@@ -1,0 +1,101 @@
+<html>
+  <head>
+    <title>C# 内存管理之对象循环引用问题 - elangduan</title>
+    <link href='/images/fav.png' rel='shortcut icon'>
+<link href='' rel='alternate' type='application/rss+xml'>
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/highlight.css">
+<link rel="stylesheet" href="/css/responsive.css">
+<script src="/js/jquery.js"></script>
+<script src="/js/basics.js"></script>
+<meta content='width=device-width, initial-scale=1.0, user-scalable=no' name='viewport'>
+<meta content='text/html; charset=utf-8' http-equiv='content-type'>
+
+
+  </head>
+  <body>
+    <header>
+</header>
+
+    <div id='container'>
+      <div class='block'>
+  
+    <a class='main' href='/'>随笔</a>
+  
+    <a class='main' href='/reading'>阅读</a>
+  
+    <a class='main' href='/movie'>电影</a>
+  
+    <a class='main' href='https://www.cnblogs.com/elang'>博客</a>
+  
+    <a class='main' href='/about'>关于</a>
+  
+</div>
+
+      <!-- <section class='paging'>
+  
+    <div class='left'>
+      <a href='/2016/07/16/Unity AssetBundle学习、分析及总结/'>
+        ‹
+      </a>
+    </div>
+  
+  
+    <div class='right'>
+      <a href='/2016/06/18/Unity中内存资源释放总结/'>
+        ›
+      </a>
+    </div>
+  
+</section>
+ -->
+      <div class='content'>
+        <section class='post'>
+          <h1>
+            <div class='date'>2016-06-29</div>
+            C# 内存管理之对象循环引用问题
+          </h1>
+          <p><strong>C#的内存管理</strong>用到了引用计数， 但是和以往我们认识的Java、Objective-c的内存管理有非常大的不同之处。不同之处在于C#的引用计数只有在GC Root对象引用的对象身上才生效，也就是说如果一个对象被GC Root对象引用了，那么在这个GC Root对象没有销毁之前这个对象是不会被销毁的。反之，如果一个对象没有被GC Root对象引用，即便这个对象被再多非GC Root对象引用，也会再下一次内存回收的时候被销毁。</p>
+<p>GC Roots:</p>
+<ul>
+<li>正在运行的局部变量</li>
+<li>静态变量</li>
+<li>重写了object的finalizer方法的变量</li>
+<li>正在调用的函数传递的参数</li>
+</ul>
+<p>下图演示了几种对象引用的情况:</p>
+<p><img src="http://images2015.cnblogs.com/blog/579121/201606/579121-20160618120119682-75508795.png" alt=""></p>
+<p>根据我们前面的描述，我们很容易判断object A和object B在RootA 被释放之后随之会被释放，object C和object D 虽然循环引用，但是没有被Root引用，所以在下一次内存回收的时候就会被释放,RootB和RootC造成了循环引用所以释放不了。</p>
+
+          <!-- <br>
+<p>Elang Duan</p>
+<p><img src='/images/scribble3.png' alt='scribble'></p>
+ -->
+        </section>
+      </div>
+      
+      <div class='block'>
+  
+    <a class='main' href='/'>随笔</a>
+  
+    <a class='main' href='/reading'>阅读</a>
+  
+    <a class='main' href='/movie'>电影</a>
+  
+    <a class='main' href='https://www.cnblogs.com/elang'>博客</a>
+  
+    <a class='main' href='/about'>关于</a>
+  
+</div>
+
+    </div>
+    <footer>
+  <span class='muted'>&copy; elangduan@126.com</span>
+  <a class='muted'>& powered by Hexo</a>
+  <br>
+  <br>
+
+</footer>
+
+  </body>
+</html>

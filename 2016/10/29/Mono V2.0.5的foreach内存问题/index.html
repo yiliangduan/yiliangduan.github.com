@@ -1,0 +1,121 @@
+<html>
+  <head>
+    <title>C# foreach带来的内存问题 - elangduan</title>
+    <link href='/images/fav.png' rel='shortcut icon'>
+<link href='' rel='alternate' type='application/rss+xml'>
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/highlight.css">
+<link rel="stylesheet" href="/css/responsive.css">
+<script src="/js/jquery.js"></script>
+<script src="/js/basics.js"></script>
+<meta content='width=device-width, initial-scale=1.0, user-scalable=no' name='viewport'>
+<meta content='text/html; charset=utf-8' http-equiv='content-type'>
+
+
+  </head>
+  <body>
+    <header>
+</header>
+
+    <div id='container'>
+      <div class='block'>
+  
+    <a class='main' href='/'>随笔</a>
+  
+    <a class='main' href='/reading'>阅读</a>
+  
+    <a class='main' href='/movie'>电影</a>
+  
+    <a class='main' href='https://www.cnblogs.com/elang'>博客</a>
+  
+    <a class='main' href='/about'>关于</a>
+  
+</div>
+
+      <!-- <section class='paging'>
+  
+    <div class='left'>
+      <a href='/2016/12/28/Unity 文件下载分析/'>
+        ‹
+      </a>
+    </div>
+  
+  
+    <div class='right'>
+      <a href='/2016/09/05/Unity-IAP和Wechat支付接入/'>
+        ›
+      </a>
+    </div>
+  
+</section>
+ -->
+      <div class='content'>
+        <section class='post'>
+          <h1>
+            <div class='date'>2016-10-29</div>
+            C# foreach带来的内存问题
+          </h1>
+          <h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h4><p>在使用Unity工具开发游戏的时候经常会被建议不要使用foreach,究其原因说是会产生额外的heap内存,既然存在这种问题, 那我必须得自己搞清楚下。本文是自己查阅资料和试验的结果总结。</p>
+<p>本文参考了<a href="https://stackoverflow.com/a/26110503" target="_blank" rel="external">Memory allocation when using foreach loops in C#</a></p>
+<p><em>测试环境: Unity5.4.1f1, MonoV2.0.5</em></p>
+<h4 id="剖析"><a href="#剖析" class="headerlink" title="剖析"></a>剖析</h4><p>首先来搞明白使用foreach和for的区别,下面是一个简单的例子:</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Sample1.0</span></span><br><span class="line">&#123;</span><br><span class="line">    List&lt;<span class="keyword">string</span>&gt; list = <span class="keyword">new</span> List&lt;<span class="keyword">string</span>&gt;()&#123;<span class="string">"hello"</span>, <span class="string">"world"</span>&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">foreach</span>(<span class="keyword">string</span> item <span class="keyword">in</span> list)</span><br><span class="line">    &#123;</span><br><span class="line">        UnityEngine.Debug.Log(item);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<a id="more"></a> 
+<p>编译之后查看对应的IL代码, 发现foreach编译之后通过获取List的内部类Enumerator来遍历List的数据,其中List<string>.Enumerator内部类的定义为:</string></p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">struct</span> Enumerator : IEnumerator&lt;T&gt;, IDisposable, IEnumerator&#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>Enumerator为struct类型, 在c#中struct类型为<a href="https://msdn.microsoft.com/en-us/library/s1ax56ch.aspx" target="_blank" rel="external">Value Types</a>,根据c#对<a href="https://msdn.microsoft.com/en-us/library/4d43ts61(v=vs.90" target="_blank" rel="external">Value and Reference Types</a>.aspx)的描述,其中说到:</p>
+<p>A value type stores its contents in memory allocated on the stack</p>
+<p>也就是说Enumerator的内存是分配在stack区域的, 再仔细看看Enumerator发现其实现了IDisposable接口,而IDisposable接口有什么特性呢? 从<a href="https://msdn.microsoft.com/en-us/library/system.idisposable(v=vs.110" target="_blank" rel="external">.Net Framework文档</a>.aspx)中我们可以看到:</p>
+<p>Implement IDisposable only if you are using unmanaged resources directly. If your app simply uses an object that implements IDisposable, don’t provide an IDisposable implementation. Instead, you should call the object’s IDisposable.Dispose implementation when you are finished using it. Depending on your programming language, you can do this in one of two ways:</p>
+<ul>
+<li>By using a language construct such as the using statement in C# and Visual Basic.</li>
+<li>By wrapping the call to the IDisposable.Dispose implementation in a try/catch block.</li>
+</ul>
+<p>也就是说继承了IDisposable接口之后得使用using来声明或者使用try/catch块来包裹我们代码。那我们根据这些特性可以通过对应的IL代码来还原成C#的代码:</p>
+<p><em>使用using</em><br><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span>(List&lt;<span class="keyword">string</span>&gt;.Enumerator enumerator = list.GetEnumerator())</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">while</span>(enumerator.MoveNext())</span><br><span class="line">    &#123;</span><br><span class="line">        UnityEngine.Debug.Log(enumerator.Current);</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
+<p><em>使用try/catch包裹</em><br><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">List&lt;<span class="keyword">string</span>&gt;.Enumerator enumerator = list.GetEnumerator();</span><br><span class="line">    </span><br><span class="line"><span class="keyword">try</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">while</span> (enumerator.MoveNext())</span><br><span class="line">    &#123;</span><br><span class="line">        UnityEngine.Debug.Log(enumerator.Current);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">finally</span></span><br><span class="line">&#123;</span><br><span class="line">    ((IDisposable)enumerator).Dispose();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>从使用try/catch包裹这个代码中我们可以看出问题了，在finally块中编译器对enumerator进行的类型的强者转换,转换称了IDisposable接口类型的,我们知道在C#中接口类型属于reference type。reference type的内存是在heap上分配的, 分析到这里其实答案基本上已经知道了。另一方面其实在分析看IL代码就可以发现问题, 在IL中的的finally块是这样的:</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">finally</span>  &#123; <span class="comment">// 0</span></span><br><span class="line">  IL_004d:  ldloc<span class="number">.2</span> </span><br><span class="line">  IL_004e:  box valuetype [mscorlib]System.Collections.Generic.List`<span class="number">1</span>/Enumerator&lt;<span class="keyword">string</span>&gt;</span><br><span class="line">  IL_0053:  callvirt instance void class [mscorlib]System.IDisposable::Dispose()</span><br><span class="line">  IL_0058:  endfinally </span><br><span class="line">&#125; <span class="comment">// end handler 0</span></span><br></pre></td></tr></table></figure>
+<p>其中第三行有一个很扎眼的关键子<em>box</em>。那么box是的作用是什么呢？从上面IL代码其实可以看出Boxing把Enumerator<string>这个valuetype转换成了IDisposable这个interface类型的对象。具体的过程参照<a href="https://msdn.microsoft.com/en-us/library/yz2be5wk.aspx" target="_blank" rel="external">Boxing官方的文档</a>有这样的描述:</string></p>
+<blockquote>
+<p>Boxing is used to store value types in the garbage-collected heap. Boxing is an implicit conversion of a value type to the type object or to any interface type implemented by this value type. Boxing a value type allocates an object instance on the heap and copies the value into the new object.</p>
+</blockquote>
+<p>也就是说把一个value type对象转换成其实现的Reference type对象, 然而转换之后的这个对象的内存是分配在heap区域的。现在我们终于知道foreach会产生heap内存的原因了。</p>
+<p>总结:基于使用foreach会在heap上分配额外内存的问题。在Unity使用foreach就要变得谨慎了,尤其是Update这种每帧执行的函数里面还是尽量避免使用foreach,尽管它有良好的代码可读性和使用上的方便等特性。</p>
+<hr>
+<p>在<em>Unity5.5.3f1</em>上面测试了一下发现这个问题已经解决了, 看下在<em>5.5.3f1</em>上foreach反编译的finally的代码:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">finally</span><br><span class="line">&#123;</span><br><span class="line">	// 0x02B9: 12 03</span><br><span class="line">	IL_0049: ldloca.s 3</span><br><span class="line">	// 0x02BB: FE 16 02 00 00 1B</span><br><span class="line">	IL_004b: constrained. valuetype [mscorlib]System.Collections.Generic.List`1/Enumerator&lt;string&gt;</span><br><span class="line">	// 0x02C1: 6F 07 00 00 0A</span><br><span class="line">	IL_0051: callvirt instance void [mscorlib]System.IDisposable::Dispose()</span><br><span class="line">	// 0x02C6: DC</span><br><span class="line">	IL_0056: endfinally</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对List的GetEnumerator已经没有进行box操作了。</p>
+
+          <!-- <br>
+<p>Elang Duan</p>
+<p><img src='/images/scribble3.png' alt='scribble'></p>
+ -->
+        </section>
+      </div>
+      
+      <div class='block'>
+  
+    <a class='main' href='/'>随笔</a>
+  
+    <a class='main' href='/reading'>阅读</a>
+  
+    <a class='main' href='/movie'>电影</a>
+  
+    <a class='main' href='https://www.cnblogs.com/elang'>博客</a>
+  
+    <a class='main' href='/about'>关于</a>
+  
+</div>
+
+    </div>
+    <footer>
+  <span class='muted'>&copy; elangduan@126.com</span>
+  <a class='muted'>& powered by Hexo</a>
+  <br>
+  <br>
+
+</footer>
+
+  </body>
+</html>

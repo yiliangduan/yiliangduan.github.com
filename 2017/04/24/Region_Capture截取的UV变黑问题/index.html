@@ -1,0 +1,93 @@
+<html>
+  <head>
+    <title>Region_Capture截取的UV色彩变黑的问题 - elangduan</title>
+    <link href='/images/fav.png' rel='shortcut icon'>
+<link href='' rel='alternate' type='application/rss+xml'>
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/highlight.css">
+<link rel="stylesheet" href="/css/responsive.css">
+<script src="/js/jquery.js"></script>
+<script src="/js/basics.js"></script>
+<meta content='width=device-width, initial-scale=1.0, user-scalable=no' name='viewport'>
+<meta content='text/html; charset=utf-8' http-equiv='content-type'>
+
+
+  </head>
+  <body>
+    <header>
+</header>
+
+    <div id='container'>
+      <div class='block'>
+  
+    <a class='main' href='/'>随笔</a>
+  
+    <a class='main' href='/reading'>阅读</a>
+  
+    <a class='main' href='/movie'>电影</a>
+  
+    <a class='main' href='https://www.cnblogs.com/elang'>博客</a>
+  
+    <a class='main' href='/about'>关于</a>
+  
+</div>
+
+      <!-- <section class='paging'>
+  
+    <div class='left'>
+      <a href='/2017/05/05/C语言的变量初始化问题/'>
+        ‹
+      </a>
+    </div>
+  
+  
+    <div class='right'>
+      <a href='/2017/04/08/OpenGL-Mesh的结构/'>
+        ›
+      </a>
+    </div>
+  
+</section>
+ -->
+      <div class='content'>
+        <section class='post'>
+          <h1>
+            <div class='date'>2017-04-24</div>
+            Region_Capture截取的UV色彩变黑的问题
+          </h1>
+          <h4 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h4><p>使用Vuforia或者EasyAR的AR识别库我们经常用到<em>Region Capture</em>这个插件来得到我们摄像头拍摄的画面中的识别图，得到这张贴图我们就可以把它贴在Target模型上面来达到实时上色的效果。但是在<em>Region Capture</em>获取贴图的过程中(实时的)经常或出现我们移动摄像头偏离识别图的时候那么<em>Region Capture</em>得到贴图有部分是黑色的(这部分黑色的就是识别图没有被摄像头拍摄到的部分)。很显然这样的效果我们是无法接受的。</p>
+<h4 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h4><p>我们读取<em>Region Capture</em>四个边角的pixel来判断是否是黑色。如果是黑色那么我们继续沿用上一次获取的贴图，知道下一次我们得到没有黑色的贴图再更新。下面是我的解决办法:</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// CameraOutputTexture是Camera的Target Texture</span></span><br><span class="line"><span class="comment">// modelTextureCache是直接从CameraOuputTexture读区的贴图</span></span><br><span class="line"><span class="comment">// ModelTexture是最终使用的Texture</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> IEnumerator <span class="title">ClipDrawingTexture</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">yield</span> return new <span class="title">WaitForEndOfFrame</span>(<span class="params"></span>)</span>;</span><br><span class="line"></span><br><span class="line">        AllocModelTextureCacheIsNull();</span><br><span class="line"></span><br><span class="line">        RenderTexture.active = CameraOutputTexture;</span><br><span class="line"></span><br><span class="line">        modelTextureCache.ReadPixels(ClipRegion, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">        RenderTexture.active = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">        modelTextureCache.Apply();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (cameraFocusTargetCenter())</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="literal">null</span> != ModelTexture)</span><br><span class="line">            &#123;</span><br><span class="line">                ModelTexture.LoadRawTextureData(modelTextureCache.GetRawTextureData());</span><br><span class="line">                ModelTexture.Apply();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">bool</span> <span class="title">cameraFocusTargetCenter</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> offsetStart = modelTextureCache.width / <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> textureWidth = modelTextureCache.width;</span><br><span class="line">        <span class="keyword">int</span> textureHeight = modelTextureCache.height;</span><br><span class="line"></span><br><span class="line">        Color leftTop = modelTextureCache.GetPixel(offsetStart, textureHeight - offsetStart);</span><br><span class="line">        Color leftBottom = modelTextureCache.GetPixel(offsetStart, offsetStart);</span><br><span class="line"></span><br><span class="line">        Color rightTop = modelTextureCache.GetPixel(textureWidth - offsetStart, textureHeight - offsetStart);</span><br><span class="line">        Color rightBottom = modelTextureCache.GetPixel(textureWidth - offsetStart, offsetStart);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> !isBlackColor(leftTop) &amp;&amp; !isBlackColor(leftBottom) &amp;&amp; !isBlackColor(rightTop) &amp;&amp; !isBlackColor(rightBottom);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">bool</span> <span class="title">isBlackColor</span>(<span class="params">Color color</span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (color.r &lt; <span class="number">0.01</span>f) &amp;&amp; (color.g &lt; <span class="number">0.01</span>f) &amp;&amp; (color.b &lt; <span class="number">0.01</span>f) &amp;&amp; color.a &gt; <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+          <!-- <br>
+<p>Elang Duan</p>
+<p><img src='/images/scribble3.png' alt='scribble'></p>
+ -->
+        </section>
+      </div>
+      
+      <div class='block'>
+  
+    <a class='main' href='/'>随笔</a>
+  
+    <a class='main' href='/reading'>阅读</a>
+  
+    <a class='main' href='/movie'>电影</a>
+  
+    <a class='main' href='https://www.cnblogs.com/elang'>博客</a>
+  
+    <a class='main' href='/about'>关于</a>
+  
+</div>
+
+    </div>
+    <footer>
+  <span class='muted'>&copy; elangduan@126.com</span>
+  <a class='muted'>& powered by Hexo</a>
+  <br>
+  <br>
+
+</footer>
+
+  </body>
+</html>
