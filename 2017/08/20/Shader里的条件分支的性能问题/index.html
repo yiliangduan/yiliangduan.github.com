@@ -93,9 +93,9 @@
 <meta property="og:description" content="GPU对条件分支语句的执行性能比较敏感似乎是一个比较普遍的认知了，那么到底影响有多大呢？这里做了一次测试，测试针对Shader中的条件分支语句的性能情况。在有if语句和没有if语句时候的程序不同写法的:  针对if语句的优化方法，参考的这里, 目前没有找到更好的替换if语句的办法，希望有更好办法的同学评论里面提出来，非常感谢！  123456789101112fixed4 col = tex2D(">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://elangduan.github.com/images/shader_performance/test.jpg">
-<meta property="og:image" content="http://elangduan.github.com/images/shader_performance/performance_different1">
-<meta property="og:image" content="http://elangduan.github.com/images/shader_performance/performance_different2">
-<meta property="og:updated_time" content="2017-11-18T12:49:44.000Z">
+<meta property="og:image" content="http://elangduan.github.com/images/shader_performance/performance_different1.jpg">
+<meta property="og:image" content="http://elangduan.github.com/images/shader_performance/performance_different2.jpg">
+<meta property="og:updated_time" content="2017-11-18T12:54:05.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Shader里的条件分支的性能问题">
 <meta name="twitter:description" content="GPU对条件分支语句的执行性能比较敏感似乎是一个比较普遍的认知了，那么到底影响有多大呢？这里做了一次测试，测试针对Shader中的条件分支语句的性能情况。在有if语句和没有if语句时候的程序不同写法的:  针对if语句的优化方法，参考的这里, 目前没有找到更好的替换if语句的办法，希望有更好办法的同学评论里面提出来，非常感谢！  123456789101112fixed4 col = tex2D(">
@@ -366,7 +366,7 @@
 </tbody>
 </table>
 <p>5min时刻的性能截图:</p>
-<p><img src="/images/shader_performance/performance_different1" alt=""></p>
+<p><img src="/images/shader_performance/performance_different1.jpg" alt=""></p>
 <p><em>2. 存在if语句的测试情况</em></p>
 <table>
 <thead>
@@ -391,7 +391,7 @@
 </tbody>
 </table>
 <p>5min时刻的性能截图:</p>
-<p><img src="/images/shader_performance/performance_different2" alt=""></p>
+<p><img src="/images/shader_performance/performance_different2.jpg" alt=""></p>
 <p>总结: 通过测试发现两种写法的shader性能基本相近, 数值一直在波动，但是波动范围和数值频率差别比较微小, 没有哪种情况能够从数值上面看出绝对的优势。也就是相比使用if语句的代码，优化之后的代码并没有执行效率的明显提升，所以这里所谓的优化就不存在了。</p>
 
       
