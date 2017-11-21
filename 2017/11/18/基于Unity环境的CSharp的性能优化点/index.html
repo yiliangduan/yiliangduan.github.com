@@ -93,7 +93,7 @@
 <meta property="og:description" content="原文Optimizing garbage collection in Unity games。这里对这个文章的粗略翻译，当作自己的笔记。  Unity的托管内存的简单介绍为了理解GC（本文GC指代Garbage Collector）在内存分配和回收时是怎样工作的，我们必须首先了解Unity的引擎代码和我们自己编写的脚本是怎么利用内存来工作的。 Unity引擎代码运行时管理内存的方式叫做手动管理内">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_performance_ways/window_with_data.png">
-<meta property="og:updated_time" content="2017-11-21T13:00:27.000Z">
+<meta property="og:updated_time" content="2017-11-21T13:01:47.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="针对Unity开发的C#的性能优化(译)">
 <meta name="twitter:description" content="原文Optimizing garbage collection in Unity games。这里对这个文章的粗略翻译，当作自己的笔记。  Unity的托管内存的简单介绍为了理解GC（本文GC指代Garbage Collector）在内存分配和回收时是怎样工作的，我们必须首先了解Unity的引擎代码和我们自己编写的脚本是怎么利用内存来工作的。 Unity引擎代码运行时管理内存的方式叫做手动管理内">
@@ -380,7 +380,7 @@
 <p>下面列出的代码是一个在堆上分配内存的例子，变量localList是局部变量但是是引用类型的(reference-type)。这个变量的内存回收是在GC运行的时候(函数执行完并不会立即释放)。</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ExampleFunction</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  List localList = <span class="keyword">new</span> List();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="使用Unity的Profile窗口可以找到堆内存的分配"><a href="#使用Unity的Profile窗口可以找到堆内存的分配" class="headerlink" title="使用Unity的Profile窗口可以找到堆内存的分配"></a>使用Unity的Profile窗口可以找到堆内存的分配</h3><p>我们可以通过Profiler窗口看到我们代码创建堆内存的地方</p>
-<p>/Users/elang/Documents/blogs/www.elangduan.com/source/images/<br><img src="/images/unity_performance_ways/window_with_data.png" alt=""></p>
+<p><img src="/images/unity_performance_ways/window_with_data.png" alt=""></p>
 <p>在CPU使用情况的分析器中，我们可以选择任何一帧然后在Profiler窗口的底部部分查看这一帧的CPU的数据使用情况，其中有一列数据叫做 <strong>GC Alloc</strong> 。这一列显示了这一帧正在进行的内存分配情况。如果我们选择这一列的头部我们可以对这些统计好的数据进行排序，以便更能轻松的看出来在我们游戏中是哪些函数产生最大的堆内存分配。一旦我们知道是哪个函数产生分配堆内存，我们可以检查这个函数。</p>
 <p>当我们知道了在这个函数中引起内存分配的那段代码，我们可以决定怎样去解决这个问题使得这里的分配的内存量最小化。</p>
 
