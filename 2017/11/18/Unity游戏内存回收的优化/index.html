@@ -84,19 +84,19 @@
 
 
 
-<meta name="description" content="原文Optimizing garbage collection in Unity games。这里对这个文章的粗略翻译，当作自己的笔记。 Garbage Collector在这里被翻译成名词GC。对于Garbage Collection这里翻译成GC内存回收。 内存垃圾: 代码中销毁了(disposed)但是GC还没有清理的内存。  Unity的托管内存的简单介绍为了理解GC（本文GC指代Gar">
+<meta name="description" content="原文Optimizing garbage collection in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。 Garbage Collector在这里被翻译成名词GC。对于Garbage Collection这里翻译成GC内存回收。 内存垃圾: 代码中销毁了(disposed)但是GC还没有清理的内存。  Unity的托管内存的简单介绍为了理解GC（本文GC指代Gar">
 <meta name="keywords" content="csharp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity游戏内存回收的优化(译)">
 <meta property="og:url" content="http://elangduan.github.com/2017/11/18/Unity游戏内存回收的优化/index.html">
 <meta property="og:site_name" content="elangduan">
-<meta property="og:description" content="原文Optimizing garbage collection in Unity games。这里对这个文章的粗略翻译，当作自己的笔记。 Garbage Collector在这里被翻译成名词GC。对于Garbage Collection这里翻译成GC内存回收。 内存垃圾: 代码中销毁了(disposed)但是GC还没有清理的内存。  Unity的托管内存的简单介绍为了理解GC（本文GC指代Gar">
+<meta property="og:description" content="原文Optimizing garbage collection in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。 Garbage Collector在这里被翻译成名词GC。对于Garbage Collection这里翻译成GC内存回收。 内存垃圾: 代码中销毁了(disposed)但是GC还没有清理的内存。  Unity的托管内存的简单介绍为了理解GC（本文GC指代Gar">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_performance_ways/window_with_data.png">
-<meta property="og:updated_time" content="2017-11-26T09:04:27.000Z">
+<meta property="og:updated_time" content="2017-11-26T09:06:01.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity游戏内存回收的优化(译)">
-<meta name="twitter:description" content="原文Optimizing garbage collection in Unity games。这里对这个文章的粗略翻译，当作自己的笔记。 Garbage Collector在这里被翻译成名词GC。对于Garbage Collection这里翻译成GC内存回收。 内存垃圾: 代码中销毁了(disposed)但是GC还没有清理的内存。  Unity的托管内存的简单介绍为了理解GC（本文GC指代Gar">
+<meta name="twitter:description" content="原文Optimizing garbage collection in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。 Garbage Collector在这里被翻译成名词GC。对于Garbage Collection这里翻译成GC内存回收。 内存垃圾: 代码中销毁了(disposed)但是GC还没有清理的内存。  Unity的托管内存的简单介绍为了理解GC（本文GC指代Gar">
 <meta name="twitter:image" content="http://elangduan.github.com/images/unity_performance_ways/window_with_data.png">
 
 
@@ -329,7 +329,7 @@
 
       
         <blockquote>
-<p>原文<a href="https://unity3d.com/cn/learn/tutorials/topics/performance-optimization/optimizing-garbage-collection-unity-games" target="_blank" rel="external">Optimizing garbage collection in Unity games</a>。这里对这个文章的粗略翻译，当作自己的笔记。</p>
+<p>原文<a href="https://unity3d.com/cn/learn/tutorials/topics/performance-optimization/optimizing-garbage-collection-unity-games" target="_blank" rel="external">Optimizing garbage collection in Unity games</a>。这里对这篇文章的粗略翻译，当作自己的笔记。</p>
 <p>Garbage Collector在这里被翻译成名词GC。对于Garbage Collection这里翻译成GC内存回收。</p>
 <p>内存垃圾: 代码中销毁了(disposed)但是GC还没有清理的内存。</p>
 </blockquote>
