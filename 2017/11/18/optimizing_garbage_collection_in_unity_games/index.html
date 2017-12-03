@@ -88,7 +88,7 @@
 <meta name="keywords" content="csharp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity游戏内存回收的优化(译)">
-<meta property="og:url" content="http://elangduan.github.com/2017/11/18/Unity游戏内存回收的优化/index.html">
+<meta property="og:url" content="http://elangduan.github.com/2017/11/18/optimizing_garbage_collection_in_unity_games/index.html">
 <meta property="og:site_name" content="elang&#39;s note">
 <meta property="og:description" content="原文Optimizing garbage collection in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。 Garbage Collector在这里被翻译成名词GC。对于Garbage Collection这里翻译成GC内存回收。 内存垃圾: 代码中销毁了(disposed)但是GC还没有清理的内存。  Unity的托管内存的简单介绍为了理解GC（本文GC指代Gar">
 <meta property="og:locale" content="zh-Hans">
@@ -125,7 +125,7 @@
 
 
 
-  <link rel="canonical" href="http://elangduan.github.com/2017/11/18/Unity游戏内存回收的优化/"/>
+  <link rel="canonical" href="http://elangduan.github.com/2017/11/18/optimizing_garbage_collection_in_unity_games/"/>
 
 
 
@@ -262,7 +262,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2017/11/18/Unity游戏内存回收的优化/">
+  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2017/11/18/optimizing_garbage_collection_in_unity_games/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="elangduan@126.com">
@@ -310,8 +310,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2017/11/18/Unity游戏内存回收的优化/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/11/18/Unity游戏内存回收的优化/" itemprop="commentCount"></span>
+                <a href="/2017/11/18/optimizing_garbage_collection_in_unity_games/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/11/18/optimizing_garbage_collection_in_unity_games/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -545,6 +545,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2017/11/28/optimizing_graphics_rendering_in_unity_games/" rel="prev" title="">
+                 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -569,8 +573,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2017/11/18/Unity游戏内存回收的优化/"
-           data-title="Unity游戏内存回收的优化(译)" data-url="http://elangduan.github.com/2017/11/18/Unity游戏内存回收的优化/">
+      <div class="ds-thread" data-thread-key="2017/11/18/optimizing_garbage_collection_in_unity_games/"
+           data-title="Unity游戏内存回收的优化(译)" data-url="http://elangduan.github.com/2017/11/18/optimizing_garbage_collection_in_unity_games/">
       </div>
     
   </div>
@@ -615,7 +619,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">27</span>
+              <span class="site-state-item-count">28</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>

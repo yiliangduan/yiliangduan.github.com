@@ -68,8 +68,6 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="csharp," />
-
 
 
 
@@ -84,20 +82,17 @@
 
 
 
-<meta name="description" content="C#的内存管理用到了引用计数， 但是和以往我们认识的Java、Objective-c的内存管理有非常大的不同之处。不同之处在于C#的引用计数只有在GC Root对象引用的对象身上才生效，也就是说如果一个对象被GC Root对象引用了，那么在这个GC Root对象没有销毁之前这个对象是不会被销毁的。反之，如果一个对象没有被GC Root对象引用，即便这个对象被再多非GC Root对象引用，也会再下一">
-<meta name="keywords" content="csharp">
+<meta name="description" content="title: ‘Unity游戏的图形渲染优化(译)’date: 2017-12-03 16:15:35tags: graphicscomments: false  原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。  介绍在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么">
 <meta property="og:type" content="article">
-<meta property="og:title" content="C# 内存管理之对象循环引用问题">
-<meta property="og:url" content="http://elangduan.github.com/2016/06/29/C-内存管理之对象循环引用问题/index.html">
+<meta property="og:title" content="elang&#39;s note">
+<meta property="og:url" content="http://elangduan.github.com/2017/11/28/optimizing_graphics_rendering_in_unity_games/index.html">
 <meta property="og:site_name" content="elang&#39;s note">
-<meta property="og:description" content="C#的内存管理用到了引用计数， 但是和以往我们认识的Java、Objective-c的内存管理有非常大的不同之处。不同之处在于C#的引用计数只有在GC Root对象引用的对象身上才生效，也就是说如果一个对象被GC Root对象引用了，那么在这个GC Root对象没有销毁之前这个对象是不会被销毁的。反之，如果一个对象没有被GC Root对象引用，即便这个对象被再多非GC Root对象引用，也会再下一">
+<meta property="og:description" content="title: ‘Unity游戏的图形渲染优化(译)’date: 2017-12-03 16:15:35tags: graphicscomments: false  原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。  介绍在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://images2015.cnblogs.com/blog/579121/201606/579121-20160618120119682-75508795.png">
-<meta property="og:updated_time" content="2017-03-08T11:54:21.000Z">
+<meta property="og:updated_time" content="2017-12-03T08:15:18.725Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="C# 内存管理之对象循环引用问题">
-<meta name="twitter:description" content="C#的内存管理用到了引用计数， 但是和以往我们认识的Java、Objective-c的内存管理有非常大的不同之处。不同之处在于C#的引用计数只有在GC Root对象引用的对象身上才生效，也就是说如果一个对象被GC Root对象引用了，那么在这个GC Root对象没有销毁之前这个对象是不会被销毁的。反之，如果一个对象没有被GC Root对象引用，即便这个对象被再多非GC Root对象引用，也会再下一">
-<meta name="twitter:image" content="http://images2015.cnblogs.com/blog/579121/201606/579121-20160618120119682-75508795.png">
+<meta name="twitter:title" content="elang&#39;s note">
+<meta name="twitter:description" content="title: ‘Unity游戏的图形渲染优化(译)’date: 2017-12-03 16:15:35tags: graphicscomments: false  原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。  介绍在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么">
 
 
 
@@ -125,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://elangduan.github.com/2016/06/29/C-内存管理之对象循环引用问题/"/>
+  <link rel="canonical" href="http://elangduan.github.com/2017/11/28/optimizing_graphics_rendering_in_unity_games/"/>
 
 
 
 
 
-  <title> C# 内存管理之对象循环引用问题 | elang's note </title>
+  <title>  | elang's note </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -261,8 +256,8 @@
   
   
 
-  <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2016/06/29/C-内存管理之对象循环引用问题/">
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2017/11/28/optimizing_graphics_rendering_in_unity_games/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="elangduan@126.com">
@@ -286,7 +281,7 @@
             
             
               
-                C# 内存管理之对象循环引用问题
+                
               
             
           </h1>
@@ -298,14 +293,23 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-06-29T21:06:34+08:00">
-              2016-06-29
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-11-28T09:18:31+08:00">
+              2017-11-28
             </time>
             
           </span>
 
           
 
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2017/11/28/optimizing_graphics_rendering_in_unity_games/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/11/28/optimizing_graphics_rendering_in_unity_games/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -328,17 +332,44 @@
       
 
       
-        <p><strong>C#的内存管理</strong>用到了引用计数， 但是和以往我们认识的Java、Objective-c的内存管理有非常大的不同之处。不同之处在于C#的引用计数只有在GC Root对象引用的对象身上才生效，也就是说如果一个对象被GC Root对象引用了，那么在这个GC Root对象没有销毁之前这个对象是不会被销毁的。反之，如果一个对象没有被GC Root对象引用，即便这个对象被再多非GC Root对象引用，也会再下一次内存回收的时候被销毁。</p>
-<p>GC Roots:</p>
+        <p>title: ‘Unity游戏的图形渲染优化(译)’<br>date: 2017-12-03 16:15:35<br>tags: graphics<br>comments: false</p>
+<blockquote>
+<p>原文<a href="https://unity3d.com/cn/learn/tutorials/temas/performance-optimization/optimizing-graphics-rendering-unity-games?playlist=44069" target="_blank" rel="external">Optimizing graphics rendering in Unity games</a>。这里对这篇文章的粗略翻译，当作自己的笔记。</p>
+</blockquote>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。</p>
+<p>在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非常依赖游戏运行的硬件和操作系统。通过调查，实验和细心的分析实验结果来解决性能问题是我们最重要的方式。</p>
+<p>这篇文章包含的信息主要是大部分常见的性能问题的修改建议和一些更深层次的阅读链接。我们的游戏中可能也存在这其中的一个问题或者一些问题或者都没有包含。但是这篇文章仍然将帮助我们理解我们自己的问题同时给予我们去搜索我们问题的知识和线索。</p>
+<h2 id="渲染的简介"><a href="#渲染的简介" class="headerlink" title="渲染的简介"></a>渲染的简介</h2><p>在我们开始介绍之前，让我们快速简单看下Unity渲染一帧时其内部发生了什么。理解事件流和正确的术语将会帮助我们 理解，调查和解决我们的性能问题。</p>
+<p><strong>注:</strong>在这篇文章中，我们将会使用”对象(object)”术语来表示一个我们游戏的渲染的对象。任何渲染组件的GameObject将会被统称为对象。</p>
+<p>在最基本的层面上，渲染可以描述为一下几步：</p>
 <ul>
-<li>正在运行的局部变量</li>
-<li>静态变量</li>
-<li>重写了object的finalizer方法的变量</li>
-<li>正在调用的函数传递的参数</li>
+<li>CPU计算出必须渲染的对象和决定怎么去绘制。</li>
+<li>CPU发送指令到GPU。</li>
+<li>GPU根据CPU的指令来确定绘制的内容。</li>
 </ul>
-<p>下图演示了几种对象引用的情况:</p>
-<p><img src="http://images2015.cnblogs.com/blog/579121/201606/579121-20160618120119682-75508795.png" alt=""></p>
-<p>根据我们前面的描述，我们很容易判断object A和object B在RootA 被释放之后随之会被释放，object C和object D 虽然循环引用，但是没有被Root引用，所以在下一次内存回收的时候就会被释放,RootB和RootC造成了循环引用所以释放不了。</p>
+<p>现在让我们来更近一步看看究竟发生了什么。这篇文章后面将会详细的介绍上面的每一个步骤。但是现在让我们先来熟悉下文中使用的词语和理解CPU和GPU在渲染中扮演的不同角色。</p>
+<p>描述渲染的词语通常用<strong>渲染管线(rendering pipeline)</strong>，记住这是一个非常有用的情景。高效的渲染都是关于保持更高信息的传送能力。</p>
+<p>对于每一个渲染的帧，CPU会做如下的工作:</p>
+<ul>
+<li>CPU会检查场景中的每一个对象来决定这个对象是否需要被渲染。只有当这个对象满足特定的条件的时候才会被渲染；例如，它的包围盒的一些部分在<a href="https://docs.unity3d.com/Manual/UnderstandingFrustum.html?_ga=2.151286320.801370543.1512275945-1497166853.1503199345" target="_blank" rel="external">相机视锥体</a>内。一个对象如果将不会被渲染我们称之为这个对象被裁剪了(culled)。关于相机的视锥体和视锥体裁剪的更多信息可以看着<a href="https://docs.unity3d.com/Manual/UnderstandingFrustum.html?_ga=2.147021758.801370543.1512275945-1497166853.1503199345" target="_blank" rel="external">这篇文章</a>。</li>
+<li>CPU搜集每一个将会被渲染的对象的信息然后将这些数据分类放入叫做<strong>draw calls</strong>命令中。一个draw call包含了一个mesh和这个mesh怎样被渲染的数据；例如，这个mesh用哪一张贴图。基于这些情况，共享设置的图像会合并到一些相同的draw call中。合并不同对象的数据到同一个draw call中我们称之为<strong>batching</strong>。</li>
+<li>CPU为每次draw call创建一个叫批处理包(batch)的数据包。批处理包有可能包含了draw calls之外的数据，但是这种情况不像常见的一个性能问题，因此我们不会在这篇文章里面来讨论。</li>
+</ul>
+<p>对于每个draw call包含的批处理包，CPU现在必须要入如下的工作:</p>
+<ul>
+<li>CPU可以向GPU发送一个命令来改变一些被统称为渲染状态的变量。这个命令叫做<strong>SetPass call</strong>。SetPass call告诉GPU哪个设置被用来渲染下一个mesh。只有当上一个mesh渲染完成下一个mesh准备渲染的时候需要改变渲染状态的时候才需要发送SetPass call命令。</li>
+<li>CPU发送draw call命令到GPU。draw call会指示GPU使用上一次设置好的SetPass call去渲染制定的mesh。</li>
+<li>基于这些情况，批处理包的数据被渲染可能需要不止一个<em>pass</em>。一个pass是一段着色器的代码，使用一个新的pass需要改变渲染状态。对于一个批处理包中的每个pass，CPU必须发送一个新的SetPass call命令同时必须再次发送draw call命令。这个pass才会生效。</li>
+</ul>
+<p>同时，GPU会做如下的工作:</p>
+<ul>
+<li>GPU按照CPU发送的顺序来处理CPU发送的任务。</li>
+<li>如果当前的任务是SetPass call，GPU就更新渲染状态。</li>
+<li>如果当前的任务是draw call, GPU就渲染这个draw call的mesh。这个是分阶段进行的，每个阶段单独定义在着色器代码中。这部分渲染比较复杂我们不会详细的讨论，但是这部分对于我们去理解<strong>顶点着色器(vertex shader)</strong>这部分代码和<strong>片段着色器(fragment shader)</strong>这部分代码非常有用。顶点着色器是用来告诉GPU怎么去处理mesh的顶点数据的代码，片段着色器使用来怎样去处理每个单独像素代码。</li>
+<li>GPU重复处理从CPU发送过来的任务，直到所有的任务都处理完成。</li>
+</ul>
+<p>现在我们理解了当Unity渲染一帧时其内部发生了什么，接下来让我们思考下当渲染发生的时候会随之发生什么问题。</p>
+<p>## </p>
 
       
     </div>
@@ -360,19 +391,13 @@
 
     <footer class="post-footer">
       
-        <div class="post-tags">
-          
-            <a href="/tags/csharp/" rel="tag"># csharp</a>
-          
-        </div>
-      
 
       
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/06/18/Unity中内存资源释放总结/" rel="next" title="Unity中内存资源释放总结">
-                <i class="fa fa-chevron-left"></i> Unity中内存资源释放总结
+              <a href="/2017/11/18/optimizing_garbage_collection_in_unity_games/" rel="next" title="Unity游戏内存回收的优化(译)">
+                <i class="fa fa-chevron-left"></i> Unity游戏内存回收的优化(译)
               </a>
             
           </div>
@@ -380,10 +405,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/07/16/Unity AssetBundle学习、分析及总结/" rel="prev" title="Unity AssetBundle学习、分析及总结">
-                Unity AssetBundle学习、分析及总结 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -407,6 +428,14 @@
 
 
           
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/11/28/optimizing_graphics_rendering_in_unity_games/"
+           data-title="" data-url="http://elangduan.github.com/2017/11/28/optimizing_graphics_rendering_in_unity_games/">
+      </div>
+    
+  </div>
+
 
         </div>
         
@@ -426,8 +455,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/uploads/avatar.png"
@@ -473,6 +511,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#渲染的简介"><span class="nav-number">2.</span> <span class="nav-text">渲染的简介</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
     </div>
