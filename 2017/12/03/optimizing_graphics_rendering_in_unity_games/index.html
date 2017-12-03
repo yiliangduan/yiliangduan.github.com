@@ -92,7 +92,7 @@
 <meta property="og:site_name" content="elang&#39;s note">
 <meta property="og:description" content="原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。  介绍在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。 在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非常依">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-12-03T13:51:09.661Z">
+<meta property="og:updated_time" content="2017-12-03T14:46:23.336Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity游戏的图形渲染优化(译)">
 <meta name="twitter:description" content="原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。  介绍在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。 在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非常依">
@@ -385,6 +385,9 @@
 <p>在Unity的渲染过程中有三种类型的线程: <strong>主线程</strong>，<strong>渲染线程</strong>和<strong>辅助线程(worker threads)</strong>。主线程是我们游戏中CPU处理任务的主要的地方，包括一些渲染的任务。渲染线程是比较特殊的线程，它的工作是发送渲染命令到GPU。辅助线程处理每个单独的任务，例如裁剪或者mesh的皮毛。哪个任务由哪个线程来处理这取决于我们的游戏设置和我们游戏运行的硬件。例如，我们的目标硬件有更多的CPU核心，就有越多的辅助线程被分配。基于这个原因，在目标硬件上来剖析我们的游戏是非常重要的；我们的游戏可能在不同的平台上表现的非常不同。</p>
 <p>由于多线程渲染比较复杂并且依赖于不同的硬件，在我们改进性能之前我们必须明白哪个线程是造成我们游戏称为CPU性能受限的原因。如果我们的游戏运行慢是由于裁剪操作在一个线程上花费了太多的时间，那么它就不能帮助我们减少在不同线程上发送命令到GPU所花费的时间(译:因为裁剪操作花费的时间可能远超过辅助线程所节省的时间)。</p>
 <p><strong>注</strong>：并不是所有的平台都支持多线程渲染；在写这篇文章的时候，WebGL还没有支持这个特性。在不支持多线程渲染的平台上，所有的CPU任务都在同一个线程里面处理。如果我们是在这种平台上CPU性能受限，优化所有的CPU任务将会改进CPU的性能。如果这个情况发生在我们的游戏中，我们应该阅读接下来的所有部分同时思考哪些优化可能最适合我们的游戏。</p>
+<h2 id="图形工作"><a href="#图形工作" class="headerlink" title="图形工作"></a>图形工作</h2><p>在<strong>Player Settings</strong>里面的<a href="https://docs.unity3d.com/Manual/class-PlayerSettingsStandalone.html?_ga=2.184843040.801370543.1512275945-1497166853.1503199345" target="_blank" rel="external">图形工作</a>的设置项决定了Unity是否使用辅助线程来处理原本需要在主线程上处理的渲染任务，如果不选择则这些工作在主线程里面处理。在这个特性可用的平台上，它可以带来相当大的性能的提升。我们应该分析我们游戏在图形选项开启和不开启的情况，观察它给我们游戏性能带来的影响。</p>
+<h2 id="找出导致性能问题的任务"><a href="#找出导致性能问题的任务" class="headerlink" title="找出导致性能问题的任务"></a>找出导致性能问题的任务</h2><p>我们可以使用Profiler window来确定导致我们游戏CPU性能受限的任务。这个教程展示了怎样去确定问题的位置。</p>
+<p>现在我们了解了哪些任务导致了我们游戏的CPU性能受限，让我们来看看一些常见问题和这些问题的解决方法。</p>
 
       
     </div>
@@ -534,7 +537,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#渲染的简介"><span class="nav-number">2.</span> <span class="nav-text">渲染的简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#渲染问题的类型"><span class="nav-number">3.</span> <span class="nav-text">渲染问题的类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#理解渲染的问题"><span class="nav-number">4.</span> <span class="nav-text">理解渲染的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Profiler-window"><span class="nav-number">4.1.</span> <span class="nav-text">Profiler window</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Frame-Debugger"><span class="nav-number">4.2.</span> <span class="nav-text">Frame Debugger</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#确定导致性能问题的原因"><span class="nav-number">4.3.</span> <span class="nav-text">确定导致性能问题的原因</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如果我们游戏是CPU性能受限"><span class="nav-number">5.</span> <span class="nav-text">如果我们游戏是CPU性能受限</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#渲染的简介"><span class="nav-number">2.</span> <span class="nav-text">渲染的简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#渲染问题的类型"><span class="nav-number">3.</span> <span class="nav-text">渲染问题的类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#理解渲染的问题"><span class="nav-number">4.</span> <span class="nav-text">理解渲染的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Profiler-window"><span class="nav-number">4.1.</span> <span class="nav-text">Profiler window</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Frame-Debugger"><span class="nav-number">4.2.</span> <span class="nav-text">Frame Debugger</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#确定导致性能问题的原因"><span class="nav-number">4.3.</span> <span class="nav-text">确定导致性能问题的原因</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如果我们游戏是CPU性能受限"><span class="nav-number">5.</span> <span class="nav-text">如果我们游戏是CPU性能受限</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#图形工作"><span class="nav-number">6.</span> <span class="nav-text">图形工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#找出导致性能问题的任务"><span class="nav-number">7.</span> <span class="nav-text">找出导致性能问题的任务</span></a></li></ol></div>
             
 
           </div>
