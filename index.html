@@ -326,7 +326,7 @@
       
         
           
-            <p>今天检查项目中代码的Boxing问题。有一个点当时让我困惑了不少时间。如下:</p>
+            <p>今天检查项目中代码的Boxing问题的时候。有一个点当时让我困惑了不少时间。如下:</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> IEnumerator&lt;<span class="keyword">float</span>&gt; <span class="title">Func0</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">yield</span> <span class="keyword">return</span> <span class="number">0.1</span>f;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> IEnumerator <span class="title">Func1</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">yield</span> <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这里在实际代码运行过程中Func1会产生Boxing而Func0没有产生Boxing，按照自己浏览的C#的文档对Boxing的理解这里应该都是会产生Boxing的才对。下面是<a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/types/boxing-and-unboxing" target="_blank" rel="external">C#的Boxing文档说明</a>的：</p>
 <blockquote>
