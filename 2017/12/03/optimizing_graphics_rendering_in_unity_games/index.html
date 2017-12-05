@@ -92,7 +92,7 @@
 <meta property="og:site_name" content="elang&#39;s note">
 <meta property="og:description" content="原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。  介绍在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。 在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非常依">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-12-03T14:46:23.336Z">
+<meta property="og:updated_time" content="2017-12-05T14:56:22.767Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity游戏的图形渲染优化(译)">
 <meta name="twitter:description" content="原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。  介绍在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。 在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非常依">
@@ -346,13 +346,13 @@
 <ul>
 <li>CPU会检查场景中的每一个对象来决定这个对象是否需要被渲染。只有当这个对象满足特定的条件的时候才会被渲染；例如，它的包围盒的一些部分在<a href="https://docs.unity3d.com/Manual/UnderstandingFrustum.html?_ga=2.151286320.801370543.1512275945-1497166853.1503199345" target="_blank" rel="external">相机视锥体</a>内。一个对象如果将不会被渲染我们称之为这个对象被裁剪了(culled)。关于相机的视锥体和视锥体裁剪的更多信息可以看着<a href="https://docs.unity3d.com/Manual/UnderstandingFrustum.html?_ga=2.147021758.801370543.1512275945-1497166853.1503199345" target="_blank" rel="external">这篇文章</a>。</li>
 <li>CPU搜集每一个将会被渲染的对象的信息然后将这些数据分类放入叫做<strong>draw calls</strong>命令中。一个draw call包含了一个mesh和这个mesh怎样被渲染的数据；例如，这个mesh用哪一张贴图。基于这些情况，共享设置的图像会合并到一些相同的draw call中。合并不同对象的数据到同一个draw call中我们称之为<strong>batching</strong>。</li>
-<li>CPU为每次draw call创建一个叫批处理包(batch)的数据包。批处理包有可能包含了draw calls之外的数据，但是这种情况不像常见的一个性能问题，因此我们不会在这篇文章里面来讨论。</li>
+<li>CPU为每次draw call创建一个叫batch的数据包。batchs有可能包含了draw calls之外的数据，但是这种情况不像常见的一个性能问题，因此我们不会在这篇文章里面来讨论。</li>
 </ul>
-<p>对于每个draw call包含的批处理包，CPU现在必须要入如下的工作:</p>
+<p>对于每个draw call包含的batchs，CPU现在必须要入如下的工作:</p>
 <ul>
 <li>CPU可以向GPU发送一个命令来改变一些被统称为渲染状态的变量。这个命令叫做<strong>SetPass call</strong>。SetPass call告诉GPU哪个设置被用来渲染下一个mesh。只有当上一个mesh渲染完成下一个mesh准备渲染的时候需要改变渲染状态的时候才需要发送SetPass call命令。</li>
 <li>CPU发送draw call命令到GPU。draw call会指示GPU使用上一次设置好的SetPass call去渲染制定的mesh。</li>
-<li>基于这些情况，批处理包的数据被渲染可能需要不止一个<em>pass</em>。一个pass是一段着色器的代码，使用一个新的pass需要改变渲染状态。对于一个批处理包中的每个pass，CPU必须发送一个新的SetPass call命令同时必须再次发送draw call命令。这个pass才会生效。</li>
+<li>基于这些情况，batchs的数据被渲染可能需要不止一个<em>pass</em>。一个pass是一段着色器的代码，使用一个新的pass需要改变渲染状态。对于一个batchs中的每个pass，CPU必须发送一个新的SetPass call命令同时必须再次发送draw call命令。这个pass才会生效。</li>
 </ul>
 <p>同时，GPU会做如下的工作:</p>
 <ul>
@@ -388,6 +388,29 @@
 <h2 id="图形工作"><a href="#图形工作" class="headerlink" title="图形工作"></a>图形工作</h2><p>在<strong>Player Settings</strong>里面的<a href="https://docs.unity3d.com/Manual/class-PlayerSettingsStandalone.html?_ga=2.184843040.801370543.1512275945-1497166853.1503199345" target="_blank" rel="external">图形工作</a>的设置项决定了Unity是否使用辅助线程来处理原本需要在主线程上处理的渲染任务，如果不选择则这些工作在主线程里面处理。在这个特性可用的平台上，它可以带来相当大的性能的提升。我们应该分析我们游戏在图形选项开启和不开启的情况，观察它给我们游戏性能带来的影响。</p>
 <h2 id="找出导致性能问题的任务"><a href="#找出导致性能问题的任务" class="headerlink" title="找出导致性能问题的任务"></a>找出导致性能问题的任务</h2><p>我们可以使用Profiler window来确定导致我们游戏CPU性能受限的任务。这个教程展示了怎样去确定问题的位置。</p>
 <p>现在我们了解了哪些任务导致了我们游戏的CPU性能受限，让我们来看看一些常见问题和这些问题的解决方法。</p>
+<h2 id="发送命令到GPU"><a href="#发送命令到GPU" class="headerlink" title="发送命令到GPU"></a>发送命令到GPU</h2><p>发送命令到GPU花费的时间是我们游戏中一个最普遍的导致CPU性能受限的原因。在大多数平台上这个任务是在渲染线程执行的，尽管在一些平台(例如，PS4)可能使用辅助线程执行。</p>
+<p>发送渲染命令打牌GPU时最消耗性能的操作是SetPass call。如果你的游戏CPU性能受限是由于向GPU发送命令，减少SetPass calls的数量可能是最好的改进性能的途径。</p>
+<p>我们可以在Unity的Profiler window工具中看到有多少SetPass calls和batches被发送到渲染分析器里面。在游戏性能受到影响之前可以发送多少数量的SetPass calls命名这取决于目标硬件；高端的电脑相比于手机能够发送更多的SetPass calls。</p>
+<p>SetPass calls的数量和它关联的batches数量取决于几个因素，我们会在接下来的内容详细的讨论这几个主题。然而，通常情况是这样的:</p>
+<ul>
+<li>减少batches的数量同时最好使更多的对象共享同一个渲染的状态。在大多数情况下可以减少SetPass calls的数量。</li>
+<li>减少SetPass calls的数量，在大多数情况下可以改进CPU的性能。</li>
+</ul>
+<p>如果减少了batches的数量并没有降低SetPass calls的数量，这样任然可能带来性能上的改进。这是因为CPU能够更有效率的处理的batch，即使batches包含相同数量的mesh数据。[FIXME]</p>
+<p>一般来说有三个方法减少batches和SetPass calls的数量。我们将更加深入的研究下面的每个方法：</p>
+<ul>
+<li>减少渲染对象的数量将很有可能减少batches和SetPass calls的数量。</li>
+<li>减少每个最终会渲染的对象的渲染时间通常会减少SestPass calls。</li>
+<li>合并需要渲染的对象的数据到更少的batches将会减少batches的数量。</li>
+</ul>
+<p>不同的技术方法适用于不同的游戏，所以我们应该考虑这些所有的选项来决定哪个方法在我们游戏和实验中有效。</p>
+<h3 id="减少渲染对象的数量"><a href="#减少渲染对象的数量" class="headerlink" title="减少渲染对象的数量"></a>减少渲染对象的数量</h3><p>减少最终会渲染的对象的数量是减少batches和SetPass calls数量的最简单的途径。这里有几个我们可以同来减少渲染对象的方法。</p>
+<ul>
+<li>简单的减少在我们场景中的可见对象的数量是一个有效的解决方法。例如，假设我们在人群中渲染了大量的不同的角色，我们尝试着逐渐减少场景中的角色。如果场景看起来逐渐更好同时性能逐渐提高，那么这个方法将比更加复杂在技术更加快速的解决我们的问题。</li>
+<li>我们可以使用摄像机的<a href="https://docs.unity3d.com/Manual/class-Camera.html" target="_blank" rel="external">远裁剪面</a>来降低我们的摄像机的绘制距离。如果对象的距离超出了摄像机设置的这个属性的距离，那么这个对象就不会被渲染。如果我们想伪装这些因为超出了摄像机的远裁剪面而不可见的对象，我们可以尝试用<a href="https://docs.unity3d.com/Manual/GlobalIllumination.html?_ga=2.101796744.848221231.1512275915-741569329.1509691291" target="_blank" rel="external">雾来遮住这些对象</a>。</li>
+<li>对于基于距离来隐藏对象更细致的做法，我们可以使用我们摄像机的<a href="https://docs.unity3d.com/ScriptReference/Camera-layerCullDistances.html?_ga=2.131092358.848221231.1512275915-741569329.1509691291" target="_blank" rel="external">层裁剪距离</a>属性为不同层的对象提供自定义的裁剪距离。这个方法对于我们有很多装饰细节的前景是个非常有用优化方法；</li>
+</ul>
+<p>TODO</p>
 
       
     </div>
@@ -429,6 +452,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/12/05/ienumerator_generics_boxing_question/" rel="prev" title="">
+                 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -492,7 +519,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">28</span>
+              <span class="site-state-item-count">29</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -537,7 +564,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#渲染的简介"><span class="nav-number">2.</span> <span class="nav-text">渲染的简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#渲染问题的类型"><span class="nav-number">3.</span> <span class="nav-text">渲染问题的类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#理解渲染的问题"><span class="nav-number">4.</span> <span class="nav-text">理解渲染的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Profiler-window"><span class="nav-number">4.1.</span> <span class="nav-text">Profiler window</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Frame-Debugger"><span class="nav-number">4.2.</span> <span class="nav-text">Frame Debugger</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#确定导致性能问题的原因"><span class="nav-number">4.3.</span> <span class="nav-text">确定导致性能问题的原因</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如果我们游戏是CPU性能受限"><span class="nav-number">5.</span> <span class="nav-text">如果我们游戏是CPU性能受限</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#图形工作"><span class="nav-number">6.</span> <span class="nav-text">图形工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#找出导致性能问题的任务"><span class="nav-number">7.</span> <span class="nav-text">找出导致性能问题的任务</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#渲染的简介"><span class="nav-number">2.</span> <span class="nav-text">渲染的简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#渲染问题的类型"><span class="nav-number">3.</span> <span class="nav-text">渲染问题的类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#理解渲染的问题"><span class="nav-number">4.</span> <span class="nav-text">理解渲染的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Profiler-window"><span class="nav-number">4.1.</span> <span class="nav-text">Profiler window</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Frame-Debugger"><span class="nav-number">4.2.</span> <span class="nav-text">Frame Debugger</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#确定导致性能问题的原因"><span class="nav-number">4.3.</span> <span class="nav-text">确定导致性能问题的原因</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如果我们游戏是CPU性能受限"><span class="nav-number">5.</span> <span class="nav-text">如果我们游戏是CPU性能受限</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#图形工作"><span class="nav-number">6.</span> <span class="nav-text">图形工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#找出导致性能问题的任务"><span class="nav-number">7.</span> <span class="nav-text">找出导致性能问题的任务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发送命令到GPU"><span class="nav-number">8.</span> <span class="nav-text">发送命令到GPU</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#减少渲染对象的数量"><span class="nav-number">8.1.</span> <span class="nav-text">减少渲染对象的数量</span></a></li></ol></li></ol></div>
             
 
           </div>
