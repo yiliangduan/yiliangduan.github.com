@@ -92,7 +92,7 @@
 <meta property="og:site_name" content="elang&#39;s note">
 <meta property="og:description" content="原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。  #介绍 在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。 在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-12-09T10:34:01.000Z">
+<meta property="og:updated_time" content="2017-12-09T15:52:26.281Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity游戏的图形渲染优化(译)">
 <meta name="twitter:description" content="原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。  #介绍 在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。 在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非">
@@ -437,8 +437,12 @@
 <li>无论是在编辑器中或者通过运行时的代码，我们都可以手动合并共享同一个材质和贴图的网格(meshs)。当使用合并网格这个方法时，我们必须注意到每个层级的对象任然会执行阴影，光照和裁剪这些操作；这意味着合并网格所带来的性能提升会被不再能够裁剪那些不被渲染的对象所抵消。如果我们希望研究这个方法，我们应该测试<a href="https://docs.unity3d.com/ScriptReference/Mesh.CombineMeshes.html?_ga=2.190829673.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">Mesh.CombineMeshes</a>函数。<a href="https://docs.unity3d.com/Manual/HOWTO-InstallStandardAssets.html?_ga=2.36060898.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">Unity的标准资源包</a>里面的CombineChildren就是使用这个技术的例子。</li>
 <li>当我们在脚本里访问<a href="https://docs.unity3d.com/ScriptReference/Renderer-material.html?_ga=2.229039582.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">Renderer.material</a>API时我们必须非常小心。这个API会复制一份这个材质然后返回复制的这份材质的引用。如果这个渲染器(renderer)是合批的一部分的话，那么这个操作会中断批处理操作。因为渲染器不再有相同的材质的相同实例引用。如果我们希望在脚本里访问合批的对象的材质，我们应该使用<a href="https://docs.unity3d.com/ScriptReference/Renderer-sharedMaterial.html?_ga=2.27080191.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">Renderer.shareMaterial</a>这个API。</li>
 </ul>
-<p>TODO</p>
-<h2 id="裁剪，排序和合批"><a href="#裁剪，排序和合批" class="headerlink" title="裁剪，排序和合批"></a>裁剪，排序和合批</h2><h2 id="蒙皮网格"><a href="#蒙皮网格" class="headerlink" title="蒙皮网格"></a>蒙皮网格</h2><h2 id="主线程的操作与渲染无关"><a href="#主线程的操作与渲染无关" class="headerlink" title="主线程的操作与渲染无关"></a>主线程的操作与渲染无关</h2><h1 id="GPU性能受限"><a href="#GPU性能受限" class="headerlink" title="GPU性能受限"></a>GPU性能受限</h1><h2 id="填充率"><a href="#填充率" class="headerlink" title="填充率"></a>填充率</h2><h2 id="内存带宽"><a href="#内存带宽" class="headerlink" title="内存带宽"></a>内存带宽</h2><h2 id="顶点处理"><a href="#顶点处理" class="headerlink" title="顶点处理"></a>顶点处理</h2><h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1>
+<h2 id="裁剪，排序和合批"><a href="#裁剪，排序和合批" class="headerlink" title="裁剪，排序和合批"></a>裁剪，排序和合批</h2><p>裁剪，收集将要渲染的对象的数据，将这些数据分类到不同类型的批次中以及生成GPU命令这些都有可能导致CPU性能受限。这些任务不管是在主线程执行还是在独立的辅助(worker)线程上执行，这取决于你的游戏的设置和目标硬件。</p>
+<ul>
+<li>裁剪不太会是一个非常耗时的操作，但是减少不必要的裁剪可以有助于性能的提高。所有活动场景中的对象对每个相机都有一份开销。即使这些对象所在的层没有被渲染。为了减少这些开销，我们应该关闭(disable)相机以及停用(deactivate)或者关闭(disable)没有使用的渲染器。</li>
+<li>合批能够很大程度上提高发送到GPU命令的速度，但是有的时候合批会在其他地方增加不必要的消耗。如果合批操作导致了我们游戏的CPU性能收到限制，我们可能希望限制在我们游戏中的手动或者自动合批操作。</li>
+</ul>
+<h2 id="蒙皮网格"><a href="#蒙皮网格" class="headerlink" title="蒙皮网格"></a>蒙皮网格</h2><h2 id="主线程的操作与渲染无关"><a href="#主线程的操作与渲染无关" class="headerlink" title="主线程的操作与渲染无关"></a>主线程的操作与渲染无关</h2><h1 id="GPU性能受限"><a href="#GPU性能受限" class="headerlink" title="GPU性能受限"></a>GPU性能受限</h1><h2 id="填充率"><a href="#填充率" class="headerlink" title="填充率"></a>填充率</h2><h2 id="内存带宽"><a href="#内存带宽" class="headerlink" title="内存带宽"></a>内存带宽</h2><h2 id="顶点处理"><a href="#顶点处理" class="headerlink" title="顶点处理"></a>顶点处理</h2><h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1>
       
     </div>
 
