@@ -92,7 +92,7 @@
 <meta property="og:site_name" content="elang&#39;s note">
 <meta property="og:description" content="原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。  #介绍 在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。 在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-12-09T15:52:26.281Z">
+<meta property="og:updated_time" content="2017-12-14T13:28:41.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity游戏的图形渲染优化(译)">
 <meta name="twitter:description" content="原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。  #介绍 在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。 在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非">
@@ -383,7 +383,7 @@
 <li>发送命令发GPU</li>
 </ul>
 <p>这些广义的类别包含了很多单独的任务并且这些任务可能在多线程中执行。线程允许单独的任务同时运行；然而一个线程执行一个任务，另外一个线程可以完全独立的执行任务。这意味着任务的处理可以更加的快速。当渲染的任务分开在不同的线程上执行，这就是所谓的<strong>多线程渲染</strong>;</p>
-<p>在Unity的渲染过程中有三种类型的线程: <strong>主线程</strong>，<strong>渲染线程</strong>和<strong>辅助线程(worker threads)</strong>。主线程是我们游戏中CPU处理任务的主要的地方，包括一些渲染的任务。渲染线程是比较特殊的线程，它的工作是发送渲染命令到GPU。辅助线程处理每个单独的任务，例如裁剪或者mesh的皮毛。哪个任务由哪个线程来处理这取决于我们的游戏设置和我们游戏运行的硬件。例如，我们的目标硬件有更多的CPU核心，就有越多的辅助线程被分配。基于这个原因，在目标硬件上来剖析我们的游戏是非常重要的；我们的游戏可能在不同的平台上表现的非常不同。</p>
+<p>在Unity的渲染过程中有三种类型的线程: <strong>主线程</strong>，<strong>渲染线程</strong>和<strong>辅助线程(worker threads)</strong>。主线程是我们游戏中CPU处理任务的主要的地方，包括一些渲染的任务。渲染线程是比较特殊的线程，它的工作是发送渲染命令到GPU。辅助线程处理每个单独的任务，例如裁剪或者mesh的蒙皮。哪个任务由哪个线程来处理这取决于我们的游戏设置和我们游戏运行的硬件。例如，我们的目标硬件有更多的CPU核心，就有越多的辅助线程被分配。基于这个原因，在目标硬件上来剖析我们的游戏是非常重要的；我们的游戏可能在不同的平台上表现的非常不同。</p>
 <p>由于多线程渲染比较复杂并且依赖于不同的硬件，在我们改进性能之前我们必须明白哪个线程是造成我们游戏称为CPU性能受限的原因。如果我们的游戏运行慢是由于裁剪操作在一个线程上花费了太多的时间，那么它就不能帮助我们减少在不同线程上发送命令到GPU所花费的时间(译:因为裁剪操作花费的时间可能远超过辅助线程所节省的时间)。</p>
 <p><strong>注</strong>：并不是所有的平台都支持多线程渲染；在写这篇文章的时候，WebGL还没有支持这个特性。在不支持多线程渲染的平台上，所有的CPU任务都在同一个线程里面处理。如果我们是在这种平台上CPU性能受限，优化所有的CPU任务将会改进CPU的性能。如果这个情况发生在我们的游戏中，我们应该阅读接下来的所有部分同时思考哪些优化可能最适合我们的游戏。</p>
 <h2 id="图形工作"><a href="#图形工作" class="headerlink" title="图形工作"></a>图形工作</h2><p>在<strong>Player Settings</strong>里面的<a href="https://docs.unity3d.com/Manual/class-PlayerSettingsStandalone.html?_ga=2.184843040.801370543.1512275945-1497166853.1503199345" target="_blank" rel="external">图形工作</a>的设置项决定了Unity是否使用辅助线程来处理原本需要在主线程上处理的渲染任务，如果不选择则这些工作在主线程里面处理。在这个特性可用的平台上，它可以带来相当大的性能的提升。我们应该分析我们游戏在图形选项开启和不开启的情况，观察它给我们游戏性能带来的影响。</p>
@@ -413,7 +413,7 @@
 <li>我们可以使用一个叫做<a href="https://docs.unity3d.com/Manual/OcclusionCulling.html?_ga=2.61236005.848221231.1512275915-741569329.1509691291" target="_blank" rel="external">封闭裁剪</a>的技术去隐藏那些被其他对象遮盖住的对象。例如，如果我们场景上有一个很大的建筑物我们可以使用封闭裁剪来关闭(disable)在这个建筑物后面的渲染对象。Unity的封闭裁剪并不适合所有的场景，这个技术会增加额外的CPU消耗和更加复杂的设置，但是它确实能给一些场景带来性能上的改善。<a href="https://blogs.unity3d.com/cn/2013/12/26/occlusion-culling-in-unity-4-3-best-practices/?_ga=2.102262536.848221231.1512275915-741569329.1509691291" target="_blank" rel="external">这篇Unity发布的封闭裁剪的最佳实践</a>是一篇很好的关于这个主题的指导。此外使用Unity的封闭裁剪我们也可以以自己的方式去手动停用(deactivating)一些我们知道用户已经不可见的对象。例如，如果我们场景中包含了用来过场动画用的对象，但是这些对像在过场动画展现之前和之后都不可见，我们应该停用(deactivate)它们。通常结合我们自己的游戏内容知识比要求Unity来解决我们的问题更加有效率。</li>
 </ul>
 <h3 id="减少每个最终会渲染的对象的渲染次数。"><a href="#减少每个最终会渲染的对象的渲染次数。" class="headerlink" title="减少每个最终会渲染的对象的渲染次数。"></a>减少每个最终会渲染的对象的渲染次数。</h3><p>实时光照、阴影和反射为游戏增加了很好的现实效果，但是这些效果非常的消耗性能。使用这些特性会带来很多对象被渲染多次，这些相当影响性能。</p>
-<p>这些特性的性能影响取决于我们游戏选择的<em>rendering path</em>。Rendering path 是指绘制场景的时候对象执行计算的顺序，rendering path之间的主要区别是它们是怎样处理实时光照、阴影和反射的。一般而言，<strong>Deferred Rendering</strong> 可能是我们游戏运行在高端硬件上使用了大量的实时光照、阴影和反射的更好的选择。<strong>Forward Rendering</strong>可能更适合用在我们游戏运行在低端硬件上同事没有使用这些特性的情况。然而，如果我们希望使用实时光照、阴影和折射这些特性这是个非常复杂的问题，最好是先去调查这个主题然后尝试做些实验。<a href="https://docs.unity3d.com/Manual/RenderingPaths.html?_ga=2.32824956.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">这个Unity手册的页面</a>提供了更多的关于不同Unity的rendering paths信息，这是个不错的起点。这个<a href="https://unity3d.com/learn/tutorials/topics/graphics/unity-5-lighting-and-rendering" target="_blank" rel="external">教程</a>包含了Unity的光照光照的内容。</p>
+<p>这些特性的性能影响取决于我们游戏选择的<em>rendering path</em>。Rendering path 是指绘制场景的时候对象执行计算的顺序，rendering path之间的主要区别是它们是怎样处理实时光照、阴影和反射的。一般而言，<strong>Deferred Rendering</strong> 可能是我们游戏运行在高端硬件上使用了大量的实时光照、阴影和反射的更好的选择。<strong>Forward Rendering</strong>可能更适合用在我们游戏运行在低端硬件上同事没有使用这些特性的情况。然而，如果我们希望使用实时光照、阴影和折射这些特性这是个非常复杂的问题，最好是先去调查这个主题然后尝试做些尝试。<a href="https://docs.unity3d.com/Manual/RenderingPaths.html?_ga=2.32824956.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">这个Unity手册的页面</a>提供了更多的关于不同Unity的rendering paths信息，这是个不错的起点。这个<a href="https://unity3d.com/learn/tutorials/topics/graphics/unity-5-lighting-and-rendering" target="_blank" rel="external">教程</a>包含了Unity的光照光照的内容。</p>
 <p>不管选择哪个rendering path，使用了实时光照、阴影和反射都会影响游戏的性能，重要的是我们要知道怎样去优化它们。</p>
 <ul>
 <li>Unity的动态光照是一个非常复杂的主题，深入的讨论这个主题已经超出了这篇文章的范围了，但是<a href="https://unity3d.com/learn/tutorials/topics/graphics/unity-5-lighting-and-rendering" target="_blank" rel="external">这个教程</a>非常好的介绍了这个主题。<a href="https://docs.unity3d.com/Manual/LightPerformance.html?_ga=2.228585567.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">这个Unity的手册页面</a>非常详细介绍了场景的光照优化。</li>
@@ -430,7 +430,7 @@
 <p>这里有几种不同的技术对符合批处理条件的对象进行批处理：</p>
 <ul>
 <li><em>静态合批</em>是一个允许在附近的符合合批的对象并且不会移动的进行合批的技术。静态合批非常有用的一个例子就是对于一堆相似的对象的处理。例如卵石。<a href="https://docs.unity3d.com/Manual/DrawCallBatching.html?_ga=2.189742441.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">这个Unity手册的页面</a>包含了在我们游戏中设置静态合批的说明。静态合批会导致更高的内存占用，所以我们应该在分析我们的游戏的时候记住这点。</li>
-<li><em>动态合批</em>是另外一种允许允许Unity批处理符合合批的对象，不管这些对象是否会移动。这里有一些对能够使用批处理的对象的限制。<a href="https://docs.unity3d.com/Manual/DrawCallBatching.html?_ga=2.202363219.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">这个Unity手册的页面</a>列出了这些限制。动态合批对CPU使用会有影响，它会引起比动态合批节省的部分更多的CPU时间消耗。当我们实验这个技术的时候我们应该记住这个消耗同事非常谨慎的使用这个技术。</li>
+<li><em>动态合批</em>是另外一种允许允许Unity批处理符合合批的对象，不管这些对象是否会移动。这里有一些对能够使用批处理的对象的限制。<a href="https://docs.unity3d.com/Manual/DrawCallBatching.html?_ga=2.202363219.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">这个Unity手册的页面</a>列出了这些限制。动态合批对CPU使用会有影响，它会引起比动态合批节省的部分更多的CPU时间消耗。当我们尝试这个技术的时候我们应该记住这个消耗同事非常谨慎的使用这个技术。</li>
 <li>Unity的UI元素合批会更复杂一点，这会影响我们UI的布局。<a href="https://www.youtube.com/watch?v=t_pdIFGh4Kg" target="_blank" rel="external">这个来自Unite曼谷2015的视频</a>对这个主题很好的全面的介绍，<a href="https://unity3d.com/learn/tutorials/topics/best-practices/guide-optimizing-unity-ui?playlist=30089" target="_blank" rel="external">Unity UI优化的指南</a>提供了怎样确保UI合批工作如我们希望的那样处理的更深入的信息。</li>
 <li><em><a href="https://en.wikipedia.org/wiki/Geometry_instancing" target="_blank" rel="external">GPU instancing</a></em>是允许大量相同对象变得非常有效的合批的一个技术。这个技术的使用有一些限制并且不是所有的硬件都支持，但是如果我们游戏里一次有很多相同的对象显示在屏幕上我们可能会从这个技术里面得到收益。<a href="https://docs.unity3d.com/Manual/GPUInstancing.html?_ga=2.26031615.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">这个Unity手册的页面</a>包含了Unity 中GPU instancing的一个指南，这个指南介绍了这个技术怎样使用，哪些平台支持这个技术，在什么样的环境下这个技术会有利于我们的有利。</li>
 <li><em>图集</em>是一个在多张贴图合并成一张大的贴图的地方使用的技术。它常被用在2D游戏和UI系统中，同样也可以用在3D游戏中。当为我们的游戏创作一个作品的时候我们使用这个技术，我们能够确保对象共享这张贴图，因此这些对象也是满足合批的条件的。Unity内置了一个针对2D游戏中使用图集的工具，它叫做<a href="https://docs.unity3d.com/Manual/SpritePacker.html?_ga=2.32953084.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">Sprite Packer</a>。</li>
@@ -439,10 +439,39 @@
 </ul>
 <h2 id="裁剪，排序和合批"><a href="#裁剪，排序和合批" class="headerlink" title="裁剪，排序和合批"></a>裁剪，排序和合批</h2><p>裁剪，收集将要渲染的对象的数据，将这些数据分类到不同类型的批次中以及生成GPU命令这些都有可能导致CPU性能受限。这些任务不管是在主线程执行还是在独立的辅助(worker)线程上执行，这取决于你的游戏的设置和目标硬件。</p>
 <ul>
-<li>裁剪不太会是一个非常耗时的操作，但是减少不必要的裁剪可以有助于性能的提高。所有活动场景中的对象对每个相机都有一份开销。即使这些对象所在的层没有被渲染。为了减少这些开销，我们应该关闭(disable)相机以及停用(deactivate)或者关闭(disable)没有使用的渲染器。</li>
+<li>裁剪不太会是一个非常耗时的操作，但是减少不必要的裁剪可以有助于性能的提高。所有活动场景中的对象对每个相机都有一份开销。即使这些对象所在的层没有被渲染。为了减少这些开销，我们应该关闭(disable)相机和没有用的渲染器，以及可以停用(deactivate)没有用的渲染器shanda@1l。</li>
 <li>合批能够很大程度上提高发送到GPU命令的速度，但是有的时候合批会在其他地方增加不必要的消耗。如果合批操作导致了我们游戏的CPU性能收到限制，我们可能希望限制在我们游戏中的手动或者自动合批操作。</li>
 </ul>
-<h2 id="蒙皮网格"><a href="#蒙皮网格" class="headerlink" title="蒙皮网格"></a>蒙皮网格</h2><h2 id="主线程的操作与渲染无关"><a href="#主线程的操作与渲染无关" class="headerlink" title="主线程的操作与渲染无关"></a>主线程的操作与渲染无关</h2><h1 id="GPU性能受限"><a href="#GPU性能受限" class="headerlink" title="GPU性能受限"></a>GPU性能受限</h1><h2 id="填充率"><a href="#填充率" class="headerlink" title="填充率"></a>填充率</h2><h2 id="内存带宽"><a href="#内存带宽" class="headerlink" title="内存带宽"></a>内存带宽</h2><h2 id="顶点处理"><a href="#顶点处理" class="headerlink" title="顶点处理"></a>顶点处理</h2><h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1>
+<h2 id="蒙皮网格"><a href="#蒙皮网格" class="headerlink" title="蒙皮网格"></a>蒙皮网格</h2><p>当我们使用一个叫做骨骼动画的技术使一个网格进行变形时会用到<a href="https://docs.unity3d.com/Manual/class-SkinnedMeshRenderer.html?_ga=2.264690255.139682236.1512800414-1143412728.1512800414" target="_blank" rel="external">SkinnedMeshRenderers</a>。它常用于角色动画上。与渲染相关的渲染蒙皮网格任务通常在主线程或者独立的辅助线程上执行，具体取决于你的游戏设置和目标硬件。</p>
+<p>渲染蒙皮网格是一个耗时的操作。如果我们通过Profiler window看到我们游戏由于渲染蒙皮网格导致CPU性能受限，这里有几个方法可以尝试提高我们的游戏性能:</p>
+<ul>
+<li>我们应该考虑是否需要为我们当前使用的每个对象都用到SkinnedMeshRenderer组件。有可能我们导入了一个模型挂载了SkinnedMeshRenderer组件但是我们实际上没有用到它的动画。例如，在这种情况中用MeshRenderer替换SkinnedMeshRenderer组件可以缓解性能压力。当导入一个模型到Unity中，如果我们没有在<a href="https://docs.unity3d.com/Manual/class-FBXImporter.html?_ga=2.230480988.139682236.1512800414-1143412728.1512800414" target="_blank" rel="external">模型Import Settings</a>中设置动画,这个模型将会用一个MeshRenderer替换掉SkinnedMeshRenderer。</li>
+<li>如果我们的动画只是在某些段时间播放(例如，只有当启动的时候或者是只有在距离摄像机一定距离的时候)，我们可以在动画不播放的时候把网格切换到一个少量细节的版本或者是用MeshRenderer组件来代替SkinnedMeshRenderer组件。SkinnedMeshRenderer组件有一个<em><a href="https://docs.unity3d.com/ScriptReference/SkinnedMeshRenderer.BakeMesh.html?_ga=2.87775071.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">BakeMesh</a></em> 函数，这个函数能够创建一个SkinnedMeshRenderer动画状态的mesh(译:相当于是SkinnedMeshRendere的某一个动作的一帧画面)，这对不同的网格或者渲染器之间进行交换而不改变对象的可见状态非常有用(译:如果把Mesh看作一个图片，这里的交换相当于播放帧动画。帧动画不需要额外计算，只需要一张图片接着一张图片的播放。类似的这里是切换不同的Mesh看起来像是有动作一样，省去了蒙皮的计算消耗)。</li>
+<li><a href="https://docs.unity3d.com/Manual/ModelingOptimizedCharacters.html?_ga=2.21328508.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Unity手册的这个页面</a>包含了对于使用了蒙皮网格(skinned meshs)的动画角色的优化建议，<a href="https://docs.unity3d.com/Manual/class-SkinnedMeshRenderer.html?_ga=2.121215695.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">SkinnedMeshRenderer组件在Unity手册中的这页</a>包含一些能够提高性能的调整。除了这些网页的介绍，值得我们记住的是蒙皮网格会增加每个顶点的消耗；因此在我们的模型中使用更少的顶点会降少大量的模型渲染的工作量。</li>
+<li>在一些平台上，蒙皮可以由GPU上处理而不是CPU上处理。如果我们的GPU的显存够高还是值得我们去尝试下。我们能够在当前平台的<em>Player Settings</em>中的quality target设置GPU skinning选项是否开启。</li>
+</ul>
+<h2 id="主线程的操作与渲染无关"><a href="#主线程的操作与渲染无关" class="headerlink" title="主线程的操作与渲染无关"></a>主线程的操作与渲染无关</h2><p>理解很多在主线程上的CPU的任务其实和渲染这块没有关系是很重要的。这意味如果我们是主线程导致CPU性能首先，我们可以通过减少与渲染不相关的任务所消耗的CPU时间来提高性能。</p>
+<p>来看一个例子,在我们游戏的某一些地方主线程上处理非常耗时的渲染操作和非常耗时的用户脚本，导致了我们游戏CPU性能首先。如果我们已经在不损失画面效果的前提下尽可能的优化了渲染操作，那么我们可以减少我们自己脚本的CPU消耗来提高性能。</p>
+<h1 id="GPU性能受限"><a href="#GPU性能受限" class="headerlink" title="GPU性能受限"></a>GPU性能受限</h1><p>如果我们游戏是GPU性能受限，我们首先要做的是找出导致GPU性能瓶颈的原因。GPU性能通常是由于<a href="https://en.wikipedia.org/wiki/Fillrate" target="_blank" rel="external">填充率</a>的限制。尤其在移动设备上，但是<a href="https://en.wikipedia.org/wiki/Memory_bandwidth" target="_blank" rel="external">内存带宽</a>和定点处理也是值得关注的点。让我们来对这些问题每个都测下下，同事研究下问题的原因，怎样去查证和修复这些问题。</p>
+<h2 id="填充率"><a href="#填充率" class="headerlink" title="填充率"></a>填充率</h2><p>填充率是指GPU每秒可以在屏幕上渲染的像素数量。如果我们游戏因为填充率收到性能的限制，这意味我们的游戏尝试每帧去画比GPU能够处理的量更多的像素。</p>
+<p>如果我们游戏中由于填充率导致GPU性能首先，我们可以简单的测试出来：</p>
+<ul>
+<li>分析我们游戏记录GPU时间</li>
+<li>在<strong>Player Settings</strong>设置降低显示分辨率。</li>
+<li>再次分析游戏，如果游戏性能提高了，这就很有可能是填充率的问题。</li>
+</ul>
+<p>如果是填充率引起的我们的问题，这里有几个方法帮助我们解决这些问题。</p>
+<ul>
+<li>片段着色器这部分代码的功能是告诉GPU怎样去绘出单个像素。每个最终会绘制的像素都会经过在GPU中执行的这部分代码的处理。所以如果这部分的代码没有效率的话，那么绘制的像素一多很容易堆积成性能问题。复杂的片段着色器经常造成填充率问题。<ul>
+<li>如果我们的游戏使用内置着色器。我们应该使用最简单的尽可能的优化了的着色器来达到我们期望的效果。举个列子，<a href="https://docs.unity3d.com/Manual/shader-Performance.html?_ga=2.20683263.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Unity提供的针对移动设备的着色器</a>是经过深度优化过的。我们应该尝试着使用它们看看这些着色器是否在没有损失我们游戏的表现效果的前提下提高了性能。这些着色器是针对移动设备上使用而设计的，但是适用于任何项目。如果使用在非移动设备上增加了性能并且表现的效果符合项目的要求自然是非常好的。</li>
+<li>如果我们游戏中的对象使用了Unity的<a href="https://docs.unity3d.com/Manual/shader-StandardShader.html?_ga=2.125484877.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Standard Shader</a>，要记住Unity是基于当前的材质的设置来编译这些shader的，只会编译当前使用的功能。这意味Unity编译时会移除例如地图细节这种功能，这样会大大的减少片段着色器的代码复杂度从而有利于提升性能。重申下，如果我们项目中出现了填充率问题，我们应该尝试这种设置看看我们游戏是否在没有损失效果的情况下提高了性能。</li>
+<li>如果我们项目使用了定制的着色器，我们应该尽可能的优化它们。优化着色器是一个复杂的主题，但是<a href="https://docs.unity3d.com/Manual/SL-ShaderPerformance.html?_ga=2.125139789.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Unity手册的这个页面</a>和<a href="https://docs.unity3d.com/Manual/MobileOptimisation.html?_ga=2.91340381.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Unity手册的这个页面</a>的<strong>着色器优化</strong>部分包含了优化我们着色器代码的有用的切入点。</li>
+</ul>
+</li>
+<li>过度绘制(Overdraw)是指当同一个像素被绘制多次。这发生在对象绘制在其他对象上层的时候，这很容易造成填充率的问题。为了理解过度绘制，我们必须知道Unity绘制场景中的对象的顺序。对象的着色器决定了<em>绘制顺序</em>，通常指明对象在哪个<a href="https://docs.unity3d.com/ScriptReference/Rendering.RenderQueue.html?_ga=2.20148991.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">渲染队列</a>中。Unity利用这个信息按照严格的顺序绘制对象，更详细的介绍在<a href="https://docs.unity3d.com/Manual/SL-SubShaderTags.html?_ga=2.16030577.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Unity手册的这页</a>。此外，在绘制之前在不同渲染队列中的对象会进行排序。例如，集合队列的项Unity会按照从前往后的顺序排序使得最小化过度绘制的情况。但是透明队列的对象为了达到要求的效果按照从后往前排序。透明队列上的对象从后往前排序实际上把过度绘制的影响最大化了。过度绘制是一个比较复杂的主题，没有一个统一的方法能够解决所有的过度绘制的问题，关键是减少重叠的对象的数量使得Unity不需要自动对这些对象排序。最好的切入点是在Unity场景视图中测试这个问题；我们场景中的<a href="https://docs.unity3d.com/Manual/ViewModes.html?_ga=2.21130748.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">绘制模式</a>允许我们查看过度绘制的情况，在这个模式下，确定可以减少过度绘制的地方。最普遍的导致过度绘制的是透明度材质，没有优化的粒子特效和重叠的UI元素，所以我们应该尝试优化或者减少它们。<a href="https://unity3d.com/cn/learn/tutorials/topics/best-practices/fill-rate-canvases-and-input?playlist=30089" target="_blank" rel="external">Unity学习网站的这篇文章</a>主要介绍了Unity UI，但是也包含了非常好的过度绘制的指南。</li>
+<li>使用图片后期效果(image effects)会极大的造成填充率问题，如果我们游戏使用了图片后期效果并且我们的游戏在填充率问题上挣扎着，我们可以尝试不同的设置或者使用更加优化的图片后期效果的版本(例如针对于<a href="https://docs.unity3d.com/560/Documentation/Manual/PostProcessing-Bloom.html" target="_blank" rel="external">Bloom</a>的优化版<a href="https://docs.unity3d.com/550/Documentation/Manual/script-BloomOptimized.html" target="_blank" rel="external">Bloom(优化版)</a>)。如果我们的游戏在同一个相机中使用了超过一个图片后期效果，这会导致这个效果需要多个着色器的SetPass calls来渲染。这种情况，我们最好是把我们图片后期效果的着色器代码合并到一个pass中，例如在<a href="https://github.com/Unity-Technologies/PostProcessing/wiki" target="_blank" rel="external">Unity的后期处理栈</a>。如果我们已经已经优化了我们的图片后期效果但是任然有填充率的问题，我们可能需要考虑关闭图片后期效果，尤其是在低端机器。</li>
+</ul>
+<h2 id="内存带宽"><a href="#内存带宽" class="headerlink" title="内存带宽"></a>内存带宽</h2><h2 id="顶点处理"><a href="#顶点处理" class="headerlink" title="顶点处理"></a>顶点处理</h2><h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1>
       
     </div>
 
