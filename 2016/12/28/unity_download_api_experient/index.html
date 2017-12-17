@@ -1,0 +1,686 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="unity," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="在项目里面有时需要从服务器上下载比较大的文件，比如我们在做更新的时候需要下载AssetBundle文件。Unity3D中提供了WWW接口可以用来下载文件，但是使用之后发现这个接口在下载比较大的文件的时候非常占用内存资源。然后我用C#的Webclient接口来下载同样的文件，发现内存占用情况存在和WWW的完全不一样。本文来就来探讨一下使用WWW和Webclient两个接口下载文件造成内存占用的原因。">
+<meta name="keywords" content="unity">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Unity 文件下载分析">
+<meta property="og:url" content="http://elangduan.github.com/2016/12/28/unity_download_api_experient/index.html">
+<meta property="og:site_name" content="elang&#39;s notes">
+<meta property="og:description" content="在项目里面有时需要从服务器上下载比较大的文件，比如我们在做更新的时候需要下载AssetBundle文件。Unity3D中提供了WWW接口可以用来下载文件，但是使用之后发现这个接口在下载比较大的文件的时候非常占用内存资源。然后我用C#的Webclient接口来下载同样的文件，发现内存占用情况存在和WWW的完全不一样。本文来就来探讨一下使用WWW和Webclient两个接口下载文件造成内存占用的原因。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/579121/201612/579121-20161230131206304-802139215.png">
+<meta property="og:updated_time" content="2017-03-08T05:21:09.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Unity 文件下载分析">
+<meta name="twitter:description" content="在项目里面有时需要从服务器上下载比较大的文件，比如我们在做更新的时候需要下载AssetBundle文件。Unity3D中提供了WWW接口可以用来下载文件，但是使用之后发现这个接口在下载比较大的文件的时候非常占用内存资源。然后我用C#的Webclient接口来下载同样的文件，发现内存占用情况存在和WWW的完全不一样。本文来就来探讨一下使用WWW和Webclient两个接口下载文件造成内存占用的原因。">
+<meta name="twitter:image" content="http://images2015.cnblogs.com/blog/579121/201612/579121-20161230131206304-802139215.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"hide"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'elangduan'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://elangduan.github.com/2016/12/28/unity_download_api_experient/"/>
+
+
+
+
+
+  <title> Unity 文件下载分析 | elang's notes </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">elang's notes</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-reading">
+          <a href="/reading" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            阅读
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-movie">
+          <a href="/movie" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-camera"></i> <br />
+            
+            电影
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-cnblogs">
+          <a href="http://www.cnblogs.com/elang" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th-large"></i> <br />
+            
+            博客园
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2016/12/28/unity_download_api_experient/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="elangduan@126.com">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/uploads/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="elang's notes">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="elang's notes" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Unity 文件下载分析
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-28T23:39:00+08:00">
+              2016-12-28
+            </time>
+            
+          </span>
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在项目里面有时需要从服务器上下载比较大的文件，比如我们在做更新的时候需要下载AssetBundle文件。Unity3D中提供了WWW接口可以用来下载文件，但是使用之后发现这个接口在下载比较大的文件的时候非常占用内存资源。然后我用C#的Webclient接口来下载同样的文件，发现内存占用情况存在和WWW的完全不一样。本文来就来探讨一下使用WWW和Webclient两个接口下载文件造成内存占用的原因。</p>
+<a id="more"></a> 
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><blockquote>
+<p>首先我们通过下面一个简单的demo来测试下分别使用WWW和Webclient两个API来实际下载下载文件内存使用情况。在demo中我们分别测试了两个下载接口下载文件到内存和下载文件到本地存储卡的情况。(<a href="https://pan.baidu.com/s/1qYq8xtE" target="_blank" rel="external">全部代码及完整内存截图</a> 密码n3pv)</p>
+</blockquote>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Test</span> : <span class="title">MonoBehaviour</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//50.9M</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">const</span> <span class="keyword">string</span> uri = <span class="string">"http://sw.bos.baidu.com/sw-search-sp/software/98087379aca67/QQMusic_12.97.3627.1201.exe"</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> HttpDataDownLoader downloader;</span><br><span class="line"></span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line">	<span class="comment">//@1 直接下载文件到内存中</span></span><br><span class="line">	<span class="function"><span class="keyword">private</span> IEnumerator <span class="title">DownloadByWWWInternal</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		Debug.Log(<span class="string">"Start DownloadByWWWInternal"</span>);</span><br><span class="line"></span><br><span class="line">		WWW www = <span class="keyword">new</span> WWW(uri);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">yield</span> <span class="keyword">return</span> www;</span><br><span class="line"></span><br><span class="line">		Debug.Log(<span class="string">"download completed&amp; www.error: "</span> + www.error);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//@2 下载数据到内存中然后保存到保存到本地(WWW下载文件必须全部下载下来才能获取下载的数据)</span></span><br><span class="line">	<span class="function"><span class="keyword">private</span> IEnumerator <span class="title">DownloadByWWWFileInternal</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		Debug.Log(<span class="string">"Start DownloadByWWWFile"</span>);</span><br><span class="line"></span><br><span class="line">		WWW www = <span class="keyword">new</span> WWW(uri);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">yield</span> <span class="keyword">return</span> www;</span><br><span class="line"></span><br><span class="line">		Debug.Log(<span class="string">"download completed&amp; www.error: "</span> + www.error);</span><br><span class="line"></span><br><span class="line">		File.WriteAllBytes(Application.persistentDataPath + <span class="string">"/test.exe"</span>, www.bytes);</span><br><span class="line"></span><br><span class="line">		www.Dispose();</span><br><span class="line"></span><br><span class="line">		Debug.Log(<span class="string">"write complete!"</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//@3 下载文件到内存中(HttpDataDownLoader是对Webclient的一个非常小的封装，具体可以打开全部代码查看)</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">DownloadByWebclient</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		Debug.Log(<span class="string">"Start DownloadByWebclient"</span>);</span><br><span class="line"></span><br><span class="line">		downloader = <span class="keyword">new</span> HttpDataDownLoader(uri, <span class="number">100000</span>, <span class="literal">false</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//@4 下载文件到本地，不保存到内存中</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">DownloadByWebclientSaveData</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		Debug.Log(<span class="string">"Start DownloadByWebclientFile"</span>);</span><br><span class="line"></span><br><span class="line">		Debug.Log(Application.dataPath);</span><br><span class="line"></span><br><span class="line">		downloader = <span class="keyword">new</span> HttpDataDownLoader(uri, <span class="number">100000</span>, <span class="literal">true</span>, Application.persistentDataPath + <span class="string">"/test2.exe"</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面是demo分别测试四种不同下载方式的内存消耗情况:</p>
+<blockquote>
+<p>测试环境: Unity3D 5.4.1f1 macOS 10.12.1 XCode 8.0</p>
+</blockquote>
+<p><img src="http://images2015.cnblogs.com/blog/579121/201612/579121-20161230131206304-802139215.png" alt=""></p>
+<hr>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>观察上面实际测的运行内存情况可以产生一个疑问:</p>
+<ul>
+<li>为什么使用WWW下载(@1@2)则是内存慢慢增长的?</li>
+<li>为什么使用WWW下载文件并保存到本地这种方式(@2)会出现内存突然增长大概一倍的情况?</li>
+<li>为什么使用Webclient方法下载文件到本地(@4)内存暂用如此之小?(下载的目标文件大小为50.9M)</li>
+</ul>
+<p>接下来我们分别对WWW和Webclient进行分析，来得出上面三个问题得答案:</p>
+<h4 id="WWW"><a href="#WWW" class="headerlink" title="WWW"></a>WWW</h4><p>WWW创建对象之后我们就是可根据对象的IsDone属性来判断是否下载完成，那么我们看看WWW内部到底是怎样下载:</p>
+<p>在C#层一般情况下我们是这样来创建一个WWW对象来进行下载的:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">WWW www = new WWW(uri);</span><br></pre></td></tr></table></figure>
+<p>通过观察WWW类C#代码我们可发现所有的WWW构造函数最终都会去调用 <strong>InitWWW</strong> 这个函数:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public WWW (string url)</span><br><span class="line">&#123;</span><br><span class="line">	this.InitWWW (url, null, null);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[WrapperlessIcall]</span><br><span class="line">[MethodImpl (MethodImplOptions.InternalCall)]</span><br><span class="line">public extern void InitWWW (string url, byte[] postData, string[] iHeaders);</span><br></pre></td></tr></table></figure>
+<p>而InitWWW是绑定的一个C++的函数,那么看看C++的实现部分:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CUSTOM void InitWWW( string url , byte[] postData, string[] iHeaders ) &#123;</span><br><span class="line">	...</span><br><span class="line">	</span><br><span class="line">	WWW* www = WWW::Create (cpp_string.c_str(), rawPostDataPtr, rawPostDataLength, headers);</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在C++层的InitWWW函数中C++层的WWW类会根据平台来创建一个相应的WWW派生类对象,由于我们现在测试的是iOS环境所以我们只看iOS环境的代码:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> WWW* <span class="title">CreatePlatformWWWBackend</span> <span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* url, <span class="keyword">const</span> <span class="keyword">char</span>* postDataPtr, <span class="keyword">int</span> postDataLength, <span class="keyword">const</span> WWW::WWWHeaders&amp; headers, <span class="keyword">bool</span> cached, <span class="keyword">int</span> cacheVersion, UInt32 crc )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	...</span><br><span class="line">	<span class="meta">#<span class="meta-keyword">elif</span> UNITY_IPHONE</span></span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">new</span> iPhoneWWW(url, postDataPtr, postDataLength, headers, cached, cacheVersion, crc);</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>iPhoneWWW是一个Objective-c类，这个类在构造方法调用之后会调用iOS的系统接口 <strong>NSURLConnection</strong> 来建立网络连接然后开始下载文件。我们重点看下载过程中接受数据的方法，这个方法可以让我们看到下载的文件数据的保存情况:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)ldata</span><br><span class="line">&#123;</span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line">	int bytes = [ldata length];</span><br><span class="line"></span><br><span class="line">	if(size+bytes &gt; alloc_size)</span><br><span class="line">	&#123;</span><br><span class="line">		const UInt32 estimatedDownloadSize = www-&gt;GetEstimatedDownloadSize();</span><br><span class="line">		if (alloc_size+bytes &lt;= estimatedDownloadSize)</span><br><span class="line">			alloc_size = estimatedDownloadSize;</span><br><span class="line">		else</span><br><span class="line">			alloc_size = (alloc_size * 1.5) + bytes;</span><br><span class="line">		data = (UInt8*)realloc((void*)data, alloc_size);</span><br><span class="line">		if (!data)</span><br><span class="line">		&#123;</span><br><span class="line">			ErrorString(&quot;WWW: out of memory&quot;);</span><br><span class="line">			[connection cancel];</span><br><span class="line">			return; // this will stop the transfer - not all data is loaded</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	[ldata getBytes:data+size length:bytes];</span><br><span class="line">	size += bytes;</span><br><span class="line"></span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个函数我们可以看到iPhoneWWW首先会分配一个预估大小的数组data来存储下载的数据，connection这个方法是在下载过程中多次回调的，每隔一段时间会接受一部分数据，然后方法里面判断data的存储大小是否足够，如果不够则重新分配之前的1.5倍大小内存空间。接着把新下载的ldata数据存到data里面。也就是说直到文件下载结束data会存储下载的文件的全部数据，但是data得大小和文件的数据的大小不是相同的(存在相同的可能)。这也是为什么@1和@2方法下载过程中所消耗的内存慢慢的增长到近似文件大小的内存值了。</p>
+<p>WWW解析到这里还没有解释一个问题，那就是为什么@2方法下载过程中那个内存的峰值是怎么出现的。再来回顾我们的demo的这一段保存下载的数据到本地代码:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">File.WriteAllBytes(Application.persistentDataPath + &quot;/test.exe&quot;, www.bytes);</span><br></pre></td></tr></table></figure>
+<p>答案就在这里,细心的人很快会产生一个疑问，iPhoneWWW下载的数据保存到了OC分配的内存空间中，那么我们这里在C#中通过 www.bytes 怎样获取到的下载数据的呢？那就来看下这个方法的实现吧</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">CUSTOM_PROP byte[] bytes &#123;</span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line">	return CreateScriptingArray&lt;UInt8&gt;( www.GetData(), www.GetSize(), GetScriptingManager().GetCommonClasses().byte );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ScriptingArrayPtr CreateScriptingArray (ScriptingClassPtr klass, int count)</span><br><span class="line">&#123;</span><br><span class="line">	...</span><br><span class="line">	return mono_array_new(mono_domain_get(),klass,count);</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>看到了么？当我们在C#层调用WWW的bytes属性的时候会重新再C#(或者说Mono)层重新分配一个和OC层保存的下载数据同样大小的内存空间，然后会把下载的数据拷贝到这个Mono层的数组中，此时此刻WWW消耗的内存突然增加了一倍，然后我们把这部分数据通过File.WriteAllBytes写入到文件中然后我们调用了WWW.Dispose方法内存就降下来了。这就是我们为什么会看到那个内存突然出现一个峰值的原因了。</p>
+<h4 id="Webclient"><a href="#Webclient" class="headerlink" title="Webclient"></a>Webclient</h4><p>分析完了WWW我们再来分析下Webclient，Webclient到底怎样实现的可以让下载文件到本地只消耗如此之小的内存，那我们来看看Webclient的下载文件的方法DownloadFileAysnc，Webclient的实现要比WWW看起来要稍微轻松一点。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">public void DownloadFileAsync (Uri address, string fileName, object userToken)</span><br><span class="line">&#123;</span><br><span class="line">	...</span><br><span class="line">	DownloadFileCore ((Uri) args [0], (string) args [1], args [2]);</span><br><span class="line">						OnDownloadFileCompleted (</span><br><span class="line">							new AsyncCompletedEventArgs (null, false, args [2]));</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void DownloadFileCore (Uri address, string fileName, object userToken)</span><br><span class="line">&#123;</span><br><span class="line">	WebRequest request = null;</span><br><span class="line">			</span><br><span class="line">	using (FileStream f = new FileStream (fileName, FileMode.Create)) &#123;</span><br><span class="line">	</span><br><span class="line">	...</span><br><span class="line">		request = SetupRequest (address);</span><br><span class="line">		WebResponse response = request.GetResponse ();</span><br><span class="line">		Stream st = ProcessResponse (response);</span><br><span class="line">					</span><br><span class="line">		int cLength = (int) response.ContentLength;</span><br><span class="line">		int length = (cLength &lt;= -1 || cLength &gt; 32*1024) ? 32*1024 : cLength;</span><br><span class="line">		byte [] buffer = new byte [length];</span><br><span class="line">					</span><br><span class="line">		int nread = 0;</span><br><span class="line">		</span><br><span class="line">		...				</span><br><span class="line">		while ((nread = st.Read (buffer, 0, length)) != 0)&#123;</span><br><span class="line">		...</span><br><span class="line">				f.Write (buffer, 0, nread);</span><br><span class="line">			&#125;</span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>为了看不来不那么累，我尽量只保留有用的代码，其他的都省略。看上面两个方法，其实就已经有答案了。Webclient下载文件其实和WWW下载文件一个道理，不同的时Webclient每接受32k大小的数据之后就直接写入到了文件当中去，这部分内存数据并不常驻内存而是随着方法调用结束会被C#的GC自动回收掉。这就是为什么Webclient下载文件保存到本地内存可以消耗这么低的原因了。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>在Unity中如果是需要把文件下载在本地则建议使用Webclient来下载,如果是单纯的下载到内存当中则两个接口都可以使用</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/unity/" rel="tag"># unity</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/29/unity_mono_foreach_memory_bug/" rel="next" title="C# foreach带来的内存问题">
+                <i class="fa fa-chevron-left"></i> C# foreach带来的内存问题
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/11/json_auto_generate_cs_code/" rel="prev" title="Json自动生成C#代码的工具">
+                Json自动生成C#代码的工具 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.png"
+               alt="elangduan@126.com" />
+          <p class="site-author-name" itemprop="name">elangduan@126.com</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">30</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#测试"><span class="nav-number">1.</span> <span class="nav-text">测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析"><span class="nav-number">2.</span> <span class="nav-text">分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#WWW"><span class="nav-number">2.1.</span> <span class="nav-text">WWW</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Webclient"><span class="nav-number">2.2.</span> <span class="nav-text">Webclient</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" align="center">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+
+  <span class="author" itemprop="copyrightHolder">elangduan@126.com | </span>
+
+  <span>
+    powered by <a class="theme-link" href="https://hexo.io">hexo</a>
+  </span>
+
+  <span>
+    & theme <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next"> NexT</a>
+  </span>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"elangduan"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

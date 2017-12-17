@@ -1,0 +1,676 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="c," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="问题 今天在写opengl shader的时候遇到了一个问题(使用C语言编写的)，出问题的代码如下(这里只列出出问题的部分代码): 12345678910111213141516171819...void main()&amp;#123;    vec3 norm = normalize(Normal);    vec3 viewDir = normalize(viewPos - FragPos);">
+<meta name="keywords" content="c">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C语言的变量初始化问题">
+<meta property="og:url" content="http://elangduan.github.com/2017/05/05/c_language_variable_init/index.html">
+<meta property="og:site_name" content="elang&#39;s notes">
+<meta property="og:description" content="问题 今天在写opengl shader的时候遇到了一个问题(使用C语言编写的)，出问题的代码如下(这里只列出出问题的部分代码): 12345678910111213141516171819...void main()&amp;#123;    vec3 norm = normalize(Normal);    vec3 viewDir = normalize(viewPos - FragPos);">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://elangduan.github.com/images/c_init_error_state.png">
+<meta property="og:image" content="http://elangduan.github.com/images/c_init_right_state.png">
+<meta property="og:image" content="http://elangduan.github.com/images/code-data-segments.png">
+<meta property="og:image" content="http://elangduan.github.com/images/test_c_variable_init_size_1.png">
+<meta property="og:image" content="http://elangduan.github.com/images/test_c_variable_init_size_2.png">
+<meta property="og:image" content="http://elangduan.github.com/images/test_c_variable_init_main.png">
+<meta property="og:image" content="http://elangduan.github.com/images/global_var_section.png">
+<meta property="og:updated_time" content="2017-05-05T06:31:33.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="C语言的变量初始化问题">
+<meta name="twitter:description" content="问题 今天在写opengl shader的时候遇到了一个问题(使用C语言编写的)，出问题的代码如下(这里只列出出问题的部分代码): 12345678910111213141516171819...void main()&amp;#123;    vec3 norm = normalize(Normal);    vec3 viewDir = normalize(viewPos - FragPos);">
+<meta name="twitter:image" content="http://elangduan.github.com/images/c_init_error_state.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"hide"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'elangduan'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://elangduan.github.com/2017/05/05/c_language_variable_init/"/>
+
+
+
+
+
+  <title> C语言的变量初始化问题 | elang's notes </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">elang's notes</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-reading">
+          <a href="/reading" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            阅读
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-movie">
+          <a href="/movie" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-camera"></i> <br />
+            
+            电影
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-cnblogs">
+          <a href="http://www.cnblogs.com/elang" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th-large"></i> <br />
+            
+            博客园
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2017/05/05/c_language_variable_init/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="elangduan@126.com">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/uploads/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="elang's notes">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="elang's notes" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                C语言的变量初始化问题
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-05T09:50:36+08:00">
+              2017-05-05
+            </time>
+            
+          </span>
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><strong>问题</strong></p>
+<p>今天在写opengl shader的时候遇到了一个问题(使用C语言编写的)，出问题的代码如下(这里只列出出问题的部分代码):</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">void main()</span><br><span class="line">&#123;</span><br><span class="line">    vec3 norm = normalize(Normal);</span><br><span class="line">    vec3 viewDir = normalize(viewPos - FragPos);</span><br><span class="line">    </span><br><span class="line">    vec3 result;</span><br><span class="line">    </span><br><span class="line">    for (int i=0; i&lt;2; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        result += CalcPointLight(pointLights[i], norm, viewDir);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    color = vec4(result, 1.0f);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>这段代码的原本的功能是计算点光源。可是代码跑起来之后使用这个shader的模型颜色明显异常。效果如下:</p>
+<p><img src="/images/c_init_error_state.png" alt=""></p>
+<p>最终查出来的错误的原因是main函数里面result未初始化的原因导致的。一开始我以为是写的光照函数CalcPointLight里面实现有错误,定位了很久才发现出问题的点。</p>
+<p>正确的效果应该是这样的:</p>
+<p><img src="/images/c_init_right_state.png" alt=""></p>
+<p>验证了一下result如果没有初始化直接使用的话，它会对应一个stack区的随机值。这样的话在累加光照值之后计算的color值肯定是错误的。(其实我想如果C语言会报错提示使用为初始化的局部变量会更加人性化)</p>
+<p><strong>原理</strong></p>
+<p>顺着这个思路想了一下，为什么C语言的全局变量(global)就算不赋值会被自动初始化位默认值，但是局部变量(local)不会呢? 学习了一下C语言的内存布局结构，然后自己验证了一下然后明白了这个原因。</p>
+<p>首先我们得知道C语言的内存布局结构,这篇文章 <a href="http://cs-fundamentals.com/c-programming/memory-layout-of-c-program-code-data-segments.php" target="_blank" rel="external">Memory layout of c program</a> 讲的非常详细。这里列出我要用到的部分,首先看结构(图片来自这篇文章):</p>
+<p><img src="/images/code-data-segments.png" alt=""></p>
+<p>从这篇文章里面我明白了两点:</p>
+<ul>
+<li>全局变量是存放在data段内存的。data段分为uninitialized data(bss)段和initalized data，未初始化的变量是放在bss段的，这部分内存存放的变量是会被自动初始化的(这是C语言的特性)</li>
+<li>局部变量是存放在stack段的。这部分内存是被runtime时期动态分配的。(其实局部变量在代码编译之后就是一个地址，接下来会演示出来)</li>
+</ul>
+<p>明白了这两点，那我通过一个demo来验证一下是否在内存中真的是这个样子。</p>
+<blockquote>
+<p>测试环境: Ubuntu 16.02.2 i386</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">//test_c_variable_init.c</span><br><span class="line"></span><br><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line"></span><br><span class="line">int global_var;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    int local_var;</span><br><span class="line">    </span><br><span class="line">    local_var = local_var + 3;</span><br><span class="line">        </span><br><span class="line">    printf(&quot;global_var: %d &amp; local_var: %d \n&quot;, global_var, local_var);</span><br><span class="line">    </span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>利用demo里面声明的一个全局变量(global_var)和局部变量(local_var)来验证现在的问题。(对local_var加常量3的操作仅仅是为了能够快速定位local_var在反编译代码中的位置)</p>
+<p>首先可以通过linux的size命令查看总的内存分布</p>
+<p>编译test_c_variable_init.c文件</p>
+<blockquote>
+<p>gcc -o test_c_variable_init test_c_variable_init.c</p>
+</blockquote>
+<p>得到可执行文件test_c_variable_init,现在可以查看到这个可执行文件的内存分布:</p>
+<p><img src="/images/test_c_variable_init_size_1.png" alt=""></p>
+<p>然后我们在test_c_variable_init.c中增加一个全局变量:</p>
+<blockquote>
+<p>int global_var2;</p>
+</blockquote>
+<p>按照之前的步骤我们再次查看重新编译的文件的内存分布:</p>
+<p><img src="/images/test_c_variable_init_size_2.png" alt=""></p>
+<p>可以看到bss段增加了4kb，这个大小就是我们增加的global_var2变量的大小。按照同样的方式增加local_var2我们会发现data和bss段都不会增加。这样可依初步确定上面列出的两点结论了。</p>
+<p>然后我们通过查看反编译代码直接来查看变量在编译之后的位置，这样就明确之前的两点结论。</p>
+<blockquote>
+<p>objdump -D test_c_variable_init &gt; test_c_variable_init.d</p>
+</blockquote>
+<p>我们把反编译之后的代码重定向到test_c_variable_init.d文件，然后我们查看下这个文件，其中有两个地方可以让我们得到想要的答案。</p>
+<p>这是反编译之后的main函数:</p>
+<p><img src="/images/test_c_variable_init_main.png" alt=""></p>
+<p>可以看到347行的 <em>$0xc</em> ，之前我列出demo的时候为local_var特地添加了一个加常量3的操作，通过这个操作我可以很快定位到了<em>$0xc</em> 就是对应的local_var变量了, <em>$0x3</em> 就是常量3(addl就是汇编里面的加运算)。这里证明了local_var是分配在stack区的。此外我们注意到 <em>0x804a020</em> 这个地址其实就是global_var变量了，跳转到这个地址</p>
+<p><img src="/images/global_var_section.png" alt=""></p>
+<p>可以很清楚的看到 <em>0x804a020</em> 就是global_var并且存放在bss段的。</p>
+<p>这样我们就验证了上面的两点结论了,也知道了为什么未初始化的全局变量会被自动初始化位默认值，局部变量不会被初始化了。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/c/" rel="tag"># c</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/04/24/unity_ar_region_caption_display_black_question/" rel="next" title="Region_Capture截取的UV色彩变黑的问题">
+                <i class="fa fa-chevron-left"></i> Region_Capture截取的UV色彩变黑的问题
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/10/openg_normal_mapping_transform_martix_derivation/" rel="prev" title="OpenGL中Normal的变换矩阵的推导">
+                OpenGL中Normal的变换矩阵的推导 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.png"
+               alt="elangduan@126.com" />
+          <p class="site-author-name" itemprop="name">elangduan@126.com</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">30</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" align="center">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+
+  <span class="author" itemprop="copyrightHolder">elangduan@126.com | </span>
+
+  <span>
+    powered by <a class="theme-link" href="https://hexo.io">hexo</a>
+  </span>
+
+  <span>
+    & theme <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next"> NexT</a>
+  </span>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"elangduan"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
