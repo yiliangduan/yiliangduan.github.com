@@ -92,7 +92,7 @@
 <meta property="og:site_name" content="elang&#39;s note">
 <meta property="og:description" content="原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。  #介绍 在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。 在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-12-17T04:58:02.592Z">
+<meta property="og:updated_time" content="2017-12-17T06:50:13.553Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity游戏的图形渲染优化(译)">
 <meta name="twitter:description" content="原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。  #介绍 在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。 在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非">
@@ -483,7 +483,21 @@
 <li>贴图压缩是个能够很好的减少贴图的运行内存和物理内存的大小的技术。如果内存带宽在我们游戏中是一个显著的问题，使用贴图压缩能够来减少内存中纹理的大小有助于提高性能。Unity中有很多不同的贴图研所格式和可用设置。每个贴图都有独立的设置。一般而言，无论在什么时候尽可能的使用压缩格式。然而，为找到适合我们游戏的最好的贴图设置的最佳方式是去尝试和试错那些设置。<a href="https://docs.unity3d.com/Manual/class-TextureImporter.html?_ga=2.206366741.720931824.1513485390-1143412728.1512800414" target="_blank" rel="external">Unity手册的这页</a>包含了关于不同格式和设置的非常有用的信息。</li>
 <li><em>Mipmaps</em>是Unity能够在对象在处于远处时使用的低分辨率版本。如果我们场景中包含了远离摄像机的对象，我们可以使用mipmaps来缓解内存带宽问题。在场景视图中的<a href="https://docs.unity3d.com/Manual/ViewModes.html?_ga=2.240487557.720931824.1513485390-1143412728.1512800414" target="_blank" rel="external">Mipmaps绘制模式</a>允许我们看我们场景中的那些对象使用mipmaps是有利的，<a href="https://docs.unity3d.com/Manual/class-TextureImporter.html?_ga=2.46499873.720931824.1513485390-1143412728.1512800414" target="_blank" rel="external">Unity手册的这一页</a>包含了为贴图是否设置mipmaps的更多信息。</li>
 </ul>
-<h2 id="顶点处理"><a href="#顶点处理" class="headerlink" title="顶点处理"></a>顶点处理</h2><h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1>
+<h2 id="顶点处理"><a href="#顶点处理" class="headerlink" title="顶点处理"></a>顶点处理</h2><p>顶点处理是指GPU一定会渲染的mesh中的每个顶点的工作。影响顶点处理的消耗有两个方面:最终会渲染的顶点数量，需要处理的每个顶点的数量。如果我们游戏是GPU性能受限同时我们确定了不是填充率和内存带宽受限导致的，那么久很有可能是顶点处理引起的问题。如果是这个原因导致的，尝试减少GPU必须进行的顶点处理的量可能会提高提高性能。</p>
+<p>这里有几个方法我们可以考虑帮助我们在处理每个顶点时减少顶点数量或者顶点处理的数量。</p>
+<ul>
+<li>首先，我们应该期望减少任何不必要的复杂的网格。如果我们使用的网格有一些在我们游戏中看不到的细节，或者是由于创建时的错误导致太多顶点，这些会浪费很多GPU处理时间。最简单的减少顶点处理的消耗的方法是在我们3D美术程序(译:如,maya)里使用最少量的顶点数据创建网格。</li>
+<li>我们可以尝试一个叫做<em>法线贴图(normal mapping)</em>的技术，这是使用纹理创建更复杂的几何网格的错误看法的地方。尽管这个技术会有一些GPU开销，但是它在很多情况下会带来性能上的提升。<a href="https://docs.unity3d.com/Manual/StandardShaderMaterialParameterNormalMap.html?_ga=2.33120119.87762321.1513491116-66925982.1513491116" target="_blank" rel="external">Unity手册的这页</a>有实用的法线贴图指南，可以使用法线贴图模拟我们网格中复杂的几何图形。</li>
+<li>如果我们游戏中的mesh没有使用法线贴图，我们通常可以在网格的<a href="https://docs.unity3d.com/Manual/FBXImporter-Model.html?_ga=2.127309892.87762321.1513491116-66925982.1513491116" target="_blank" rel="external">导入设置</a>中关闭使用顶点切线。这回减少大量的发送到GPU的顶点数据。</li>
+<li><a href="https://zh.wikipedia.org/wiki/细节层次" target="_blank" rel="external">细节层次(Level of detail)</a>,也叫做LOD，是一对网格远离相机时减少复杂度的优化技术。这会减少GPU渲染的顶点的数量，同时不影响游戏的显示效果。<a href="https://docs.unity3d.com/Manual/class-LODGroup.html" target="_blank" rel="external">Unity手册关于LOD的页面</a>包含了更多怎样设置我们游戏的LOD的信息。</li>
+<li>顶点着色器是一块用来告诉GPU怎样去绘制每个顶点的着色器代码。如果我们游戏由于顶点处理受到性能限制，减少我们游戏顶点着色器的复杂度可能有帮助。<ul>
+<li>如果我们游戏使用的是Unity内置着色器，我们应该期望使用最简单的尽可能最优化的着色器来达到我们期望的显示效果。举个例子，<a href="https://docs.unity3d.com/Manual/shader-Performance.html" target="_blank" rel="external">Unity发布的移动设备的着色器</a>是高度优化了的；我们应该尝试使用这些材质，看看是否能提高性能但不影响我们游戏的显示效果 。</li>
+<li>如果我们项目使用了定制的着色器，我们应该尽可能的优化它们。优化着色器是一个复杂的主题，但是<a href="https://docs.unity3d.com/Manual/SL-ShaderPerformance.html?_ga=2.125139789.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Unity手册的这个页面</a>和<a href="https://docs.unity3d.com/Manual/MobileOptimisation.html?_ga=2.91340381.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Unity手册的这个页面</a>的<strong>着色器优化</strong>部分包含了优化我们着色器代码的有用的切入点。</li>
+</ul>
+</li>
+</ul>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>我们学习了Unity渲染是怎样工作的，当渲染的时候会出现什么类型的问题，怎样提高我们游戏的性能。使用这部分知识并且使用性能分析工具，我们可以修复渲染相关的性能问题，构建我们的游戏使得游戏的渲染管线更显平滑和高率。</p>
+
       
     </div>
 
