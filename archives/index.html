@@ -1,31 +1,20 @@
-<!DOCTYPE html>
+<!doctype html>
 
 
 
   
 
 
-<html class="theme-next muse use-motion" lang="zh-Hans">
+<html class="theme-next pisces use-motion" lang="zh-Hans">
 <head>
   <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-<meta name="theme-color" content="#222">
-
-
-
-
-
-
 
 
 
 <meta http-equiv="Cache-Control" content="no-transform" />
 <meta http-equiv="Cache-Control" content="no-siteapp" />
-
-
-
-
 
 
 
@@ -45,34 +34,48 @@
 
 
 
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
 
 
 
 <link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
-
-
-  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
 
 
 
 
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
 
 
 
@@ -93,15 +96,13 @@
   var NexT = window.NexT || {};
   var CONFIG = {
     root: '/',
-    scheme: 'Muse',
-    version: '5.1.3',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"hide"},
     fancybox: true,
-    tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    motion: true,
     duoshuo: {
       userId: '0',
-      author: '博主'
+      author: 'elangduan'
     },
     algolia: {
       applicationID: '',
@@ -121,52 +122,50 @@
 
 
 
-  <title>归档 | elang's note</title>
-  
-
-
-
-
-
-
-
-
+  <title> 归档 | elang's note </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
 
   
+
+
+
+
+
+
+
+
+
+
+  
   
     
   
 
-  <div class="container sidebar-position-left page-archive">
+  <div class="container one-collumn sidebar-position-left  page-archive  ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta ">
-    
+      <div class="header-inner"><div class="site-meta ">
+  
 
-    <div class="custom-logo-site-title">
-      <a href="/"  class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">elang's note</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
-    </div>
-      
-        <p class="site-subtitle"></p>
-      
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">elang's note</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
   </div>
+  <p class="site-subtitle"></p>
+</div>
 
-  <div class="site-nav-toggle">
-    <button>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-    </button>
-  </div>
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
 </div>
 
 <nav class="site-nav">
@@ -187,11 +186,41 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/archives/" rel="section">
+          <a href="/archives" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
             归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-reading">
+          <a href="/reading" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            阅读
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-movie">
+          <a href="/movie" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-camera"></i> <br />
+            
+            电影
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-cnblogs">
+          <a href="http://www.cnblogs.com/elang" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th-large"></i> <br />
+            
+            博客园
           </a>
         </li>
       
@@ -214,42 +243,31 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block archive">
-    <div id="posts" class="posts-collapse">
-      <span class="archive-move-on"></span>
+  <section id="posts" class="posts-collapse">
+    <span class="archive-move-on"></span>
 
-      <span class="archive-page-counter">
-        
-        
-        
-          
-        
-        嗯..! 目前共计 30 篇日志。 继续努力。
-      </span>
+  
+
+    
 
       
+      
+      
 
+      
         
-        
-        
+        <div class="collection-title">
+          <h2 class="archive-year motion-element" id="archive-year-2017">2017</h2>
+        </div>
+      
+      
 
-        
-          
-          <div class="collection-title">
-            <h1 class="archive-year" id="archive-year-2017">2017</h1>
-          </div>
-        
-        
-
-        
+      
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2017/12/09/ugui_graphics_rebuild_about_image_alpha_fade/" itemprop="url">
               
@@ -257,7 +275,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -272,21 +290,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2017/12/05/ienumerator_generics_boxing_question/" itemprop="url">
               
@@ -294,7 +312,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -309,21 +327,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2017/12/03/optimizing_graphics_rendering_in_unity_games/" itemprop="url">
               
@@ -331,7 +349,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -346,21 +364,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2017/11/18/optimizing_garbage_collection_in_unity_games/" itemprop="url">
               
@@ -368,7 +386,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -383,21 +401,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2017/08/30/Quaternion的插值分析及总结/" itemprop="url">
               
@@ -405,7 +423,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -420,21 +438,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2017/08/20/Shader里的条件分支的性能问题/" itemprop="url">
               
@@ -442,7 +460,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -457,21 +475,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2017/07/14/Unity3D Sprite常用存储格式性能对比/" itemprop="url">
               
@@ -479,7 +497,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -494,21 +512,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2017/07/13/Unity3D的UIPanel隐藏的处理方式/" itemprop="url">
               
@@ -516,7 +534,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -531,21 +549,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2017/07/08/OpenGL模型渲染层级顺序问题/" itemprop="url">
               
@@ -553,7 +571,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -568,21 +586,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2017/06/18/Unity脚本自动构建ipa包/" itemprop="url">
               
@@ -590,7 +608,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -605,21 +623,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2017/05/25/Unity Coroutine的实现原理/" itemprop="url">
               
@@ -627,7 +645,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -642,21 +660,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2017/05/10/OpenGL中Normal的变换矩阵的推导/" itemprop="url">
               
@@ -664,7 +682,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -679,21 +697,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2017/05/05/C语言的变量初始化问题/" itemprop="url">
               
@@ -701,7 +719,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -716,21 +734,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2017/04/24/Region_Capture截取的UV变黑问题/" itemprop="url">
               
@@ -738,7 +756,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -753,21 +771,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2017/04/08/OpenGL-Mesh的结构/" itemprop="url">
               
@@ -775,7 +793,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -790,21 +808,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2017/03/08/MonoBehaviour的Awake,Start等函数的调用原理/" itemprop="url">
               
@@ -812,7 +830,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -827,21 +845,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2017/03/04/Unity模型坐标转换到屏幕坐标/" itemprop="url">
               
@@ -849,7 +867,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -864,21 +882,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2017/02/25/MonoBehaviour的Awake的调用时机/" itemprop="url">
               
@@ -886,7 +904,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -901,21 +919,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2017/02/11/Json自动生成CSharp代码的工具/" itemprop="url">
               
@@ -923,7 +941,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -938,26 +956,26 @@
 
 
 
+    
+
+      
+      
       
 
+      
         
-        
-        
+        <div class="collection-title">
+          <h2 class="archive-year motion-element" id="archive-year-2016">2016</h2>
+        </div>
+      
+      
 
-        
-          
-          <div class="collection-title">
-            <h1 class="archive-year" id="archive-year-2016">2016</h1>
-          </div>
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2016/12/28/Unity 文件下载分析/" itemprop="url">
               
@@ -965,7 +983,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -980,21 +998,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2016/10/29/Mono V2.0.5的foreach内存问题/" itemprop="url">
               
@@ -1002,7 +1020,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -1017,21 +1035,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2016/09/05/Unity-IAP和Wechat支付接入/" itemprop="url">
               
@@ -1039,7 +1057,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -1054,21 +1072,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2016/07/16/Unity AssetBundle学习、分析及总结/" itemprop="url">
               
@@ -1076,7 +1094,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -1091,21 +1109,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2016/06/29/C-内存管理之对象循环引用问题/" itemprop="url">
               
@@ -1113,7 +1131,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -1128,21 +1146,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2016/06/18/Unity中内存资源释放总结/" itemprop="url">
               
@@ -1150,7 +1168,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -1165,21 +1183,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2016/06/05/C-多线程下数据同步处理/" itemprop="url">
               
@@ -1187,7 +1205,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -1202,21 +1220,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2016/05/09/Unity-GameObject深度剖析/" itemprop="url">
               
@@ -1224,7 +1242,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -1239,21 +1257,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2016/04/27/C-全局变量的初始化过程/" itemprop="url">
               
@@ -1261,7 +1279,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -1276,21 +1294,21 @@
 
 
 
+    
+
+      
+      
       
 
-        
-        
-        
+      
+      
 
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2016/04/09/C-的const-static-和-readonly-关键字的理解/" itemprop="url">
               
@@ -1298,7 +1316,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -1313,26 +1331,26 @@
 
 
 
+    
+
+      
+      
       
 
+      
         
-        
-        
+        <div class="collection-title">
+          <h2 class="archive-year motion-element" id="archive-year-2015">2015</h2>
+        </div>
+      
+      
 
-        
-          
-          <div class="collection-title">
-            <h1 class="archive-year" id="archive-year-2015">2015</h1>
-          </div>
-        
-        
-
-        
+      
 
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
     <header class="post-header">
 
-      <h2 class="post-title">
+      <h1 class="post-title">
         
             <a class="post-title-link" href="/2015/06/20/C-虚函数的内存结构浅析/" itemprop="url">
               
@@ -1340,7 +1358,7 @@
               
             </a>
         
-      </h2>
+      </h1>
 
       <div class="post-meta">
         <time class="post-time" itemprop="dateCreated"
@@ -1355,13 +1373,9 @@
 
 
 
-      
+    
 
-    </div>
-  </div>
-  
-  
-  
+  </section>
 
   
 
@@ -1386,71 +1400,57 @@
   </div>
 
   <aside id="sidebar" class="sidebar">
-    
     <div class="sidebar-inner">
 
       
 
       
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
-        <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-            
-              <img class="site-author-image" itemprop="image"
-                src="/uploads/avatar.png"
-                alt="elangduan@126.com" />
-            
-              <p class="site-author-name" itemprop="name">elangduan@126.com</p>
-              <p class="site-description motion-element" itemprop="description"></p>
-          </div>
-
-          <nav class="site-state motion-element">
-
-            
-              <div class="site-state-item site-state-posts">
-              
-                <a href="/archives/">
-              
-                  <span class="site-state-item-count">30</span>
-                  <span class="site-state-item-name">日志</span>
-                </a>
-              </div>
-            
-
-            
-
-            
-              
-              
-              <div class="site-state-item site-state-tags">
-                
-                  <span class="site-state-item-count">8</span>
-                  <span class="site-state-item-name">标签</span>
-                
-              </div>
-            
-
-          </nav>
-
-          
-
-          <div class="links-of-author motion-element">
-            
-          </div>
-
-          
-          
-
-          
-          
-
-          
-
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.png"
+               alt="elangduan@126.com" />
+          <p class="site-author-name" itemprop="name">elangduan@126.com</p>
+          <p class="site-description motion-element" itemprop="description"></p>
         </div>
-      </section>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">30</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
 
-      
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
 
       
 
@@ -1464,50 +1464,31 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2017</span>
-  <span class="with-love">
-    <i class="fa fa-user"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">elangduan@126.com</span>
-
+        <div class="copyright" align="center">
   
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+
+  <span class="author" itemprop="copyrightHolder">elangduan@126.com | </span>
+
+  <span>
+    powered by <a class="theme-link" href="https://hexo.io">hexo</a>
+  </span>
+
+  <span>
+    & theme <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next"> NexT</a>
+  </span>
 </div>
 
-
-  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
-
-
-
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.3</div>
-
-
-
-
         
-
-
-
-
-
-
 
         
       </div>
     </footer>
 
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
-      </div>
-    
-
-    
-
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
   </div>
 
   
@@ -1530,64 +1511,56 @@
 
 
 
-
-
-
-
-
-
-
-
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
 
   
-  
-    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
 
   
-  
-    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
 
   
-  
-    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
 
   
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
 
   
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
-  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
 
 
   
 
 
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
 
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
 
 
 
   
   
 
-  
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
 
   
+  
+    <script type="text/javascript" id="motion.page.archive">
+      $('.archive-year').velocity('transition.slideLeftIn');
+    </script>
+  
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
 
 
 
@@ -1624,28 +1597,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-  
-
-  
-
   
   
 
@@ -1654,6 +1605,9 @@
   
 
   
+
+  
+
 
 </body>
 </html>
