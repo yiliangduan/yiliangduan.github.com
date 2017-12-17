@@ -92,7 +92,7 @@
 <meta property="og:site_name" content="elang&#39;s note">
 <meta property="og:description" content="原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。  #介绍 在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。 在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-12-14T13:28:41.000Z">
+<meta property="og:updated_time" content="2017-12-17T04:58:02.592Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity游戏的图形渲染优化(译)">
 <meta name="twitter:description" content="原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。  #介绍 在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。 在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非">
@@ -439,7 +439,7 @@
 </ul>
 <h2 id="裁剪，排序和合批"><a href="#裁剪，排序和合批" class="headerlink" title="裁剪，排序和合批"></a>裁剪，排序和合批</h2><p>裁剪，收集将要渲染的对象的数据，将这些数据分类到不同类型的批次中以及生成GPU命令这些都有可能导致CPU性能受限。这些任务不管是在主线程执行还是在独立的辅助(worker)线程上执行，这取决于你的游戏的设置和目标硬件。</p>
 <ul>
-<li>裁剪不太会是一个非常耗时的操作，但是减少不必要的裁剪可以有助于性能的提高。所有活动场景中的对象对每个相机都有一份开销。即使这些对象所在的层没有被渲染。为了减少这些开销，我们应该关闭(disable)相机和没有用的渲染器，以及可以停用(deactivate)没有用的渲染器shanda@1l。</li>
+<li>裁剪不太会是一个非常耗时的操作，但是减少不必要的裁剪可以有助于性能的提高。所有活动场景中的对象对每个相机都有一份开销。即使这些对象所在的层没有被渲染。为了减少这些开销，我们应该关闭(disable)相机和没有用的渲染器，以及可以停用(deactivate)没有用的渲染器。</li>
 <li>合批能够很大程度上提高发送到GPU命令的速度，但是有的时候合批会在其他地方增加不必要的消耗。如果合批操作导致了我们游戏的CPU性能收到限制，我们可能希望限制在我们游戏中的手动或者自动合批操作。</li>
 </ul>
 <h2 id="蒙皮网格"><a href="#蒙皮网格" class="headerlink" title="蒙皮网格"></a>蒙皮网格</h2><p>当我们使用一个叫做骨骼动画的技术使一个网格进行变形时会用到<a href="https://docs.unity3d.com/Manual/class-SkinnedMeshRenderer.html?_ga=2.264690255.139682236.1512800414-1143412728.1512800414" target="_blank" rel="external">SkinnedMeshRenderers</a>。它常用于角色动画上。与渲染相关的渲染蒙皮网格任务通常在主线程或者独立的辅助线程上执行，具体取决于你的游戏设置和目标硬件。</p>
@@ -471,7 +471,19 @@
 <li>过度绘制(Overdraw)是指当同一个像素被绘制多次。这发生在对象绘制在其他对象上层的时候，这很容易造成填充率的问题。为了理解过度绘制，我们必须知道Unity绘制场景中的对象的顺序。对象的着色器决定了<em>绘制顺序</em>，通常指明对象在哪个<a href="https://docs.unity3d.com/ScriptReference/Rendering.RenderQueue.html?_ga=2.20148991.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">渲染队列</a>中。Unity利用这个信息按照严格的顺序绘制对象，更详细的介绍在<a href="https://docs.unity3d.com/Manual/SL-SubShaderTags.html?_ga=2.16030577.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Unity手册的这页</a>。此外，在绘制之前在不同渲染队列中的对象会进行排序。例如，集合队列的项Unity会按照从前往后的顺序排序使得最小化过度绘制的情况。但是透明队列的对象为了达到要求的效果按照从后往前排序。透明队列上的对象从后往前排序实际上把过度绘制的影响最大化了。过度绘制是一个比较复杂的主题，没有一个统一的方法能够解决所有的过度绘制的问题，关键是减少重叠的对象的数量使得Unity不需要自动对这些对象排序。最好的切入点是在Unity场景视图中测试这个问题；我们场景中的<a href="https://docs.unity3d.com/Manual/ViewModes.html?_ga=2.21130748.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">绘制模式</a>允许我们查看过度绘制的情况，在这个模式下，确定可以减少过度绘制的地方。最普遍的导致过度绘制的是透明度材质，没有优化的粒子特效和重叠的UI元素，所以我们应该尝试优化或者减少它们。<a href="https://unity3d.com/cn/learn/tutorials/topics/best-practices/fill-rate-canvases-and-input?playlist=30089" target="_blank" rel="external">Unity学习网站的这篇文章</a>主要介绍了Unity UI，但是也包含了非常好的过度绘制的指南。</li>
 <li>使用图片后期效果(image effects)会极大的造成填充率问题，如果我们游戏使用了图片后期效果并且我们的游戏在填充率问题上挣扎着，我们可以尝试不同的设置或者使用更加优化的图片后期效果的版本(例如针对于<a href="https://docs.unity3d.com/560/Documentation/Manual/PostProcessing-Bloom.html" target="_blank" rel="external">Bloom</a>的优化版<a href="https://docs.unity3d.com/550/Documentation/Manual/script-BloomOptimized.html" target="_blank" rel="external">Bloom(优化版)</a>)。如果我们的游戏在同一个相机中使用了超过一个图片后期效果，这会导致这个效果需要多个着色器的SetPass calls来渲染。这种情况，我们最好是把我们图片后期效果的着色器代码合并到一个pass中，例如在<a href="https://github.com/Unity-Technologies/PostProcessing/wiki" target="_blank" rel="external">Unity的后期处理栈</a>。如果我们已经已经优化了我们的图片后期效果但是任然有填充率的问题，我们可能需要考虑关闭图片后期效果，尤其是在低端机器。</li>
 </ul>
-<h2 id="内存带宽"><a href="#内存带宽" class="headerlink" title="内存带宽"></a>内存带宽</h2><h2 id="顶点处理"><a href="#顶点处理" class="headerlink" title="顶点处理"></a>顶点处理</h2><h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1>
+<h2 id="内存带宽"><a href="#内存带宽" class="headerlink" title="内存带宽"></a>内存带宽</h2><p>内存宽带是指GPU可以读写专用的内存的速率。如果我们游戏内存宽带受限，通常表示我们使用了大多的纹理，GPU已经无法快速的处理了。</p>
+<p>检查内存内存宽带是否有问题，我们可以这样做:</p>
+<ul>
+<li>分析我们的游戏，记下GPU的时间。</li>
+<li>在<a href="https://docs.unity3d.com/Manual/class-QualitySettings.html?_ga=2.73760529.2076163812.1513481094-741569329.1509691291" target="_blank" rel="external">Quality Settings</a>里面降低当前平台贴图质量(<strong>Texture Quality</strong>)和运行时画质</li>
+<li>再次分析游戏和记录下GPU的时间。如果性能得到提高，这似乎内存带宽是有问题的。</li>
+</ul>
+<p>如果我们游戏中存在内存带宽问题，我们需要减少我们游戏中贴图的内存使用量。重申一遍，减少贴图内存使用量对每个游戏的优化的最好的效果是不同的，但是这里有几个方法可以优化我们的贴图。</p>
+<ul>
+<li>贴图压缩是个能够很好的减少贴图的运行内存和物理内存的大小的技术。如果内存带宽在我们游戏中是一个显著的问题，使用贴图压缩能够来减少内存中纹理的大小有助于提高性能。Unity中有很多不同的贴图研所格式和可用设置。每个贴图都有独立的设置。一般而言，无论在什么时候尽可能的使用压缩格式。然而，为找到适合我们游戏的最好的贴图设置的最佳方式是去尝试和试错那些设置。<a href="https://docs.unity3d.com/Manual/class-TextureImporter.html?_ga=2.206366741.720931824.1513485390-1143412728.1512800414" target="_blank" rel="external">Unity手册的这页</a>包含了关于不同格式和设置的非常有用的信息。</li>
+<li><em>Mipmaps</em>是Unity能够在对象在处于远处时使用的低分辨率版本。如果我们场景中包含了远离摄像机的对象，我们可以使用mipmaps来缓解内存带宽问题。在场景视图中的<a href="https://docs.unity3d.com/Manual/ViewModes.html?_ga=2.240487557.720931824.1513485390-1143412728.1512800414" target="_blank" rel="external">Mipmaps绘制模式</a>允许我们看我们场景中的那些对象使用mipmaps是有利的，<a href="https://docs.unity3d.com/Manual/class-TextureImporter.html?_ga=2.46499873.720931824.1513485390-1143412728.1512800414" target="_blank" rel="external">Unity手册的这一页</a>包含了为贴图是否设置mipmaps的更多信息。</li>
+</ul>
+<h2 id="顶点处理"><a href="#顶点处理" class="headerlink" title="顶点处理"></a>顶点处理</h2><h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1>
       
     </div>
 
