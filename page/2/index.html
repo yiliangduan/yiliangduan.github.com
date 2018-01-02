@@ -281,7 +281,7 @@
               
                 
                 <a class="post-title-link" href="/2017/08/20/unity_shader_if_state_performance/" itemprop="url">
-                  Shader里的条件分支的性能问题
+                  Unity中shader代码的条件分支的性能问题
                 </a>
               
             
@@ -326,7 +326,7 @@
       
         
           
-            <h3 id="优化方案"><a href="#优化方案" class="headerlink" title="优化方案"></a>优化方案</h3><p>GPU对条件分支语句的执行性能比较敏感似乎是一个比较普遍的认知了，那么到底影响有多大呢？这里做了一次测试，测试针对Shader中的条件分支语句的性能情况。在有if语句和没有if语句时候的程序不同写法的:</p>
+            <h2 id="优化方案"><a href="#优化方案" class="headerlink" title="优化方案"></a>优化方案</h2><p>GPU对条件分支语句的执行性能比较敏感似乎是一个比较普遍的认知了，那么到底影响有多大呢？这里做了一次测试，测试针对Shader中的条件分支语句的性能情况。在有if语句和没有if语句时候的程序不同写法的:</p>
 <blockquote>
 <p>针对if语句的优化方法，参考的<a href="http://answers.unity3d.com/questions/442688/shader-if-else-performance.html" target="_blank" rel="external">这里</a>, 目前没有找到更好的替换if语句的办法，希望有更好办法的同学评论里面提出来，非常感谢！</p>
 </blockquote>
@@ -335,8 +335,10 @@
 <blockquote>
 <p>测试环境: macOS 10.12.6,  unity 5.6.3f1,  xcode 8.3.3， iOS 10.3.3,  iPhone7<br>测试的结果主要针对iphone7的设备，其他设备测试结果可能不同，和GPU的型号直接关系。</p>
 </blockquote>
-<h3 id="测试的场景"><a href="#测试的场景" class="headerlink" title="测试的场景"></a>测试的场景</h3><p><img src="/images/shader_performance/test.jpg" alt=""></p>
-<h3 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h3><p><em>1.    没有if的测试情况</em></p>
+<h2 id="结果验证"><a href="#结果验证" class="headerlink" title="结果验证"></a>结果验证</h2><h3 id="测试场景"><a href="#测试场景" class="headerlink" title="测试场景"></a>测试场景</h3><p><img src="/images/shader_performance/test.jpg" alt=""></p>
+<h3 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h3><ol>
+<li>没有if的测试情况</li>
+</ol>
 <table>
 <thead>
 <tr>
@@ -361,7 +363,9 @@
 </table>
 <p>5min时刻的性能截图:</p>
 <p><img src="/images/shader_performance/performance_different1.jpg" alt=""></p>
-<p><em>2. 存在if语句的测试情况</em></p>
+<ol>
+<li>存在if语句的测试情况</li>
+</ol>
 <table>
 <thead>
 <tr>
