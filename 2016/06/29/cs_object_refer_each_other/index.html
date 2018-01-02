@@ -92,12 +92,12 @@
 <meta property="og:site_name" content="elang&#39;s notes">
 <meta property="og:description" content="C#的内存管理用到了引用计数， 但是和以往我们认识的Java、Objective-c的内存管理有非常大的不同之处。不同之处在于C#的引用计数只有在GC Root对象引用的对象身上才生效，也就是说如果一个对象被GC Root对象引用了，那么在这个GC Root对象没有销毁之前这个对象是不会被销毁的。反之，如果一个对象没有被GC Root对象引用，即便这个对象被再多非GC Root对象引用，也会再下一">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://images2015.cnblogs.com/blog/579121/201606/579121-20160618120119682-75508795.png">
-<meta property="og:updated_time" content="2017-03-08T11:54:21.000Z">
+<meta property="og:image" content="http://elangduan.github.com/images/cs_object_reference_each_other/1.png">
+<meta property="og:updated_time" content="2018-01-02T03:12:05.821Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="C# 内存管理之对象循环引用问题">
 <meta name="twitter:description" content="C#的内存管理用到了引用计数， 但是和以往我们认识的Java、Objective-c的内存管理有非常大的不同之处。不同之处在于C#的引用计数只有在GC Root对象引用的对象身上才生效，也就是说如果一个对象被GC Root对象引用了，那么在这个GC Root对象没有销毁之前这个对象是不会被销毁的。反之，如果一个对象没有被GC Root对象引用，即便这个对象被再多非GC Root对象引用，也会再下一">
-<meta name="twitter:image" content="http://images2015.cnblogs.com/blog/579121/201606/579121-20160618120119682-75508795.png">
+<meta name="twitter:image" content="http://elangduan.github.com/images/cs_object_reference_each_other/1.png">
 
 
 
@@ -337,7 +337,7 @@
 <li>正在调用的函数传递的参数</li>
 </ul>
 <p>下图演示了几种对象引用的情况:</p>
-<p><img src="http://images2015.cnblogs.com/blog/579121/201606/579121-20160618120119682-75508795.png" alt=""></p>
+<p><img src="/images/cs_object_reference_each_other/1.png" alt=""></p>
 <p>根据我们前面的描述，我们很容易判断object A和object B在RootA 被释放之后随之会被释放，object C和object D 虽然循环引用，但是没有被Root引用，所以在下一次内存回收的时候就会被释放,RootB和RootC造成了循环引用所以释放不了。</p>
 
       
@@ -488,7 +488,7 @@
         <div class="copyright" align="center">
   
   &copy; 
-  <span itemprop="copyrightYear">2017</span>
+  <span itemprop="copyrightYear">2018</span>
 
   <span class="author" itemprop="copyrightHolder">elangduan@126.com | </span>
 

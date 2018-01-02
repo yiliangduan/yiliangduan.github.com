@@ -92,12 +92,12 @@
 <meta property="og:site_name" content="elang&#39;s notes">
 <meta property="og:description" content="苹果IAP接入相比微信支付和支付宝支付要麻烦一些,麻烦的地方主要体现在对测试支付环境的要求以及苹果审核方面的要求上面。本文是自己在接入iOS的IAP模块的经验及总结，发出来分享下。建议需要接入的话还是浏览一遍苹果官方文档 注意事项 测试支付的ipa必须使用[App-Store]证书 越狱机器无法测试IAP 用SandBox账号测试支付的时候,必须把在系统[设置]里面把[Itunes Store 与">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://images2015.cnblogs.com/blog/579121/201702/579121-20170208173914572-719243504.png">
-<meta property="og:updated_time" content="2017-04-18T07:31:29.000Z">
+<meta property="og:image" content="http://elangduan.github.com/images/unity_in_app_purchase/1.png">
+<meta property="og:updated_time" content="2018-01-02T03:09:43.479Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity 苹果IAP和微信支付接入">
 <meta name="twitter:description" content="苹果IAP接入相比微信支付和支付宝支付要麻烦一些,麻烦的地方主要体现在对测试支付环境的要求以及苹果审核方面的要求上面。本文是自己在接入iOS的IAP模块的经验及总结，发出来分享下。建议需要接入的话还是浏览一遍苹果官方文档 注意事项 测试支付的ipa必须使用[App-Store]证书 越狱机器无法测试IAP 用SandBox账号测试支付的时候,必须把在系统[设置]里面把[Itunes Store 与">
-<meta name="twitter:image" content="http://images2015.cnblogs.com/blog/579121/201702/579121-20170208173914572-719243504.png">
+<meta name="twitter:image" content="http://elangduan.github.com/images/unity_in_app_purchase/1.png">
 
 
 
@@ -375,20 +375,19 @@
 <li><p>在 <strong>[iTunes Connect]</strong> 添加Sandbox测试账号。</p>
 </li>
 </ul>
-<h4 id="购买流程"><a href="#购买流程" class="headerlink" title="购买流程"></a>购买流程</h4><center><img src="http://images2015.cnblogs.com/blog/579121/201702/579121-20170208173914572-719243504.png" alt=""></center>
-
+<h4 id="购买流程"><a href="#购买流程" class="headerlink" title="购买流程"></a>购买流程</h4><p><img src="/images/unity_in_app_purchase/1.png" alt=""></p>
 <h4 id="订单收据验证"><a href="#订单收据验证" class="headerlink" title="订单收据验证"></a>订单收据验证</h4><ul>
 <li><p>两种验证方式</p>
 <ul>
 <li><p>客户端本地验证</p>
 </li>
 <li><p>发送receipt数据给游戏服务器，让游戏服务器向AppStore服务器验证(我现在用的这种，安全)</p>
-<p>如果在购买的时候没有进行receipt验证退出app了，那么在下次购买的时候会storekit会首先查询receipt数据把未验证订单先验证了才会进行接下来的购买。</p>
 </li>
 </ul>
+<p>如果在购买的时候没有进行receipt验证退出app了，那么在下次购买的时候会storekit会首先查询receipt数据把未验证订单先验证了才会进行接下来的购买。</p>
 </li>
 <li><p>收据(receipt)</p>
-<p>  对于消费类型的商品(Consumable)收据会在验证之后自动删除掉,对于非消费类型的商品(Non-Consumable)每次购买的订单都保存在了收据里面，并且收据文件不会删除。如果用户手动把receipt文件删除了的话，那么在下次app启动的时候会自动生成一个和之前一样的receipt数据文件并且在下次购买的时候会自动验证。</p>
+<p>对于消费类型的商品(Consumable)收据会在验证之后自动删除掉,对于非消费类型的商品(Non-Consumable)每次购买的订单都保存在了收据里面，并且收据文件不会删除。如果用户手动把receipt文件删除了的话，那么在下次app启动的时候会自动生成一个和之前一样的receipt数据文件并且在下次购买的时候会自动验证。</p>
 </li>
 </ul>
 <h4 id="丢单的考虑"><a href="#丢单的考虑" class="headerlink" title="丢单的考虑"></a>丢单的考虑</h4><p>整个支付过程从表面上看有可能丢单的地方是在客户端支付完成的时候准备向游戏服务器发送receipt数据进行验证的时候，如果这个时候客户端退出游戏了(比如用户按Home键退出游戏杀掉进程)，那么此时用户已经付费了但是收不到商品。经过验证在这个过程中如果我们在购买完成的时候没有调用storekit的完成订单API的话也会导致每次app重新启动的时候storekit会回调订单完成的接口直到你调用finishTransaction才会停止。注意storekit回调成功的前提是你的购买监听API已经实例化，在这里提供的对应的是IAPHelper类，必须在app启动的时候就实例化。所以我们的做法是先向游戏服务器进行订单验证，验证成功之后在调用storekit的finishTrasaction，那么整个过程基本上就不会有丢单的情况了。</p>
@@ -403,9 +402,10 @@
 <ul>
 <li><p>支付完成之后不回调onResp函数</p>
 <ul>
-<li><p>由于没有在AndroidManifest中注册回调监听  </p>
+<li>由于没有在AndroidManifest中注册回调监听  </li>
+</ul>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;receiver</span><br><span class="line">    android:name=<span class="string">".AppRegister"</span>&gt;</span><br><span class="line">    &lt;intent-filter&gt;</span><br><span class="line">    &lt;action android:name=<span class="string">"com.tencent.mm.plugin.openapi.Intent.ACTION_REFRESH_WXAPP"</span> /&gt;</span><br><span class="line">    &lt;/intent-filter&gt;</span><br><span class="line">&lt;/receiver&gt;</span><br></pre></td></tr></table></figure>
-</li>
+<ul>
 <li><p>Unity生成APK的时候Bundle Identifier填写的和微信开放平台注册的Bundle Identifier不一致</p>
 </li>
 <li><p>应用包签名错误,确保在Unity生成APK的时候选择一个固定的Keystore文件，这个文件的签名要和微信开放平台注册的应用签名保持一致</p>
@@ -593,7 +593,7 @@
         <div class="copyright" align="center">
   
   &copy; 
-  <span itemprop="copyrightYear">2017</span>
+  <span itemprop="copyrightYear">2018</span>
 
   <span class="author" itemprop="copyrightHolder">elangduan@126.com | </span>
 
