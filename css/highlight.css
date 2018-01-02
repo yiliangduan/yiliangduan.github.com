@@ -1,6 +1,6 @@
 .post pre,
 .post .highlight {
-  background: #2d2d2d;
+  background: #f7f7f7;
   padding: 1em;
   border-style: solid;
   border-color: #ddd;
@@ -28,7 +28,7 @@
   overflow: auto;
 }
 .post pre code {
-  background: none;
+  background: #f7f7f7;
   text-shadow: none;
   padding: 0;
 }
