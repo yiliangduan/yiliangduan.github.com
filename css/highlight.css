@@ -19,7 +19,7 @@
 }
 .post pre,
 .post code {
-  font-family: "Microsoft YaHei", Consolas, Monaco, Menlo, Consolas, monospace;
+  font-family: Consolas, Monaco, Menlo, Consolas, monospace;
 }
 .post code {
   background: #eee;
