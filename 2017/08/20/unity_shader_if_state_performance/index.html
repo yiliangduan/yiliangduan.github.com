@@ -84,21 +84,21 @@
 
 
 
-<meta name="description" content="GPU对条件分支语句的执行性能比较敏感似乎是一个比较普遍的认知了，那么到底影响有多大呢？这里做了一次测试，测试针对Shader中的条件分支语句的性能情况。在有if语句和没有if语句时候的程序不同写法的:  针对if语句的优化方法，参考的这里, 目前没有找到更好的替换if语句的办法，希望有更好办法的同学评论里面提出来，非常感谢！  123456789101112fixed4 col = tex2D(">
+<meta name="description" content="优化方案GPU对条件分支语句的执行性能比较敏感似乎是一个比较普遍的认知了，那么到底影响有多大呢？这里做了一次测试，测试针对Shader中的条件分支语句的性能情况。在有if语句和没有if语句时候的程序不同写法的:  针对if语句的优化方法，参考的这里, 目前没有找到更好的替换if语句的办法，希望有更好办法的同学评论里面提出来，非常感谢！  123456789101112fixed4 col = te">
 <meta name="keywords" content="unity,shader">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Shader里的条件分支的性能问题">
 <meta property="og:url" content="http://elangduan.github.com/2017/08/20/unity_shader_if_state_performance/index.html">
 <meta property="og:site_name" content="elang&#39;s notes">
-<meta property="og:description" content="GPU对条件分支语句的执行性能比较敏感似乎是一个比较普遍的认知了，那么到底影响有多大呢？这里做了一次测试，测试针对Shader中的条件分支语句的性能情况。在有if语句和没有if语句时候的程序不同写法的:  针对if语句的优化方法，参考的这里, 目前没有找到更好的替换if语句的办法，希望有更好办法的同学评论里面提出来，非常感谢！  123456789101112fixed4 col = tex2D(">
+<meta property="og:description" content="优化方案GPU对条件分支语句的执行性能比较敏感似乎是一个比较普遍的认知了，那么到底影响有多大呢？这里做了一次测试，测试针对Shader中的条件分支语句的性能情况。在有if语句和没有if语句时候的程序不同写法的:  针对if语句的优化方法，参考的这里, 目前没有找到更好的替换if语句的办法，希望有更好办法的同学评论里面提出来，非常感谢！  123456789101112fixed4 col = te">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://elangduan.github.com/images/shader_performance/test.jpg">
 <meta property="og:image" content="http://elangduan.github.com/images/shader_performance/performance_different1.jpg">
 <meta property="og:image" content="http://elangduan.github.com/images/shader_performance/performance_different2.jpg">
-<meta property="og:updated_time" content="2017-11-18T12:54:05.000Z">
+<meta property="og:updated_time" content="2018-01-02T03:24:20.723Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Shader里的条件分支的性能问题">
-<meta name="twitter:description" content="GPU对条件分支语句的执行性能比较敏感似乎是一个比较普遍的认知了，那么到底影响有多大呢？这里做了一次测试，测试针对Shader中的条件分支语句的性能情况。在有if语句和没有if语句时候的程序不同写法的:  针对if语句的优化方法，参考的这里, 目前没有找到更好的替换if语句的办法，希望有更好办法的同学评论里面提出来，非常感谢！  123456789101112fixed4 col = tex2D(">
+<meta name="twitter:description" content="优化方案GPU对条件分支语句的执行性能比较敏感似乎是一个比较普遍的认知了，那么到底影响有多大呢？这里做了一次测试，测试针对Shader中的条件分支语句的性能情况。在有if语句和没有if语句时候的程序不同写法的:  针对if语句的优化方法，参考的这里, 目前没有找到更好的替换if语句的办法，希望有更好办法的同学评论里面提出来，非常感谢！  123456789101112fixed4 col = te">
 <meta name="twitter:image" content="http://elangduan.github.com/images/shader_performance/test.jpg">
 
 
@@ -330,7 +330,7 @@
       
 
       
-        <p>GPU对条件分支语句的执行性能比较敏感似乎是一个比较普遍的认知了，那么到底影响有多大呢？这里做了一次测试，测试针对Shader中的条件分支语句的性能情况。在有if语句和没有if语句时候的程序不同写法的:</p>
+        <h3 id="优化方案"><a href="#优化方案" class="headerlink" title="优化方案"></a>优化方案</h3><p>GPU对条件分支语句的执行性能比较敏感似乎是一个比较普遍的认知了，那么到底影响有多大呢？这里做了一次测试，测试针对Shader中的条件分支语句的性能情况。在有if语句和没有if语句时候的程序不同写法的:</p>
 <blockquote>
 <p>针对if语句的优化方法，参考的<a href="http://answers.unity3d.com/questions/442688/shader-if-else-performance.html" target="_blank" rel="external">这里</a>, 目前没有找到更好的替换if语句的办法，希望有更好办法的同学评论里面提出来，非常感谢！</p>
 </blockquote>
@@ -339,10 +339,8 @@
 <blockquote>
 <p>测试环境: macOS 10.12.6,  unity 5.6.3f1,  xcode 8.3.3， iOS 10.3.3,  iPhone7<br>测试的结果主要针对iphone7的设备，其他设备测试结果可能不同，和GPU的型号直接关系。</p>
 </blockquote>
-<p>###测试的场景</p>
-<p><img src="/images/shader_performance/test.jpg" alt=""></p>
-<p>###测试结果</p>
-<p><em>1.    没有if的测试情况</em></p>
+<h3 id="测试的场景"><a href="#测试的场景" class="headerlink" title="测试的场景"></a>测试的场景</h3><p><img src="/images/shader_performance/test.jpg" alt=""></p>
+<h3 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h3><p><em>1.    没有if的测试情况</em></p>
 <table>
 <thead>
 <tr>
@@ -480,8 +478,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/uploads/avatar.png"
@@ -527,6 +534,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#优化方案"><span class="nav-number">1.</span> <span class="nav-text">优化方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试的场景"><span class="nav-number">2.</span> <span class="nav-text">测试的场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试结果"><span class="nav-number">3.</span> <span class="nav-text">测试结果</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
     </div>
