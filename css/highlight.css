@@ -6,7 +6,7 @@
   border-color: #ddd;
   border-width: 1px 0;
   border-radius: 5px;
-  overflow: hidden;
+  overflow: visible;
   color: #ccc;
   line-height: 16px;
 }
