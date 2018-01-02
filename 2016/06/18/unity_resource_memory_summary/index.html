@@ -1,0 +1,101 @@
+<html>
+  <head>
+    <title>Unity中内存资源释放总结 - elangduan</title>
+    <link href='/images/fav.png' rel='shortcut icon'>
+<link href='' rel='alternate' type='application/rss+xml'>
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/highlight.css">
+<link rel="stylesheet" href="/css/responsive.css">
+<script src="/js/jquery.js"></script>
+<script src="/js/basics.js"></script>
+<meta content='width=device-width, initial-scale=1.0, user-scalable=no' name='viewport'>
+<meta content='text/html; charset=utf-8' http-equiv='content-type'>
+
+
+  </head>
+  <body>
+    <header>
+</header>
+
+    <div id='container'>
+      <div class='block'>
+  
+    <a class='main' href='/'>随笔</a>
+  
+    <a class='main' href='/reading'>阅读</a>
+  
+    <a class='main' href='/movie'>电影</a>
+  
+    <a class='main' href='https://www.cnblogs.com/elang'>博客</a>
+  
+    <a class='main' href='/about'>关于</a>
+  
+</div>
+
+      <!-- <section class='paging'>
+  
+    <div class='left'>
+      <a href='/2016/06/29/cs_object_refer_each_other/'>
+        ‹
+      </a>
+    </div>
+  
+  
+    <div class='right'>
+      <a href='/2016/06/05/cs_multi_thread_note/'>
+        ›
+      </a>
+    </div>
+  
+</section>
+ -->
+      <div class='content'>
+        <section class='post'>
+          <h1>
+            <div class='date'>2016-06-18</div>
+            Unity中内存资源释放总结
+          </h1>
+          <p><strong>Unity内存释放</strong> 问题主要考虑一下几个方面:<br>  (1)  Resources 加载的资源需要释放的时候调用 Resources.UnloadUnusedAssets();</p>
+<p>  (2) WWW 加载的任何资源<font color="#FF0000">必须</font>调用WWW的Dispose接口</p>
+<p>  (3) 创建的RenderTexture<font color="#FF0000">必须</font>调用Release接口</p>
+<p>  (4) 必须用Xcode联机调试确定C++层有没有内存泄漏</p>
+<p>  (5) AssetBundle资源在Unity Profile中的Scene Memory不会显示，可以通过Xcode联机调试确定有没有释放完全</p>
+<p>  (6) 加载资源和卸载资源的异步处理,避免同一帧内加载过多资源导致内存瞬间增大从而导致Crash(低配机器上表现更明显)</p>
+<p>一般通过WWW加载一张Texture来通过Image显示的话，一种的方法是使用Texture通过Sprite.Create来创建一个Sprite对象赋值给Image.overrideSprite完成显示。但是需要注意一个问题，Sprite.Create创建对象对拷贝Texture中数据，并生成一个新的Sprite对象，这样会造成耗费将近2倍Texture大小的内存，而且这个内存占用不会随着Image的销毁而马上销毁，知道你调用Resources.UnloadUnusedResources()接口才会销毁。如果在一个场景中有大量的图片需要动态加载的话，那么必须注意内存问题了。所以建议不要使用显示Image的方式，有一种方式是显示RawImage，按照官方文档的描述:</p>
+<blockquote>
+<p>The Raw Image control displays a non-interactive image to the user. This can be used for decoration, icons, etc, and the image can also be changed from a script to reflect changes in other controls.</p>
+</blockquote>
+<p>RawImage是一个没有和用户交互的Image，所以如果我们不需要比如事件这种交互的操作的话，还是建议用RawImage来显示Texture。RawImage的方式会高效很多，如果从AssetBundle里面加载了一张Texture，不管是赋值给多少个RawImage，Texture是公用的，只会有一分内存。</p>
+
+          <!-- <br>
+<p>Elang Duan</p>
+<p><img src='/images/scribble3.png' alt='scribble'></p>
+ -->
+        </section>
+      </div>
+      
+      <div class='block'>
+  
+    <a class='main' href='/'>随笔</a>
+  
+    <a class='main' href='/reading'>阅读</a>
+  
+    <a class='main' href='/movie'>电影</a>
+  
+    <a class='main' href='https://www.cnblogs.com/elang'>博客</a>
+  
+    <a class='main' href='/about'>关于</a>
+  
+</div>
+
+    </div>
+    <footer>
+  <span class='muted'>&copy; elangduan@126.com</span>
+  <a class='muted'>& powered by Hexo</a>
+  <br>
+  <br>
+
+</footer>
+
+  </body>
+</html>

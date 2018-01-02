@@ -1,0 +1,111 @@
+<html>
+  <head>
+    <title>Unity模型渲染层级顺序问题 - elangduan</title>
+    <link href='/images/fav.png' rel='shortcut icon'>
+<link href='' rel='alternate' type='application/rss+xml'>
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/highlight.css">
+<link rel="stylesheet" href="/css/responsive.css">
+<script src="/js/jquery.js"></script>
+<script src="/js/basics.js"></script>
+<meta content='width=device-width, initial-scale=1.0, user-scalable=no' name='viewport'>
+<meta content='text/html; charset=utf-8' http-equiv='content-type'>
+
+
+  </head>
+  <body>
+    <header>
+</header>
+
+    <div id='container'>
+      <div class='block'>
+  
+    <a class='main' href='/'>随笔</a>
+  
+    <a class='main' href='/reading'>阅读</a>
+  
+    <a class='main' href='/movie'>电影</a>
+  
+    <a class='main' href='https://www.cnblogs.com/elang'>博客</a>
+  
+    <a class='main' href='/about'>关于</a>
+  
+</div>
+
+      <!-- <section class='paging'>
+  
+    <div class='left'>
+      <a href='/2017/07/13/unity_ugui_panel_visible_manage/'>
+        ‹
+      </a>
+    </div>
+  
+  
+    <div class='right'>
+      <a href='/2017/06/18/unity_auto_build_ipa/'>
+        ›
+      </a>
+    </div>
+  
+</section>
+ -->
+      <div class='content'>
+        <section class='post'>
+          <h1>
+            <div class='date'>2017-07-08</div>
+            Unity模型渲染层级顺序问题
+          </h1>
+          <h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><p>项目中遇到一个问题，在Untiy中如果关闭ZTest的话，模型的子部件之间的层级可能会出现错乱的现象，模型是3ds max导出的模型。</p>
+<h3 id="原因思考"><a href="#原因思考" class="headerlink" title="原因思考"></a>原因思考</h3><p> 既然是层级错误，根据Unity渲染管线的规则决定层级的有两个地方。一个是传入Unity的顶点数据的顺序(如果用了顶点数据索引，那么就是索引的顺序)，另外一个是Unity里面的DepthTest功能决定。那么两种情况的规则是怎样的呢？</p>
+<blockquote>
+<p>Unity中的shader有一个RenderQueue设置，使用设置了同一个RendererQueue的值的shader模型在同一批被渲染，比如RenderQueue设置了一般不透明物体设置为Geometry(对应的数值为2000)，透明物体物体设置为Transparent(对应的数值为3000)。Geometry的对象会先渲染，然后才会渲染Transparent的物体。本文我遇到的问题的模型都是用的同一个shader，所以RendererQueue不是问题的原因。</p>
+</blockquote>
+<p> 首先看DepthTest的作用，在Unity中利用了深度缓冲来保证了渲染的层级问题，深度缓冲是根据RenderQueue和深度值(顶点的Z值)来确定的。渲染管线在光栅化之后会对顶点数据做一次DepthTest 。</p>
+<p> 对于顶点数据的顺序的影响也是经过这个问题之后我才发现的。在DepthTest打开的情况下(Shader里面ZWrite&amp;ZTest开启)，这个顺序也没有什么作用的，但是当我们关闭DepthTest的时候(比如渲染半透明的物体需要进行混合操作),Unity的渲染就直接根据这个数据的顺序去渲染了。</p>
+<p>基于上面两种情况的分析，通过测试发现我们的模型在打开DepthTest的时候是没有层级的问题的，关闭DepthTest之后才出现层级混乱的问题。这样我们就把问题定位到原因了。那么接下来验证一下原因</p>
+<h3 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h3><p>首先我直接在Unity中通过代码生成一个Mesh来渲染，目的是为了可以方便的更改顶点数据的顺序。(创建Mesh的代码参考了<a href="https://github.com/mortennobel/ProceduralMesh" target="_blank" rel="external">ProceduralMesh</a>，根据自己测试需求做了一些改动)</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">CreateMesh</span> : <span class="title">MonoBehaviour</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">bool</span> UseRightTrianglesOrder;</span><br><span class="line">    <span class="keyword">private</span> MeshFilter m_MeshFilter;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">Start</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        gameObject.AddComponent&lt;MeshRenderer&gt;();</span><br><span class="line">        m_MeshFilter = gameObject.AddComponent&lt;MeshFilter&gt;();</span><br><span class="line">        m_MeshFilter.mesh = <span class="keyword">new</span> Mesh();</span><br><span class="line"></span><br><span class="line">        BuildMesh();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnGUI</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(GUI.Button(<span class="keyword">new</span> Rect(<span class="number">20</span>, <span class="number">20</span>, <span class="number">200</span>, <span class="number">80</span>), <span class="string">"ReBuild"</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            BuildMesh();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">BuildMesh</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        Vector3 p0 = <span class="keyword">new</span> Vector3(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">        Vector3 p1 = <span class="keyword">new</span> Vector3(<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">        Vector3 p2 = <span class="keyword">new</span> Vector3(<span class="number">0.5</span>f, <span class="number">0</span>, Mathf.Sqrt(<span class="number">0.75</span>f));</span><br><span class="line">        Vector3 p3 = <span class="keyword">new</span> Vector3(<span class="number">0.5</span>f, Mathf.Sqrt(<span class="number">0.75</span>f), Mathf.Sqrt(<span class="number">0.75</span>f) / <span class="number">3</span>);</span><br><span class="line"></span><br><span class="line">        Mesh mesh = m_MeshFilter.sharedMesh;</span><br><span class="line">        mesh.Clear();</span><br><span class="line"></span><br><span class="line">        mesh.vertices = <span class="keyword">new</span> Vector3[]&#123;</span><br><span class="line">            p0,p1,p2,</span><br><span class="line">            p0,p2,p3,</span><br><span class="line">            p2,p1,p3,</span><br><span class="line">            p0,p3,p1</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (UseRightTrianglesOrder)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//这是正确的顺序</span></span><br><span class="line">            mesh.triangles = <span class="keyword">new</span> <span class="keyword">int</span>[]&#123;</span><br><span class="line">                <span class="number">9</span>,<span class="number">10</span>,<span class="number">11</span>, <span class="comment">//蓝色的那个三角形</span></span><br><span class="line">                <span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,</span><br><span class="line">                <span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,</span><br><span class="line">                <span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span></span><br><span class="line">            &#125;;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//这是错误的顺序</span></span><br><span class="line">            mesh.triangles = <span class="keyword">new</span> <span class="keyword">int</span>[]&#123;</span><br><span class="line">                <span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,</span><br><span class="line">                <span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,</span><br><span class="line">                <span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>,</span><br><span class="line">                <span class="number">9</span>,<span class="number">10</span>,<span class="number">11</span> <span class="comment">//蓝色的那个三角形,如果ZTest关闭，那么这个三角形在最后被渲染，会覆盖前面的三个三角形部分区域</span></span><br><span class="line">            &#125;;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Vector2 uv3a = <span class="keyword">new</span> Vector2(<span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">        Vector2 uv1 = <span class="keyword">new</span> Vector2(<span class="number">0.5</span>f, <span class="number">0</span>);</span><br><span class="line">        Vector2 uv0 = <span class="keyword">new</span> Vector2(<span class="number">0.25</span>f, Mathf.Sqrt(<span class="number">0.75</span>f) / <span class="number">2</span>);</span><br><span class="line">        Vector2 uv2 = <span class="keyword">new</span> Vector2(<span class="number">0.75</span>f, Mathf.Sqrt(<span class="number">0.75</span>f) / <span class="number">2</span>);</span><br><span class="line">        Vector2 uv3b = <span class="keyword">new</span> Vector2(<span class="number">0.5</span>f, Mathf.Sqrt(<span class="number">0.75</span>f));</span><br><span class="line">        Vector2 uv3c = <span class="keyword">new</span> Vector2(<span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">        mesh.uv = <span class="keyword">new</span> Vector2[]&#123;</span><br><span class="line">            uv0,uv1,uv2,</span><br><span class="line">            uv0,uv2,uv3b,</span><br><span class="line">            uv0,uv1,uv3a,</span><br><span class="line">            uv1,uv2,uv3c</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        mesh.RecalculateNormals();</span><br><span class="line">        mesh.RecalculateBounds();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在使用正确的triangles的数据并且关闭ZTest的时候，显示的效果如下:</p>
+<p><img src="/images/3ds_max_fbx_export_model_layer/opengl_model_render_order_1.png" alt=""></p>
+<p>这种效果是正确的。在使用乱序的triangles的索引并且关闭ZTest的时候，显示效果如下:</p>
+<p><img src="/images/3ds_max_fbx_export_model_layer/opengl_model_render_order_2.png" alt=""></p>
+<p>这看起来很怪异，再看看3D空间视图里面的顶部视图:</p>
+<p><img src="/images/3ds_max_fbx_export_model_layer/opengl_model_render_order_3.png" alt=""></p>
+<p>通过这个图我们可以看到，其实乱序的triangles数据渲染出来的效果是因为蓝色的那个三角形被渲染在前面了，然而他本身的位置是在红色和绿色的后面的。说明他比红色和绿色的面片要后渲染出来。</p>
+<p>上面的两个测试证明了在关闭ZTest的时候，Unity的渲染顺序其实就是根据triangles数据的顺序来渲染的。如果我们开启ZTest，那么上面两个triangles数据渲染出来的模型我们会发现都是没有问题的。现在证明了是triangles顺序的问题但是我们模型的triangles的数据来自于3dsMax，说明这应该是在3dsMax导出模型的一些设置问题，或者说是模型本身有问题。</p>
+<h3 id="3DS-Max导出模型的问题"><a href="#3DS-Max导出模型的问题" class="headerlink" title="3DS Max导出模型的问题"></a>3DS Max导出模型的问题</h3><p>现在问题定位到模型导出的问题，由于没用过3dsMax。为了测试需要我直接摸索创建了一个包含3个Cube的模型，然后合并三个模型的Mesh。导出FBX之后再在Unity观察三个Cube的层级关系，结果重现了问题模型的问题。那么到底是哪一步出错了呢？经过无数次的测试，最终发现了triangles顺序是由合并Mesh的顺序决定的。如果想得到triangles数据的顺序正好是对应顶点的层级由低到高的顺序，那么在3dsMax中在合并Mesh(Attach子模型)的时候需要从层级最低的模型逐个Attach到层级最高的模型。</p>
+<p>最后测试的Shader(其实就是官方给的Unlit-Alpha改了一点点)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line">// Unlit alpha-blended shader.</span><br><span class="line">// - no lighting</span><br><span class="line">// - no lightmap support</span><br><span class="line">// - no per-material color</span><br><span class="line"></span><br><span class="line">Shader &quot;Custom/TestRenderOrder&quot; &#123;</span><br><span class="line">Properties &#123;</span><br><span class="line">	_MainTex (&quot;Base (RGB) Trans (A)&quot;, 2D) = &quot;white&quot; &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">SubShader &#123;</span><br><span class="line">	Tags &#123;&quot;RenderType&quot;=&quot;Opaque&quot;&#125;</span><br><span class="line">	LOD 100</span><br><span class="line"></span><br><span class="line">	//ZWrite Off</span><br><span class="line">	ZTest Off</span><br><span class="line">	Cull Off</span><br><span class="line"></span><br><span class="line">	Pass &#123;  </span><br><span class="line">		CGPROGRAM</span><br><span class="line">			#pragma vertex vert</span><br><span class="line">			#pragma fragment frag</span><br><span class="line">			#pragma target 2.0</span><br><span class="line">			#pragma multi_compile_fog</span><br><span class="line"></span><br><span class="line">			#include &quot;UnityCG.cginc&quot;</span><br><span class="line"></span><br><span class="line">			struct appdata_t &#123;</span><br><span class="line">				float4 vertex : POSITION;</span><br><span class="line">				float2 texcoord : TEXCOORD0;</span><br><span class="line">				UNITY_VERTEX_INPUT_INSTANCE_ID</span><br><span class="line">			&#125;;</span><br><span class="line"></span><br><span class="line">			struct v2f &#123;</span><br><span class="line">				float4 vertex : SV_POSITION;</span><br><span class="line">				float2 texcoord : TEXCOORD0;</span><br><span class="line">				UNITY_FOG_COORDS(1)</span><br><span class="line">				UNITY_VERTEX_OUTPUT_STEREO</span><br><span class="line">			&#125;;</span><br><span class="line"></span><br><span class="line">			sampler2D _MainTex;</span><br><span class="line">			float4 _MainTex_ST;</span><br><span class="line"></span><br><span class="line">			v2f vert (appdata_t v)</span><br><span class="line">			&#123;</span><br><span class="line">				v2f o;</span><br><span class="line">				UNITY_SETUP_INSTANCE_ID(v);</span><br><span class="line">				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);</span><br><span class="line">				o.vertex = UnityObjectToClipPos(v.vertex);</span><br><span class="line">				o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);</span><br><span class="line">				UNITY_TRANSFER_FOG(o,o.vertex);</span><br><span class="line">				return o;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			fixed4 frag (v2f i) : SV_Target</span><br><span class="line">			&#123;</span><br><span class="line">				fixed4 col = tex2D(_MainTex, i.texcoord);</span><br><span class="line">				UNITY_APPLY_FOG(i.fogCoord, col);</span><br><span class="line">				return col;</span><br><span class="line">			&#125;</span><br><span class="line">		ENDCG</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+          <!-- <br>
+<p>Elang Duan</p>
+<p><img src='/images/scribble3.png' alt='scribble'></p>
+ -->
+        </section>
+      </div>
+      
+      <div class='block'>
+  
+    <a class='main' href='/'>随笔</a>
+  
+    <a class='main' href='/reading'>阅读</a>
+  
+    <a class='main' href='/movie'>电影</a>
+  
+    <a class='main' href='https://www.cnblogs.com/elang'>博客</a>
+  
+    <a class='main' href='/about'>关于</a>
+  
+</div>
+
+    </div>
+    <footer>
+  <span class='muted'>&copy; elangduan@126.com</span>
+  <a class='muted'>& powered by Hexo</a>
+  <br>
+  <br>
+
+</footer>
+
+  </body>
+</html>

@@ -1,0 +1,103 @@
+<html>
+  <head>
+    <title>Unity模型坐标转换到屏幕坐标 - elangduan</title>
+    <link href='/images/fav.png' rel='shortcut icon'>
+<link href='' rel='alternate' type='application/rss+xml'>
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/highlight.css">
+<link rel="stylesheet" href="/css/responsive.css">
+<script src="/js/jquery.js"></script>
+<script src="/js/basics.js"></script>
+<meta content='width=device-width, initial-scale=1.0, user-scalable=no' name='viewport'>
+<meta content='text/html; charset=utf-8' http-equiv='content-type'>
+
+
+  </head>
+  <body>
+    <header>
+</header>
+
+    <div id='container'>
+      <div class='block'>
+  
+    <a class='main' href='/'>随笔</a>
+  
+    <a class='main' href='/reading'>阅读</a>
+  
+    <a class='main' href='/movie'>电影</a>
+  
+    <a class='main' href='https://www.cnblogs.com/elang'>博客</a>
+  
+    <a class='main' href='/about'>关于</a>
+  
+</div>
+
+      <!-- <section class='paging'>
+  
+    <div class='left'>
+      <a href='/2017/03/08/monobehaviour_awake_start_function_call_detail/'>
+        ‹
+      </a>
+    </div>
+  
+  
+    <div class='right'>
+      <a href='/2017/02/25/unity_monobehavior_awake_function_call_time/'>
+        ›
+      </a>
+    </div>
+  
+</section>
+ -->
+      <div class='content'>
+        <section class='post'>
+          <h1>
+            <div class='date'>2017-03-04</div>
+            Unity模型坐标转换到屏幕坐标
+          </h1>
+          <p>项目中遇到一个需求，需要添加一个引导，引导用户从UI层拖拽一个物品到三维的一个模型上面，引导只需在UI层表现即可。这里需要把模型的坐标转换到屏幕的坐标，这里记录一下。</p>
+<p>首先要清楚转换的步骤:</p>
+<blockquote>
+<p>模型坐标 -&gt; 世界坐标 -&gt; 屏幕坐标 -&gt; Canvas坐标</p>
+</blockquote>
+<p>需要注意的地方:</p>
+<ul>
+<li><p>模型坐标到世界坐标这一步不需要我们自己转换，因为Transform的position属性就是模型的世界坐标</p>
+</li>
+<li><p>屏幕坐标到Canvas坐标这一步很容易被忽略，在设备的分辨率和我们<strong>CanvasScaler</strong>设置的<br><em>Reference Resolution</em>设置的分辨率不是一致的话，那么<em>CanvasScaler</em>会进行缩放操作，所以我们需要考虑缩放之后的值</p>
+</li>
+</ul>
+<p>下面是转换过程:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Vector3 modelScreenPos = modelCamera.WorldToScreenPoint(model.transform.position);</span><br><span class="line"></span><br><span class="line">Vector2 canvasRect = canvasScaler.GetComponent&lt;RectTransform&gt;().rect;</span><br><span class="line"></span><br><span class="line">float factorX = canvasRect.width / Screen.width;</span><br><span class="line">float factorY = canvasRect.height / Screen.height;</span><br><span class="line"></span><br><span class="line">Vector3 modelCanvasPos = new Vector3(modelScreenPos.x * factorX, modelScreenPos.y * factorY, 0);</span><br></pre></td></tr></table></figure>
+          <!-- <br>
+<p>Elang Duan</p>
+<p><img src='/images/scribble3.png' alt='scribble'></p>
+ -->
+        </section>
+      </div>
+      
+      <div class='block'>
+  
+    <a class='main' href='/'>随笔</a>
+  
+    <a class='main' href='/reading'>阅读</a>
+  
+    <a class='main' href='/movie'>电影</a>
+  
+    <a class='main' href='https://www.cnblogs.com/elang'>博客</a>
+  
+    <a class='main' href='/about'>关于</a>
+  
+</div>
+
+    </div>
+    <footer>
+  <span class='muted'>&copy; elangduan@126.com</span>
+  <a class='muted'>& powered by Hexo</a>
+  <br>
+  <br>
+
+</footer>
+
+  </body>
+</html>
