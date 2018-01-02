@@ -204,7 +204,7 @@ a, .as-link {
         background: #797; }
 
 hr {
-  border: 1px;
+  border: 0;
   border-bottom: 1px dotted #CCC;
   margin: 25px 0; }
 
