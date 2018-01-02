@@ -1,64 +1,88 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   
-  <title>Seite 2 | elang&#39;s notes</title>
-  <meta name="author" content="elangduan@126.com">
+
   
-  
+  <title>elang&#39;s notes</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
+  <meta property="og:type" content="website">
+<meta property="og:title" content="elang&#39;s notes">
+<meta property="og:url" content="http://elangduan.github.com/page/2/index.html">
+<meta property="og:site_name" content="elang&#39;s notes">
+<meta property="og:locale" content="zh-Hans">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="elang&#39;s notes">
   
-  <meta property="og:site_name" content="elang&#39;s notes"/>
-
+    <link rel="alternate" href="/atom.xml" title="elang&#39;s notes" type="application/atom+xml">
   
-    <meta property="og:image" content=""/>
   
-
-  <link href="/favicon.png" rel="icon">
-  <link rel="alternate" href="/atom.xml" title="elang&#39;s notes" type="application/atom+xml">
-  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
-  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+    <link rel="icon" href="/favicon.png">
   
-
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 
-
 <body>
-  <header id="header" class="inner"><div class="alignleft">
-  <h1><a href="/">elang&#39;s notes</a></h1>
-  <h2><a href="/"></a></h2>
-</div>
-<nav id="main-nav" class="alignright">
-  <ul>
-    
-      <li><a href="/">Home</a></li>
-    
-      <li><a href="/archives">Archives</a></li>
-    
-  </ul>
-  <div class="clearfix"></div>
-</nav>
-<div class="clearfix"></div>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">elang&#39;s notes</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Suche"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://elangduan.github.com"></form>
+      </div>
+    </div>
+  </div>
 </header>
-  <div id="content" class="inner">
-    <div id="main-col" class="alignleft"><div id="wrapper">
-  <article class="post">
+      <div class="outer">
+        <section id="main">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2017-07-08T01:59:39.000Z"><a href="/2017/07/08/unity_render_order_question/">2017-07-08</a></time>
-      
-      
+    <article id="post-unity_render_order_question" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/07/08/unity_render_order_question/" class="article-date">
+  <time datetime="2017-07-08T01:59:39.000Z" itemprop="datePublished">2017-07-08</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 class="title"><a href="/2017/07/08/unity_render_order_question/">Unity模型渲染层级顺序问题</a></h1>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/08/unity_render_order_question/">Unity模型渲染层级顺序问题</a>
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><p>项目中遇到一个问题，在Untiy中如果关闭ZTest的话，模型的子部件之间的层级可能会出现错乱的现象，模型是3ds max导出的模型。</p>
 <h3 id="原因思考"><a href="#原因思考" class="headerlink" title="原因思考"></a>原因思考</h3><p> 既然是层级错误，根据Unity渲染管线的规则决定层级的有两个地方。一个是传入Unity的顶点数据的顺序(如果用了顶点数据索引，那么就是索引的顺序)，另外一个是Unity里面的DepthTest功能决定。那么两种情况的规则是怎样的呢？</p>
@@ -84,34 +108,40 @@
 
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2017/07/08/unity_render_order_question/" data-id="cjbxg1afo001e14jmf8p33opi" class="article-share-link">Teilen</a>
       
-        
-        
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Unity-unity/">Unity, unity</a></li></ul>
+
     </footer>
   </div>
+  
 </article>
 
 
-
-
-  <article class="post">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2017-06-18T15:30:00.000Z"><a href="/2017/06/18/unity_auto_build_ipa/">2017-06-18</a></time>
-      
-      
+    <article id="post-unity_auto_build_ipa" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/06/18/unity_auto_build_ipa/" class="article-date">
+  <time datetime="2017-06-18T15:30:00.000Z" itemprop="datePublished">2017-06-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 class="title"><a href="/2017/06/18/unity_auto_build_ipa/">Unity脚本自动构建IPA包</a></h1>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/06/18/unity_auto_build_ipa/">Unity脚本自动构建IPA包</a>
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <p>Unity项目在iOS平台打包是一件比较费时间的事情，所以写了脚本来实现自动话打包生成ipa文件，避免每次去到处xcode工程然后配置证书之类的设置。</p>
 <blockquote>
@@ -153,34 +183,40 @@
 
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2017/06/18/unity_auto_build_ipa/" data-id="cjbxg1af6000u14jmrjp4zngr" class="article-share-link">Teilen</a>
       
-        
-        
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/unity/">unity</a></li></ul>
+
     </footer>
   </div>
+  
 </article>
 
 
-
-
-  <article class="post">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2017-05-25T08:47:36.000Z"><a href="/2017/05/25/unity_coroutine_note/">2017-05-25</a></time>
-      
-      
+    <article id="post-unity_coroutine_note" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/05/25/unity_coroutine_note/" class="article-date">
+  <time datetime="2017-05-25T08:47:36.000Z" itemprop="datePublished">2017-05-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 class="title"><a href="/2017/05/25/unity_coroutine_note/">Unity Coroutine的实现原理</a></h1>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/05/25/unity_coroutine_note/">Unity Coroutine的实现原理</a>
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <p>在Unity中我经常用到Coroutine的功能，但是对于Coroutine一直有一些疑问没有得到答案，下面先上一个在项目里面经常使用Coroutine的场景的sample:</p>
 <figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//TestCoroutine.cs</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">TestCoroutine</span> : <span class="title">MonoBehaviour</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">Start</span> (<span class="params"></span>) </span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        StartCoroutine(Test()); </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> IEnumerator <span class="title">Test</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        Debug.Log(gameObject.name);</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">yield</span> return new <span class="title">WaitForSeconds</span>(<span class="params"><span class="number">5</span></span>)</span>;</span><br><span class="line"></span><br><span class="line">        Debug.Log(transform.localPosition);</span><br><span class="line"></span><br><span class="line">        transform.localScale = Vector3.one;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -231,34 +267,40 @@
 
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2017/05/25/unity_coroutine_note/" data-id="cjbxg1afa000y14jmzyhvvmi7" class="article-share-link">Teilen</a>
       
-        
-        
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/csharp/">csharp</a></li></ul>
+
     </footer>
   </div>
+  
 </article>
 
 
-
-
-  <article class="post">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2017-05-10T14:15:39.000Z"><a href="/2017/05/10/openg_normal_mapping_transform_martix_derivation/">2017-05-10</a></time>
-      
-      
+    <article id="post-openg_normal_mapping_transform_martix_derivation" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/05/10/openg_normal_mapping_transform_martix_derivation/" class="article-date">
+  <time datetime="2017-05-10T14:15:39.000Z" itemprop="datePublished">2017-05-10</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 class="title"><a href="/2017/05/10/openg_normal_mapping_transform_martix_derivation/">OpenGL中Normal的变换矩阵的推导</a></h1>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/05/10/openg_normal_mapping_transform_martix_derivation/">OpenGL中Normal的变换矩阵的推导</a>
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <p>本文的结论通过 <a href="http://www.lighthouse3d.com/tutorials/glsl-12-tutorial/the-normal-matrix/" target="_blank" rel="external">the-normal-matrix</a> 获得的。</p>
 <p>今天在学习OpenGL shader的时候遇到一个困惑的地方,先上代码:</p>
@@ -301,34 +343,40 @@
 
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2017/05/10/openg_normal_mapping_transform_martix_derivation/" data-id="cjbxg1aev000h14jmyttm96q6" class="article-share-link">Teilen</a>
       
-        
-        
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/opengl/">opengl</a></li></ul>
+
     </footer>
   </div>
+  
 </article>
 
 
-
-
-  <article class="post">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2017-05-05T01:50:36.000Z"><a href="/2017/05/05/c_language_variable_init/">2017-05-05</a></time>
-      
-      
+    <article id="post-c_language_variable_init" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/05/05/c_language_variable_init/" class="article-date">
+  <time datetime="2017-05-05T01:50:36.000Z" itemprop="datePublished">2017-05-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 class="title"><a href="/2017/05/05/c_language_variable_init/">C语言的变量初始化问题</a></h1>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/05/05/c_language_variable_init/">C语言的变量初始化问题</a>
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <p><strong>问题</strong></p>
 <p>今天在写opengl shader的时候遇到了一个问题(使用C语言编写的)，出问题的代码如下(这里只列出出问题的部分代码):</p>
@@ -382,34 +430,40 @@
 
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2017/05/05/c_language_variable_init/" data-id="cjbxg1aec000314jm2c6a24hv" class="article-share-link">Teilen</a>
       
-        
-        
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/">c</a></li></ul>
+
     </footer>
   </div>
+  
 </article>
 
 
-
-
-  <article class="post">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2017-04-24T15:40:10.000Z"><a href="/2017/04/24/unity_ar_region_caption_display_black_question/">2017-04-24</a></time>
-      
-      
+    <article id="post-unity_ar_region_caption_display_black_question" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/04/24/unity_ar_region_caption_display_black_question/" class="article-date">
+  <time datetime="2017-04-24T15:40:10.000Z" itemprop="datePublished">2017-04-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 class="title"><a href="/2017/04/24/unity_ar_region_caption_display_black_question/">Region_Capture截取的UV色彩变黑的问题</a></h1>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/04/24/unity_ar_region_caption_display_black_question/">Region_Capture截取的UV色彩变黑的问题</a>
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>使用Vuforia或者EasyAR的AR识别库我们经常用到<em>Region Capture</em>这个插件来得到我们摄像头拍摄的画面中的识别图，得到这张贴图我们就可以把它贴在Target模型上面来达到实时上色的效果。但是在<em>Region Capture</em>获取贴图的过程中(实时的)经常或出现我们移动摄像头偏离识别图的时候那么<em>Region Capture</em>得到贴图有部分是黑色的(这部分黑色的就是识别图没有被摄像头拍摄到的部分)。很显然这样的效果我们是无法接受的。</p>
 <h2 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h2><p>我们读取<em>Region Capture</em>四个边角的pixel来判断是否是黑色。如果是黑色那么我们继续沿用上一次获取的贴图，知道下一次我们得到没有黑色的贴图再更新。下面是我的解决办法:</p>
@@ -417,34 +471,40 @@
 
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2017/04/24/unity_ar_region_caption_display_black_question/" data-id="cjbxg1af4000q14jmtln1c5ph" class="article-share-link">Teilen</a>
       
-        
-        
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/unity/">unity</a></li></ul>
+
     </footer>
   </div>
+  
 </article>
 
 
-
-
-  <article class="post">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2017-03-08T10:12:40.000Z"><a href="/2017/03/08/monobehaviour_awake_start_function_call_detail/">2017-03-08</a></time>
-      
-      
+    <article id="post-monobehaviour_awake_start_function_call_detail" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/03/08/monobehaviour_awake_start_function_call_detail/" class="article-date">
+  <time datetime="2017-03-08T10:12:40.000Z" itemprop="datePublished">2017-03-08</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 class="title"><a href="/2017/03/08/monobehaviour_awake_start_function_call_detail/">MonoBehaviour的Awake,Start等函数的调用原理</a></h1>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/03/08/monobehaviour_awake_start_function_call_detail/">MonoBehaviour的Awake,Start等函数的调用原理</a>
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <p>在用Unity的时候一直有一个比较困惑问题，继承自MonoBehaviour脚本的Awake(),Start(),Update()等这些函数是怎样被调用的。今天阅读了下Unity的代码了解了其中的调用原理,然后自己写了一个sample来模拟Unity中的调用方式。</p>
 <p>Unity的引擎是用C++实现的，自己实现的MonoBehaviour的脚本却是CS脚本。所以这里就涉及到C++调用CS函数的过程。Unity中用的Mono的Framework来实现在C++调用CS脚本，不多说直接上sample就懂了。</p>
@@ -474,34 +534,40 @@
 
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2017/03/08/monobehaviour_awake_start_function_call_detail/" data-id="cjbxg1aez000k14jmd75s8is4" class="article-share-link">Teilen</a>
       
-        
-        
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/unity/">unity</a></li></ul>
+
     </footer>
   </div>
+  
 </article>
 
 
-
-
-  <article class="post">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2017-03-04T06:16:40.000Z"><a href="/2017/03/04/unity_model_position_transform_to_world_position/">2017-03-04</a></time>
-      
-      
+    <article id="post-unity_model_position_transform_to_world_position" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/03/04/unity_model_position_transform_to_world_position/" class="article-date">
+  <time datetime="2017-03-04T06:16:40.000Z" itemprop="datePublished">2017-03-04</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 class="title"><a href="/2017/03/04/unity_model_position_transform_to_world_position/">Unity模型坐标转换到屏幕坐标</a></h1>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/03/04/unity_model_position_transform_to_world_position/">Unity模型坐标转换到屏幕坐标</a>
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <p>项目中遇到一个需求，需要添加一个引导，引导用户从UI层拖拽一个物品到三维的一个模型上面，引导只需在UI层表现即可。这里需要把模型的坐标转换到屏幕的坐标，这里记录一下。</p>
 <p>首先要清楚转换的步骤:</p>
@@ -519,84 +585,126 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Vector3 modelScreenPos = modelCamera.WorldToScreenPoint(model.transform.position);</span><br><span class="line"></span><br><span class="line">Vector2 canvasRect = canvasScaler.GetComponent&lt;RectTransform&gt;().rect;</span><br><span class="line"></span><br><span class="line">float factorX = canvasRect.width / Screen.width;</span><br><span class="line">float factorY = canvasRect.height / Screen.height;</span><br><span class="line"></span><br><span class="line">Vector3 modelCanvasPos = new Vector3(modelScreenPos.x * factorX, modelScreenPos.y * factorY, 0);</span><br></pre></td></tr></table></figure>
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2017/03/04/unity_model_position_transform_to_world_position/" data-id="cjbxg1afg001614jm5v8a7t42" class="article-share-link">Teilen</a>
       
-        
-        
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/unity/">unity</a></li></ul>
+
     </footer>
   </div>
+  
 </article>
 
 
-
-
-
-<nav id="pagination">
-  
-    <a href="/" class="alignleft prev">Vorherige Seite</a>
-  
-  
-    <a href="/page/3/" class="alignright next">Nächste Seite</a>
-  
-  <div class="clearfix"></div>
-</nav></div></div>
-    <aside id="sidebar" class="alignright">
-  <div class="search">
-  <form action="//google.com/search" method="get" accept-charset="utf-8">
-    <input type="search" name="q" results="0" placeholder="Suche">
-    <input type="hidden" name="q" value="site:elangduan.github.com">
-  </form>
-</div>
-
   
 
-  
-<div class="widget tag">
-  <h3 class="title">Tags</h3>
-  <ul class="entry">
-  
-    <li><a href="/tags/Unity-unity/">Unity, unity</a><small>1</small></li>
-  
-    <li><a href="/tags/c/">c</a><small>1</small></li>
-  
-    <li><a href="/tags/cplusplus/">cplusplus</a><small>1</small></li>
-  
-    <li><a href="/tags/csharp/">csharp</a><small>10</small></li>
-  
-    <li><a href="/tags/graphics/">graphics</a><small>1</small></li>
-  
-    <li><a href="/tags/opengl/">opengl</a><small>1</small></li>
-  
-    <li><a href="/tags/unity/">unity</a><small>14</small></li>
-  
-  </ul>
-</div>
 
-</aside>
-    <div class="clearfix"></div>
+  <nav id="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/">&laquo; zurück</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/">weiter &raquo;</a>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Unity-unity/">Unity, unity</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cplusplus/">cplusplus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/csharp/">csharp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/graphics/">graphics</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/opengl/">opengl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unity/">unity</a></li></ul>
+    </div>
   </div>
-  <footer id="footer" class="inner"><div class="alignleft">
+
+
   
-  &copy; 2018 elangduan@126.com
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Unity-unity/" style="font-size: 10px;">Unity, unity</a> <a href="/tags/c/" style="font-size: 10px;">c</a> <a href="/tags/cplusplus/" style="font-size: 10px;">cplusplus</a> <a href="/tags/csharp/" style="font-size: 15px;">csharp</a> <a href="/tags/graphics/" style="font-size: 10px;">graphics</a> <a href="/tags/opengl/" style="font-size: 10px;">opengl</a> <a href="/tags/unity/" style="font-size: 20px;">unity</a>
+    </div>
+  </div>
+
   
-</div>
-<div class="clearfix"></div></footer>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-<script src="/js/jquery.imagesloaded.min.js"></script>
-<script src="/js/gallery.js"></script>
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archiv</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">letzter Beitrag</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/12/09/ugui_graphics_rebuild_about_image_alpha_fade/">UGUI的Graphic Rebuild问题</a>
+          </li>
+        
+          <li>
+            <a href="/2017/12/05/ienumerator_generics_boxing_question/">C# 泛型集合的Boxing问题</a>
+          </li>
+        
+          <li>
+            <a href="/2017/12/03/optimizing_graphics_rendering_in_unity_games/">Unity游戏的图形渲染优化(译)</a>
+          </li>
+        
+          <li>
+            <a href="/2017/11/18/optimizing_garbage_collection_in_unity_games/">Unity游戏内存回收的优化(译)</a>
+          </li>
+        
+          <li>
+            <a href="/2017/08/30/unity_quaternion_interpolation_note/">Quaternion的插值分析及总结</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 elangduan@126.com<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
 
 
 
-
-<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
-<script src="/fancybox/jquery.fancybox.pack.js"></script>
-<script type="text/javascript">
-(function($){
-  $('.fancybox').fancybox();
-})(jQuery);
-</script>
-
+  </div>
 </body>
 </html>

@@ -1,64 +1,88 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   
+
+  
   <title>elang&#39;s notes</title>
-  <meta name="author" content="elangduan@126.com">
-  
-  
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
+  <meta property="og:type" content="website">
+<meta property="og:title" content="elang&#39;s notes">
+<meta property="og:url" content="http://elangduan.github.com/index.html">
+<meta property="og:site_name" content="elang&#39;s notes">
+<meta property="og:locale" content="zh-Hans">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="elang&#39;s notes">
   
-  <meta property="og:site_name" content="elang&#39;s notes"/>
-
+    <link rel="alternate" href="/atom.xml" title="elang&#39;s notes" type="application/atom+xml">
   
-    <meta property="og:image" content=""/>
   
-
-  <link href="/favicon.png" rel="icon">
-  <link rel="alternate" href="/atom.xml" title="elang&#39;s notes" type="application/atom+xml">
-  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
-  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+    <link rel="icon" href="/favicon.png">
   
-
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 
-
 <body>
-  <header id="header" class="inner"><div class="alignleft">
-  <h1><a href="/">elang&#39;s notes</a></h1>
-  <h2><a href="/"></a></h2>
-</div>
-<nav id="main-nav" class="alignright">
-  <ul>
-    
-      <li><a href="/">Home</a></li>
-    
-      <li><a href="/archives">Archives</a></li>
-    
-  </ul>
-  <div class="clearfix"></div>
-</nav>
-<div class="clearfix"></div>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">elang&#39;s notes</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Suche"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://elangduan.github.com"></form>
+      </div>
+    </div>
+  </div>
 </header>
-  <div id="content" class="inner">
-    <div id="main-col" class="alignleft"><div id="wrapper">
-  <article class="post">
+      <div class="outer">
+        <section id="main">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2017-12-09T12:16:35.000Z"><a href="/2017/12/09/ugui_graphics_rebuild_about_image_alpha_fade/">2017-12-09</a></time>
-      
-      
+    <article id="post-ugui_graphics_rebuild_about_image_alpha_fade" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/12/09/ugui_graphics_rebuild_about_image_alpha_fade/" class="article-date">
+  <time datetime="2017-12-09T12:16:35.000Z" itemprop="datePublished">2017-12-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 class="title"><a href="/2017/12/09/ugui_graphics_rebuild_about_image_alpha_fade/">UGUI的Graphic Rebuild问题</a></h1>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/12/09/ugui_graphics_rebuild_about_image_alpha_fade/">UGUI的Graphic Rebuild问题</a>
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <p>今天在项目中发现了一个UI的性能消耗比较异常的问题。在Unity的Profiler里面我看到一项<em>Canvas.SendWillRenderCanvases</em>CPU消耗持续比较高，但是查看游戏的UI界面好像动态变化的UI并没有。在逐个关闭UI才定位到有一张图片一直在做渐变效果，所以才导致UI一直在重建。这里写个简单的例子模拟下，在场景中创建一张Image，然后挂载一个测试脚本，在这个脚本里面一直更新这个Image的alpha通道就可以看到这种现象。</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">TestGraphicRebuild</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> Image FadeImage;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">float</span> _mAlpha = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">Update</span> (<span class="params"></span>)</span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">	    _mAlpha += <span class="number">0.01</span>f;</span><br><span class="line">	    _mAlpha = _mAlpha &gt; <span class="number">1</span> ? <span class="number">0</span> : _mAlpha;</span><br><span class="line">	    </span><br><span class="line">        FadeImage.color = <span class="keyword">new</span> Color(FadeImage.color.r, FadeImage.color.g, FadeImage.color.b, _mAlpha);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -66,40 +90,47 @@
 <p><img src="/images/ugui_graphics_rebuild/ugui_graphic_rebuild_profiler.png" alt=""></p>
 <p>如果能避免UGUI的Graphic Rebuild又能让这张图片有渐变效果，目前想到一个办法是把这个Image使用自定义的material来渲染。这样我可以在shader中来改变这张图片的alpha通道达到渐变的效果。</p>
 <p>我们create一个material，然后实现一个UI 图片渐变效果的shader。把material的shader选择我们自己实现的这个shader。最后把material拖到目标Image的Material属性上就可以了。shader的实现很简单，如下:</p>
+        
+          <p class="article-more-link">
+            <a href="/2017/12/09/ugui_graphics_rebuild_about_image_alpha_fade/#more">Read More</a>
+          </p>
+        
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2017/12/09/ugui_graphics_rebuild_about_image_alpha_fade/" data-id="cjbxg1af3000o14jmw767bgs1" class="article-share-link">Teilen</a>
       
-        
-          <div class="alignleft">
-            <a href="/2017/12/09/ugui_graphics_rebuild_about_image_alpha_fade/#more" class="more-link">Read More</a>
-          </div>
-        
-        
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/unity/">unity</a></li></ul>
+
     </footer>
   </div>
+  
 </article>
 
 
-
-
-  <article class="post">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2017-12-05T12:16:35.000Z"><a href="/2017/12/05/ienumerator_generics_boxing_question/">2017-12-05</a></time>
-      
-      
+    <article id="post-ienumerator_generics_boxing_question" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/12/05/ienumerator_generics_boxing_question/" class="article-date">
+  <time datetime="2017-12-05T12:16:35.000Z" itemprop="datePublished">2017-12-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 class="title"><a href="/2017/12/05/ienumerator_generics_boxing_question/">C# 泛型集合的Boxing问题</a></h1>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/12/05/ienumerator_generics_boxing_question/">C# 泛型集合的Boxing问题</a>
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <p>今天检查项目中代码的Boxing问题的时候。有一个点当时让我困惑了不少时间。如下:</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> IEnumerator&lt;<span class="keyword">float</span>&gt; <span class="title">Func0</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">yield</span> <span class="keyword">return</span> <span class="number">0.1</span>f;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> IEnumerator <span class="title">Func1</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">yield</span> <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -120,34 +151,40 @@
 
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2017/12/05/ienumerator_generics_boxing_question/" data-id="cjbxg1aep000d14jm1s3d0t1g" class="article-share-link">Teilen</a>
       
-        
-        
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/csharp/">csharp</a></li></ul>
+
     </footer>
   </div>
+  
 </article>
 
 
-
-
-  <article class="post">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2017-12-03T08:15:35.000Z"><a href="/2017/12/03/optimizing_graphics_rendering_in_unity_games/">2017-12-03</a></time>
-      
-      
+    <article id="post-optimizing_graphics_rendering_in_unity_games" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/12/03/optimizing_graphics_rendering_in_unity_games/" class="article-date">
+  <time datetime="2017-12-03T08:15:35.000Z" itemprop="datePublished">2017-12-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 class="title"><a href="/2017/12/03/optimizing_graphics_rendering_in_unity_games/">Unity游戏的图形渲染优化(译)</a></h1>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/12/03/optimizing_graphics_rendering_in_unity_games/">Unity游戏的图形渲染优化(译)</a>
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <blockquote>
 <p>原文<a href="https://unity3d.com/cn/learn/tutorials/temas/performance-optimization/optimizing-graphics-rendering-unity-games?playlist=44069" target="_blank" rel="external">Optimizing graphics rendering in Unity games</a>。这里对这篇文章的粗略翻译，当作自己的笔记。</p>
@@ -185,40 +222,47 @@
 <li>GPU重复处理从CPU发送过来的任务，直到所有的任务都处理完成。</li>
 </ul>
 <p>现在我们理解了当Unity渲染一帧时其内部发生了什么，接下来让我们思考下当渲染发生的时候会随之发生什么问题。</p>
+        
+          <p class="article-more-link">
+            <a href="/2017/12/03/optimizing_graphics_rendering_in_unity_games/#more">Read More</a>
+          </p>
+        
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2017/12/03/optimizing_graphics_rendering_in_unity_games/" data-id="cjbxg1af1000m14jml7za7i1s" class="article-share-link">Teilen</a>
       
-        
-          <div class="alignleft">
-            <a href="/2017/12/03/optimizing_graphics_rendering_in_unity_games/#more" class="more-link">Read More</a>
-          </div>
-        
-        
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/graphics/">graphics</a></li></ul>
+
     </footer>
   </div>
+  
 </article>
 
 
-
-
-  <article class="post">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2017-11-18T12:58:35.000Z"><a href="/2017/11/18/optimizing_garbage_collection_in_unity_games/">2017-11-18</a></time>
-      
-      
+    <article id="post-optimizing_garbage_collection_in_unity_games" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/11/18/optimizing_garbage_collection_in_unity_games/" class="article-date">
+  <time datetime="2017-11-18T12:58:35.000Z" itemprop="datePublished">2017-11-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 class="title"><a href="/2017/11/18/optimizing_garbage_collection_in_unity_games/">Unity游戏内存回收的优化(译)</a></h1>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/11/18/optimizing_garbage_collection_in_unity_games/">Unity游戏内存回收的优化(译)</a>
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <blockquote>
 <p>原文<a href="https://unity3d.com/cn/learn/tutorials/topics/performance-optimization/optimizing-garbage-collection-unity-games" target="_blank" rel="external">Optimizing garbage collection in Unity games</a>。这里对这篇文章的粗略翻译，当作自己的笔记。</p>
@@ -237,40 +281,47 @@
 <li>GC会标记并且回收堆上没有被使用的内存。它会周期性的对堆上的内存进行清理。</li>
 </ul>
 <p>现在我们了解了内存使用的流程，让我们来更深入的来了解栈和堆上的内存的分配和释放。</p>
+        
+          <p class="article-more-link">
+            <a href="/2017/11/18/optimizing_garbage_collection_in_unity_games/#more">Read More</a>
+          </p>
+        
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2017/11/18/optimizing_garbage_collection_in_unity_games/" data-id="cjbxg1af9000w14jmnol8qhvl" class="article-share-link">Teilen</a>
       
-        
-          <div class="alignleft">
-            <a href="/2017/11/18/optimizing_garbage_collection_in_unity_games/#more" class="more-link">Read More</a>
-          </div>
-        
-        
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/csharp/">csharp</a></li></ul>
+
     </footer>
   </div>
+  
 </article>
 
 
-
-
-  <article class="post">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2017-08-30T15:40:10.000Z"><a href="/2017/08/30/unity_quaternion_interpolation_note/">2017-08-30</a></time>
-      
-      
+    <article id="post-unity_quaternion_interpolation_note" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/08/30/unity_quaternion_interpolation_note/" class="article-date">
+  <time datetime="2017-08-30T15:40:10.000Z" itemprop="datePublished">2017-08-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 class="title"><a href="/2017/08/30/unity_quaternion_interpolation_note/">Quaternion的插值分析及总结</a></h1>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/08/30/unity_quaternion_interpolation_note/">Quaternion的插值分析及总结</a>
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <blockquote>
 <p>下面的内容是阅读<a href="https://book.douban.com/subject/1400419/" target="_blank" rel="external">3D数学基础</a>后结合自己的理解的总结</p>
@@ -304,34 +355,40 @@
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> Quaternion _sphereOriginRotation;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">readonly</span> <span class="keyword">float</span> _rotationFactor = <span class="number">0.2</span>f;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Start</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    _sphereOriginRotation = Sphere.rotation;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//这样用其实没有用上Slerp的球面线性差值的特性</span></span><br><span class="line">    Sphere.rotation = Quaternion.Slerp(Sphere.rotation, Target.rotation, _rotationFactor);</span><br><span class="line"> </span><br><span class="line">    <span class="comment">//上面这么写的话，其实和用Lerp得到的效果基本一样。但是Lerp的计算效率会高很多</span></span><br><span class="line">    Sphere.rotation = Quaternion.Lerp(Sphere.rotation, Target.rotation, _rotationFactor);</span><br><span class="line">         </span><br><span class="line">    <span class="comment">//要用到Slerp的球面差值的特性可以这样写,改变目标旋转的物体之前，先保存这个物体的Rotation</span></span><br><span class="line">    Sphere.rotation = Quaternion.Slerp(_sphereOriginRotation, Target.rotation, _rotationFactor);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2017/08/30/unity_quaternion_interpolation_note/" data-id="cjbxg1afq001h14jm1mp6kcti" class="article-share-link">Teilen</a>
       
-        
-        
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/unity/">unity</a></li></ul>
+
     </footer>
   </div>
+  
 </article>
 
 
-
-
-  <article class="post">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2017-08-20T09:03:34.000Z"><a href="/2017/08/20/unity_shader_if_state_performance/">2017-08-20</a></time>
-      
-      
+    <article id="post-unity_shader_if_state_performance" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/08/20/unity_shader_if_state_performance/" class="article-date">
+  <time datetime="2017-08-20T09:03:34.000Z" itemprop="datePublished">2017-08-20</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 class="title"><a href="/2017/08/20/unity_shader_if_state_performance/">Unity中shader代码的条件分支的性能问题</a></h1>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/08/20/unity_shader_if_state_performance/">Unity中shader代码的条件分支的性能问题</a>
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <h3 id="优化方案"><a href="#优化方案" class="headerlink" title="优化方案"></a>优化方案</h3><p>GPU对条件分支语句的执行性能比较敏感似乎是一个比较普遍的认知了，那么到底影响有多大呢？这里做了一次测试，测试针对Shader中的条件分支语句的性能情况。在有if语句和没有if语句时候的程序不同写法的:</p>
 <blockquote>
@@ -401,34 +458,40 @@
 
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2017/08/20/unity_shader_if_state_performance/" data-id="cjbxg1aft001m14jmhf182vq7" class="article-share-link">Teilen</a>
       
-        
-        
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/unity/">unity</a></li></ul>
+
     </footer>
   </div>
+  
 </article>
 
 
-
-
-  <article class="post">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2017-07-14T10:08:34.000Z"><a href="/2017/07/14/unity_sprite_format_summary/">2017-07-14</a></time>
-      
-      
+    <article id="post-unity_sprite_format_summary" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/07/14/unity_sprite_format_summary/" class="article-date">
+  <time datetime="2017-07-14T10:08:34.000Z" itemprop="datePublished">2017-07-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 class="title"><a href="/2017/07/14/unity_sprite_format_summary/">Unity3D Sprite常用存储格式性能对比</a></h1>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/14/unity_sprite_format_summary/">Unity3D Sprite常用存储格式性能对比</a>
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <p>UI图片资源对于项目里面内存的占用还是包大小的比例都是很大一部分，这里对带Alpha的图片的几种常用格式做了下对比，便于找出最好的解决方案应用到项目中去</p>
 <blockquote>
@@ -466,34 +529,40 @@
 
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2017/07/14/unity_sprite_format_summary/" data-id="cjbxg1afv001o14jmkrv6jvwo" class="article-share-link">Teilen</a>
       
-        
-        
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/csharp/">csharp</a></li></ul>
+
     </footer>
   </div>
+  
 </article>
 
 
-
-
-  <article class="post">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2017-07-13T15:40:10.000Z"><a href="/2017/07/13/unity_ugui_panel_visible_manage/">2017-07-13</a></time>
-      
-      
+    <article id="post-unity_ugui_panel_visible_manage" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/07/13/unity_ugui_panel_visible_manage/" class="article-date">
+  <time datetime="2017-07-13T15:40:10.000Z" itemprop="datePublished">2017-07-13</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 class="title"><a href="/2017/07/13/unity_ugui_panel_visible_manage/">Unity3D的UIPanel隐藏的处理方式</a></h1>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/13/unity_ugui_panel_visible_manage/">Unity3D的UIPanel隐藏的处理方式</a>
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <h3 id="隐藏的方式"><a href="#隐藏的方式" class="headerlink" title="隐藏的方式"></a>隐藏的方式</h3><ol>
 <li><p>设置Active为false方式。这种方式UIPanel的所有脚本逻辑、Rendering、Canvas.BuildBatch都会停止。构建的渲染的Mesh也会被清理。</p>
@@ -510,82 +579,126 @@
 
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2017/07/13/unity_ugui_panel_visible_manage/" data-id="cjbxg1afz001r14jm1drpgi5u" class="article-share-link">Teilen</a>
       
-        
-        
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/unity/">unity</a></li></ul>
+
     </footer>
   </div>
+  
 </article>
 
 
-
-
-
-<nav id="pagination">
-  
-  
-    <a href="/page/2/" class="alignright next">Nächste Seite</a>
-  
-  <div class="clearfix"></div>
-</nav></div></div>
-    <aside id="sidebar" class="alignright">
-  <div class="search">
-  <form action="//google.com/search" method="get" accept-charset="utf-8">
-    <input type="search" name="q" results="0" placeholder="Suche">
-    <input type="hidden" name="q" value="site:elangduan.github.com">
-  </form>
-</div>
-
   
 
-  
-<div class="widget tag">
-  <h3 class="title">Tags</h3>
-  <ul class="entry">
-  
-    <li><a href="/tags/Unity-unity/">Unity, unity</a><small>1</small></li>
-  
-    <li><a href="/tags/c/">c</a><small>1</small></li>
-  
-    <li><a href="/tags/cplusplus/">cplusplus</a><small>1</small></li>
-  
-    <li><a href="/tags/csharp/">csharp</a><small>10</small></li>
-  
-    <li><a href="/tags/graphics/">graphics</a><small>1</small></li>
-  
-    <li><a href="/tags/opengl/">opengl</a><small>1</small></li>
-  
-    <li><a href="/tags/unity/">unity</a><small>14</small></li>
-  
-  </ul>
-</div>
 
-</aside>
-    <div class="clearfix"></div>
+  <nav id="page-nav">
+    
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">weiter &raquo;</a>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Unity-unity/">Unity, unity</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cplusplus/">cplusplus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/csharp/">csharp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/graphics/">graphics</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/opengl/">opengl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unity/">unity</a></li></ul>
+    </div>
   </div>
-  <footer id="footer" class="inner"><div class="alignleft">
+
+
   
-  &copy; 2018 elangduan@126.com
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Unity-unity/" style="font-size: 10px;">Unity, unity</a> <a href="/tags/c/" style="font-size: 10px;">c</a> <a href="/tags/cplusplus/" style="font-size: 10px;">cplusplus</a> <a href="/tags/csharp/" style="font-size: 15px;">csharp</a> <a href="/tags/graphics/" style="font-size: 10px;">graphics</a> <a href="/tags/opengl/" style="font-size: 10px;">opengl</a> <a href="/tags/unity/" style="font-size: 20px;">unity</a>
+    </div>
+  </div>
+
   
-</div>
-<div class="clearfix"></div></footer>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-<script src="/js/jquery.imagesloaded.min.js"></script>
-<script src="/js/gallery.js"></script>
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archiv</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">letzter Beitrag</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/12/09/ugui_graphics_rebuild_about_image_alpha_fade/">UGUI的Graphic Rebuild问题</a>
+          </li>
+        
+          <li>
+            <a href="/2017/12/05/ienumerator_generics_boxing_question/">C# 泛型集合的Boxing问题</a>
+          </li>
+        
+          <li>
+            <a href="/2017/12/03/optimizing_graphics_rendering_in_unity_games/">Unity游戏的图形渲染优化(译)</a>
+          </li>
+        
+          <li>
+            <a href="/2017/11/18/optimizing_garbage_collection_in_unity_games/">Unity游戏内存回收的优化(译)</a>
+          </li>
+        
+          <li>
+            <a href="/2017/08/30/unity_quaternion_interpolation_note/">Quaternion的插值分析及总结</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 elangduan@126.com<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
 
 
 
-
-<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
-<script src="/fancybox/jquery.fancybox.pack.js"></script>
-<script type="text/javascript">
-(function($){
-  $('.fancybox').fancybox();
-})(jQuery);
-</script>
-
+  </div>
 </body>
 </html>

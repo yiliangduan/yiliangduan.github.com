@@ -1,99 +1,91 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   
+
+  
   <title>Unity游戏的图形渲染优化(译) | elang&#39;s notes</title>
-  <meta name="author" content="elangduan@126.com">
-  
-  <meta name="description" content="原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。
-
-介绍在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。
-在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非常依赖游戏运行的硬件和操作系统。通过调查，实验和细心的分析实验结果来解决性能问题是我们最重要的方式。
-这篇文章包含的信息主要是大部分常见的性能问题的修改建议和一些更深层次的阅读链接。我们的游戏中可能也存在这其中的一个问题或者一些问题或者都没有包含。但是这篇文章仍然将帮助我们理解我们自己的问题同时给予我们去搜索我们问题的知识和线索。
-渲染的简介在我们开始介绍之前，让我们快速简单看下Unity渲染一帧时其内部发生了什么。理解事件流和正确的术语将会帮助我们 理解，调查和解决我们的性能问题。
-注:在这篇文章中，我们将会使用”对象(object)”术语来表示一个我们游戏的渲染的对象。任何渲染组件的GameObject将会被统称为对象。
-在最基本的层面上，渲染可以描述为一下几步：
-
-CPU计算出必须渲染的对象和决定怎么去绘制。
-CPU发送指令到GPU。
-GPU根据CPU的指令来确定绘制的内容。
-
-现在让我们来更近一步看看究竟发生了什么。这篇文章后面将会详细的介绍上面的每一个步骤。但是现在让我们先来熟悉下文中使用的词语和理解CPU和GPU在渲染中扮演的不同角色。
-描述渲染的词语通常用渲染管线(rendering pipeline)，记住这是一个非常有用的情景。高效的渲染都是关于保持更高信息的传送能力。
-对于每一个渲染的帧，CPU会做如下的工作:
-
-CPU会检查场景中的每一个对象来决定这个对象是否需要被渲染。只有当这个对象满足特定的条件的时候才会被渲染；例如，它的包围盒的一些部分在相机视锥体内。一个对象如果将不会被渲染我们称之为这个对象被裁剪了(culled)。关于相机的视锥体和视锥体裁剪的更多信息可以看着这篇文章。
-CPU搜集每一个将会被渲染的对象的信息然后将这些数据分类放入叫做draw calls命令中。一个draw call包含了一个mesh和这个mesh怎样被渲染的数据；例如，这个mesh用哪一张贴图。基于这些情况，共享设置的图像会合并到一些相同的draw call中。合并不同对象的数据到同一个draw call中我们称之为batching。
-CPU为每次draw call创建一个叫batch的数据包。batchs有可能包含了draw calls之外的数据，但是这种情况不像常见的一个性能问题，因此我们不会在这篇文章里面来讨论。
-
-对于每个draw call包含的batchs，CPU现在必须要入如下的工作:
-
-CPU可以向GPU发送一个命令来改变一些被统称为渲染状态的变量。这个命令叫做SetPass call。SetPass call告诉GPU哪个设置被用来渲染下一个mesh。只有当上一个mesh渲染完成下一个mesh准备渲染的时候需要改变渲染状态的时候才需要发送SetPass call命令。
-CPU发送draw call命令到GPU。draw call会指示GPU使用上一次设置好的SetPass call去渲染制定的mesh。
-基于这些情况，batchs的数据被渲染可能需要不止一个pass。一个pass是一段着色器的代码，使用一个新的pass需要改变渲染状态。对于一个batchs中的每个pass，CPU必须发送一个新的SetPass call命令同时必须再次发送draw call命令。这个pass才会生效。
-
-同时，GPU会做如下的工作:
-
-GPU按照CPU发送的顺序来处理CPU发送的任务。
-如果当前的任务是SetPass call，GPU就更新渲染状态。
-如果当前的任务是draw call, GPU就渲染这个draw call的mesh。这个是分阶段进行的，每个阶段单独定义在着色器代码中。这部分渲染比较复杂我们不会详细的讨论，但是这部分对于我们去理解顶点着色器(vertex shader)这部分代码和片段着色器(fragment shader)这部分代码非常有用。顶点着色器是用来告诉GPU怎么去处理mesh的顶点数据的代码，片段着色器使用来怎样去处理每个单独像素代码。
-GPU重复处理从CPU发送过来的任务，直到所有的任务都处理完成。
-
-现在我们理解了当Unity渲染一帧时其内部发生了什么，接下来让我们思考下当渲染发生的时候会随之发生什么问题。">
-  
-  
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
-  <meta property="og:title" content="Unity游戏的图形渲染优化(译)"/>
-  <meta property="og:site_name" content="elang&#39;s notes"/>
-
+  <meta name="description" content="原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。  介绍在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。 在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非常依">
+<meta name="keywords" content="graphics">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Unity游戏的图形渲染优化(译)">
+<meta property="og:url" content="http://elangduan.github.com/2017/12/03/optimizing_graphics_rendering_in_unity_games/index.html">
+<meta property="og:site_name" content="elang&#39;s notes">
+<meta property="og:description" content="原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。  介绍在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。 在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非常依">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-12-17T13:05:04.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Unity游戏的图形渲染优化(译)">
+<meta name="twitter:description" content="原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。  介绍在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。 在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非常依">
   
-    <meta property="og:image" content=""/>
+    <link rel="alternate" href="/atom.xml" title="elang&#39;s notes" type="application/atom+xml">
   
-
-  <link href="/favicon.png" rel="icon">
-  <link rel="alternate" href="/atom.xml" title="elang&#39;s notes" type="application/atom+xml">
-  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
-  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
   
-
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 
-
 <body>
-  <header id="header" class="inner"><div class="alignleft">
-  <h1><a href="/">elang&#39;s notes</a></h1>
-  <h2><a href="/"></a></h2>
-</div>
-<nav id="main-nav" class="alignright">
-  <ul>
-    
-      <li><a href="/">Home</a></li>
-    
-      <li><a href="/archives">Archives</a></li>
-    
-  </ul>
-  <div class="clearfix"></div>
-</nav>
-<div class="clearfix"></div>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">elang&#39;s notes</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Suche"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://elangduan.github.com"></form>
+      </div>
+    </div>
+  </div>
 </header>
-  <div id="content" class="inner">
-    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+      <div class="outer">
+        <section id="main"><article id="post-optimizing_graphics_rendering_in_unity_games" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/12/03/optimizing_graphics_rendering_in_unity_games/" class="article-date">
+  <time datetime="2017-12-03T08:15:35.000Z" itemprop="datePublished">2017-12-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2017-12-03T08:15:35.000Z"><a href="/2017/12/03/optimizing_graphics_rendering_in_unity_games/">2017-12-03</a></time>
-      
-      
-  
-    <h1 class="title">Unity游戏的图形渲染优化(译)</h1>
+    <h1 class="article-title" itemprop="name">
+      Unity游戏的图形渲染优化(译)
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <blockquote>
 <p>原文<a href="https://unity3d.com/cn/learn/tutorials/temas/performance-optimization/optimizing-graphics-rendering-unity-games?playlist=44069" target="_blank" rel="external">Optimizing graphics rendering in Unity games</a>。这里对这篇文章的粗略翻译，当作自己的笔记。</p>
@@ -268,96 +260,138 @@ GPU重复处理从CPU发送过来的任务，直到所有的任务都处理完�
 
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2017/12/03/optimizing_graphics_rendering_in_unity_games/" data-id="cjbxg1af1000m14jml7za7i1s" class="article-share-link">Teilen</a>
       
-        
-        
-  
-  <div class="tags">
-    <a href="/tags/graphics/">graphics</a>
-  </div>
-
-        
-  <div class="addthis addthis_toolbox addthis_default_style">
-    
-      <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
-    
-    
-      <a class="addthis_button_tweet"></a>
-    
-    
-      <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
-    
-    
-      <a class="addthis_button_pinterest_pinit" pi:pinit:layout="horizontal"></a>
-    
-    <a class="addthis_counter addthis_pill_style"></a>
-  </div>
-  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
-
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/graphics/">graphics</a></li></ul>
+
     </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/12/05/ienumerator_generics_boxing_question/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Neuer</strong>
+      <div class="article-nav-title">
+        
+          C# 泛型集合的Boxing问题
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/11/18/optimizing_garbage_collection_in_unity_games/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Älter</strong>
+      <div class="article-nav-title">Unity游戏内存回收的优化(译)</div>
+    </a>
+  
+</nav>
+
+  
 </article>
 
-
-</div></div>
-    <aside id="sidebar" class="alignright">
-  <div class="search">
-  <form action="//google.com/search" method="get" accept-charset="utf-8">
-    <input type="search" name="q" results="0" placeholder="Suche">
-    <input type="hidden" name="q" value="site:elangduan.github.com">
-  </form>
-</div>
+</section>
+        
+          <aside id="sidebar">
+  
+    
 
   
-
-  
-<div class="widget tag">
-  <h3 class="title">Tags</h3>
-  <ul class="entry">
-  
-    <li><a href="/tags/Unity-unity/">Unity, unity</a><small>1</small></li>
-  
-    <li><a href="/tags/c/">c</a><small>1</small></li>
-  
-    <li><a href="/tags/cplusplus/">cplusplus</a><small>1</small></li>
-  
-    <li><a href="/tags/csharp/">csharp</a><small>10</small></li>
-  
-    <li><a href="/tags/graphics/">graphics</a><small>1</small></li>
-  
-    <li><a href="/tags/opengl/">opengl</a><small>1</small></li>
-  
-    <li><a href="/tags/unity/">unity</a><small>14</small></li>
-  
-  </ul>
-</div>
-
-</aside>
-    <div class="clearfix"></div>
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Unity-unity/">Unity, unity</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cplusplus/">cplusplus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/csharp/">csharp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/graphics/">graphics</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/opengl/">opengl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unity/">unity</a></li></ul>
+    </div>
   </div>
-  <footer id="footer" class="inner"><div class="alignleft">
+
+
   
-  &copy; 2018 elangduan@126.com
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Unity-unity/" style="font-size: 10px;">Unity, unity</a> <a href="/tags/c/" style="font-size: 10px;">c</a> <a href="/tags/cplusplus/" style="font-size: 10px;">cplusplus</a> <a href="/tags/csharp/" style="font-size: 15px;">csharp</a> <a href="/tags/graphics/" style="font-size: 10px;">graphics</a> <a href="/tags/opengl/" style="font-size: 10px;">opengl</a> <a href="/tags/unity/" style="font-size: 20px;">unity</a>
+    </div>
+  </div>
+
   
-</div>
-<div class="clearfix"></div></footer>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-<script src="/js/jquery.imagesloaded.min.js"></script>
-<script src="/js/gallery.js"></script>
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archiv</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">letzter Beitrag</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/12/09/ugui_graphics_rebuild_about_image_alpha_fade/">UGUI的Graphic Rebuild问题</a>
+          </li>
+        
+          <li>
+            <a href="/2017/12/05/ienumerator_generics_boxing_question/">C# 泛型集合的Boxing问题</a>
+          </li>
+        
+          <li>
+            <a href="/2017/12/03/optimizing_graphics_rendering_in_unity_games/">Unity游戏的图形渲染优化(译)</a>
+          </li>
+        
+          <li>
+            <a href="/2017/11/18/optimizing_garbage_collection_in_unity_games/">Unity游戏内存回收的优化(译)</a>
+          </li>
+        
+          <li>
+            <a href="/2017/08/30/unity_quaternion_interpolation_note/">Quaternion的插值分析及总结</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 elangduan@126.com<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
 
 
 
-
-<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
-<script src="/fancybox/jquery.fancybox.pack.js"></script>
-<script type="text/javascript">
-(function($){
-  $('.fancybox').fancybox();
-})(jQuery);
-</script>
-
+  </div>
 </body>
 </html>

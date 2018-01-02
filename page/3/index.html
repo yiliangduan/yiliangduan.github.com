@@ -1,64 +1,88 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   
-  <title>Seite 3 | elang&#39;s notes</title>
-  <meta name="author" content="elangduan@126.com">
+
   
-  
+  <title>elang&#39;s notes</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
+  <meta property="og:type" content="website">
+<meta property="og:title" content="elang&#39;s notes">
+<meta property="og:url" content="http://elangduan.github.com/page/3/index.html">
+<meta property="og:site_name" content="elang&#39;s notes">
+<meta property="og:locale" content="zh-Hans">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="elang&#39;s notes">
   
-  <meta property="og:site_name" content="elang&#39;s notes"/>
-
+    <link rel="alternate" href="/atom.xml" title="elang&#39;s notes" type="application/atom+xml">
   
-    <meta property="og:image" content=""/>
   
-
-  <link href="/favicon.png" rel="icon">
-  <link rel="alternate" href="/atom.xml" title="elang&#39;s notes" type="application/atom+xml">
-  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
-  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+    <link rel="icon" href="/favicon.png">
   
-
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 
-
 <body>
-  <header id="header" class="inner"><div class="alignleft">
-  <h1><a href="/">elang&#39;s notes</a></h1>
-  <h2><a href="/"></a></h2>
-</div>
-<nav id="main-nav" class="alignright">
-  <ul>
-    
-      <li><a href="/">Home</a></li>
-    
-      <li><a href="/archives">Archives</a></li>
-    
-  </ul>
-  <div class="clearfix"></div>
-</nav>
-<div class="clearfix"></div>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">elang&#39;s notes</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Suche"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://elangduan.github.com"></form>
+      </div>
+    </div>
+  </div>
 </header>
-  <div id="content" class="inner">
-    <div id="main-col" class="alignleft"><div id="wrapper">
-  <article class="post">
+      <div class="outer">
+        <section id="main">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2017-02-25T05:56:36.000Z"><a href="/2017/02/25/unity_monobehavior_awake_function_call_time/">2017-02-25</a></time>
-      
-      
+    <article id="post-unity_monobehavior_awake_function_call_time" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/02/25/unity_monobehavior_awake_function_call_time/" class="article-date">
+  <time datetime="2017-02-25T05:56:36.000Z" itemprop="datePublished">2017-02-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 class="title"><a href="/2017/02/25/unity_monobehavior_awake_function_call_time/">MonoBehaviour的Awake的调用时机</a></h1>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/02/25/unity_monobehavior_awake_function_call_time/">MonoBehaviour的Awake的调用时机</a>
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <p>对MonoBehaviour的Awake之前有一个一直错误的理解:如果一个GameObject被添加到scene中，就算Active为false只要场景运行，此GameObejct的Awake函数就会调用。此理解是看了<a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Awake.html" target="_blank" rel="external">官方文档</a>自己得出的结论:</p>
 <blockquote>
@@ -69,152 +93,180 @@
 <blockquote>
 <p>Note: The checkbox for disabling a MonoBehavior (on the editor) will only prevent Start(), Awake(), Update(), FixedUpdate(), and OnGUI() from executing. If none of these functions are present, the checkbox is not displayed.</p>
 </blockquote>
+        
+          <p class="article-more-link">
+            <a href="/2017/02/25/unity_monobehavior_awake_function_call_time/#more">Read More</a>
+          </p>
+        
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2017/02/25/unity_monobehavior_awake_function_call_time/" data-id="cjbxg1afh001814jm6z680ith" class="article-share-link">Teilen</a>
       
-        
-          <div class="alignleft">
-            <a href="/2017/02/25/unity_monobehavior_awake_function_call_time/#more" class="more-link">Read More</a>
-          </div>
-        
-        
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/unity/">unity</a></li></ul>
+
     </footer>
   </div>
+  
 </article>
 
 
-
-
-  <article class="post">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2017-02-11T09:03:34.000Z"><a href="/2017/02/11/json_auto_generate_cs_code/">2017-02-11</a></time>
-      
-      
+    <article id="post-json_auto_generate_cs_code" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/02/11/json_auto_generate_cs_code/" class="article-date">
+  <time datetime="2017-02-11T09:03:34.000Z" itemprop="datePublished">2017-02-11</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 class="title"><a href="/2017/02/11/json_auto_generate_cs_code/">Json自动生成C#代码的工具</a></h1>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/02/11/json_auto_generate_cs_code/">Json自动生成C#代码的工具</a>
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <h3 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h3><p>由于现在项目里面与服务器通信的数据使用的Json格式，在每次服务器添加协议的时候客户端都要根据服务器返回的数据对照写一遍解析的数据类和解析类，这样重复性的工作比较浪费时间，所以写了一个Json自动生成C#代码的工具，只要把服务器返回的Json数据用这个工具转换一下就可以自动生成对应的C#解析的代码。</p>
+        
+          <p class="article-more-link">
+            <a href="/2017/02/11/json_auto_generate_cs_code/#more">Read More</a>
+          </p>
+        
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2017/02/11/json_auto_generate_cs_code/" data-id="cjbxg1aes000f14jmu43muvbo" class="article-share-link">Teilen</a>
       
-        
-          <div class="alignleft">
-            <a href="/2017/02/11/json_auto_generate_cs_code/#more" class="more-link">Read More</a>
-          </div>
-        
-        
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/csharp/">csharp</a></li></ul>
+
     </footer>
   </div>
+  
 </article>
 
 
-
-
-  <article class="post">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2016-12-28T15:39:00.000Z"><a href="/2016/12/28/unity_download_api_experient/">2016-12-28</a></time>
-      
-      
+    <article id="post-unity_download_api_experient" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/12/28/unity_download_api_experient/" class="article-date">
+  <time datetime="2016-12-28T15:39:00.000Z" itemprop="datePublished">2016-12-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 class="title"><a href="/2016/12/28/unity_download_api_experient/">Unity 文件下载分析</a></h1>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/12/28/unity_download_api_experient/">Unity 文件下载分析</a>
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <p>在项目里面有时需要从服务器上下载比较大的文件，比如我们在做更新的时候需要下载AssetBundle文件。Unity3D中提供了WWW接口可以用来下载文件，但是使用之后发现这个接口在下载比较大的文件的时候非常占用内存资源。然后我用C#的Webclient接口来下载同样的文件，发现内存占用情况存在和WWW的完全不一样。本文来就来探讨一下使用WWW和Webclient两个接口下载文件造成内存占用的原因。</p>
+        
+          <p class="article-more-link">
+            <a href="/2016/12/28/unity_download_api_experient/#more">Read More</a>
+          </p>
+        
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2016/12/28/unity_download_api_experient/" data-id="cjbxg1afc001114jm6z1kq3r5" class="article-share-link">Teilen</a>
       
-        
-          <div class="alignleft">
-            <a href="/2016/12/28/unity_download_api_experient/#more" class="more-link">Read More</a>
-          </div>
-        
-        
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/unity/">unity</a></li></ul>
+
     </footer>
   </div>
+  
 </article>
 
 
-
-
-  <article class="post">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2016-10-29T13:16:35.000Z"><a href="/2016/10/29/unity_mono_foreach_memory_bug/">2016-10-29</a></time>
-      
-      
+    <article id="post-unity_mono_foreach_memory_bug" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/10/29/unity_mono_foreach_memory_bug/" class="article-date">
+  <time datetime="2016-10-29T13:16:35.000Z" itemprop="datePublished">2016-10-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 class="title"><a href="/2016/10/29/unity_mono_foreach_memory_bug/">C# foreach带来的内存问题</a></h1>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/10/29/unity_mono_foreach_memory_bug/">C# foreach带来的内存问题</a>
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h4><p>在使用Unity工具开发游戏的时候经常会被建议不要使用foreach,究其原因说是会产生额外的heap内存,既然存在这种问题, 那我必须得自己搞清楚下。本文是自己查阅资料和试验的结果总结。</p>
 <p>本文参考了<a href="https://stackoverflow.com/a/26110503" target="_blank" rel="external">Memory allocation when using foreach loops in C#</a></p>
 <p><em>测试环境: Unity5.4.1f1, MonoV2.0.5</em></p>
 <h4 id="剖析"><a href="#剖析" class="headerlink" title="剖析"></a>剖析</h4><p>首先来搞明白使用foreach和for的区别,下面是一个简单的例子:</p>
 <figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Sample1.0</span></span><br><span class="line">&#123;</span><br><span class="line">    List&lt;<span class="keyword">string</span>&gt; list = <span class="keyword">new</span> List&lt;<span class="keyword">string</span>&gt;()&#123;<span class="string">"hello"</span>, <span class="string">"world"</span>&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">foreach</span>(<span class="keyword">string</span> item <span class="keyword">in</span> list)</span><br><span class="line">    &#123;</span><br><span class="line">        UnityEngine.Debug.Log(item);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        
+          <p class="article-more-link">
+            <a href="/2016/10/29/unity_mono_foreach_memory_bug/#more">Read More</a>
+          </p>
+        
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2016/10/29/unity_mono_foreach_memory_bug/" data-id="cjbxg1afm001c14jmfrwh6qdn" class="article-share-link">Teilen</a>
       
-        
-          <div class="alignleft">
-            <a href="/2016/10/29/unity_mono_foreach_memory_bug/#more" class="more-link">Read More</a>
-          </div>
-        
-        
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/csharp/">csharp</a></li></ul>
+
     </footer>
   </div>
+  
 </article>
 
 
-
-
-  <article class="post">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2016-09-05T12:49:40.000Z"><a href="/2016/09/05/unity_in_app_purchase_note/">2016-09-05</a></time>
-      
-      
+    <article id="post-unity_in_app_purchase_note" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/09/05/unity_in_app_purchase_note/" class="article-date">
+  <time datetime="2016-09-05T12:49:40.000Z" itemprop="datePublished">2016-09-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 class="title"><a href="/2016/09/05/unity_in_app_purchase_note/">Unity 苹果IAP和微信支付接入</a></h1>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/09/05/unity_in_app_purchase_note/">Unity 苹果IAP和微信支付接入</a>
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <h3 id="苹果IAP接入"><a href="#苹果IAP接入" class="headerlink" title="苹果IAP接入"></a>苹果IAP接入</h3><p>相比微信支付和支付宝支付要麻烦一些,麻烦的地方主要体现在对测试支付环境的要求以及苹果审核方面的要求上面。本文是自己在接入iOS的IAP模块的经验及总结，发出来分享下。建议需要接入的话还是浏览一遍<a href="https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/StoreKitGuide/Introduction.html" target="_blank" rel="external">苹果官方文档</a></p>
 <h4 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h4><ul>
@@ -227,40 +279,47 @@
 <li>非消耗型商品必须的有恢复商品功能</li>
 <li>非消耗类型的商品不要和商户自己的服务器关联</li>
 </ul>
+        
+          <p class="article-more-link">
+            <a href="/2016/09/05/unity_in_app_purchase_note/#more">Read More</a>
+          </p>
+        
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2016/09/05/unity_in_app_purchase_note/" data-id="cjbxg1afk001914jm02jgn2qy" class="article-share-link">Teilen</a>
       
-        
-          <div class="alignleft">
-            <a href="/2016/09/05/unity_in_app_purchase_note/#more" class="more-link">Read More</a>
-          </div>
-        
-        
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/unity/">unity</a></li></ul>
+
     </footer>
   </div>
+  
 </article>
 
 
-
-
-  <article class="post">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2016-07-16T08:44:10.000Z"><a href="/2016/07/16/unity_assetbundle_learning_and_summary/">2016-07-16</a></time>
-      
-      
+    <article id="post-unity_assetbundle_learning_and_summary" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/07/16/unity_assetbundle_learning_and_summary/" class="article-date">
+  <time datetime="2016-07-16T08:44:10.000Z" itemprop="datePublished">2016-07-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 class="title"><a href="/2016/07/16/unity_assetbundle_learning_and_summary/">Unity AssetBundle学习、分析及总结</a></h1>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/07/16/unity_assetbundle_learning_and_summary/">Unity AssetBundle学习、分析及总结</a>
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <p>本文是学习<a href="https://unity3d.com/learn/tutorials/topics/best-practices" target="_blank" rel="external">Unity官方教程</a>、<a href="https://docs.unity3d.com/ScriptReference/" target="_blank" rel="external">Unity官方的API</a>和阅读Unity代码的总结</p>
 <h4 id="AssetBundle基本知识"><a href="#AssetBundle基本知识" class="headerlink" title="AssetBundle基本知识"></a>AssetBundle基本知识</h4><p><strong>1.</strong> AssetBundle由两部分组成:头部(header)数据部分(data segment)</p>
@@ -271,40 +330,47 @@
 </li>
 <li><strong>数据块</strong>保存了在build AssetBundle时候标记的textures、prefabs、materials等这些资源文件</li>
 </ul>
+        
+          <p class="article-more-link">
+            <a href="/2016/07/16/unity_assetbundle_learning_and_summary/#more">Read More</a>
+          </p>
+        
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2016/07/16/unity_assetbundle_learning_and_summary/" data-id="cjbxg1af5000s14jm4f1zkn73" class="article-share-link">Teilen</a>
       
-        
-          <div class="alignleft">
-            <a href="/2016/07/16/unity_assetbundle_learning_and_summary/#more" class="more-link">Read More</a>
-          </div>
-        
-        
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/unity/">unity</a></li></ul>
+
     </footer>
   </div>
+  
 </article>
 
 
-
-
-  <article class="post">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2016-06-29T13:06:34.000Z"><a href="/2016/06/29/cs_object_refer_each_other/">2016-06-29</a></time>
-      
-      
+    <article id="post-cs_object_refer_each_other" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/06/29/cs_object_refer_each_other/" class="article-date">
+  <time datetime="2016-06-29T13:06:34.000Z" itemprop="datePublished">2016-06-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 class="title"><a href="/2016/06/29/cs_object_refer_each_other/">C# 内存管理之对象循环引用问题</a></h1>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/06/29/cs_object_refer_each_other/">C# 内存管理之对象循环引用问题</a>
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <p><strong>C#的内存管理</strong>用到了引用计数， 但是和以往我们认识的Java、Objective-c的内存管理有非常大的不同之处。不同之处在于C#的引用计数只有在GC Root对象引用的对象身上才生效，也就是说如果一个对象被GC Root对象引用了，那么在这个GC Root对象没有销毁之前这个对象是不会被销毁的。反之，如果一个对象没有被GC Root对象引用，即便这个对象被再多非GC Root对象引用，也会再下一次内存回收的时候被销毁。</p>
 <p>GC Roots:</p>
@@ -320,34 +386,40 @@
 
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2016/06/29/cs_object_refer_each_other/" data-id="cjbxg1aem000914jmx2ubrlye" class="article-share-link">Teilen</a>
       
-        
-        
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/csharp/">csharp</a></li></ul>
+
     </footer>
   </div>
+  
 </article>
 
 
-
-
-  <article class="post">
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2016-06-18T04:03:10.000Z"><a href="/2016/06/18/unity_resource_memory_summary/">2016-06-18</a></time>
-      
-      
+    <article id="post-unity_resource_memory_summary" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/06/18/unity_resource_memory_summary/" class="article-date">
+  <time datetime="2016-06-18T04:03:10.000Z" itemprop="datePublished">2016-06-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 class="title"><a href="/2016/06/18/unity_resource_memory_summary/">Unity中内存资源释放总结</a></h1>
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/06/18/unity_resource_memory_summary/">Unity中内存资源释放总结</a>
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <p><strong>Unity内存释放</strong> 问题主要考虑一下几个方面:<br>  (1)  Resources 加载的资源需要释放的时候调用 Resources.UnloadUnusedAssets();</p>
 <p>  (2) WWW 加载的任何资源<font color="#FF0000">必须</font>调用WWW的Dispose接口</p>
@@ -363,84 +435,126 @@
 
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2016/06/18/unity_resource_memory_summary/" data-id="cjbxg1afr001j14jmbiaiaz5h" class="article-share-link">Teilen</a>
       
-        
-        
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/unity/">unity</a></li></ul>
+
     </footer>
   </div>
+  
 </article>
 
 
-
-
-
-<nav id="pagination">
-  
-    <a href="/page/2/" class="alignleft prev">Vorherige Seite</a>
-  
-  
-    <a href="/page/4/" class="alignright next">Nächste Seite</a>
-  
-  <div class="clearfix"></div>
-</nav></div></div>
-    <aside id="sidebar" class="alignright">
-  <div class="search">
-  <form action="//google.com/search" method="get" accept-charset="utf-8">
-    <input type="search" name="q" results="0" placeholder="Suche">
-    <input type="hidden" name="q" value="site:elangduan.github.com">
-  </form>
-</div>
-
   
 
-  
-<div class="widget tag">
-  <h3 class="title">Tags</h3>
-  <ul class="entry">
-  
-    <li><a href="/tags/Unity-unity/">Unity, unity</a><small>1</small></li>
-  
-    <li><a href="/tags/c/">c</a><small>1</small></li>
-  
-    <li><a href="/tags/cplusplus/">cplusplus</a><small>1</small></li>
-  
-    <li><a href="/tags/csharp/">csharp</a><small>10</small></li>
-  
-    <li><a href="/tags/graphics/">graphics</a><small>1</small></li>
-  
-    <li><a href="/tags/opengl/">opengl</a><small>1</small></li>
-  
-    <li><a href="/tags/unity/">unity</a><small>14</small></li>
-  
-  </ul>
-</div>
 
-</aside>
-    <div class="clearfix"></div>
+  <nav id="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/page/2/">&laquo; zurück</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/">weiter &raquo;</a>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Unity-unity/">Unity, unity</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cplusplus/">cplusplus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/csharp/">csharp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/graphics/">graphics</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/opengl/">opengl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unity/">unity</a></li></ul>
+    </div>
   </div>
-  <footer id="footer" class="inner"><div class="alignleft">
+
+
   
-  &copy; 2018 elangduan@126.com
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Unity-unity/" style="font-size: 10px;">Unity, unity</a> <a href="/tags/c/" style="font-size: 10px;">c</a> <a href="/tags/cplusplus/" style="font-size: 10px;">cplusplus</a> <a href="/tags/csharp/" style="font-size: 15px;">csharp</a> <a href="/tags/graphics/" style="font-size: 10px;">graphics</a> <a href="/tags/opengl/" style="font-size: 10px;">opengl</a> <a href="/tags/unity/" style="font-size: 20px;">unity</a>
+    </div>
+  </div>
+
   
-</div>
-<div class="clearfix"></div></footer>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-<script src="/js/jquery.imagesloaded.min.js"></script>
-<script src="/js/gallery.js"></script>
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archiv</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">letzter Beitrag</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/12/09/ugui_graphics_rebuild_about_image_alpha_fade/">UGUI的Graphic Rebuild问题</a>
+          </li>
+        
+          <li>
+            <a href="/2017/12/05/ienumerator_generics_boxing_question/">C# 泛型集合的Boxing问题</a>
+          </li>
+        
+          <li>
+            <a href="/2017/12/03/optimizing_graphics_rendering_in_unity_games/">Unity游戏的图形渲染优化(译)</a>
+          </li>
+        
+          <li>
+            <a href="/2017/11/18/optimizing_garbage_collection_in_unity_games/">Unity游戏内存回收的优化(译)</a>
+          </li>
+        
+          <li>
+            <a href="/2017/08/30/unity_quaternion_interpolation_note/">Quaternion的插值分析及总结</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 elangduan@126.com<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
 
 
 
-
-<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
-<script src="/fancybox/jquery.fancybox.pack.js"></script>
-<script type="text/javascript">
-(function($){
-  $('.fancybox').fancybox();
-})(jQuery);
-</script>
-
+  </div>
 </body>
 </html>

@@ -1,80 +1,93 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   
+
+  
   <title>Unity游戏内存回收的优化(译) | elang&#39;s notes</title>
-  <meta name="author" content="elangduan@126.com">
-  
-  <meta name="description" content="原文Optimizing garbage collection in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。
-Garbage Collector在这里被翻译成名词GC。对于Garbage Collection这里翻译成GC内存回收。
-内存垃圾: 代码中销毁了(disposed)但是GC还没有清理的内存。
-
-Unity的托管内存的简单介绍为了理解GC（本文GC指代Garbage Collector）在内存分配和回收时是怎样工作的，我们必须首先了解Unity的引擎代码和我们自己编写的脚本是怎么利用内存来工作的。
-Unity引擎代码运行时管理内存的方式叫做手动管理内存(manual memory management)。也就是说引擎代码必须显示的声明内存是怎么使用的。手动管理内存没有用到GC，这部分内容本文不做介绍。
-当运行我们自己编写的脚本时Unity管理这部分内存的方式叫做自动内存管理(automatic memory management).这意味这我们自己编写的代码不需要很详细的去告诉Unity怎样去管理这部分内存。Unity都帮我们做好了。
-简而言之，Unity的自动管理内存工作方式如下：
-
-Unity有两个可以访问的内存池：栈(stack)和堆 (heap)(也被叫做托管堆。栈内存被用在短期存储一些小片段的数据，堆则用来存储一些长期并且比较大的片段数据)。
-当一个变量创建好了，Unity会在栈或者堆中申请一个内存块。
-只要这个创建的变量在作用范围之内(我们的代码一直可以访问到它)，为它分配的相应的那块内存就一直是保持可用状态。我们把这块内存成为已经被分配的(allocated)。我们把在栈中分配内存的变量叫做栈上的对象，把内存分配在堆上的变量成为堆上的对象。
-当这个变量已经脱离了它的作用区域，相应的这个变量所分配的内存也就不再需要了，这块内存随之就会把返回给分配时的那个内存池。我们称这块内存叫做已回收(deallocated)。栈上的内存一旦离开了作用区域就会立即被回收。如果是堆上的内存即便是它的引用已经超出了作用区域也不会被立即回收，它还会保持它的分配状态。
-GC会标记并且回收堆上没有被使用的内存。它会周期性的对堆上的内存进行清理。
-
-现在我们了解了内存使用的流程，让我们来更深入的来了解栈和堆上的内存的分配和释放。">
-  
-  
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
-  <meta property="og:title" content="Unity游戏内存回收的优化(译)"/>
-  <meta property="og:site_name" content="elang&#39;s notes"/>
-
+  <meta name="description" content="原文Optimizing garbage collection in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。 Garbage Collector在这里被翻译成名词GC。对于Garbage Collection这里翻译成GC内存回收。 内存垃圾: 代码中销毁了(disposed)但是GC还没有清理的内存。  Unity的托管内存的简单介绍为了理解GC（本文GC指代Gar">
+<meta name="keywords" content="csharp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Unity游戏内存回收的优化(译)">
+<meta property="og:url" content="http://elangduan.github.com/2017/11/18/optimizing_garbage_collection_in_unity_games/index.html">
+<meta property="og:site_name" content="elang&#39;s notes">
+<meta property="og:description" content="原文Optimizing garbage collection in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。 Garbage Collector在这里被翻译成名词GC。对于Garbage Collection这里翻译成GC内存回收。 内存垃圾: 代码中销毁了(disposed)但是GC还没有清理的内存。  Unity的托管内存的简单介绍为了理解GC（本文GC指代Gar">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://elangduan.github.com/images/unity_performance_ways/window_with_data.png">
+<meta property="og:updated_time" content="2017-12-03T08:19:16.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Unity游戏内存回收的优化(译)">
+<meta name="twitter:description" content="原文Optimizing garbage collection in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。 Garbage Collector在这里被翻译成名词GC。对于Garbage Collection这里翻译成GC内存回收。 内存垃圾: 代码中销毁了(disposed)但是GC还没有清理的内存。  Unity的托管内存的简单介绍为了理解GC（本文GC指代Gar">
+<meta name="twitter:image" content="http://elangduan.github.com/images/unity_performance_ways/window_with_data.png">
   
-    <meta property="og:image" content=""/>
+    <link rel="alternate" href="/atom.xml" title="elang&#39;s notes" type="application/atom+xml">
   
-
-  <link href="/favicon.png" rel="icon">
-  <link rel="alternate" href="/atom.xml" title="elang&#39;s notes" type="application/atom+xml">
-  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
-  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
   
-
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 
-
 <body>
-  <header id="header" class="inner"><div class="alignleft">
-  <h1><a href="/">elang&#39;s notes</a></h1>
-  <h2><a href="/"></a></h2>
-</div>
-<nav id="main-nav" class="alignright">
-  <ul>
-    
-      <li><a href="/">Home</a></li>
-    
-      <li><a href="/archives">Archives</a></li>
-    
-  </ul>
-  <div class="clearfix"></div>
-</nav>
-<div class="clearfix"></div>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">elang&#39;s notes</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Suche"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://elangduan.github.com"></form>
+      </div>
+    </div>
+  </div>
 </header>
-  <div id="content" class="inner">
-    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+      <div class="outer">
+        <section id="main"><article id="post-optimizing_garbage_collection_in_unity_games" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/11/18/optimizing_garbage_collection_in_unity_games/" class="article-date">
+  <time datetime="2017-11-18T12:58:35.000Z" itemprop="datePublished">2017-11-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2017-11-18T12:58:35.000Z"><a href="/2017/11/18/optimizing_garbage_collection_in_unity_games/">2017-11-18</a></time>
-      
-      
-  
-    <h1 class="title">Unity游戏内存回收的优化(译)</h1>
+    <h1 class="article-title" itemprop="name">
+      Unity游戏内存回收的优化(译)
+    </h1>
   
 
-    </header>
-    <div class="entry">
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
       
         <blockquote>
 <p>原文<a href="https://unity3d.com/cn/learn/tutorials/topics/performance-optimization/optimizing-garbage-collection-unity-games" target="_blank" rel="external">Optimizing garbage collection in Unity games</a>。这里对这篇文章的粗略翻译，当作自己的笔记。</p>
@@ -245,116 +258,138 @@ GC会标记并且回收堆上没有被使用的内存。它会周期性的对堆
 
       
     </div>
-    <footer>
+    <footer class="article-footer">
+      <a data-url="http://elangduan.github.com/2017/11/18/optimizing_garbage_collection_in_unity_games/" data-id="cjbxg1af9000w14jmnol8qhvl" class="article-share-link">Teilen</a>
       
-        
-        
-  
-  <div class="tags">
-    <a href="/tags/csharp/">csharp</a>
-  </div>
-
-        
-  <div class="addthis addthis_toolbox addthis_default_style">
-    
-      <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
-    
-    
-      <a class="addthis_button_tweet"></a>
-    
-    
-      <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
-    
-    
-      <a class="addthis_button_pinterest_pinit" pi:pinit:layout="horizontal"></a>
-    
-    <a class="addthis_counter addthis_pill_style"></a>
-  </div>
-  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
-
       
-      <div class="clearfix"></div>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/csharp/">csharp</a></li></ul>
+
     </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/12/03/optimizing_graphics_rendering_in_unity_games/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Neuer</strong>
+      <div class="article-nav-title">
+        
+          Unity游戏的图形渲染优化(译)
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/08/30/unity_quaternion_interpolation_note/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Älter</strong>
+      <div class="article-nav-title">Quaternion的插值分析及总结</div>
+    </a>
+  
+</nav>
+
+  
 </article>
 
-
-<section id="comment">
-  <h1 class="title">Kommentare</h1>
-
-  
-      <div id="fb-root"></div>
-<script>
-  (function(d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s); js.id = id;
-    js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=123456789012345";
-    fjs.parentNode.insertBefore(js, fjs);
-  }(document, 'script', 'facebook-jssdk'));
-</script>
-
-<div class="fb-comments" data-href="http://elangduan.github.com/2017/11/18/optimizing_garbage_collection_in_unity_games/index.html" data-num-posts="5" data-width="840" data-colorscheme="light"></div>
-      
-  
 </section>
-
-</div></div>
-    <aside id="sidebar" class="alignright">
-  <div class="search">
-  <form action="//google.com/search" method="get" accept-charset="utf-8">
-    <input type="search" name="q" results="0" placeholder="Suche">
-    <input type="hidden" name="q" value="site:elangduan.github.com">
-  </form>
-</div>
+        
+          <aside id="sidebar">
+  
+    
 
   
-
-  
-<div class="widget tag">
-  <h3 class="title">Tags</h3>
-  <ul class="entry">
-  
-    <li><a href="/tags/Unity-unity/">Unity, unity</a><small>1</small></li>
-  
-    <li><a href="/tags/c/">c</a><small>1</small></li>
-  
-    <li><a href="/tags/cplusplus/">cplusplus</a><small>1</small></li>
-  
-    <li><a href="/tags/csharp/">csharp</a><small>10</small></li>
-  
-    <li><a href="/tags/graphics/">graphics</a><small>1</small></li>
-  
-    <li><a href="/tags/opengl/">opengl</a><small>1</small></li>
-  
-    <li><a href="/tags/unity/">unity</a><small>14</small></li>
-  
-  </ul>
-</div>
-
-</aside>
-    <div class="clearfix"></div>
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Unity-unity/">Unity, unity</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cplusplus/">cplusplus</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/csharp/">csharp</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/graphics/">graphics</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/opengl/">opengl</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unity/">unity</a></li></ul>
+    </div>
   </div>
-  <footer id="footer" class="inner"><div class="alignleft">
+
+
   
-  &copy; 2018 elangduan@126.com
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Unity-unity/" style="font-size: 10px;">Unity, unity</a> <a href="/tags/c/" style="font-size: 10px;">c</a> <a href="/tags/cplusplus/" style="font-size: 10px;">cplusplus</a> <a href="/tags/csharp/" style="font-size: 15px;">csharp</a> <a href="/tags/graphics/" style="font-size: 10px;">graphics</a> <a href="/tags/opengl/" style="font-size: 10px;">opengl</a> <a href="/tags/unity/" style="font-size: 20px;">unity</a>
+    </div>
+  </div>
+
   
-</div>
-<div class="clearfix"></div></footer>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-<script src="/js/jquery.imagesloaded.min.js"></script>
-<script src="/js/gallery.js"></script>
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archiv</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/02/">February 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/12/">December 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/10/">October 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/09/">September 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/07/">July 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">June 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">letzter Beitrag</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/12/09/ugui_graphics_rebuild_about_image_alpha_fade/">UGUI的Graphic Rebuild问题</a>
+          </li>
+        
+          <li>
+            <a href="/2017/12/05/ienumerator_generics_boxing_question/">C# 泛型集合的Boxing问题</a>
+          </li>
+        
+          <li>
+            <a href="/2017/12/03/optimizing_graphics_rendering_in_unity_games/">Unity游戏的图形渲染优化(译)</a>
+          </li>
+        
+          <li>
+            <a href="/2017/11/18/optimizing_garbage_collection_in_unity_games/">Unity游戏内存回收的优化(译)</a>
+          </li>
+        
+          <li>
+            <a href="/2017/08/30/unity_quaternion_interpolation_note/">Quaternion的插值分析及总结</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 elangduan@126.com<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
 
 
 
-
-<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
-<script src="/fancybox/jquery.fancybox.pack.js"></script>
-<script type="text/javascript">
-(function($){
-  $('.fancybox').fancybox();
-})(jQuery);
-</script>
-
+  </div>
 </body>
 </html>
