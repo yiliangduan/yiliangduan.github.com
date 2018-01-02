@@ -84,18 +84,18 @@
 
 
 
-<meta name="description" content="隐藏的方式 设置Active为false方式。这种方式UIPanel的所有脚本逻辑、Rendering、Canvas.BuildBatch都会停止。构建的渲染的Mesh也会被清理。  设置不被渲染的Camera的Layer层上。这种方式相当于只是停掉了Rendering，其他的逻辑照常执行。   优缺点比较 方式1隐藏Panel的时候构建的Mesh会被清理掉，会节省这部分内存。而且在动态Panel">
+<meta name="description" content="隐藏的方式  1.1 设置Active为false方式。这种方式UIPanel的所有脚本逻辑、Rendering、Canvas.BuildBatch都会停止。构建的渲染的Mesh也会被清理。 1.2 设置不被渲染的Camera的Layer层上。这种方式相当于只是停掉了Rendering，其他的逻辑照常执行。  优缺点比较  1.1 方式1隐藏Panel的时候构建的Mesh会被清理掉，会节省这部分">
 <meta name="keywords" content="unity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity3D的UIPanel隐藏的处理方式">
 <meta property="og:url" content="http://elangduan.github.com/2017/07/13/unity_ugui_panel_visible_manage/index.html">
 <meta property="og:site_name" content="elangduan">
-<meta property="og:description" content="隐藏的方式 设置Active为false方式。这种方式UIPanel的所有脚本逻辑、Rendering、Canvas.BuildBatch都会停止。构建的渲染的Mesh也会被清理。  设置不被渲染的Camera的Layer层上。这种方式相当于只是停掉了Rendering，其他的逻辑照常执行。   优缺点比较 方式1隐藏Panel的时候构建的Mesh会被清理掉，会节省这部分内存。而且在动态Panel">
+<meta property="og:description" content="隐藏的方式  1.1 设置Active为false方式。这种方式UIPanel的所有脚本逻辑、Rendering、Canvas.BuildBatch都会停止。构建的渲染的Mesh也会被清理。 1.2 设置不被渲染的Camera的Layer层上。这种方式相当于只是停掉了Rendering，其他的逻辑照常执行。  优缺点比较  1.1 方式1隐藏Panel的时候构建的Mesh会被清理掉，会节省这部分">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-01-02T05:49:37.958Z">
+<meta property="og:updated_time" content="2018-01-02T11:02:43.963Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity3D的UIPanel隐藏的处理方式">
-<meta name="twitter:description" content="隐藏的方式 设置Active为false方式。这种方式UIPanel的所有脚本逻辑、Rendering、Canvas.BuildBatch都会停止。构建的渲染的Mesh也会被清理。  设置不被渲染的Camera的Layer层上。这种方式相当于只是停掉了Rendering，其他的逻辑照常执行。   优缺点比较 方式1隐藏Panel的时候构建的Mesh会被清理掉，会节省这部分内存。而且在动态Panel">
+<meta name="twitter:description" content="隐藏的方式  1.1 设置Active为false方式。这种方式UIPanel的所有脚本逻辑、Rendering、Canvas.BuildBatch都会停止。构建的渲染的Mesh也会被清理。 1.2 设置不被渲染的Camera的Layer层上。这种方式相当于只是停掉了Rendering，其他的逻辑照常执行。  优缺点比较  1.1 方式1隐藏Panel的时候构建的Mesh会被清理掉，会节省这部分">
 
 
 
@@ -316,18 +316,16 @@
       
 
       
-        <h3 id="隐藏的方式"><a href="#隐藏的方式" class="headerlink" title="隐藏的方式"></a>隐藏的方式</h3><ol>
-<li><p>设置Active为false方式。这种方式UIPanel的所有脚本逻辑、Rendering、Canvas.BuildBatch都会停止。构建的渲染的Mesh也会被清理。</p>
-</li>
-<li><p>设置不被渲染的Camera的Layer层上。这种方式相当于只是停掉了Rendering，其他的逻辑照常执行。</p>
-</li>
+        <ol>
+<li>隐藏的方式</li>
 </ol>
-<h3 id="优缺点比较"><a href="#优缺点比较" class="headerlink" title="优缺点比较"></a>优缺点比较</h3><ol>
-<li><p>方式1隐藏Panel的时候构建的Mesh会被清理掉，会节省这部分内存。而且在动态Panel的时候(Panel上包含移动变化的GameObject)，Canvas的BuildBatch不会再调用，这会节省CPU(节省的程度根据Panel的复杂度决定的)。但是这种方式在隐藏和重新显示的时候由于需要重新构建渲染的Mesh，会消耗一定的CPU和产生GC.Allocate。</p>
-</li>
-<li><p>方式2的好处在于Panel隐藏和重新显示的时候不需要重新构建渲染的Mesh，不会产生额外的CPU消耗和GC.Allocate。但是这种方式在隐藏的时候Panel的所有逻辑任然在执行(Update等)，在动态Panel的话Canvas的BuildBatch也会照常执行，这会一直消耗CPU资源。</p>
-</li>
+<p>1.1 设置Active为false方式。这种方式UIPanel的所有脚本逻辑、Rendering、Canvas.BuildBatch都会停止。构建的渲染的Mesh也会被清理。</p>
+<p>1.2 设置不被渲染的Camera的Layer层上。这种方式相当于只是停掉了Rendering，其他的逻辑照常执行。</p>
+<ol>
+<li>优缺点比较</li>
 </ol>
+<p>1.1 方式1隐藏Panel的时候构建的Mesh会被清理掉，会节省这部分内存。而且在动态Panel的时候(Panel上包含移动变化的GameObject)，Canvas的BuildBatch不会再调用，这会节省CPU(节省的程度根据Panel的复杂度决定的)。但是这种方式在隐藏和重新显示的时候由于需要重新构建渲染的Mesh，会消耗一定的CPU和产生GC.Allocate。</p>
+<p>1.2 方式2的好处在于Panel隐藏和重新显示的时候不需要重新构建渲染的Mesh，不会产生额外的CPU消耗和GC.Allocate。但是这种方式在隐藏的时候Panel的所有逻辑任然在执行(Update等)，在动态Panel的话Canvas的BuildBatch也会照常执行，这会一直消耗CPU资源。</p>
 
       
     </div>
@@ -415,17 +413,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview sidebar-panel">
+      <section class="site-overview sidebar-panel sidebar-panel-active">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/uploads/avatar.png"
@@ -471,22 +460,6 @@
 
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#隐藏的方式"><span class="nav-number">1.</span> <span class="nav-text">隐藏的方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#优缺点比较"><span class="nav-number">2.</span> <span class="nav-text">优缺点比较</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
     </div>
