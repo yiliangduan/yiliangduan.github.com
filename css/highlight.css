@@ -22,9 +22,10 @@
   font-family: Consolas, Monaco, Menlo, Consolas, monospace;
 }
 .post code {
-  background: #eee;
+  background: #f7f7f7;
   text-shadow: 0 1px #fff;
   padding: 0 0.3em;
+  overflow: auto;
 }
 .post pre code {
   background: none;
