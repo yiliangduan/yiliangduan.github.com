@@ -1,96 +1,21 @@
-<!doctype html>
 
 
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head prefix="og: http://ogp.me/ns#">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <meta name="description" content="">
+    <title>Quaternion的插值分析及总结 | elangduan</title>
 
-  
-
-
-<html class="theme-next mist use-motion" lang="zh-Hans">
-<head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-
-
-
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
-
-
-
-
-  
-  
-  
-  
-
-  
-    
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    
-    
-    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
-  
-
-
-
-
-
-
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
-
-<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
-
-
-  <meta name="keywords" content="unity," />
-
-
-
-
-
-
-
-
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
-
-
-
-
-
-
-<meta name="description" content="下面的内容是阅读3D数学基础后结合自己的理解的总结  Unity中应用我们接触到的地方就是Unity的Transform组件。Transform组件维护了四元数实现方位角位的变换。但是我们也看到Transform组件提供了eulerAgnles属性，按理说里面也实现了欧拉角的，但事实并不是这样。接下来详细分析下 首先看看类似与这种操作，我们对一个GameObject实现旋转的时候，可以直接对其t">
+    <!-- Open Graph -->
+    <meta name="description" content="&amp;#x4E0B;&amp;#x9762;&amp;#x7684;&amp;#x5185;&amp;#x5BB9;&amp;#x662F;&amp;#x9605;&amp;#x8BFB;3D&amp;#x6570;&amp;#x5B66;&amp;#x57FA;&amp;#x7840;&amp;#x540E;&amp;#x7ED3;&amp;#x5408;&amp;#x81EA;&amp;#x5DF1;&amp;#x7684;&amp;#x7406;&amp;#x89E3;&amp;#x7684;&amp;#x603B;&amp;#x7ED3;  Unity&amp;#x4E2">
 <meta name="keywords" content="unity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Quaternion的插值分析及总结">
 <meta property="og:url" content="http://elangduan.github.com/2017/08/30/unity_quaternion_interpolation_note/index.html">
 <meta property="og:site_name" content="elangduan">
-<meta property="og:description" content="下面的内容是阅读3D数学基础后结合自己的理解的总结  Unity中应用我们接触到的地方就是Unity的Transform组件。Transform组件维护了四元数实现方位角位的变换。但是我们也看到Transform组件提供了eulerAgnles属性，按理说里面也实现了欧拉角的，但事实并不是这样。接下来详细分析下 首先看看类似与这种操作，我们对一个GameObject实现旋转的时候，可以直接对其t">
+<meta property="og:description" content="&amp;#x4E0B;&amp;#x9762;&amp;#x7684;&amp;#x5185;&amp;#x5BB9;&amp;#x662F;&amp;#x9605;&amp;#x8BFB;3D&amp;#x6570;&amp;#x5B66;&amp;#x57FA;&amp;#x7840;&amp;#x540E;&amp;#x7ED3;&amp;#x5408;&amp;#x81EA;&amp;#x5DF1;&amp;#x7684;&amp;#x7406;&amp;#x89E3;&amp;#x7684;&amp;#x603B;&amp;#x7ED3;  Unity&amp;#x4E2">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://elangduan.github.com/images/quaternion/derivation.jpg">
 <meta property="og:image" content="http://elangduan.github.com/images/quaternion/effect_drawing.png">
@@ -98,562 +23,289 @@
 <meta property="og:updated_time" content="2018-01-02T06:12:42.108Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Quaternion的插值分析及总结">
-<meta name="twitter:description" content="下面的内容是阅读3D数学基础后结合自己的理解的总结  Unity中应用我们接触到的地方就是Unity的Transform组件。Transform组件维护了四元数实现方位角位的变换。但是我们也看到Transform组件提供了eulerAgnles属性，按理说里面也实现了欧拉角的，但事实并不是这样。接下来详细分析下 首先看看类似与这种操作，我们对一个GameObject实现旋转的时候，可以直接对其t">
+<meta name="twitter:description" content="&amp;#x4E0B;&amp;#x9762;&amp;#x7684;&amp;#x5185;&amp;#x5BB9;&amp;#x662F;&amp;#x9605;&amp;#x8BFB;3D&amp;#x6570;&amp;#x5B66;&amp;#x57FA;&amp;#x7840;&amp;#x540E;&amp;#x7ED3;&amp;#x5408;&amp;#x81EA;&amp;#x5DF1;&amp;#x7684;&amp;#x7406;&amp;#x89E3;&amp;#x7684;&amp;#x603B;&amp;#x7ED3;  Unity&amp;#x4E2">
 <meta name="twitter:image" content="http://elangduan.github.com/images/quaternion/derivation.jpg">
 
-
-
-<script type="text/javascript" id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Mist',
-    sidebar: {"position":"left","display":"hide"},
-    fancybox: true,
-    motion: true,
-    duoshuo: {
-      userId: '0',
-      author: 'elangduan'
-    },
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
+    <script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Person",
+  "email": "mailto:elangduan@126.com",
+  "image": "/uploads/avatar.png",
+  "name": "elangduan@126.com",
+  "url": "http://elangduan.github.com"
+}
+</script>
+    <script>
+    var algoliaEnabled = false;
+    
 </script>
 
+    
 
+    
+    
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+    
+    
+    
+        <!-- stylesheets list from config.yml -->
+        
+        <link rel="stylesheet" href="/css/aloha.css">
+        
+        <link rel="stylesheet" href="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.css">
+        
+        <link rel="stylesheet" href="//cdn.bootcss.com/magnific-popup.js/1.1.0/magnific-popup.min.css">
+        
+    
 
-  <link rel="canonical" href="http://elangduan.github.com/2017/08/30/unity_quaternion_interpolation_note/"/>
-
-
-
-
-
-  <title> Quaternion的插值分析及总结 | elangduan </title>
 </head>
+<body id="body" style="margin-bottom: 0;" class="pushable">
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
-
-  
-
-
-
-
-
-
-
-
-
-
-  
-  
-    
-  
-
-  <div class="container one-collumn sidebar-position-left page-post-detail ">
-    <div class="headband"></div>
-
-    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-meta ">
-  
-
-  <div class="custom-logo-site-title">
-    <a href="/"  class="brand" rel="start">
-      <span class="logo-line-before"><i></i></span>
-      <span class="site-title">elangduan</span>
-      <span class="logo-line-after"><i></i></span>
-    </a>
-  </div>
-  <p class="site-subtitle"></p>
-</div>
-
-<div class="site-nav-toggle">
-  <button>
-    <span class="btn-bar"></span>
-    <span class="btn-bar"></span>
-    <span class="btn-bar"></span>
-  </button>
-</div>
-
-<nav class="site-nav">
-  
-
-  
-    <ul id="menu" class="menu">
-      
-        
-        <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
-            
-            首页
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-archives">
-          <a href="/archives" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
-            
-            归档
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-reading">
-          <a href="/reading" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
-            
-            阅读
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-movie">
-          <a href="/movie" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-camera"></i> <br />
-            
-            电影
-          </a>
-        </li>
-      
-
-      
-    </ul>
-  
-
-  
-</nav>
-
-
-
- </div>
-    </header>
-
-    <main id="main" class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
-    
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2017/08/30/unity_quaternion_interpolation_note/">
-
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="elangduan@126.com">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/uploads/avatar.png">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="elangduan">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="elangduan" src="">
-    </span>
-  </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                Quaternion的插值分析及总结
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-30T23:40:10+08:00">
-              2017-08-30
-            </time>
-            
-          </span>
-
-          
-
-          
-
-          
-
-          
-          
-
-          
-          
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        <blockquote>
-<p>下面的内容是阅读<a href="https://book.douban.com/subject/1400419/" target="_blank" rel="external">3D数学基础</a>后结合自己的理解的总结</p>
-</blockquote>
-<h4 id="Unity中应用"><a href="#Unity中应用" class="headerlink" title="Unity中应用"></a>Unity中应用</h4><p>我们接触到的地方就是Unity的Transform组件。Transform组件维护了四元数实现方位角位的变换。但是我们也看到Transform组件提供了eulerAgnles属性，按理说里面也实现了欧拉角的，但事实并不是这样。接下来详细分析下</p>
-<p>首先看看类似与这种操作，我们对一个GameObject实现旋转的时候，可以直接对其transform组件的eulerAngles属性赋值需要旋转的角度即可。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">transform.eulerAngles = Vector3.zero;</span><br></pre></td></tr></table></figure>
-<p>这个是transform的eulerAngles的实现，可以看到其实里面直接把欧拉角转换成了四元数来处理，所以欧拉角其实只是作为一个方法的表达形式，并没有作为Transform的成员变量之类的属性来维护 (实际上也不需要，因为有了四元数之后，欧拉角和四元数就可以实现相互的转换)</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">void Transform::SetLocalEulerAngles (const Vector3f&amp; eulerAngles)</span><br><span class="line">&#123;</span><br><span class="line">    ABORT_INVALID_VECTOR3 (eulerAngles, localEulerAngles, transform)</span><br><span class="line">     </span><br><span class="line">    SetLocalRotationSafe (EulerToQuaternion (eulerAngles * Deg2Rad (<span class="number">1</span>)));</span><br><span class="line">  </span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们想对一个GameObject实现旋转还可以对其的transform组件的rotation属性以四元素的方式赋值，来实现旋转。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">transform.rotation = Quaternion.identity;</span><br></pre></td></tr></table></figure>
-<p>对于rotation属性，其具体实现是这样的</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">void Transform::SetRotation (const Quaternionf&amp; q)</span><br><span class="line">&#123;</span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (father != NULL)</span><br><span class="line">        SetLocalRotation (Inverse (father-&gt;GetRotation ()) * q);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        SetLocalRotation (q);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">void Transform::SetLocalRotation (const Quaternionf&amp; q)</span><br><span class="line">&#123;</span><br><span class="line">    ABORT_INVALID_QUATERNION (q, localRotation, transform);</span><br><span class="line">    m_LocalRotation = q;</span><br><span class="line">    </span><br><span class="line">   ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>可以看到标红色的那行，传入的四元数被赋值参数被赋值给了m_LocalRotation成员变量。</p>
-<p>上面介绍了在Unity里面封装的Quaternion的方位与角位的情况。那么下面Quaternion里面常用到的一个叫做Lerp的方法。相应的这个方法有一个   对应的Slerp方法。那么这两个方法到底有什么区别呢？下面来看看。</p>
-<h4 id="线性插值和球面线性插值的原理"><a href="#线性插值和球面线性插值的原理" class="headerlink" title="线性插值和球面线性插值的原理"></a><a href="https://www.youtube.com/watch?v=uNHIPVOnt-Y" target="_blank" rel="external">线性插值和球面线性插值</a>的原理</h4><p>Lerp是用来求两个目标之前的差值，其表达式为Lerp(a, b, t)。a和b分别为起始和终点两个点，t为差值参数变量，范围在0到1之间。Lerp表示为标准的线性差值公式的话，其公式为:</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Lerp(a, b, t) = a + (b - a) * t</span><br></pre></td></tr></table></figure>
-<p>代码实现着这样的:</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Quaternion <span class="title">LerpX</span> (<span class="params">Quaternion a, Quaternion b, <span class="keyword">float</span> t</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Quaternion result;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">//线性的</span></span><br><span class="line">    <span class="keyword">float</span> k0 = <span class="number">1.0</span>f - t;</span><br><span class="line">    <span class="keyword">float</span> k1 = t;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">//插值</span></span><br><span class="line">    result.w = a.w * k0 + b.w * k1;</span><br><span class="line">    result.x = a.x * k0 + b.x * k1;</span><br><span class="line">    result.y = a.y * k0 + b.y * k1;</span><br><span class="line">    result.z = a.z * k0 + b.z * k1;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Slerp的计算方式(里面数学公式编辑比较麻烦，干脆直接写下来上图片了):</p>
-<p><img src="/images/quaternion/derivation.jpg" alt=""></p>
-<p>得出了推导公式，那么代码实现就比较简单了:</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">private</span> Quaternion <span class="title">SlerpX</span>(<span class="params">Quaternion a, Quaternion b, <span class="keyword">float</span> t</span>)</span></span><br><span class="line"><span class="function"> </span>&#123;</span><br><span class="line">        Quaternion result;</span><br><span class="line"> </span><br><span class="line">        <span class="comment">//利用点乘计算两个四元素夹角的cos值</span></span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">        <span class="comment">//   q1 * q2 = [w1 v1] * [w2 v2]</span></span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">        <span class="comment">//           = [w1 (x1 y1 z1)] * [w2 (x2 y2 z2)]</span></span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">        <span class="comment">//           = w1*w2 + x1*x2 + y1*y2 + z1*z2</span></span><br><span class="line"> </span><br><span class="line">        <span class="comment">// 这个可以参考向量点积: 两个向量的点积等于两个向量的模乘以两个向量的夹角</span></span><br><span class="line">        <span class="comment">// a * b = ||a|| ||b|| cosθ</span></span><br><span class="line">        <span class="comment">// 如果 a和b是单位向量</span></span><br><span class="line">        <span class="comment">// 那么 a * b = cosθ</span></span><br><span class="line"> </span><br><span class="line">        <span class="comment">//这里a,b是单位四元数</span></span><br><span class="line">        <span class="comment">//   q   = [cos(θ/2) sin(θ/2)n]</span></span><br><span class="line">        <span class="comment">// ||q|| = sqrt(cos(θ/2)^2 + (sin(θ/2)n)^2)</span></span><br><span class="line">        <span class="comment">// 如果n为单位向量，则:</span></span><br><span class="line">        <span class="comment">//       = sqrt(cos(θ/2)^2 + (sin(θ/2)^2)</span></span><br><span class="line">        <span class="comment">//       = 1</span></span><br><span class="line">        <span class="keyword">float</span> cosOmega = a.w * b.w + a.x * b.x + a.y * b.y + a.z * b.z;</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">if</span> (cosOmega &lt; <span class="number">0.0</span>f)</span><br><span class="line">        &#123;</span><br><span class="line">            result.w = -a.w;</span><br><span class="line">            result.x = -a.x;</span><br><span class="line">            result.y = -a.y;</span><br><span class="line">            result.z = -a.z;</span><br><span class="line"> </span><br><span class="line">            cosOmega = -cosOmega;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">float</span> k0, k1;</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">if</span> (cosOmega &gt; <span class="number">0.9999</span>f) <span class="comment">//线性计算</span></span><br><span class="line">        &#123; <span class="comment">//Unity中为0.95f</span></span><br><span class="line">            k0 = <span class="number">1.0</span>f - t;</span><br><span class="line">            k1 = t;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="comment">//球面平滑的</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 用三角公式 sin^2(omega) + cos^2(omega) = 1求得</span></span><br><span class="line">            <span class="keyword">float</span> sinOmega = Mathf.Sqrt(<span class="number">1.0</span>f - cosOmega * cosOmega);</span><br><span class="line"> </span><br><span class="line">            <span class="comment">// tan(omega) = sin(omega) / cos(omega)</span></span><br><span class="line">            <span class="comment">// omega = atan(sin(omega) / cos(omega)</span></span><br><span class="line">            <span class="keyword">float</span> omega = Mathf.Atan2(sinOmega, cosOmega);</span><br><span class="line"> </span><br><span class="line">            <span class="comment">// 计算 1 / sin(omega)</span></span><br><span class="line">            <span class="keyword">float</span> oneOverSinOmega = <span class="number">1.0</span>f / sinOmega;</span><br><span class="line"> </span><br><span class="line">            k0 = Mathf.Sin((<span class="number">1.0</span>f - t) * omega) * oneOverSinOmega;</span><br><span class="line"> </span><br><span class="line">            k1 = Mathf.Sin(t * omega) * oneOverSinOmega;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="comment">//插值</span></span><br><span class="line">        result.w = a.w * k0 + b.w * k1;</span><br><span class="line">        result.x = a.x * k0 + b.x * k1;</span><br><span class="line">        result.y = a.y * k0 + b.y * k1;</span><br><span class="line">        result.z = a.z * k0 + b.z * k1;</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
-<p>两种方式比较: Lerp更少的计算量，Slerp更加平滑。实际测试下使用Slerp和Lerp的运动效果</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">const</span> <span class="keyword">int</span> mMaxDotCount = <span class="number">20</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> mCurDotCount = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">float</span> mStep = <span class="number">0.05</span>f;</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Start</span> (<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    StartCoroutine (Loop ());</span><br><span class="line">&#125;</span><br><span class="line">  </span><br><span class="line"><span class="function">IEnumerator <span class="title">Loop</span> (<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Quaternion slerpStartRoation = SlerpCapsule.rotation;</span><br><span class="line">    Quaternion lerpStartRotation = LerpCapsule.rotation;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">while</span> (mCurDotCount &lt; mMaxDotCount) &#123; <span class="comment">//只计算mMaxDotCount次</span></span><br><span class="line">  </span><br><span class="line">        <span class="comment">//平滑表现测试</span></span><br><span class="line">        Quaternion newSlerpRotation = SlerpX (slerpStartRoation, Targeter.rotation, mStep);</span><br><span class="line">        Quaternion newLerpRotation = LerpX (lerpStartRotation, Targeter.rotation, mStep);</span><br><span class="line">  </span><br><span class="line">        mStep += <span class="number">0.05</span>f;</span><br><span class="line">  </span><br><span class="line">        GameObject lerpDot = Instantiate (LerpDotTemplate);</span><br><span class="line">  </span><br><span class="line">        lerpDot.transform.SetParent (<span class="literal">null</span>);</span><br><span class="line">        lerpDot.transform.localPosition = newLerpRotation.eulerAngles;</span><br><span class="line">  </span><br><span class="line">        GameObject slerpDot = Instantiate (SlerpDotTemplate);</span><br><span class="line">  </span><br><span class="line">        slerpDot.transform.SetParent (<span class="literal">null</span>);</span><br><span class="line">        slerpDot.transform.localPosition = newSlerpRotation.eulerAngles;</span><br><span class="line">  </span><br><span class="line">        SlerpCapsule.rotation = newSlerpRotation;</span><br><span class="line">        LerpCapsule.rotation = newLerpRotation;</span><br><span class="line"></span><br><span class="line">    mCurDotCount++;</span><br><span class="line">              </span><br><span class="line">        <span class="function"><span class="keyword">yield</span> return new <span class="title">WaitForSeconds</span> (<span class="params"><span class="number">0.02</span>f</span>)</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>通过一个个的小球，我把每次Slerp和Lerp的插值画出来，形成了一个轨迹(其中红色是Slerp的插值轨迹，白色的是Lerp的插值轨迹)</p>
-<p><img src="/images/quaternion/effect_drawing.png" alt=""></p>
-<p>通过这个轨迹图片可以看得到(由于各个小球的Z周有一点差异，导致画面有一点透视效果)，代码Slerp的红色小球的轨迹相邻的之间距离比较均匀，但是代表Lerp的白色的小球两球之前的距离由最开始逐渐变小然后到达中间之后又开始变大。分析之后可以归结到下面两张图片中(左图描述Lerp，右图描述Slerp)。Lerp求得的是四元数在圆上的弦上的等分，而Slerp求得的是四元数载圆上的圆弧的等分(论据的图是参考的<a href="http://www.cppblog.com/heath/archive/2013/10/27/203921.html" target="_blank" rel="external">这里</a>)。</p>
-<p><img src="/images/quaternion/different.jpg" alt=""></p>
-<p>项目中的使用问题:</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> Quaternion _sphereOriginRotation;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">readonly</span> <span class="keyword">float</span> _rotationFactor = <span class="number">0.2</span>f;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Start</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    _sphereOriginRotation = Sphere.rotation;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//这样用其实没有用上Slerp的球面线性差值的特性</span></span><br><span class="line">    Sphere.rotation = Quaternion.Slerp(Sphere.rotation, Target.rotation, _rotationFactor);</span><br><span class="line"> </span><br><span class="line">    <span class="comment">//上面这么写的话，其实和用Lerp得到的效果基本一样。但是Lerp的计算效率会高很多</span></span><br><span class="line">    Sphere.rotation = Quaternion.Lerp(Sphere.rotation, Target.rotation, _rotationFactor);</span><br><span class="line">         </span><br><span class="line">    <span class="comment">//要用到Slerp的球面差值的特性可以这样写,改变目标旋转的物体之前，先保存这个物体的Rotation</span></span><br><span class="line">    Sphere.rotation = Quaternion.Slerp(_sphereOriginRotation, Target.rotation, _rotationFactor);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-      
+    <div class="ui top fixed menu">
+        <a class="item" id="menu-icon"><i class="sidebar icon"></i></a>
     </div>
 
-    <div>
-      
-        
+    <div id="menu-sidebar" class="ui left vertical sidebar menu">
 
-      
-    </div>
-
-    <div>
-      
-        
-
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/unity/" rel="tag"># unity</a>
-          
+    <div id="sidebar-top">
+        <div class="content">
+            <h3>elangduan</h3>
         </div>
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2017/08/20/unity_shader_if_state_performance/" rel="next" title="Unity中shader代码的条件分支的性能问题">
-                <i class="fa fa-chevron-left"></i> Unity中shader代码的条件分支的性能问题
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/11/18/optimizing_garbage_collection_in_unity_games/" rel="prev" title="Unity游戏内存回收的优化(译)">
-                Unity游戏内存回收的优化(译) <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
-      
-    </footer>
-  </article>
-
-
-
-    <div class="post-spread">
-      
     </div>
-  </div>
+    <div class="ui container sidebar-card">
+    <div class="ui people shape content">
+        <div class="active side">
+            <div class="ui card">
+                <div class="image">
+                    <img class="ui medium bordered image" src="/images/avatar.jpg">
+                </div>
+                <div class="content">
+                    <a class="header">elangduan@126.com</a>
+                    
+                        <div class="meta">
+                            Game Developer
+                        </div>
+                    
+                </div>
+                <div class="extra content">
+                    <div class="ui list">
+                        
+                        <div class="item">
+                            <i class="marker icon" style="float: left"></i>
+                            <div class="content">Shanghai</div>
+                        </div>
+                        
+                        
+                        <div class="item">
+                            <i class="mail icon" style="float: left"></i>
+                            <div class="content">
+                                <a href="mailto:elangduan@126.com">elangduan@126.com</a>
+                            </div>
+                        </div>
+                        
+                    </div>
 
-
-          </div>
-          
-
-
-          
-
-        </div>
-        
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <section class="site-overview sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image"
-               src="/uploads/avatar.png"
-               alt="elangduan@126.com" />
-          <p class="site-author-name" itemprop="name">elangduan@126.com</p>
-          <p class="site-description motion-element" itemprop="description"></p>
-        </div>
-        <nav class="site-state motion-element">
-          <div class="site-state-item site-state-posts">
-            <a href="/archives">
-              <span class="site-state-item-count">29</span>
-              <span class="site-state-item-name">日志</span>
-            </a>
-          </div>
-
-          
-
-          
-            <div class="site-state-item site-state-tags">
-              
-                <span class="site-state-item-count">6</span>
-                <span class="site-state-item-name">标签</span>
-              
+                </div>
+                <div class="extra content">
+                    <div class="ui list">
+                        
+                    </div>
+                </div>
             </div>
-          
-
-        </nav>
-
-        
-
-        <div class="links-of-author motion-element">
-          
         </div>
-
-        
-        
-
-        
-        
-
-        
-
-
-      </section>
-
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Unity中应用"><span class="nav-number">1.</span> <span class="nav-text">Unity中应用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#线性插值和球面线性插值的原理"><span class="nav-number">2.</span> <span class="nav-text">线性插值和球面线性插值的原理</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
-      
-
     </div>
-  </aside>
 
 
-        
-      </div>
-    </main>
-
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <div class="copyright" align="center">
-  
-  &copy; 
-  <span itemprop="copyrightYear">2018</span>
-
-  <span class="author" itemprop="copyrightHolder">elangduan@126.com | </span>
-
-  <span>
-    powered by <a class="theme-link" href="https://hexo.io">hexo</a>
-  </span>
-
-  <span>
-    & theme <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next"> NexT</a>
-  </span>
 </div>
 
+    
+    
+
+    
+
+    
+    <a href="/index.html" class="item" >
+        <i class="home icon"></i>
+        HOME
+    </a>
+
+    
+
+    
+</div>
+
+    <div class="pusher body-content">
+        <div id="content" class="ui main container">
+            <!--<div class="ui one column grid">-->
+                <!--<div class="column">-->
+                    <!--<div class="ui main container">-->
+                        <div id="post-unity_quaternion_interpolation_note" class="ui main container article-type-post">
+
+    
+
+    <div class="ui divided grid">
+
+        <div class="two column row" id="article-content">
+
+            <div class="thirteen wide computer thirteen wide tablet sixteen wide mobile column">
+                
+
+<h1 class="ui header">
+    
+    Quaternion的插值分析及总结
+</h1>
+
+
+
+                <div class="article-inner">
+
+                    <div class="article-entry" itemprop="articleBody">
+                        
+                        <blockquote>
+<p>&#x4E0B;&#x9762;&#x7684;&#x5185;&#x5BB9;&#x662F;&#x9605;&#x8BFB;<a href="https://book.douban.com/subject/1400419/" target="_blank" rel="external">3D&#x6570;&#x5B66;&#x57FA;&#x7840;</a>&#x540E;&#x7ED3;&#x5408;&#x81EA;&#x5DF1;&#x7684;&#x7406;&#x89E3;&#x7684;&#x603B;&#x7ED3;</p>
+</blockquote>
+<h4 id="Unity&#x4E2D;&#x5E94;&#x7528;"><a href="#Unity&#x4E2D;&#x5E94;&#x7528;" class="headerlink" title="Unity&#x4E2D;&#x5E94;&#x7528;"></a>Unity&#x4E2D;&#x5E94;&#x7528;</h4><p>&#x6211;&#x4EEC;&#x63A5;&#x89E6;&#x5230;&#x7684;&#x5730;&#x65B9;&#x5C31;&#x662F;Unity&#x7684;Transform&#x7EC4;&#x4EF6;&#x3002;Transform&#x7EC4;&#x4EF6;&#x7EF4;&#x62A4;&#x4E86;&#x56DB;&#x5143;&#x6570;&#x5B9E;&#x73B0;&#x65B9;&#x4F4D;&#x89D2;&#x4F4D;&#x7684;&#x53D8;&#x6362;&#x3002;&#x4F46;&#x662F;&#x6211;&#x4EEC;&#x4E5F;&#x770B;&#x5230;Transform&#x7EC4;&#x4EF6;&#x63D0;&#x4F9B;&#x4E86;eulerAgnles&#x5C5E;&#x6027;&#xFF0C;&#x6309;&#x7406;&#x8BF4;&#x91CC;&#x9762;&#x4E5F;&#x5B9E;&#x73B0;&#x4E86;&#x6B27;&#x62C9;&#x89D2;&#x7684;&#xFF0C;&#x4F46;&#x4E8B;&#x5B9E;&#x5E76;&#x4E0D;&#x662F;&#x8FD9;&#x6837;&#x3002;&#x63A5;&#x4E0B;&#x6765;&#x8BE6;&#x7EC6;&#x5206;&#x6790;&#x4E0B;</p>
+<p>&#x9996;&#x5148;&#x770B;&#x770B;&#x7C7B;&#x4F3C;&#x4E0E;&#x8FD9;&#x79CD;&#x64CD;&#x4F5C;&#xFF0C;&#x6211;&#x4EEC;&#x5BF9;&#x4E00;&#x4E2A;GameObject&#x5B9E;&#x73B0;&#x65CB;&#x8F6C;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x53EF;&#x4EE5;&#x76F4;&#x63A5;&#x5BF9;&#x5176;transform&#x7EC4;&#x4EF6;&#x7684;eulerAngles&#x5C5E;&#x6027;&#x8D4B;&#x503C;&#x9700;&#x8981;&#x65CB;&#x8F6C;&#x7684;&#x89D2;&#x5EA6;&#x5373;&#x53EF;&#x3002;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">transform.eulerAngles&#xA0;=&#xA0;Vector3.zero;</span><br></pre></td></tr></table></figure>
+<p>&#x8FD9;&#x4E2A;&#x662F;transform&#x7684;eulerAngles&#x7684;&#x5B9E;&#x73B0;&#xFF0C;&#x53EF;&#x4EE5;&#x770B;&#x5230;&#x5176;&#x5B9E;&#x91CC;&#x9762;&#x76F4;&#x63A5;&#x628A;&#x6B27;&#x62C9;&#x89D2;&#x8F6C;&#x6362;&#x6210;&#x4E86;&#x56DB;&#x5143;&#x6570;&#x6765;&#x5904;&#x7406;&#xFF0C;&#x6240;&#x4EE5;&#x6B27;&#x62C9;&#x89D2;&#x5176;&#x5B9E;&#x53EA;&#x662F;&#x4F5C;&#x4E3A;&#x4E00;&#x4E2A;&#x65B9;&#x6CD5;&#x7684;&#x8868;&#x8FBE;&#x5F62;&#x5F0F;&#xFF0C;&#x5E76;&#x6CA1;&#x6709;&#x4F5C;&#x4E3A;Transform&#x7684;&#x6210;&#x5458;&#x53D8;&#x91CF;&#x4E4B;&#x7C7B;&#x7684;&#x5C5E;&#x6027;&#x6765;&#x7EF4;&#x62A4; (&#x5B9E;&#x9645;&#x4E0A;&#x4E5F;&#x4E0D;&#x9700;&#x8981;&#xFF0C;&#x56E0;&#x4E3A;&#x6709;&#x4E86;&#x56DB;&#x5143;&#x6570;&#x4E4B;&#x540E;&#xFF0C;&#x6B27;&#x62C9;&#x89D2;&#x548C;&#x56DB;&#x5143;&#x6570;&#x5C31;&#x53EF;&#x4EE5;&#x5B9E;&#x73B0;&#x76F8;&#x4E92;&#x7684;&#x8F6C;&#x6362;)</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">void&#xA0;Transform::SetLocalEulerAngles&#xA0;(const&#xA0;Vector3f&amp;&#xA0;eulerAngles)</span><br><span class="line">{</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;ABORT_INVALID_VECTOR3&#xA0;(eulerAngles,&#xA0;localEulerAngles,&#xA0;transform)</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;SetLocalRotationSafe&#xA0;(EulerToQuaternion&#xA0;(eulerAngles&#xA0;*&#xA0;Deg2Rad&#xA0;(<span class="number">1</span>)));</span><br><span class="line">&#xA0;&#xA0;</span><br><span class="line">&#xA0;&#xA0;  ...</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>&#x6211;&#x4EEC;&#x60F3;&#x5BF9;&#x4E00;&#x4E2A;GameObject&#x5B9E;&#x73B0;&#x65CB;&#x8F6C;&#x8FD8;&#x53EF;&#x4EE5;&#x5BF9;&#x5176;&#x7684;transform&#x7EC4;&#x4EF6;&#x7684;rotation&#x5C5E;&#x6027;&#x4EE5;&#x56DB;&#x5143;&#x7D20;&#x7684;&#x65B9;&#x5F0F;&#x8D4B;&#x503C;&#xFF0C;&#x6765;&#x5B9E;&#x73B0;&#x65CB;&#x8F6C;&#x3002;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">transform.rotation = Quaternion.identity;</span><br></pre></td></tr></table></figure>
+<p>&#x5BF9;&#x4E8E;rotation&#x5C5E;&#x6027;&#xFF0C;&#x5176;&#x5177;&#x4F53;&#x5B9E;&#x73B0;&#x662F;&#x8FD9;&#x6837;&#x7684;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">void&#xA0;Transform::SetRotation&#xA0;(const&#xA0;Quaternionf&amp;&#xA0;q)</span><br><span class="line">{</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;...</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;<span class="keyword">if</span>&#xA0;(father&#xA0;!=&#xA0;NULL)</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;SetLocalRotation&#xA0;(Inverse&#xA0;(father-&gt;GetRotation&#xA0;())&#xA0;*&#xA0;q);</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;<span class="keyword">else</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;SetLocalRotation&#xA0;(q);</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line">void&#xA0;Transform::SetLocalRotation&#xA0;(const&#xA0;Quaternionf&amp;&#xA0;q)</span><br><span class="line">{</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;ABORT_INVALID_QUATERNION&#xA0;(q,&#xA0;localRotation,&#xA0;transform);</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;m_LocalRotation&#xA0;=&#xA0;q;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;</span><br><span class="line">&#xA0;  ...</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>&#x53EF;&#x4EE5;&#x770B;&#x5230;&#x6807;&#x7EA2;&#x8272;&#x7684;&#x90A3;&#x884C;&#xFF0C;&#x4F20;&#x5165;&#x7684;&#x56DB;&#x5143;&#x6570;&#x88AB;&#x8D4B;&#x503C;&#x53C2;&#x6570;&#x88AB;&#x8D4B;&#x503C;&#x7ED9;&#x4E86;m_LocalRotation&#x6210;&#x5458;&#x53D8;&#x91CF;&#x3002;</p>
+<p>&#x4E0A;&#x9762;&#x4ECB;&#x7ECD;&#x4E86;&#x5728;Unity&#x91CC;&#x9762;&#x5C01;&#x88C5;&#x7684;Quaternion&#x7684;&#x65B9;&#x4F4D;&#x4E0E;&#x89D2;&#x4F4D;&#x7684;&#x60C5;&#x51B5;&#x3002;&#x90A3;&#x4E48;&#x4E0B;&#x9762;Quaternion&#x91CC;&#x9762;&#x5E38;&#x7528;&#x5230;&#x7684;&#x4E00;&#x4E2A;&#x53EB;&#x505A;Lerp&#x7684;&#x65B9;&#x6CD5;&#x3002;&#x76F8;&#x5E94;&#x7684;&#x8FD9;&#x4E2A;&#x65B9;&#x6CD5;&#x6709;&#x4E00;&#x4E2A;   &#x5BF9;&#x5E94;&#x7684;Slerp&#x65B9;&#x6CD5;&#x3002;&#x90A3;&#x4E48;&#x8FD9;&#x4E24;&#x4E2A;&#x65B9;&#x6CD5;&#x5230;&#x5E95;&#x6709;&#x4EC0;&#x4E48;&#x533A;&#x522B;&#x5462;&#xFF1F;&#x4E0B;&#x9762;&#x6765;&#x770B;&#x770B;&#x3002;</p>
+<h4 id="&#x7EBF;&#x6027;&#x63D2;&#x503C;&#x548C;&#x7403;&#x9762;&#x7EBF;&#x6027;&#x63D2;&#x503C;&#x7684;&#x539F;&#x7406;"><a href="#&#x7EBF;&#x6027;&#x63D2;&#x503C;&#x548C;&#x7403;&#x9762;&#x7EBF;&#x6027;&#x63D2;&#x503C;&#x7684;&#x539F;&#x7406;" class="headerlink" title="&#x7EBF;&#x6027;&#x63D2;&#x503C;&#x548C;&#x7403;&#x9762;&#x7EBF;&#x6027;&#x63D2;&#x503C;&#x7684;&#x539F;&#x7406;"></a><a href="https://www.youtube.com/watch?v=uNHIPVOnt-Y" target="_blank" rel="external">&#x7EBF;&#x6027;&#x63D2;&#x503C;&#x548C;&#x7403;&#x9762;&#x7EBF;&#x6027;&#x63D2;&#x503C;</a>&#x7684;&#x539F;&#x7406;</h4><p>Lerp&#x662F;&#x7528;&#x6765;&#x6C42;&#x4E24;&#x4E2A;&#x76EE;&#x6807;&#x4E4B;&#x524D;&#x7684;&#x5DEE;&#x503C;&#xFF0C;&#x5176;&#x8868;&#x8FBE;&#x5F0F;&#x4E3A;Lerp(a, b, t)&#x3002;a&#x548C;b&#x5206;&#x522B;&#x4E3A;&#x8D77;&#x59CB;&#x548C;&#x7EC8;&#x70B9;&#x4E24;&#x4E2A;&#x70B9;&#xFF0C;t&#x4E3A;&#x5DEE;&#x503C;&#x53C2;&#x6570;&#x53D8;&#x91CF;&#xFF0C;&#x8303;&#x56F4;&#x5728;0&#x5230;1&#x4E4B;&#x95F4;&#x3002;Lerp&#x8868;&#x793A;&#x4E3A;&#x6807;&#x51C6;&#x7684;&#x7EBF;&#x6027;&#x5DEE;&#x503C;&#x516C;&#x5F0F;&#x7684;&#x8BDD;&#xFF0C;&#x5176;&#x516C;&#x5F0F;&#x4E3A;:</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Lerp(a, b, t) = a + (b - a) * t</span><br></pre></td></tr></table></figure>
+<p>&#x4EE3;&#x7801;&#x5B9E;&#x73B0;&#x7740;&#x8FD9;&#x6837;&#x7684;:</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span>&#xA0;Quaternion&#xA0;<span class="title">LerpX</span>&#xA0;(<span class="params">Quaternion&#xA0;a,&#xA0;Quaternion&#xA0;b,&#xA0;<span class="keyword">float</span>&#xA0;t</span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;Quaternion&#xA0;result;</span><br><span class="line">&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#x7EBF;&#x6027;&#x7684;</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;<span class="keyword">float</span>&#xA0;k0&#xA0;=&#xA0;<span class="number">1.0</span>f&#xA0;-&#xA0;t;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;<span class="keyword">float</span>&#xA0;k1&#xA0;=&#xA0;t;</span><br><span class="line">&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#x63D2;&#x503C;</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;result.w&#xA0;=&#xA0;a.w&#xA0;*&#xA0;k0&#xA0;+&#xA0;b.w&#xA0;*&#xA0;k1;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;result.x&#xA0;=&#xA0;a.x&#xA0;*&#xA0;k0&#xA0;+&#xA0;b.x&#xA0;*&#xA0;k1;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;result.y&#xA0;=&#xA0;a.y&#xA0;*&#xA0;k0&#xA0;+&#xA0;b.y&#xA0;*&#xA0;k1;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;result.z&#xA0;=&#xA0;a.z&#xA0;*&#xA0;k0&#xA0;+&#xA0;b.z&#xA0;*&#xA0;k1;</span><br><span class="line">&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;<span class="keyword">return</span>&#xA0;result;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>Slerp&#x7684;&#x8BA1;&#x7B97;&#x65B9;&#x5F0F;(&#x91CC;&#x9762;&#x6570;&#x5B66;&#x516C;&#x5F0F;&#x7F16;&#x8F91;&#x6BD4;&#x8F83;&#x9EBB;&#x70E6;&#xFF0C;&#x5E72;&#x8106;&#x76F4;&#x63A5;&#x5199;&#x4E0B;&#x6765;&#x4E0A;&#x56FE;&#x7247;&#x4E86;):</p>
+<p><a class="magnific-img" href="/images/quaternion/derivation.jpg"><img src="/images/quaternion/derivation.jpg" alt="" class="ui centered image"></a></p>
+<p>&#x5F97;&#x51FA;&#x4E86;&#x63A8;&#x5BFC;&#x516C;&#x5F0F;&#xFF0C;&#x90A3;&#x4E48;&#x4EE3;&#x7801;&#x5B9E;&#x73B0;&#x5C31;&#x6BD4;&#x8F83;&#x7B80;&#x5355;&#x4E86;:</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">&#xA0;<span class="function"><span class="keyword">private</span>&#xA0;Quaternion&#xA0;<span class="title">SlerpX</span>(<span class="params">Quaternion&#xA0;a,&#xA0;Quaternion&#xA0;b,&#xA0;<span class="keyword">float</span>&#xA0;t</span>)</span></span><br><span class="line"><span class="function">&#xA0;</span>{</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;Quaternion&#xA0;result;</span><br><span class="line">&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#x5229;&#x7528;&#x70B9;&#x4E58;&#x8BA1;&#x7B97;&#x4E24;&#x4E2A;&#x56DB;&#x5143;&#x7D20;&#x5939;&#x89D2;&#x7684;cos&#x503C;</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#xA0;&#xA0;&#xA0;q1&#xA0;*&#xA0;q2&#xA0;=&#xA0;[w1&#xA0;v1]&#xA0;*&#xA0;[w2&#xA0;v2]</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;=&#xA0;[w1&#xA0;(x1&#xA0;y1&#xA0;z1)]&#xA0;*&#xA0;[w2&#xA0;(x2&#xA0;y2&#xA0;z2)]</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;=&#xA0;w1*w2&#xA0;+&#xA0;x1*x2&#xA0;+&#xA0;y1*y2&#xA0;+&#xA0;z1*z2</span></span><br><span class="line">&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#xA0;&#x8FD9;&#x4E2A;&#x53EF;&#x4EE5;&#x53C2;&#x8003;&#x5411;&#x91CF;&#x70B9;&#x79EF;:&#xA0;&#x4E24;&#x4E2A;&#x5411;&#x91CF;&#x7684;&#x70B9;&#x79EF;&#x7B49;&#x4E8E;&#x4E24;&#x4E2A;&#x5411;&#x91CF;&#x7684;&#x6A21;&#x4E58;&#x4EE5;&#x4E24;&#x4E2A;&#x5411;&#x91CF;&#x7684;&#x5939;&#x89D2;</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#xA0;a&#xA0;*&#xA0;b&#xA0;=&#xA0;||a||&#xA0;||b||&#xA0;cos&#x3B8;</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#xA0;&#x5982;&#x679C;&#xA0;a&#x548C;b&#x662F;&#x5355;&#x4F4D;&#x5411;&#x91CF;</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#xA0;&#x90A3;&#x4E48;&#xA0;a&#xA0;*&#xA0;b&#xA0;=&#xA0;cos&#x3B8;</span></span><br><span class="line">&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#x8FD9;&#x91CC;a,b&#x662F;&#x5355;&#x4F4D;&#x56DB;&#x5143;&#x6570;</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#xA0;&#xA0;&#xA0;q&#xA0;&#xA0;&#xA0;=&#xA0;[cos(&#x3B8;/2)&#xA0;sin(&#x3B8;/2)n]</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#xA0;||q||&#xA0;=&#xA0;sqrt(cos(&#x3B8;/2)^2&#xA0;+&#xA0;(sin(&#x3B8;/2)n)^2)</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#xA0;&#x5982;&#x679C;n&#x4E3A;&#x5355;&#x4F4D;&#x5411;&#x91CF;&#xFF0C;&#x5219;:</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;=&#xA0;sqrt(cos(&#x3B8;/2)^2&#xA0;+&#xA0;(sin(&#x3B8;/2)^2)</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;=&#xA0;1</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="keyword">float</span>&#xA0;cosOmega&#xA0;=&#xA0;a.w&#xA0;*&#xA0;b.w&#xA0;+&#xA0;a.x&#xA0;*&#xA0;b.x&#xA0;+&#xA0;a.y&#xA0;*&#xA0;b.y&#xA0;+&#xA0;a.z&#xA0;*&#xA0;b.z;</span><br><span class="line">&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="keyword">if</span>&#xA0;(cosOmega&#xA0;&lt;&#xA0;<span class="number">0.0</span>f)</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;{</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;result.w&#xA0;=&#xA0;-a.w;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;result.x&#xA0;=&#xA0;-a.x;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;result.y&#xA0;=&#xA0;-a.y;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;result.z&#xA0;=&#xA0;-a.z;</span><br><span class="line">&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;cosOmega&#xA0;=&#xA0;-cosOmega;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;}</span><br><span class="line">&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="keyword">float</span>&#xA0;k0,&#xA0;k1;</span><br><span class="line">&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="keyword">if</span>&#xA0;(cosOmega&#xA0;&gt;&#xA0;<span class="number">0.9999</span>f)&#xA0;<span class="comment">//&#x7EBF;&#x6027;&#x8BA1;&#x7B97;</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;{&#xA0;<span class="comment">//Unity&#x4E2D;&#x4E3A;0.95f</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;k0&#xA0;=&#xA0;<span class="number">1.0</span>f&#xA0;-&#xA0;t;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;k1&#xA0;=&#xA0;t;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;}</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="keyword">else</span>&#xA0;<span class="comment">//&#x7403;&#x9762;&#x5E73;&#x6ED1;&#x7684;</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;{</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#xA0;&#x7528;&#x4E09;&#x89D2;&#x516C;&#x5F0F;&#xA0;sin^2(omega)&#xA0;+&#xA0;cos^2(omega)&#xA0;=&#xA0;1&#x6C42;&#x5F97;</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="keyword">float</span>&#xA0;sinOmega&#xA0;=&#xA0;Mathf.Sqrt(<span class="number">1.0</span>f&#xA0;-&#xA0;cosOmega&#xA0;*&#xA0;cosOmega);</span><br><span class="line">&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#xA0;tan(omega)&#xA0;=&#xA0;sin(omega)&#xA0;/&#xA0;cos(omega)</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#xA0;omega&#xA0;=&#xA0;atan(sin(omega)&#xA0;/&#xA0;cos(omega)</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="keyword">float</span>&#xA0;omega&#xA0;=&#xA0;Mathf.Atan2(sinOmega,&#xA0;cosOmega);</span><br><span class="line">&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#xA0;&#x8BA1;&#x7B97;&#xA0;1&#xA0;/&#xA0;sin(omega)</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="keyword">float</span>&#xA0;oneOverSinOmega&#xA0;=&#xA0;<span class="number">1.0</span>f&#xA0;/&#xA0;sinOmega;</span><br><span class="line">&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;k0&#xA0;=&#xA0;Mathf.Sin((<span class="number">1.0</span>f&#xA0;-&#xA0;t)&#xA0;*&#xA0;omega)&#xA0;*&#xA0;oneOverSinOmega;</span><br><span class="line">&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;k1&#xA0;=&#xA0;Mathf.Sin(t&#xA0;*&#xA0;omega)&#xA0;*&#xA0;oneOverSinOmega;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;}</span><br><span class="line">&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#x63D2;&#x503C;</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;result.w&#xA0;=&#xA0;a.w&#xA0;*&#xA0;k0&#xA0;+&#xA0;b.w&#xA0;*&#xA0;k1;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;result.x&#xA0;=&#xA0;a.x&#xA0;*&#xA0;k0&#xA0;+&#xA0;b.x&#xA0;*&#xA0;k1;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;result.y&#xA0;=&#xA0;a.y&#xA0;*&#xA0;k0&#xA0;+&#xA0;b.y&#xA0;*&#xA0;k1;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;result.z&#xA0;=&#xA0;a.z&#xA0;*&#xA0;k0&#xA0;+&#xA0;b.z&#xA0;*&#xA0;k1;</span><br><span class="line">&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="keyword">return</span>&#xA0;result;</span><br><span class="line">&#xA0;}</span><br></pre></td></tr></table></figure>
+<p>&#x4E24;&#x79CD;&#x65B9;&#x5F0F;&#x6BD4;&#x8F83;: Lerp&#x66F4;&#x5C11;&#x7684;&#x8BA1;&#x7B97;&#x91CF;&#xFF0C;Slerp&#x66F4;&#x52A0;&#x5E73;&#x6ED1;&#x3002;&#x5B9E;&#x9645;&#x6D4B;&#x8BD5;&#x4E0B;&#x4F7F;&#x7528;Slerp&#x548C;Lerp&#x7684;&#x8FD0;&#x52A8;&#x6548;&#x679C;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span>&#xA0;<span class="keyword">const</span>&#xA0;<span class="keyword">int</span>&#xA0;mMaxDotCount&#xA0;=&#xA0;<span class="number">20</span>;</span><br><span class="line"><span class="keyword">private</span>&#xA0;<span class="keyword">int</span>&#xA0;mCurDotCount&#xA0;=&#xA0;<span class="number">0</span>;</span><br><span class="line"><span class="keyword">private</span>&#xA0;<span class="keyword">float</span>&#xA0;mStep&#xA0;=&#xA0;<span class="number">0.05</span>f;</span><br><span class="line">&#xA0;&#xA0;</span><br><span class="line"><span class="function"><span class="keyword">void</span>&#xA0;<span class="title">Start</span>&#xA0;(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;StartCoroutine&#xA0;(Loop&#xA0;());</span><br><span class="line">}</span><br><span class="line">&#xA0;&#xA0;</span><br><span class="line"><span class="function">IEnumerator&#xA0;<span class="title">Loop</span>&#xA0;(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;Quaternion&#xA0;slerpStartRoation&#xA0;=&#xA0;SlerpCapsule.rotation;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;Quaternion&#xA0;lerpStartRotation&#xA0;=&#xA0;LerpCapsule.rotation;</span><br><span class="line">&#xA0;&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;<span class="keyword">while</span>&#xA0;(mCurDotCount&#xA0;&lt;&#xA0;mMaxDotCount)&#xA0;{&#xA0;<span class="comment">//&#x53EA;&#x8BA1;&#x7B97;mMaxDotCount&#x6B21;</span></span><br><span class="line">&#xA0;&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#x5E73;&#x6ED1;&#x8868;&#x73B0;&#x6D4B;&#x8BD5;</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;Quaternion&#xA0;newSlerpRotation&#xA0;=&#xA0;SlerpX&#xA0;(slerpStartRoation,&#xA0;Targeter.rotation,&#xA0;mStep);</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;Quaternion&#xA0;newLerpRotation&#xA0;=&#xA0;LerpX&#xA0;(lerpStartRotation,&#xA0;Targeter.rotation,&#xA0;mStep);</span><br><span class="line">&#xA0;&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;mStep&#xA0;+=&#xA0;<span class="number">0.05</span>f;</span><br><span class="line">&#xA0;&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;GameObject&#xA0;lerpDot&#xA0;=&#xA0;Instantiate&#xA0;(LerpDotTemplate);</span><br><span class="line">&#xA0;&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;lerpDot.transform.SetParent&#xA0;(<span class="literal">null</span>);</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;lerpDot.transform.localPosition&#xA0;=&#xA0;newLerpRotation.eulerAngles;</span><br><span class="line">&#xA0;&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;GameObject&#xA0;slerpDot&#xA0;=&#xA0;Instantiate&#xA0;(SlerpDotTemplate);</span><br><span class="line">&#xA0;&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;slerpDot.transform.SetParent&#xA0;(<span class="literal">null</span>);</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;slerpDot.transform.localPosition&#xA0;=&#xA0;newSlerpRotation.eulerAngles;</span><br><span class="line">&#xA0;&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;SlerpCapsule.rotation&#xA0;=&#xA0;newSlerpRotation;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;LerpCapsule.rotation&#xA0;=&#xA0;newLerpRotation;</span><br><span class="line"></span><br><span class="line">    mCurDotCount++;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;<span class="function"><span class="keyword">yield</span>&#xA0;return&#xA0;new&#xA0;<span class="title">WaitForSeconds</span>&#xA0;(<span class="params"><span class="number">0.02</span>f</span>)</span>;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;}</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>&#x901A;&#x8FC7;&#x4E00;&#x4E2A;&#x4E2A;&#x7684;&#x5C0F;&#x7403;&#xFF0C;&#x6211;&#x628A;&#x6BCF;&#x6B21;Slerp&#x548C;Lerp&#x7684;&#x63D2;&#x503C;&#x753B;&#x51FA;&#x6765;&#xFF0C;&#x5F62;&#x6210;&#x4E86;&#x4E00;&#x4E2A;&#x8F68;&#x8FF9;(&#x5176;&#x4E2D;&#x7EA2;&#x8272;&#x662F;Slerp&#x7684;&#x63D2;&#x503C;&#x8F68;&#x8FF9;&#xFF0C;&#x767D;&#x8272;&#x7684;&#x662F;Lerp&#x7684;&#x63D2;&#x503C;&#x8F68;&#x8FF9;)</p>
+<p><a class="magnific-img" href="/images/quaternion/effect_drawing.png"><img src="/images/quaternion/effect_drawing.png" alt="" class="ui centered image"></a></p>
+<p>&#x901A;&#x8FC7;&#x8FD9;&#x4E2A;&#x8F68;&#x8FF9;&#x56FE;&#x7247;&#x53EF;&#x4EE5;&#x770B;&#x5F97;&#x5230;(&#x7531;&#x4E8E;&#x5404;&#x4E2A;&#x5C0F;&#x7403;&#x7684;Z&#x5468;&#x6709;&#x4E00;&#x70B9;&#x5DEE;&#x5F02;&#xFF0C;&#x5BFC;&#x81F4;&#x753B;&#x9762;&#x6709;&#x4E00;&#x70B9;&#x900F;&#x89C6;&#x6548;&#x679C;)&#xFF0C;&#x4EE3;&#x7801;Slerp&#x7684;&#x7EA2;&#x8272;&#x5C0F;&#x7403;&#x7684;&#x8F68;&#x8FF9;&#x76F8;&#x90BB;&#x7684;&#x4E4B;&#x95F4;&#x8DDD;&#x79BB;&#x6BD4;&#x8F83;&#x5747;&#x5300;&#xFF0C;&#x4F46;&#x662F;&#x4EE3;&#x8868;Lerp&#x7684;&#x767D;&#x8272;&#x7684;&#x5C0F;&#x7403;&#x4E24;&#x7403;&#x4E4B;&#x524D;&#x7684;&#x8DDD;&#x79BB;&#x7531;&#x6700;&#x5F00;&#x59CB;&#x9010;&#x6E10;&#x53D8;&#x5C0F;&#x7136;&#x540E;&#x5230;&#x8FBE;&#x4E2D;&#x95F4;&#x4E4B;&#x540E;&#x53C8;&#x5F00;&#x59CB;&#x53D8;&#x5927;&#x3002;&#x5206;&#x6790;&#x4E4B;&#x540E;&#x53EF;&#x4EE5;&#x5F52;&#x7ED3;&#x5230;&#x4E0B;&#x9762;&#x4E24;&#x5F20;&#x56FE;&#x7247;&#x4E2D;(&#x5DE6;&#x56FE;&#x63CF;&#x8FF0;Lerp&#xFF0C;&#x53F3;&#x56FE;&#x63CF;&#x8FF0;Slerp)&#x3002;Lerp&#x6C42;&#x5F97;&#x7684;&#x662F;&#x56DB;&#x5143;&#x6570;&#x5728;&#x5706;&#x4E0A;&#x7684;&#x5F26;&#x4E0A;&#x7684;&#x7B49;&#x5206;&#xFF0C;&#x800C;Slerp&#x6C42;&#x5F97;&#x7684;&#x662F;&#x56DB;&#x5143;&#x6570;&#x8F7D;&#x5706;&#x4E0A;&#x7684;&#x5706;&#x5F27;&#x7684;&#x7B49;&#x5206;(&#x8BBA;&#x636E;&#x7684;&#x56FE;&#x662F;&#x53C2;&#x8003;&#x7684;<a href="http://www.cppblog.com/heath/archive/2013/10/27/203921.html" target="_blank" rel="external">&#x8FD9;&#x91CC;</a>)&#x3002;</p>
+<p><a class="magnific-img" href="/images/quaternion/different.jpg"><img src="/images/quaternion/different.jpg" alt="" class="ui centered image"></a></p>
+<p>&#x9879;&#x76EE;&#x4E2D;&#x7684;&#x4F7F;&#x7528;&#x95EE;&#x9898;:</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span>&#xA0;Quaternion&#xA0;_sphereOriginRotation;</span><br><span class="line"><span class="keyword">private</span>&#xA0;<span class="keyword">readonly</span>&#xA0;<span class="keyword">float</span>&#xA0;_rotationFactor&#xA0;=&#xA0;<span class="number">0.2</span>f;</span><br><span class="line">&#xA0;</span><br><span class="line"><span class="function"><span class="keyword">void</span>&#xA0;<span class="title">Start</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;_sphereOriginRotation&#xA0;=&#xA0;Sphere.rotation;</span><br><span class="line">}</span><br><span class="line">&#xA0;</span><br><span class="line"><span class="function"><span class="keyword">void</span>&#xA0;<span class="title">Update</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#x8FD9;&#x6837;&#x7528;&#x5176;&#x5B9E;&#x6CA1;&#x6709;&#x7528;&#x4E0A;Slerp&#x7684;&#x7403;&#x9762;&#x7EBF;&#x6027;&#x5DEE;&#x503C;&#x7684;&#x7279;&#x6027;</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;Sphere.rotation&#xA0;=&#xA0;Quaternion.Slerp(Sphere.rotation,&#xA0;Target.rotation,&#xA0;_rotationFactor);</span><br><span class="line">&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#x4E0A;&#x9762;&#x8FD9;&#x4E48;&#x5199;&#x7684;&#x8BDD;&#xFF0C;&#x5176;&#x5B9E;&#x548C;&#x7528;Lerp&#x5F97;&#x5230;&#x7684;&#x6548;&#x679C;&#x57FA;&#x672C;&#x4E00;&#x6837;&#x3002;&#x4F46;&#x662F;Lerp&#x7684;&#x8BA1;&#x7B97;&#x6548;&#x7387;&#x4F1A;&#x9AD8;&#x5F88;&#x591A;</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;Sphere.rotation&#xA0;=&#xA0;Quaternion.Lerp(Sphere.rotation,&#xA0;Target.rotation,&#xA0;_rotationFactor);</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;</span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;<span class="comment">//&#x8981;&#x7528;&#x5230;Slerp&#x7684;&#x7403;&#x9762;&#x5DEE;&#x503C;&#x7684;&#x7279;&#x6027;&#x53EF;&#x4EE5;&#x8FD9;&#x6837;&#x5199;,&#x6539;&#x53D8;&#x76EE;&#x6807;&#x65CB;&#x8F6C;&#x7684;&#x7269;&#x4F53;&#x4E4B;&#x524D;&#xFF0C;&#x5148;&#x4FDD;&#x5B58;&#x8FD9;&#x4E2A;&#x7269;&#x4F53;&#x7684;Rotation</span></span><br><span class="line">&#xA0;&#xA0;&#xA0;&#xA0;Sphere.rotation&#xA0;=&#xA0;Quaternion.Slerp(_sphereOriginRotation,&#xA0;Target.rotation,&#xA0;_rotationFactor);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+                        
+                    </div>
+
+                    
+                    
+                    
+
+                    <div class="description post-description">
+    <span class="post-description-item">
+        <time datetime="2017-08-30T15:40:10.000Z" itemprop="datePublished">2017-08-30</time>
+
+    </span>
+    <span class="post-description-item">
         
 
-        
-      </div>
-    </footer>
+    <span>
+        <i class="tags icon"></i>
+    </span>
 
-    <div class="back-to-top">
-      <i class="fa fa-arrow-up"></i>
+    
+    <span class="ui tiny label">
+        <a href="/tags/unity/">unity</a>
+    </span>
+
+    
+
+    </span>
+</div>
+
+                </div>
+                
+                <div id="pagination" class="nav-web ui text container pagination">
+
+    <div class="ui stackable two column divided grid container">
+        <div class="row">
+            <div class="column nav-left">
+                
+
+                <a href="/2017/11/18/optimizing_garbage_collection_in_unity_games/" class="ui tiny button">
+
+                    <i class="angle left icon"></i>
+                    
+                    Unity游戏内存回收的优化(译)
+                    
+
+                </a>
+
+                
+            </div>
+            <div class="column nav-right">
+                
+
+                <a href="/2017/08/20/unity_shader_if_state_performance/" class="ui tiny button">
+                    
+                    Unity中shader代码的条件分支的性能问题
+                    
+                    <i class="angle right icon"></i></a>
+                
+            </div>
+        </div>
     </div>
-  </div>
 
-  
+</div>
+                
+            </div>
 
-<script type="text/javascript">
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
-</script>
+            
+            <div class="three wide computer three wide tablet column">
 
+                <div class="ui sticky article-toc" id="article-toc">
+                    <!-- toc -->
+                    <ol class="ui ordered list"><li><a href="#Unity中应用"><span>Unity中应用</span></a></li><li><a href="#线性插值和球面线性插值的原理"><span>线性插值和球面线性插值的原理</span></a></li></ol>
+                </div>
 
+            </div>
+            
 
-
-
-
-
-
-
-  
-
-
-
-  
-  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-
-  
-  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-
-  
-  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-
-  
-  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+        </div>
+    </div>
+</div>
 
 
-  
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        </div>
+        <div class="ui vertical footer segment">
+    <div class="ui center aligned container">
+        <div class="ui inverted section divider"></div>
+        &copy; 2018 <a href="/">elangduan@126.com</a>,
+        Powered by <a href="https://github.com/henryhuang/hexo-theme-aloha" target="_blank">Aloha</a> and <a
+                href="http://hexo.io/" target="_blank">Hexo</a>.
+    </div>
+</div>
 
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
-
-
-
-  
-
-  
-    
-  
-
-  <script type="text/javascript">
-    var duoshuoQuery = {short_name:"elangduan"};
-    (function() {
-      var ds = document.createElement('script');
-      ds.type = 'text/javascript';ds.async = true;
-      ds.id = 'duoshuo-script';
-      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-      ds.charset = 'UTF-8';
-      (document.getElementsByTagName('head')[0]
-      || document.getElementsByTagName('body')[0]).appendChild(ds);
-    })();
-  </script>
-
-  
-    
-    
-    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
-    <script src="/js/src/hook-duoshuo.js"></script>
-  
+    </div>
 
 
 
 
+<!-- scripts list from theme config.yml -->
 
+<script src="//cdn.bootcss.com/jquery/3.1.0/jquery.min.js"></script>
 
+<script src="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.js"></script>
 
+<script src="//cdn.bootcss.com/algoliasearch/3.18.1/algoliasearch.min.js"></script>
 
-  
-  
+<script src="//cdn.bootcss.com/algoliasearch-helper-js/2.13.0/algoliasearch.helper.min.js"></script>
 
-  
+<script src="/js/semantic-ui-algolia.js"></script>
 
-  
+<script src="/js/aloha-events.js"></script>
 
-  
-
-  
 
 
 </body>

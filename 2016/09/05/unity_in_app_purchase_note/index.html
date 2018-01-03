@@ -1,90 +1,15 @@
-<!doctype html>
 
 
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head prefix="og: http://ogp.me/ns#">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <meta name="description" content="">
+    <title>Unity 苹果IAP和微信支付接入 | elangduan</title>
 
-  
-
-
-<html class="theme-next mist use-motion" lang="zh-Hans">
-<head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-
-
-
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
-
-
-
-
-  
-  
-  
-  
-
-  
-    
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    
-    
-    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
-  
-
-
-
-
-
-
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
-
-<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
-
-
-  <meta name="keywords" content="unity," />
-
-
-
-
-
-
-
-
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
-
-
-
-
-
-
-<meta name="description" content="苹果IAP接入相比微信支付和支付宝支付要麻烦一些,麻烦的地方主要体现在对测试支付环境的要求以及苹果审核方面的要求上面。本文是自己在接入iOS的IAP模块的经验及总结，发出来分享下。建议需要接入的话还是浏览一遍苹果官方文档 注意事项 测试支付的ipa必须使用[App-Store]证书 越狱机器无法测试IAP 用SandBox账号测试支付的时候,必须把在系统[设置]里面把[Itunes Store 与">
+    <!-- Open Graph -->
+    <meta name="description" content="苹果IAP接入相比微信支付和支付宝支付要麻烦一些,麻烦的地方主要体现在对测试支付环境的要求以及苹果审核方面的要求上面。本文是自己在接入iOS的IAP模块的经验及总结，发出来分享下。建议需要接入的话还是浏览一遍苹果官方文档 注意事项 测试支付的ipa必须使用[App-Store]证书 越狱机器无法测试IAP 用SandBox账号测试支付的时候,必须把在系统[设置]里面把[Itunes Store 与">
 <meta name="keywords" content="unity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity 苹果IAP和微信支付接入">
@@ -99,621 +24,348 @@
 <meta name="twitter:description" content="苹果IAP接入相比微信支付和支付宝支付要麻烦一些,麻烦的地方主要体现在对测试支付环境的要求以及苹果审核方面的要求上面。本文是自己在接入iOS的IAP模块的经验及总结，发出来分享下。建议需要接入的话还是浏览一遍苹果官方文档 注意事项 测试支付的ipa必须使用[App-Store]证书 越狱机器无法测试IAP 用SandBox账号测试支付的时候,必须把在系统[设置]里面把[Itunes Store 与">
 <meta name="twitter:image" content="http://elangduan.github.com/images/unity_in_app_purchase/1.png">
 
-
-
-<script type="text/javascript" id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Mist',
-    sidebar: {"position":"left","display":"hide"},
-    fancybox: true,
-    motion: true,
-    duoshuo: {
-      userId: '0',
-      author: 'elangduan'
-    },
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
+    <script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Person",
+  "email": "mailto:elangduan@126.com",
+  "image": "/uploads/avatar.png",
+  "name": "elangduan@126.com",
+  "url": "http://elangduan.github.com"
+}
+</script>
+    <script>
+    var algoliaEnabled = false;
+    
 </script>
 
+    
 
+    
+    
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+    
+    
+    
+        <!-- stylesheets list from config.yml -->
+        
+        <link rel="stylesheet" href="/css/aloha.css">
+        
+        <link rel="stylesheet" href="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.css">
+        
+        <link rel="stylesheet" href="//cdn.bootcss.com/magnific-popup.js/1.1.0/magnific-popup.min.css">
+        
+    
 
-  <link rel="canonical" href="http://elangduan.github.com/2016/09/05/unity_in_app_purchase_note/"/>
-
-
-
-
-
-  <title> Unity 苹果IAP和微信支付接入 | elangduan </title>
 </head>
+<body id="body" style="margin-bottom: 0;" class="pushable">
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+    <div class="ui top fixed menu">
+        <a class="item" id="menu-icon"><i class="sidebar icon"></i></a>
+    </div>
 
-  
+    <div id="menu-sidebar" class="ui left vertical sidebar menu">
 
-
-
-
-
-
-
-
-
-
-  
-  
-    
-  
-
-  <div class="container one-collumn sidebar-position-left page-post-detail ">
-    <div class="headband"></div>
-
-    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-meta ">
-  
-
-  <div class="custom-logo-site-title">
-    <a href="/"  class="brand" rel="start">
-      <span class="logo-line-before"><i></i></span>
-      <span class="site-title">elangduan</span>
-      <span class="logo-line-after"><i></i></span>
-    </a>
-  </div>
-  <p class="site-subtitle"></p>
-</div>
-
-<div class="site-nav-toggle">
-  <button>
-    <span class="btn-bar"></span>
-    <span class="btn-bar"></span>
-    <span class="btn-bar"></span>
-  </button>
-</div>
-
-<nav class="site-nav">
-  
-
-  
-    <ul id="menu" class="menu">
-      
-        
-        <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
-            
-            首页
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-archives">
-          <a href="/archives" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
-            
-            归档
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-reading">
-          <a href="/reading" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
-            
-            阅读
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-movie">
-          <a href="/movie" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-camera"></i> <br />
-            
-            电影
-          </a>
-        </li>
-      
-
-      
-    </ul>
-  
-
-  
-</nav>
-
-
-
- </div>
-    </header>
-
-    <main id="main" class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
-    
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2016/09/05/unity_in_app_purchase_note/">
-
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="elangduan@126.com">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/uploads/avatar.png">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="elangduan">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="elangduan" src="">
-    </span>
-  </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                Unity 苹果IAP和微信支付接入
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-09-05T20:49:40+08:00">
-              2016-09-05
-            </time>
-            
-          </span>
-
-          
-
-          
-
-          
-
-          
-          
-
-          
-          
-          
-
+    <div id="sidebar-top">
+        <div class="content">
+            <h3>elangduan</h3>
         </div>
-      </header>
+    </div>
+    <div class="ui container sidebar-card">
+    <div class="ui people shape content">
+        <div class="active side">
+            <div class="ui card">
+                <div class="image">
+                    <img class="ui medium bordered image" src="/images/avatar.jpg">
+                </div>
+                <div class="content">
+                    <a class="header">elangduan@126.com</a>
+                    
+                        <div class="meta">
+                            Game Developer
+                        </div>
+                    
+                </div>
+                <div class="extra content">
+                    <div class="ui list">
+                        
+                        <div class="item">
+                            <i class="marker icon" style="float: left"></i>
+                            <div class="content">Shanghai</div>
+                        </div>
+                        
+                        
+                        <div class="item">
+                            <i class="mail icon" style="float: left"></i>
+                            <div class="content">
+                                <a href="mailto:elangduan@126.com">elangduan@126.com</a>
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                </div>
+                <div class="extra content">
+                    <div class="ui list">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+    
     
 
+    
 
-    <div class="post-body" itemprop="articleBody">
+    
+    <a href="/index.html" class="item" >
+        <i class="home icon"></i>
+        HOME
+    </a>
 
-      
-      
+    
 
-      
-        <h3 id="苹果IAP接入"><a href="#苹果IAP接入" class="headerlink" title="苹果IAP接入"></a>苹果IAP接入</h3><p>相比微信支付和支付宝支付要麻烦一些,麻烦的地方主要体现在对测试支付环境的要求以及苹果审核方面的要求上面。本文是自己在接入iOS的IAP模块的经验及总结，发出来分享下。建议需要接入的话还是浏览一遍<a href="https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/StoreKitGuide/Introduction.html" target="_blank" rel="external">苹果官方文档</a></p>
-<h4 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h4><ul>
-<li>测试支付的ipa必须使用[App-Store]证书</li>
-<li>越狱机器无法测试IAP</li>
-<li>用SandBox账号测试支付的时候,必须把在系统<strong>[设置]</strong>里面把<strong>[Itunes Store 与 App Store]</strong>登录的非SandBox账号注销掉,否则向苹果服务器请求不到订单信息</li>
-<li>Sandbox账号不要在正式支付环境登陆支付，登陆过的正式支付环境的SandBox账号会失效</li>
-<li>所有在itunes上配置的商品都必须可购买,不能有某些商品根据商户自己的服务器的数据在某个时期出现免费的情况</li>
-<li>商品列表不能按照某些特定条件进行排序(比如说下载量)</li>
-<li>非消耗型商品必须的有恢复商品功能</li>
-<li>非消耗类型的商品不要和商户自己的服务器关联</li>
+    
+</div>
+
+    <div class="pusher body-content">
+        <div id="content" class="ui main container">
+            <!--<div class="ui one column grid">-->
+                <!--<div class="column">-->
+                    <!--<div class="ui main container">-->
+                        <div id="post-unity_in_app_purchase_note" class="ui main container article-type-post">
+
+    
+
+    <div class="ui divided grid">
+
+        <div class="two column row" id="article-content">
+
+            <div class="thirteen wide computer thirteen wide tablet sixteen wide mobile column">
+                
+
+<h1 class="ui header">
+    
+    Unity 苹果IAP和微信支付接入
+</h1>
+
+
+
+                <div class="article-inner">
+
+                    <div class="article-entry" itemprop="articleBody">
+                        
+                        <h3 id="&#x82F9;&#x679C;IAP&#x63A5;&#x5165;"><a href="#&#x82F9;&#x679C;IAP&#x63A5;&#x5165;" class="headerlink" title="&#x82F9;&#x679C;IAP&#x63A5;&#x5165;"></a>&#x82F9;&#x679C;IAP&#x63A5;&#x5165;</h3><p>&#x76F8;&#x6BD4;&#x5FAE;&#x4FE1;&#x652F;&#x4ED8;&#x548C;&#x652F;&#x4ED8;&#x5B9D;&#x652F;&#x4ED8;&#x8981;&#x9EBB;&#x70E6;&#x4E00;&#x4E9B;,&#x9EBB;&#x70E6;&#x7684;&#x5730;&#x65B9;&#x4E3B;&#x8981;&#x4F53;&#x73B0;&#x5728;&#x5BF9;&#x6D4B;&#x8BD5;&#x652F;&#x4ED8;&#x73AF;&#x5883;&#x7684;&#x8981;&#x6C42;&#x4EE5;&#x53CA;&#x82F9;&#x679C;&#x5BA1;&#x6838;&#x65B9;&#x9762;&#x7684;&#x8981;&#x6C42;&#x4E0A;&#x9762;&#x3002;&#x672C;&#x6587;&#x662F;&#x81EA;&#x5DF1;&#x5728;&#x63A5;&#x5165;iOS&#x7684;IAP&#x6A21;&#x5757;&#x7684;&#x7ECF;&#x9A8C;&#x53CA;&#x603B;&#x7ED3;&#xFF0C;&#x53D1;&#x51FA;&#x6765;&#x5206;&#x4EAB;&#x4E0B;&#x3002;&#x5EFA;&#x8BAE;&#x9700;&#x8981;&#x63A5;&#x5165;&#x7684;&#x8BDD;&#x8FD8;&#x662F;&#x6D4F;&#x89C8;&#x4E00;&#x904D;<a href="https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/StoreKitGuide/Introduction.html" target="_blank" rel="external">&#x82F9;&#x679C;&#x5B98;&#x65B9;&#x6587;&#x6863;</a></p>
+<h4 id="&#x6CE8;&#x610F;&#x4E8B;&#x9879;"><a href="#&#x6CE8;&#x610F;&#x4E8B;&#x9879;" class="headerlink" title="&#x6CE8;&#x610F;&#x4E8B;&#x9879;"></a>&#x6CE8;&#x610F;&#x4E8B;&#x9879;</h4><ul class="ui list">
+<li>&#x6D4B;&#x8BD5;&#x652F;&#x4ED8;&#x7684;ipa&#x5FC5;&#x987B;&#x4F7F;&#x7528;[App-Store]&#x8BC1;&#x4E66;</li>
+<li>&#x8D8A;&#x72F1;&#x673A;&#x5668;&#x65E0;&#x6CD5;&#x6D4B;&#x8BD5;IAP</li>
+<li>&#x7528;SandBox&#x8D26;&#x53F7;&#x6D4B;&#x8BD5;&#x652F;&#x4ED8;&#x7684;&#x65F6;&#x5019;,&#x5FC5;&#x987B;&#x628A;&#x5728;&#x7CFB;&#x7EDF;<strong>[&#x8BBE;&#x7F6E;]</strong>&#x91CC;&#x9762;&#x628A;<strong>[Itunes Store &#x4E0E; App Store]</strong>&#x767B;&#x5F55;&#x7684;&#x975E;SandBox&#x8D26;&#x53F7;&#x6CE8;&#x9500;&#x6389;,&#x5426;&#x5219;&#x5411;&#x82F9;&#x679C;&#x670D;&#x52A1;&#x5668;&#x8BF7;&#x6C42;&#x4E0D;&#x5230;&#x8BA2;&#x5355;&#x4FE1;&#x606F;</li>
+<li>Sandbox&#x8D26;&#x53F7;&#x4E0D;&#x8981;&#x5728;&#x6B63;&#x5F0F;&#x652F;&#x4ED8;&#x73AF;&#x5883;&#x767B;&#x9646;&#x652F;&#x4ED8;&#xFF0C;&#x767B;&#x9646;&#x8FC7;&#x7684;&#x6B63;&#x5F0F;&#x652F;&#x4ED8;&#x73AF;&#x5883;&#x7684;SandBox&#x8D26;&#x53F7;&#x4F1A;&#x5931;&#x6548;</li>
+<li>&#x6240;&#x6709;&#x5728;itunes&#x4E0A;&#x914D;&#x7F6E;&#x7684;&#x5546;&#x54C1;&#x90FD;&#x5FC5;&#x987B;&#x53EF;&#x8D2D;&#x4E70;,&#x4E0D;&#x80FD;&#x6709;&#x67D0;&#x4E9B;&#x5546;&#x54C1;&#x6839;&#x636E;&#x5546;&#x6237;&#x81EA;&#x5DF1;&#x7684;&#x670D;&#x52A1;&#x5668;&#x7684;&#x6570;&#x636E;&#x5728;&#x67D0;&#x4E2A;&#x65F6;&#x671F;&#x51FA;&#x73B0;&#x514D;&#x8D39;&#x7684;&#x60C5;&#x51B5;</li>
+<li>&#x5546;&#x54C1;&#x5217;&#x8868;&#x4E0D;&#x80FD;&#x6309;&#x7167;&#x67D0;&#x4E9B;&#x7279;&#x5B9A;&#x6761;&#x4EF6;&#x8FDB;&#x884C;&#x6392;&#x5E8F;(&#x6BD4;&#x5982;&#x8BF4;&#x4E0B;&#x8F7D;&#x91CF;)</li>
+<li>&#x975E;&#x6D88;&#x8017;&#x578B;&#x5546;&#x54C1;&#x5FC5;&#x987B;&#x7684;&#x6709;&#x6062;&#x590D;&#x5546;&#x54C1;&#x529F;&#x80FD;</li>
+<li>&#x975E;&#x6D88;&#x8017;&#x7C7B;&#x578B;&#x7684;&#x5546;&#x54C1;&#x4E0D;&#x8981;&#x548C;&#x5546;&#x6237;&#x81EA;&#x5DF1;&#x7684;&#x670D;&#x52A1;&#x5668;&#x5173;&#x8054;</li>
 </ul>
 <a id="more"></a> 
-<h4 id="关于证书"><a href="#关于证书" class="headerlink" title="关于证书"></a>关于证书</h4><table>
+<h4 id="&#x5173;&#x4E8E;&#x8BC1;&#x4E66;"><a href="#&#x5173;&#x4E8E;&#x8BC1;&#x4E66;" class="headerlink" title="&#x5173;&#x4E8E;&#x8BC1;&#x4E66;"></a>&#x5173;&#x4E8E;&#x8BC1;&#x4E66;</h4><table>
 <thead>
 <tr>
-<th>证书名称</th>
-<th style="text-align:center">证书类型</th>
-<th>适用场景</th>
+<th>&#x8BC1;&#x4E66;&#x540D;&#x79F0;</th>
+<th style="text-align:center">&#x8BC1;&#x4E66;&#x7C7B;&#x578B;</th>
+<th>&#x9002;&#x7528;&#x573A;&#x666F;</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Ad-hoc</td>
-<td style="text-align:center">内测版本</td>
-<td>需要把设备Identifier添加到证书才可安装</td>
+<td style="text-align:center">&#x5185;&#x6D4B;&#x7248;&#x672C;</td>
+<td>&#x9700;&#x8981;&#x628A;&#x8BBE;&#x5907;Identifier&#x6DFB;&#x52A0;&#x5230;&#x8BC1;&#x4E66;&#x624D;&#x53EF;&#x5B89;&#x88C5;</td>
 </tr>
 <tr>
 <td>In-house</td>
-<td style="text-align:center">企业版本</td>
-<td>任何iOS设备都可以安装</td>
+<td style="text-align:center">&#x4F01;&#x4E1A;&#x7248;&#x672C;</td>
+<td>&#x4EFB;&#x4F55;iOS&#x8BBE;&#x5907;&#x90FD;&#x53EF;&#x4EE5;&#x5B89;&#x88C5;</td>
 </tr>
 <tr>
 <td>App-Store</td>
-<td style="text-align:center">App-Store版本</td>
-<td>上传到App-Store审核过了，在App-Store中安装</td>
+<td style="text-align:center">App-Store&#x7248;&#x672C;</td>
+<td>&#x4E0A;&#x4F20;&#x5230;App-Store&#x5BA1;&#x6838;&#x8FC7;&#x4E86;&#xFF0C;&#x5728;App-Store&#x4E2D;&#x5B89;&#x88C5;</td>
 </tr>
 </tbody>
 </table>
-<p>说明: 如果需要接入IAP则需要用App-Store版本证书，在开发调试的时候我们使用App-Store Developer证书和SandBox账号即可调试。平时我们提交到fir.im的包可以用In-house证书，也可用Ad-hoc证书。关于证书的更多介绍可以参考<a href="https://www.pgyer.com/doc/view/app_developer_account" target="_blank" rel="external">这里</a>。</p>
-<h4 id="商品配置"><a href="#商品配置" class="headerlink" title="商品配置"></a>商品配置</h4><ul>
-<li><p>首先在 <strong>[iTunes Connect]</strong> 构建一个App版本，然后我们在<strong>[Xcode]</strong>里面或者<strong>[Application Loader]</strong>上传一个App到App-Store。上传好之后我们在<strong>[iTunes Connect]</strong>中的<strong>[我的App]</strong>中看到我们刚上传的App。(配置IAP商品之前必须先上传版本，苹果要求的)</p>
+<p>&#x8BF4;&#x660E;: &#x5982;&#x679C;&#x9700;&#x8981;&#x63A5;&#x5165;IAP&#x5219;&#x9700;&#x8981;&#x7528;App-Store&#x7248;&#x672C;&#x8BC1;&#x4E66;&#xFF0C;&#x5728;&#x5F00;&#x53D1;&#x8C03;&#x8BD5;&#x7684;&#x65F6;&#x5019;&#x6211;&#x4EEC;&#x4F7F;&#x7528;App-Store Developer&#x8BC1;&#x4E66;&#x548C;SandBox&#x8D26;&#x53F7;&#x5373;&#x53EF;&#x8C03;&#x8BD5;&#x3002;&#x5E73;&#x65F6;&#x6211;&#x4EEC;&#x63D0;&#x4EA4;&#x5230;fir.im&#x7684;&#x5305;&#x53EF;&#x4EE5;&#x7528;In-house&#x8BC1;&#x4E66;&#xFF0C;&#x4E5F;&#x53EF;&#x7528;Ad-hoc&#x8BC1;&#x4E66;&#x3002;&#x5173;&#x4E8E;&#x8BC1;&#x4E66;&#x7684;&#x66F4;&#x591A;&#x4ECB;&#x7ECD;&#x53EF;&#x4EE5;&#x53C2;&#x8003;<a href="https://www.pgyer.com/doc/view/app_developer_account" target="_blank" rel="external">&#x8FD9;&#x91CC;</a>&#x3002;</p>
+<h4 id="&#x5546;&#x54C1;&#x914D;&#x7F6E;"><a href="#&#x5546;&#x54C1;&#x914D;&#x7F6E;" class="headerlink" title="&#x5546;&#x54C1;&#x914D;&#x7F6E;"></a>&#x5546;&#x54C1;&#x914D;&#x7F6E;</h4><ul class="ui list">
+<li><p>&#x9996;&#x5148;&#x5728; <strong>[iTunes Connect]</strong> &#x6784;&#x5EFA;&#x4E00;&#x4E2A;App&#x7248;&#x672C;&#xFF0C;&#x7136;&#x540E;&#x6211;&#x4EEC;&#x5728;<strong>[Xcode]</strong>&#x91CC;&#x9762;&#x6216;&#x8005;<strong>[Application Loader]</strong>&#x4E0A;&#x4F20;&#x4E00;&#x4E2A;App&#x5230;App-Store&#x3002;&#x4E0A;&#x4F20;&#x597D;&#x4E4B;&#x540E;&#x6211;&#x4EEC;&#x5728;<strong>[iTunes Connect]</strong>&#x4E2D;&#x7684;<strong>[&#x6211;&#x7684;App]</strong>&#x4E2D;&#x770B;&#x5230;&#x6211;&#x4EEC;&#x521A;&#x4E0A;&#x4F20;&#x7684;App&#x3002;(&#x914D;&#x7F6E;IAP&#x5546;&#x54C1;&#x4E4B;&#x524D;&#x5FC5;&#x987B;&#x5148;&#x4E0A;&#x4F20;&#x7248;&#x672C;&#xFF0C;&#x82F9;&#x679C;&#x8981;&#x6C42;&#x7684;)</p>
 </li>
-<li><p>在 <strong>[iTunes Connect]</strong> 打开我的App中的<strong>[功能]</strong>可以看到配置App内购项目的选项<strong>[App内购项目]</strong>。然后添加对应的商品就可以了。这里有个地方需要注意的是商品的类型，具体的商品类型说明可以看<a href="https://developer.apple.com/library/content/documentation/LanguagesUtilities/Conceptual/iTunesConnectInAppPurchase_Guide/Chapters/CreatingInAppPurchaseProducts.html#//apple_ref/doc/uid/TP40013727-CH3-SW1" target="_blank" rel="external">这里</a>。切记要选对商品类型，在此说下如果是游戏中的虚拟金币之类的商品的话就选择 <strong>Consumable</strong> 类型即可。</p>
+<li><p>&#x5728; <strong>[iTunes Connect]</strong> &#x6253;&#x5F00;&#x6211;&#x7684;App&#x4E2D;&#x7684;<strong>[&#x529F;&#x80FD;]</strong>&#x53EF;&#x4EE5;&#x770B;&#x5230;&#x914D;&#x7F6E;App&#x5185;&#x8D2D;&#x9879;&#x76EE;&#x7684;&#x9009;&#x9879;<strong>[App&#x5185;&#x8D2D;&#x9879;&#x76EE;]</strong>&#x3002;&#x7136;&#x540E;&#x6DFB;&#x52A0;&#x5BF9;&#x5E94;&#x7684;&#x5546;&#x54C1;&#x5C31;&#x53EF;&#x4EE5;&#x4E86;&#x3002;&#x8FD9;&#x91CC;&#x6709;&#x4E2A;&#x5730;&#x65B9;&#x9700;&#x8981;&#x6CE8;&#x610F;&#x7684;&#x662F;&#x5546;&#x54C1;&#x7684;&#x7C7B;&#x578B;&#xFF0C;&#x5177;&#x4F53;&#x7684;&#x5546;&#x54C1;&#x7C7B;&#x578B;&#x8BF4;&#x660E;&#x53EF;&#x4EE5;&#x770B;<a href="https://developer.apple.com/library/content/documentation/LanguagesUtilities/Conceptual/iTunesConnectInAppPurchase_Guide/Chapters/CreatingInAppPurchaseProducts.html#//apple_ref/doc/uid/TP40013727-CH3-SW1" target="_blank" rel="external">&#x8FD9;&#x91CC;</a>&#x3002;&#x5207;&#x8BB0;&#x8981;&#x9009;&#x5BF9;&#x5546;&#x54C1;&#x7C7B;&#x578B;&#xFF0C;&#x5728;&#x6B64;&#x8BF4;&#x4E0B;&#x5982;&#x679C;&#x662F;&#x6E38;&#x620F;&#x4E2D;&#x7684;&#x865A;&#x62DF;&#x91D1;&#x5E01;&#x4E4B;&#x7C7B;&#x7684;&#x5546;&#x54C1;&#x7684;&#x8BDD;&#x5C31;&#x9009;&#x62E9; <strong>Consumable</strong> &#x7C7B;&#x578B;&#x5373;&#x53EF;&#x3002;</p>
 </li>
-<li><p>在 <strong>[iTunes Connect]</strong> 添加Sandbox测试账号。</p>
+<li><p>&#x5728; <strong>[iTunes Connect]</strong> &#x6DFB;&#x52A0;Sandbox&#x6D4B;&#x8BD5;&#x8D26;&#x53F7;&#x3002;</p>
 </li>
 </ul>
-<h4 id="购买流程"><a href="#购买流程" class="headerlink" title="购买流程"></a>购买流程</h4><p><img src="/images/unity_in_app_purchase/1.png" alt=""></p>
-<h4 id="订单收据验证"><a href="#订单收据验证" class="headerlink" title="订单收据验证"></a>订单收据验证</h4><ul>
-<li><p>两种验证方式</p>
+<h4 id="&#x8D2D;&#x4E70;&#x6D41;&#x7A0B;"><a href="#&#x8D2D;&#x4E70;&#x6D41;&#x7A0B;" class="headerlink" title="&#x8D2D;&#x4E70;&#x6D41;&#x7A0B;"></a>&#x8D2D;&#x4E70;&#x6D41;&#x7A0B;</h4><p><a class="magnific-img" href="/images/unity_in_app_purchase/1.png"><img src="/images/unity_in_app_purchase/1.png" alt="" class="ui centered image"></a></p>
+<h4 id="&#x8BA2;&#x5355;&#x6536;&#x636E;&#x9A8C;&#x8BC1;"><a href="#&#x8BA2;&#x5355;&#x6536;&#x636E;&#x9A8C;&#x8BC1;" class="headerlink" title="&#x8BA2;&#x5355;&#x6536;&#x636E;&#x9A8C;&#x8BC1;"></a>&#x8BA2;&#x5355;&#x6536;&#x636E;&#x9A8C;&#x8BC1;</h4><ul class="ui list">
+<li><p>&#x4E24;&#x79CD;&#x9A8C;&#x8BC1;&#x65B9;&#x5F0F;</p>
 <ul>
-<li><p>客户端本地验证</p>
+<li><p>&#x5BA2;&#x6237;&#x7AEF;&#x672C;&#x5730;&#x9A8C;&#x8BC1;</p>
 </li>
-<li><p>发送receipt数据给游戏服务器，让游戏服务器向AppStore服务器验证(我现在用的这种，安全)</p>
-</li>
-</ul>
-<p>如果在购买的时候没有进行receipt验证退出app了，那么在下次购买的时候会storekit会首先查询receipt数据把未验证订单先验证了才会进行接下来的购买。</p>
-</li>
-<li><p>收据(receipt)</p>
-<p>对于消费类型的商品(Consumable)收据会在验证之后自动删除掉,对于非消费类型的商品(Non-Consumable)每次购买的订单都保存在了收据里面，并且收据文件不会删除。如果用户手动把receipt文件删除了的话，那么在下次app启动的时候会自动生成一个和之前一样的receipt数据文件并且在下次购买的时候会自动验证。</p>
+<li><p>&#x53D1;&#x9001;receipt&#x6570;&#x636E;&#x7ED9;&#x6E38;&#x620F;&#x670D;&#x52A1;&#x5668;&#xFF0C;&#x8BA9;&#x6E38;&#x620F;&#x670D;&#x52A1;&#x5668;&#x5411;AppStore&#x670D;&#x52A1;&#x5668;&#x9A8C;&#x8BC1;(&#x6211;&#x73B0;&#x5728;&#x7528;&#x7684;&#x8FD9;&#x79CD;&#xFF0C;&#x5B89;&#x5168;)</p>
 </li>
 </ul>
-<h4 id="丢单的考虑"><a href="#丢单的考虑" class="headerlink" title="丢单的考虑"></a>丢单的考虑</h4><p>整个支付过程从表面上看有可能丢单的地方是在客户端支付完成的时候准备向游戏服务器发送receipt数据进行验证的时候，如果这个时候客户端退出游戏了(比如用户按Home键退出游戏杀掉进程)，那么此时用户已经付费了但是收不到商品。经过验证在这个过程中如果我们在购买完成的时候没有调用storekit的完成订单API的话也会导致每次app重新启动的时候storekit会回调订单完成的接口直到你调用finishTransaction才会停止。注意storekit回调成功的前提是你的购买监听API已经实例化，在这里提供的对应的是IAPHelper类，必须在app启动的时候就实例化。所以我们的做法是先向游戏服务器进行订单验证，验证成功之后在调用storekit的finishTrasaction，那么整个过程基本上就不会有丢单的情况了。</p>
-<h4 id="支付过程"><a href="#支付过程" class="headerlink" title="支付过程"></a>支付过程</h4><blockquote>
-<p>具体代码见<a href="https://pan.baidu.com/s/1hsHsZIG" target="_blank" rel="external">这里</a>(密码是qp4f)，下面只列出部分要讲解的代码</p>
+<p>&#x5982;&#x679C;&#x5728;&#x8D2D;&#x4E70;&#x7684;&#x65F6;&#x5019;&#x6CA1;&#x6709;&#x8FDB;&#x884C;receipt&#x9A8C;&#x8BC1;&#x9000;&#x51FA;app&#x4E86;&#xFF0C;&#x90A3;&#x4E48;&#x5728;&#x4E0B;&#x6B21;&#x8D2D;&#x4E70;&#x7684;&#x65F6;&#x5019;&#x4F1A;storekit&#x4F1A;&#x9996;&#x5148;&#x67E5;&#x8BE2;receipt&#x6570;&#x636E;&#x628A;&#x672A;&#x9A8C;&#x8BC1;&#x8BA2;&#x5355;&#x5148;&#x9A8C;&#x8BC1;&#x4E86;&#x624D;&#x4F1A;&#x8FDB;&#x884C;&#x63A5;&#x4E0B;&#x6765;&#x7684;&#x8D2D;&#x4E70;&#x3002;</p>
+</li>
+<li><p>&#x6536;&#x636E;(receipt)</p>
+<p>&#x5BF9;&#x4E8E;&#x6D88;&#x8D39;&#x7C7B;&#x578B;&#x7684;&#x5546;&#x54C1;(Consumable)&#x6536;&#x636E;&#x4F1A;&#x5728;&#x9A8C;&#x8BC1;&#x4E4B;&#x540E;&#x81EA;&#x52A8;&#x5220;&#x9664;&#x6389;,&#x5BF9;&#x4E8E;&#x975E;&#x6D88;&#x8D39;&#x7C7B;&#x578B;&#x7684;&#x5546;&#x54C1;(Non-Consumable)&#x6BCF;&#x6B21;&#x8D2D;&#x4E70;&#x7684;&#x8BA2;&#x5355;&#x90FD;&#x4FDD;&#x5B58;&#x5728;&#x4E86;&#x6536;&#x636E;&#x91CC;&#x9762;&#xFF0C;&#x5E76;&#x4E14;&#x6536;&#x636E;&#x6587;&#x4EF6;&#x4E0D;&#x4F1A;&#x5220;&#x9664;&#x3002;&#x5982;&#x679C;&#x7528;&#x6237;&#x624B;&#x52A8;&#x628A;receipt&#x6587;&#x4EF6;&#x5220;&#x9664;&#x4E86;&#x7684;&#x8BDD;&#xFF0C;&#x90A3;&#x4E48;&#x5728;&#x4E0B;&#x6B21;app&#x542F;&#x52A8;&#x7684;&#x65F6;&#x5019;&#x4F1A;&#x81EA;&#x52A8;&#x751F;&#x6210;&#x4E00;&#x4E2A;&#x548C;&#x4E4B;&#x524D;&#x4E00;&#x6837;&#x7684;receipt&#x6570;&#x636E;&#x6587;&#x4EF6;&#x5E76;&#x4E14;&#x5728;&#x4E0B;&#x6B21;&#x8D2D;&#x4E70;&#x7684;&#x65F6;&#x5019;&#x4F1A;&#x81EA;&#x52A8;&#x9A8C;&#x8BC1;&#x3002;</p>
+</li>
+</ul>
+<h4 id="&#x4E22;&#x5355;&#x7684;&#x8003;&#x8651;"><a href="#&#x4E22;&#x5355;&#x7684;&#x8003;&#x8651;" class="headerlink" title="&#x4E22;&#x5355;&#x7684;&#x8003;&#x8651;"></a>&#x4E22;&#x5355;&#x7684;&#x8003;&#x8651;</h4><p>&#x6574;&#x4E2A;&#x652F;&#x4ED8;&#x8FC7;&#x7A0B;&#x4ECE;&#x8868;&#x9762;&#x4E0A;&#x770B;&#x6709;&#x53EF;&#x80FD;&#x4E22;&#x5355;&#x7684;&#x5730;&#x65B9;&#x662F;&#x5728;&#x5BA2;&#x6237;&#x7AEF;&#x652F;&#x4ED8;&#x5B8C;&#x6210;&#x7684;&#x65F6;&#x5019;&#x51C6;&#x5907;&#x5411;&#x6E38;&#x620F;&#x670D;&#x52A1;&#x5668;&#x53D1;&#x9001;receipt&#x6570;&#x636E;&#x8FDB;&#x884C;&#x9A8C;&#x8BC1;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x5982;&#x679C;&#x8FD9;&#x4E2A;&#x65F6;&#x5019;&#x5BA2;&#x6237;&#x7AEF;&#x9000;&#x51FA;&#x6E38;&#x620F;&#x4E86;(&#x6BD4;&#x5982;&#x7528;&#x6237;&#x6309;Home&#x952E;&#x9000;&#x51FA;&#x6E38;&#x620F;&#x6740;&#x6389;&#x8FDB;&#x7A0B;)&#xFF0C;&#x90A3;&#x4E48;&#x6B64;&#x65F6;&#x7528;&#x6237;&#x5DF2;&#x7ECF;&#x4ED8;&#x8D39;&#x4E86;&#x4F46;&#x662F;&#x6536;&#x4E0D;&#x5230;&#x5546;&#x54C1;&#x3002;&#x7ECF;&#x8FC7;&#x9A8C;&#x8BC1;&#x5728;&#x8FD9;&#x4E2A;&#x8FC7;&#x7A0B;&#x4E2D;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x5728;&#x8D2D;&#x4E70;&#x5B8C;&#x6210;&#x7684;&#x65F6;&#x5019;&#x6CA1;&#x6709;&#x8C03;&#x7528;storekit&#x7684;&#x5B8C;&#x6210;&#x8BA2;&#x5355;API&#x7684;&#x8BDD;&#x4E5F;&#x4F1A;&#x5BFC;&#x81F4;&#x6BCF;&#x6B21;app&#x91CD;&#x65B0;&#x542F;&#x52A8;&#x7684;&#x65F6;&#x5019;storekit&#x4F1A;&#x56DE;&#x8C03;&#x8BA2;&#x5355;&#x5B8C;&#x6210;&#x7684;&#x63A5;&#x53E3;&#x76F4;&#x5230;&#x4F60;&#x8C03;&#x7528;finishTransaction&#x624D;&#x4F1A;&#x505C;&#x6B62;&#x3002;&#x6CE8;&#x610F;storekit&#x56DE;&#x8C03;&#x6210;&#x529F;&#x7684;&#x524D;&#x63D0;&#x662F;&#x4F60;&#x7684;&#x8D2D;&#x4E70;&#x76D1;&#x542C;API&#x5DF2;&#x7ECF;&#x5B9E;&#x4F8B;&#x5316;&#xFF0C;&#x5728;&#x8FD9;&#x91CC;&#x63D0;&#x4F9B;&#x7684;&#x5BF9;&#x5E94;&#x7684;&#x662F;IAPHelper&#x7C7B;&#xFF0C;&#x5FC5;&#x987B;&#x5728;app&#x542F;&#x52A8;&#x7684;&#x65F6;&#x5019;&#x5C31;&#x5B9E;&#x4F8B;&#x5316;&#x3002;&#x6240;&#x4EE5;&#x6211;&#x4EEC;&#x7684;&#x505A;&#x6CD5;&#x662F;&#x5148;&#x5411;&#x6E38;&#x620F;&#x670D;&#x52A1;&#x5668;&#x8FDB;&#x884C;&#x8BA2;&#x5355;&#x9A8C;&#x8BC1;&#xFF0C;&#x9A8C;&#x8BC1;&#x6210;&#x529F;&#x4E4B;&#x540E;&#x5728;&#x8C03;&#x7528;storekit&#x7684;finishTrasaction&#xFF0C;&#x90A3;&#x4E48;&#x6574;&#x4E2A;&#x8FC7;&#x7A0B;&#x57FA;&#x672C;&#x4E0A;&#x5C31;&#x4E0D;&#x4F1A;&#x6709;&#x4E22;&#x5355;&#x7684;&#x60C5;&#x51B5;&#x4E86;&#x3002;</p>
+<h4 id="&#x652F;&#x4ED8;&#x8FC7;&#x7A0B;"><a href="#&#x652F;&#x4ED8;&#x8FC7;&#x7A0B;" class="headerlink" title="&#x652F;&#x4ED8;&#x8FC7;&#x7A0B;"></a>&#x652F;&#x4ED8;&#x8FC7;&#x7A0B;</h4><blockquote>
+<p>&#x5177;&#x4F53;&#x4EE3;&#x7801;&#x89C1;<a href="https://pan.baidu.com/s/1hsHsZIG" target="_blank" rel="external">&#x8FD9;&#x91CC;</a>(&#x5BC6;&#x7801;&#x662F;qp4f)&#xFF0C;&#x4E0B;&#x9762;&#x53EA;&#x5217;&#x51FA;&#x90E8;&#x5206;&#x8981;&#x8BB2;&#x89E3;&#x7684;&#x4EE3;&#x7801;</p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line">//IAPHelper.mm</span><br><span class="line"></span><br><span class="line">- (void)getProductInfoById:(NSString*)productID</span><br><span class="line">&#123;</span><br><span class="line">    NSLog(@&quot;--productId: %@&quot;, productID);</span><br><span class="line">    </span><br><span class="line">    NSArray *product = nil;</span><br><span class="line">    product = [[NSArray alloc] initWithObjects:productID, nil];</span><br><span class="line">    </span><br><span class="line">    NSSet *set = [NSSet setWithArray:product];</span><br><span class="line">    SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:set];</span><br><span class="line">    </span><br><span class="line">    //设置并启动监听</span><br><span class="line">    request.delegate = self;</span><br><span class="line">    [request start];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//这个函数是getProductInfoById查询订单的回调函数</span><br><span class="line">//一般查询不到商品信息有三种情况: </span><br><span class="line">//1.没有在iTunes中没有配置对应商品 </span><br><span class="line">//2.没有使用Appstore Developer证书</span><br><span class="line">//3.使用了越狱的机器</span><br><span class="line"></span><br><span class="line">- (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response</span><br><span class="line">&#123;</span><br><span class="line">    NSArray *myProduct = response.products;</span><br><span class="line">    if (myProduct.count == 0)</span><br><span class="line">    &#123;</span><br><span class="line">        UnitySendMessage(self.mCallBackObjectName.UTF8String, &quot;PreBuyProductFailed&quot;, &quot;ProductNotExist&quot;);</span><br><span class="line">        </span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    //如果iOS已经登录了[iTunes Store与App Store]账号，则这一步会失败</span><br><span class="line">    SKPayment * payment = [SKPayment paymentWithProduct:myProduct[0]];</span><br><span class="line">    [[SKPaymentQueue defaultQueue] addPayment:payment];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions</span><br><span class="line">&#123;</span><br><span class="line">    for (SKPaymentTransaction *transaction in transactions) &#123;</span><br><span class="line">        switch (transaction.transactionState) &#123;</span><br><span class="line">                // Call the appropriate custom method for the transaction state.</span><br><span class="line">            case SKPaymentTransactionStatePurchasing:</span><br><span class="line">                [self showTransactionAsInProgress:transaction deferred:NO];</span><br><span class="line">                break;</span><br><span class="line">            case SKPaymentTransactionStateDeferred:</span><br><span class="line">                [self showTransactionAsInProgress:transaction deferred:YES];</span><br><span class="line">                break;</span><br><span class="line">            case SKPaymentTransactionStateFailed:</span><br><span class="line">                [self failedTransaction:transaction];</span><br><span class="line">                break;</span><br><span class="line">            case SKPaymentTransactionStatePurchased:</span><br><span class="line">	             //这个函数是支付成功之后App Store服务器会回调的函数,里面包含了Receipt数据</span><br><span class="line">	             //我这边的处理是先把这个数据发送给Mono层，通过Mono层的网路接口把数据发给自己的商户服务器</span><br><span class="line">	             //商户服务器会把Receipt数据发往App Store服务器进行验证，再把验证结果返回给客户端，如果验证成功</span><br><span class="line">	             //这次支付才算完成</span><br><span class="line">                [self verifyPurchaseWithPaymentTransaction:transaction];</span><br><span class="line">                break;</span><br><span class="line">            case SKPaymentTransactionStateRestored:</span><br><span class="line">                [self restoreTransaction:transaction];</span><br><span class="line">                break;</span><br><span class="line">            default:</span><br><span class="line">                // For debugging</span><br><span class="line">                NSLog(@&quot;Unexpected transaction state %@&quot;, @(transaction.transactionState));</span><br><span class="line">                break;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//这个函数是服务器验证成功之后必须调用的函数，</span><br><span class="line">//作用就是将购买完成的订单从peymentQueue中移除，否则这个订单会在你的机器上一直</span><br><span class="line">//保留，算作一个未完成的订单。就算你的App删除重装也没有用。</span><br><span class="line">//transactionIdentifier是每个订单的唯一表示ID</span><br><span class="line">- (void) completeTransactionByIdentifier:(NSString*)transactionIdentifier</span><br><span class="line">&#123;</span><br><span class="line">     NSArray&lt;SKPaymentTransaction *&gt; * transactions = [[SKPaymentQueue defaultQueue] transactions];</span><br><span class="line">    </span><br><span class="line">    for (SKPaymentTransaction *transaction in transactions)</span><br><span class="line">    &#123;</span><br><span class="line">        NSLog(@&quot;completeTransactionByIdentifier %@ ---  %@&quot;, transaction.transactionIdentifier, transactionIdentifier);</span><br><span class="line">        </span><br><span class="line">        BOOL result = [transaction.transactionIdentifier compare:transactionIdentifier];</span><br><span class="line">        </span><br><span class="line">        if (NULL != transaction &amp;&amp; !result)</span><br><span class="line">        &#123;</span><br><span class="line">            [self completeTransaction:transaction];</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void) completeTransaction:(SKPaymentTransaction*)transaction</span><br><span class="line">&#123;</span><br><span class="line">    NSLog(@&quot;completeTransaction: %@&quot;, transaction.transactionIdentifier);</span><br><span class="line">    //NSLog(@&quot;completeTransaction: %@&quot;, transaction.transactionIdentifier);</span><br><span class="line"></span><br><span class="line">    // Remove the transaction from the payment queue.</span><br><span class="line">    [[SKPaymentQueue defaultQueue] finishTransaction: transaction];</span><br><span class="line">    </span><br><span class="line">    // Your application should implement these two methods.</span><br><span class="line">    NSString * productIdentifier = transaction.payment.productIdentifier;</span><br><span class="line">    </span><br><span class="line">    if([productIdentifier length] &gt; 0)</span><br><span class="line">    &#123;</span><br><span class="line">        NSLog(@&quot;productIdentifier : %@&quot;, productIdentifier);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    UnitySendMessage(self.mCallBackObjectName.UTF8String, &quot;BuyProductSuccess&quot;, productIdentifier.UTF8String);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line">//IAPHelper.mm</span><br><span class="line"></span><br><span class="line">- (void)getProductInfoById:(NSString*)productID</span><br><span class="line">{</span><br><span class="line">    NSLog(@&quot;--productId: %@&quot;, productID);</span><br><span class="line">    </span><br><span class="line">    NSArray *product = nil;</span><br><span class="line">    product = [[NSArray alloc] initWithObjects:productID, nil];</span><br><span class="line">    </span><br><span class="line">    NSSet *set = [NSSet setWithArray:product];</span><br><span class="line">    SKProductsRequest *request = [[SKProductsRequest alloc] initWithProductIdentifiers:set];</span><br><span class="line">    </span><br><span class="line">    //&#x8BBE;&#x7F6E;&#x5E76;&#x542F;&#x52A8;&#x76D1;&#x542C;</span><br><span class="line">    request.delegate = self;</span><br><span class="line">    [request start];</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line">//&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x662F;getProductInfoById&#x67E5;&#x8BE2;&#x8BA2;&#x5355;&#x7684;&#x56DE;&#x8C03;&#x51FD;&#x6570;</span><br><span class="line">//&#x4E00;&#x822C;&#x67E5;&#x8BE2;&#x4E0D;&#x5230;&#x5546;&#x54C1;&#x4FE1;&#x606F;&#x6709;&#x4E09;&#x79CD;&#x60C5;&#x51B5;: </span><br><span class="line">//1.&#x6CA1;&#x6709;&#x5728;iTunes&#x4E2D;&#x6CA1;&#x6709;&#x914D;&#x7F6E;&#x5BF9;&#x5E94;&#x5546;&#x54C1; </span><br><span class="line">//2.&#x6CA1;&#x6709;&#x4F7F;&#x7528;Appstore Developer&#x8BC1;&#x4E66;</span><br><span class="line">//3.&#x4F7F;&#x7528;&#x4E86;&#x8D8A;&#x72F1;&#x7684;&#x673A;&#x5668;</span><br><span class="line"></span><br><span class="line">- (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response</span><br><span class="line">{</span><br><span class="line">    NSArray *myProduct = response.products;</span><br><span class="line">    if (myProduct.count == 0)</span><br><span class="line">    {</span><br><span class="line">        UnitySendMessage(self.mCallBackObjectName.UTF8String, &quot;PreBuyProductFailed&quot;, &quot;ProductNotExist&quot;);</span><br><span class="line">        </span><br><span class="line">        return;</span><br><span class="line">    }</span><br><span class="line">    </span><br><span class="line">    //&#x5982;&#x679C;iOS&#x5DF2;&#x7ECF;&#x767B;&#x5F55;&#x4E86;[iTunes Store&#x4E0E;App Store]&#x8D26;&#x53F7;&#xFF0C;&#x5219;&#x8FD9;&#x4E00;&#x6B65;&#x4F1A;&#x5931;&#x8D25;</span><br><span class="line">    SKPayment * payment = [SKPayment paymentWithProduct:myProduct[0]];</span><br><span class="line">    [[SKPaymentQueue defaultQueue] addPayment:payment];</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions</span><br><span class="line">{</span><br><span class="line">    for (SKPaymentTransaction *transaction in transactions) {</span><br><span class="line">        switch (transaction.transactionState) {</span><br><span class="line">                // Call the appropriate custom method for the transaction state.</span><br><span class="line">            case SKPaymentTransactionStatePurchasing:</span><br><span class="line">                [self showTransactionAsInProgress:transaction deferred:NO];</span><br><span class="line">                break;</span><br><span class="line">            case SKPaymentTransactionStateDeferred:</span><br><span class="line">                [self showTransactionAsInProgress:transaction deferred:YES];</span><br><span class="line">                break;</span><br><span class="line">            case SKPaymentTransactionStateFailed:</span><br><span class="line">                [self failedTransaction:transaction];</span><br><span class="line">                break;</span><br><span class="line">            case SKPaymentTransactionStatePurchased:</span><br><span class="line">	             //&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x662F;&#x652F;&#x4ED8;&#x6210;&#x529F;&#x4E4B;&#x540E;App Store&#x670D;&#x52A1;&#x5668;&#x4F1A;&#x56DE;&#x8C03;&#x7684;&#x51FD;&#x6570;,&#x91CC;&#x9762;&#x5305;&#x542B;&#x4E86;Receipt&#x6570;&#x636E;</span><br><span class="line">	             //&#x6211;&#x8FD9;&#x8FB9;&#x7684;&#x5904;&#x7406;&#x662F;&#x5148;&#x628A;&#x8FD9;&#x4E2A;&#x6570;&#x636E;&#x53D1;&#x9001;&#x7ED9;Mono&#x5C42;&#xFF0C;&#x901A;&#x8FC7;Mono&#x5C42;&#x7684;&#x7F51;&#x8DEF;&#x63A5;&#x53E3;&#x628A;&#x6570;&#x636E;&#x53D1;&#x7ED9;&#x81EA;&#x5DF1;&#x7684;&#x5546;&#x6237;&#x670D;&#x52A1;&#x5668;</span><br><span class="line">	             //&#x5546;&#x6237;&#x670D;&#x52A1;&#x5668;&#x4F1A;&#x628A;Receipt&#x6570;&#x636E;&#x53D1;&#x5F80;App Store&#x670D;&#x52A1;&#x5668;&#x8FDB;&#x884C;&#x9A8C;&#x8BC1;&#xFF0C;&#x518D;&#x628A;&#x9A8C;&#x8BC1;&#x7ED3;&#x679C;&#x8FD4;&#x56DE;&#x7ED9;&#x5BA2;&#x6237;&#x7AEF;&#xFF0C;&#x5982;&#x679C;&#x9A8C;&#x8BC1;&#x6210;&#x529F;</span><br><span class="line">	             //&#x8FD9;&#x6B21;&#x652F;&#x4ED8;&#x624D;&#x7B97;&#x5B8C;&#x6210;</span><br><span class="line">                [self verifyPurchaseWithPaymentTransaction:transaction];</span><br><span class="line">                break;</span><br><span class="line">            case SKPaymentTransactionStateRestored:</span><br><span class="line">                [self restoreTransaction:transaction];</span><br><span class="line">                break;</span><br><span class="line">            default:</span><br><span class="line">                // For debugging</span><br><span class="line">                NSLog(@&quot;Unexpected transaction state %@&quot;, @(transaction.transactionState));</span><br><span class="line">                break;</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x662F;&#x670D;&#x52A1;&#x5668;&#x9A8C;&#x8BC1;&#x6210;&#x529F;&#x4E4B;&#x540E;&#x5FC5;&#x987B;&#x8C03;&#x7528;&#x7684;&#x51FD;&#x6570;&#xFF0C;</span><br><span class="line">//&#x4F5C;&#x7528;&#x5C31;&#x662F;&#x5C06;&#x8D2D;&#x4E70;&#x5B8C;&#x6210;&#x7684;&#x8BA2;&#x5355;&#x4ECE;peymentQueue&#x4E2D;&#x79FB;&#x9664;&#xFF0C;&#x5426;&#x5219;&#x8FD9;&#x4E2A;&#x8BA2;&#x5355;&#x4F1A;&#x5728;&#x4F60;&#x7684;&#x673A;&#x5668;&#x4E0A;&#x4E00;&#x76F4;</span><br><span class="line">//&#x4FDD;&#x7559;&#xFF0C;&#x7B97;&#x4F5C;&#x4E00;&#x4E2A;&#x672A;&#x5B8C;&#x6210;&#x7684;&#x8BA2;&#x5355;&#x3002;&#x5C31;&#x7B97;&#x4F60;&#x7684;App&#x5220;&#x9664;&#x91CD;&#x88C5;&#x4E5F;&#x6CA1;&#x6709;&#x7528;&#x3002;</span><br><span class="line">//transactionIdentifier&#x662F;&#x6BCF;&#x4E2A;&#x8BA2;&#x5355;&#x7684;&#x552F;&#x4E00;&#x8868;&#x793A;ID</span><br><span class="line">- (void) completeTransactionByIdentifier:(NSString*)transactionIdentifier</span><br><span class="line">{</span><br><span class="line">     NSArray&lt;SKPaymentTransaction *&gt; * transactions = [[SKPaymentQueue defaultQueue] transactions];</span><br><span class="line">    </span><br><span class="line">    for (SKPaymentTransaction *transaction in transactions)</span><br><span class="line">    {</span><br><span class="line">        NSLog(@&quot;completeTransactionByIdentifier %@ ---  %@&quot;, transaction.transactionIdentifier, transactionIdentifier);</span><br><span class="line">        </span><br><span class="line">        BOOL result = [transaction.transactionIdentifier compare:transactionIdentifier];</span><br><span class="line">        </span><br><span class="line">        if (NULL != transaction &amp;&amp; !result)</span><br><span class="line">        {</span><br><span class="line">            [self completeTransaction:transaction];</span><br><span class="line">            return;</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line">- (void) completeTransaction:(SKPaymentTransaction*)transaction</span><br><span class="line">{</span><br><span class="line">    NSLog(@&quot;completeTransaction: %@&quot;, transaction.transactionIdentifier);</span><br><span class="line">    //NSLog(@&quot;completeTransaction: %@&quot;, transaction.transactionIdentifier);</span><br><span class="line"></span><br><span class="line">    // Remove the transaction from the payment queue.</span><br><span class="line">    [[SKPaymentQueue defaultQueue] finishTransaction: transaction];</span><br><span class="line">    </span><br><span class="line">    // Your application should implement these two methods.</span><br><span class="line">    NSString * productIdentifier = transaction.payment.productIdentifier;</span><br><span class="line">    </span><br><span class="line">    if([productIdentifier length] &gt; 0)</span><br><span class="line">    {</span><br><span class="line">        NSLog(@&quot;productIdentifier : %@&quot;, productIdentifier);</span><br><span class="line">    }</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    UnitySendMessage(self.mCallBackObjectName.UTF8String, &quot;BuyProductSuccess&quot;, productIdentifier.UTF8String);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
 <p><br></p>
 <hr>
-<h3 id="微信和支付宝支付"><a href="#微信和支付宝支付" class="headerlink" title="微信和支付宝支付"></a>微信和支付宝支付</h3><h4 id="iOS平台"><a href="#iOS平台" class="headerlink" title="iOS平台"></a>iOS平台</h4><p>iOS平台微信和支付宝支付官方的demo已经很全了，可以直接拿过来用。但是Unity平台有一些不一样，Unity工程发布Xcode工程的时候UnityAppController(和AppDelegate一样的启动文件)每次都是动态生成的，所以我们不能照着demo直接把回掉监听写在UnityAppController中，这样每次发布Xcode工程都得改一遍。根据查找发现Unity的UnityAppController是可以重写的,可以看<a href="http://starzero.hatenablog.com/entry/2014/02/24/182646" target="_blank" rel="external">这里</a>。代码看附件, 附件里面包含了Ali和Wechat的SDK可以替换成最新的。</p>
-<h4 id="Android平台"><a href="#Android平台" class="headerlink" title="Android平台"></a>Android平台</h4><p>微信支付的流程及操作步骤<a href="https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=8_5" target="_blank" rel="external">官方文档</a>已经描述的非常清楚了，这里就不介绍了。这里主要讲下遇到的问题及在Unity中接入的问题</p>
+<h3 id="&#x5FAE;&#x4FE1;&#x548C;&#x652F;&#x4ED8;&#x5B9D;&#x652F;&#x4ED8;"><a href="#&#x5FAE;&#x4FE1;&#x548C;&#x652F;&#x4ED8;&#x5B9D;&#x652F;&#x4ED8;" class="headerlink" title="&#x5FAE;&#x4FE1;&#x548C;&#x652F;&#x4ED8;&#x5B9D;&#x652F;&#x4ED8;"></a>&#x5FAE;&#x4FE1;&#x548C;&#x652F;&#x4ED8;&#x5B9D;&#x652F;&#x4ED8;</h3><h4 id="iOS&#x5E73;&#x53F0;"><a href="#iOS&#x5E73;&#x53F0;" class="headerlink" title="iOS&#x5E73;&#x53F0;"></a>iOS&#x5E73;&#x53F0;</h4><p>iOS&#x5E73;&#x53F0;&#x5FAE;&#x4FE1;&#x548C;&#x652F;&#x4ED8;&#x5B9D;&#x652F;&#x4ED8;&#x5B98;&#x65B9;&#x7684;demo&#x5DF2;&#x7ECF;&#x5F88;&#x5168;&#x4E86;&#xFF0C;&#x53EF;&#x4EE5;&#x76F4;&#x63A5;&#x62FF;&#x8FC7;&#x6765;&#x7528;&#x3002;&#x4F46;&#x662F;Unity&#x5E73;&#x53F0;&#x6709;&#x4E00;&#x4E9B;&#x4E0D;&#x4E00;&#x6837;&#xFF0C;Unity&#x5DE5;&#x7A0B;&#x53D1;&#x5E03;Xcode&#x5DE5;&#x7A0B;&#x7684;&#x65F6;&#x5019;UnityAppController(&#x548C;AppDelegate&#x4E00;&#x6837;&#x7684;&#x542F;&#x52A8;&#x6587;&#x4EF6;)&#x6BCF;&#x6B21;&#x90FD;&#x662F;&#x52A8;&#x6001;&#x751F;&#x6210;&#x7684;&#xFF0C;&#x6240;&#x4EE5;&#x6211;&#x4EEC;&#x4E0D;&#x80FD;&#x7167;&#x7740;demo&#x76F4;&#x63A5;&#x628A;&#x56DE;&#x6389;&#x76D1;&#x542C;&#x5199;&#x5728;UnityAppController&#x4E2D;&#xFF0C;&#x8FD9;&#x6837;&#x6BCF;&#x6B21;&#x53D1;&#x5E03;Xcode&#x5DE5;&#x7A0B;&#x90FD;&#x5F97;&#x6539;&#x4E00;&#x904D;&#x3002;&#x6839;&#x636E;&#x67E5;&#x627E;&#x53D1;&#x73B0;Unity&#x7684;UnityAppController&#x662F;&#x53EF;&#x4EE5;&#x91CD;&#x5199;&#x7684;,&#x53EF;&#x4EE5;&#x770B;<a href="http://starzero.hatenablog.com/entry/2014/02/24/182646" target="_blank" rel="external">&#x8FD9;&#x91CC;</a>&#x3002;&#x4EE3;&#x7801;&#x770B;&#x9644;&#x4EF6;, &#x9644;&#x4EF6;&#x91CC;&#x9762;&#x5305;&#x542B;&#x4E86;Ali&#x548C;Wechat&#x7684;SDK&#x53EF;&#x4EE5;&#x66FF;&#x6362;&#x6210;&#x6700;&#x65B0;&#x7684;&#x3002;</p>
+<h4 id="Android&#x5E73;&#x53F0;"><a href="#Android&#x5E73;&#x53F0;" class="headerlink" title="Android&#x5E73;&#x53F0;"></a>Android&#x5E73;&#x53F0;</h4><p>&#x5FAE;&#x4FE1;&#x652F;&#x4ED8;&#x7684;&#x6D41;&#x7A0B;&#x53CA;&#x64CD;&#x4F5C;&#x6B65;&#x9AA4;<a href="https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=8_5" target="_blank" rel="external">&#x5B98;&#x65B9;&#x6587;&#x6863;</a>&#x5DF2;&#x7ECF;&#x63CF;&#x8FF0;&#x7684;&#x975E;&#x5E38;&#x6E05;&#x695A;&#x4E86;&#xFF0C;&#x8FD9;&#x91CC;&#x5C31;&#x4E0D;&#x4ECB;&#x7ECD;&#x4E86;&#x3002;&#x8FD9;&#x91CC;&#x4E3B;&#x8981;&#x8BB2;&#x4E0B;&#x9047;&#x5230;&#x7684;&#x95EE;&#x9898;&#x53CA;&#x5728;Unity&#x4E2D;&#x63A5;&#x5165;&#x7684;&#x95EE;&#x9898;</p>
+<ul class="ui list">
+<li><p>&#x652F;&#x4ED8;&#x5B8C;&#x6210;&#x4E4B;&#x540E;&#x4E0D;&#x56DE;&#x8C03;onResp&#x51FD;&#x6570;</p>
 <ul>
-<li><p>支付完成之后不回调onResp函数</p>
-<ul>
-<li>由于没有在AndroidManifest中注册回调监听  </li>
+<li>&#x7531;&#x4E8E;&#x6CA1;&#x6709;&#x5728;AndroidManifest&#x4E2D;&#x6CE8;&#x518C;&#x56DE;&#x8C03;&#x76D1;&#x542C;  </li>
 </ul>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;receiver</span><br><span class="line">    android:name=<span class="string">".AppRegister"</span>&gt;</span><br><span class="line">    &lt;intent-filter&gt;</span><br><span class="line">    &lt;action android:name=<span class="string">"com.tencent.mm.plugin.openapi.Intent.ACTION_REFRESH_WXAPP"</span> /&gt;</span><br><span class="line">    &lt;/intent-filter&gt;</span><br><span class="line">&lt;/receiver&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;receiver</span><br><span class="line">    android:name=<span class="string">&quot;.AppRegister&quot;</span>&gt;</span><br><span class="line">    &lt;intent-filter&gt;</span><br><span class="line">    &lt;action android:name=<span class="string">&quot;com.tencent.mm.plugin.openapi.Intent.ACTION_REFRESH_WXAPP&quot;</span> /&gt;</span><br><span class="line">    &lt;/intent-filter&gt;</span><br><span class="line">&lt;/receiver&gt;</span><br></pre></td></tr></table></figure>
 <ul>
-<li><p>Unity生成APK的时候Bundle Identifier填写的和微信开放平台注册的Bundle Identifier不一致</p>
+<li><p>Unity&#x751F;&#x6210;APK&#x7684;&#x65F6;&#x5019;Bundle Identifier&#x586B;&#x5199;&#x7684;&#x548C;&#x5FAE;&#x4FE1;&#x5F00;&#x653E;&#x5E73;&#x53F0;&#x6CE8;&#x518C;&#x7684;Bundle Identifier&#x4E0D;&#x4E00;&#x81F4;</p>
 </li>
-<li><p>应用包签名错误,确保在Unity生成APK的时候选择一个固定的Keystore文件，这个文件的签名要和微信开放平台注册的应用签名保持一致</p>
-</li>
-</ul>
-</li>
-<li><p>支付第一次成功之后，后面就再也支付一直返回错误码-1</p>
-<p> 解决：网上有答案说把微信的缓存清除掉就可以再支付，但是每支付一次就清楚一次。这其实没有解决根本问题。其实返回错误码-1官方明确说了一种可能是APPID或者签名错了。我这边还遇到了另外一种情况就是服务器传递给客户端的sign值错了，这个得服务器确认好。</p>
-</li>
-<li><p>在游戏中启动不了微信支付回调界面</p>
-<p> 解决: 把WXPayEntryActivity这个Activity添加到Unity的Plugins下面的AndroidManifest文件中</p>
+<li><p>&#x5E94;&#x7528;&#x5305;&#x7B7E;&#x540D;&#x9519;&#x8BEF;,&#x786E;&#x4FDD;&#x5728;Unity&#x751F;&#x6210;APK&#x7684;&#x65F6;&#x5019;&#x9009;&#x62E9;&#x4E00;&#x4E2A;&#x56FA;&#x5B9A;&#x7684;Keystore&#x6587;&#x4EF6;&#xFF0C;&#x8FD9;&#x4E2A;&#x6587;&#x4EF6;&#x7684;&#x7B7E;&#x540D;&#x8981;&#x548C;&#x5FAE;&#x4FE1;&#x5F00;&#x653E;&#x5E73;&#x53F0;&#x6CE8;&#x518C;&#x7684;&#x5E94;&#x7528;&#x7B7E;&#x540D;&#x4FDD;&#x6301;&#x4E00;&#x81F4;</p>
 </li>
 </ul>
+</li>
+<li><p>&#x652F;&#x4ED8;&#x7B2C;&#x4E00;&#x6B21;&#x6210;&#x529F;&#x4E4B;&#x540E;&#xFF0C;&#x540E;&#x9762;&#x5C31;&#x518D;&#x4E5F;&#x652F;&#x4ED8;&#x4E00;&#x76F4;&#x8FD4;&#x56DE;&#x9519;&#x8BEF;&#x7801;-1</p>
+<p> &#x89E3;&#x51B3;&#xFF1A;&#x7F51;&#x4E0A;&#x6709;&#x7B54;&#x6848;&#x8BF4;&#x628A;&#x5FAE;&#x4FE1;&#x7684;&#x7F13;&#x5B58;&#x6E05;&#x9664;&#x6389;&#x5C31;&#x53EF;&#x4EE5;&#x518D;&#x652F;&#x4ED8;&#xFF0C;&#x4F46;&#x662F;&#x6BCF;&#x652F;&#x4ED8;&#x4E00;&#x6B21;&#x5C31;&#x6E05;&#x695A;&#x4E00;&#x6B21;&#x3002;&#x8FD9;&#x5176;&#x5B9E;&#x6CA1;&#x6709;&#x89E3;&#x51B3;&#x6839;&#x672C;&#x95EE;&#x9898;&#x3002;&#x5176;&#x5B9E;&#x8FD4;&#x56DE;&#x9519;&#x8BEF;&#x7801;-1&#x5B98;&#x65B9;&#x660E;&#x786E;&#x8BF4;&#x4E86;&#x4E00;&#x79CD;&#x53EF;&#x80FD;&#x662F;APPID&#x6216;&#x8005;&#x7B7E;&#x540D;&#x9519;&#x4E86;&#x3002;&#x6211;&#x8FD9;&#x8FB9;&#x8FD8;&#x9047;&#x5230;&#x4E86;&#x53E6;&#x5916;&#x4E00;&#x79CD;&#x60C5;&#x51B5;&#x5C31;&#x662F;&#x670D;&#x52A1;&#x5668;&#x4F20;&#x9012;&#x7ED9;&#x5BA2;&#x6237;&#x7AEF;&#x7684;sign&#x503C;&#x9519;&#x4E86;&#xFF0C;&#x8FD9;&#x4E2A;&#x5F97;&#x670D;&#x52A1;&#x5668;&#x786E;&#x8BA4;&#x597D;&#x3002;</p>
+</li>
+<li><p>&#x5728;&#x6E38;&#x620F;&#x4E2D;&#x542F;&#x52A8;&#x4E0D;&#x4E86;&#x5FAE;&#x4FE1;&#x652F;&#x4ED8;&#x56DE;&#x8C03;&#x754C;&#x9762;</p>
+<p> &#x89E3;&#x51B3;: &#x628A;WXPayEntryActivity&#x8FD9;&#x4E2A;Activity&#x6DFB;&#x52A0;&#x5230;Unity&#x7684;Plugins&#x4E0B;&#x9762;&#x7684;AndroidManifest&#x6587;&#x4EF6;&#x4E2D;</p>
+</li>
+</ul>
 
-      
-    </div>
+                        
+                    </div>
 
-    <div>
-      
+                    
+                    
+                    
+
+                    <div class="description post-description">
+    <span class="post-description-item">
+        <time datetime="2016-09-05T12:49:40.000Z" itemprop="datePublished">2016-09-05</time>
+
+    </span>
+    <span class="post-description-item">
         
 
-      
-    </div>
+    <span>
+        <i class="tags icon"></i>
+    </span>
 
-    <div>
-      
-        
+    
+    <span class="ui tiny label">
+        <a href="/tags/unity/">unity</a>
+    </span>
 
-      
-    </div>
+    
 
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/unity/" rel="tag"># unity</a>
-          
-        </div>
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2016/07/16/unity_assetbundle_learning_and_summary/" rel="next" title="Unity AssetBundle学习、分析及总结">
-                <i class="fa fa-chevron-left"></i> Unity AssetBundle学习、分析及总结
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/10/29/unity_mono_foreach_memory_bug/" rel="prev" title="C# foreach带来的内存问题">
-                C# foreach带来的内存问题 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
-      
-    </footer>
-  </article>
-
-
-
-    <div class="post-spread">
-      
-    </div>
-  </div>
-
-
-          </div>
-          
-
-
-          
-
-        </div>
-        
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <section class="site-overview sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image"
-               src="/uploads/avatar.png"
-               alt="elangduan@126.com" />
-          <p class="site-author-name" itemprop="name">elangduan@126.com</p>
-          <p class="site-description motion-element" itemprop="description"></p>
-        </div>
-        <nav class="site-state motion-element">
-          <div class="site-state-item site-state-posts">
-            <a href="/archives">
-              <span class="site-state-item-count">29</span>
-              <span class="site-state-item-name">日志</span>
-            </a>
-          </div>
-
-          
-
-          
-            <div class="site-state-item site-state-tags">
-              
-                <span class="site-state-item-count">6</span>
-                <span class="site-state-item-name">标签</span>
-              
-            </div>
-          
-
-        </nav>
-
-        
-
-        <div class="links-of-author motion-element">
-          
-        </div>
-
-        
-        
-
-        
-        
-
-        
-
-
-      </section>
-
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#苹果IAP接入"><span class="nav-number">1.</span> <span class="nav-text">苹果IAP接入</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#注意事项"><span class="nav-number">1.1.</span> <span class="nav-text">注意事项</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#关于证书"><span class="nav-number">1.2.</span> <span class="nav-text">关于证书</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#商品配置"><span class="nav-number">1.3.</span> <span class="nav-text">商品配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#购买流程"><span class="nav-number">1.4.</span> <span class="nav-text">购买流程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#订单收据验证"><span class="nav-number">1.5.</span> <span class="nav-text">订单收据验证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#丢单的考虑"><span class="nav-number">1.6.</span> <span class="nav-text">丢单的考虑</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#支付过程"><span class="nav-number">1.7.</span> <span class="nav-text">支付过程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#微信和支付宝支付"><span class="nav-number">2.</span> <span class="nav-text">微信和支付宝支付</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#iOS平台"><span class="nav-number">2.1.</span> <span class="nav-text">iOS平台</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Android平台"><span class="nav-number">2.2.</span> <span class="nav-text">Android平台</span></a></li></ol></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
-      
-
-    </div>
-  </aside>
-
-
-        
-      </div>
-    </main>
-
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <div class="copyright" align="center">
-  
-  &copy; 
-  <span itemprop="copyrightYear">2018</span>
-
-  <span class="author" itemprop="copyrightHolder">elangduan@126.com | </span>
-
-  <span>
-    powered by <a class="theme-link" href="https://hexo.io">hexo</a>
-  </span>
-
-  <span>
-    & theme <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next"> NexT</a>
-  </span>
+    </span>
 </div>
 
-        
+                </div>
+                
+                <div id="pagination" class="nav-web ui text container pagination">
 
-        
-      </div>
-    </footer>
+    <div class="ui stackable two column divided grid container">
+        <div class="row">
+            <div class="column nav-left">
+                
 
-    <div class="back-to-top">
-      <i class="fa fa-arrow-up"></i>
+                <a href="/2016/10/29/unity_mono_foreach_memory_bug/" class="ui tiny button">
+
+                    <i class="angle left icon"></i>
+                    
+                    C# foreach带来的内存问题
+                    
+
+                </a>
+
+                
+            </div>
+            <div class="column nav-right">
+                
+
+                <a href="/2016/07/16/unity_assetbundle_learning_and_summary/" class="ui tiny button">
+                    
+                    Unity AssetBundle学习、分析及总结
+                    
+                    <i class="angle right icon"></i></a>
+                
+            </div>
+        </div>
     </div>
-  </div>
 
-  
+</div>
+                
+            </div>
 
-<script type="text/javascript">
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
-</script>
+            
+            <div class="three wide computer three wide tablet column">
 
+                <div class="ui sticky article-toc" id="article-toc">
+                    <!-- toc -->
+                    <ol class="ui ordered list"><li><a href="#苹果IAP接入"><span>苹果IAP接入</span></a><ol><li><a href="#注意事项"><span>注意事项</span></a></li><li><a href="#关于证书"><span>关于证书</span></a></li><li><a href="#商品配置"><span>商品配置</span></a></li><li><a href="#购买流程"><span>购买流程</span></a></li><li><a href="#订单收据验证"><span>订单收据验证</span></a></li><li><a href="#丢单的考虑"><span>丢单的考虑</span></a></li><li><a href="#支付过程"><span>支付过程</span></a></li></ol></li><li><a href="#微信和支付宝支付"><span>微信和支付宝支付</span></a><ol><li><a href="#iOS平台"><span>iOS平台</span></a></li><li><a href="#Android平台"><span>Android平台</span></a></li></ol></li></ol>
+                </div>
 
+            </div>
+            
 
-
-
-
-
-
-
-  
-
-
-
-  
-  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-
-  
-  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-
-  
-  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-
-  
-  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+        </div>
+    </div>
+</div>
 
 
-  
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        </div>
+        <div class="ui vertical footer segment">
+    <div class="ui center aligned container">
+        <div class="ui inverted section divider"></div>
+        &copy; 2018 <a href="/">elangduan@126.com</a>,
+        Powered by <a href="https://github.com/henryhuang/hexo-theme-aloha" target="_blank">Aloha</a> and <a
+                href="http://hexo.io/" target="_blank">Hexo</a>.
+    </div>
+</div>
 
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
-
-
-
-  
-
-  
-    
-  
-
-  <script type="text/javascript">
-    var duoshuoQuery = {short_name:"elangduan"};
-    (function() {
-      var ds = document.createElement('script');
-      ds.type = 'text/javascript';ds.async = true;
-      ds.id = 'duoshuo-script';
-      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-      ds.charset = 'UTF-8';
-      (document.getElementsByTagName('head')[0]
-      || document.getElementsByTagName('body')[0]).appendChild(ds);
-    })();
-  </script>
-
-  
-    
-    
-    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
-    <script src="/js/src/hook-duoshuo.js"></script>
-  
+    </div>
 
 
 
 
+<!-- scripts list from theme config.yml -->
 
+<script src="//cdn.bootcss.com/jquery/3.1.0/jquery.min.js"></script>
 
+<script src="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.js"></script>
 
+<script src="//cdn.bootcss.com/algoliasearch/3.18.1/algoliasearch.min.js"></script>
 
-  
-  
+<script src="//cdn.bootcss.com/algoliasearch-helper-js/2.13.0/algoliasearch.helper.min.js"></script>
 
-  
+<script src="/js/semantic-ui-algolia.js"></script>
 
-  
+<script src="/js/aloha-events.js"></script>
 
-  
-
-  
 
 
 </body>

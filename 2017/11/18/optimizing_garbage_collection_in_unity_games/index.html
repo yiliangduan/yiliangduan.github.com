@@ -1,90 +1,15 @@
-<!doctype html>
 
 
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head prefix="og: http://ogp.me/ns#">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <meta name="description" content="">
+    <title>Unity游戏内存回收的优化(译) | elangduan</title>
 
-  
-
-
-<html class="theme-next mist use-motion" lang="zh-Hans">
-<head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-
-
-
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
-
-
-
-
-  
-  
-  
-  
-
-  
-    
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    
-    
-    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
-  
-
-
-
-
-
-
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
-
-<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
-
-
-  <meta name="keywords" content="csharp," />
-
-
-
-
-
-
-
-
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
-
-
-
-
-
-
-<meta name="description" content="原文Optimizing garbage collection in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。 Garbage Collector在这里被翻译成名词GC。对于Garbage Collection这里翻译成GC内存回收。 内存垃圾: 代码中销毁了(disposed)但是GC还没有清理的内存。  Unity的托管内存的简单介绍为了理解GC（本文GC指代Gar">
+    <!-- Open Graph -->
+    <meta name="description" content="原文Optimizing garbage collection in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。 Garbage Collector在这里被翻译成名词GC。对于Garbage Collection这里翻译成GC内存回收。 内存垃圾: 代码中销毁了(disposed)但是GC还没有清理的内存。  Unity的托管内存的简单介绍为了理解GC（本文GC指代Gar">
 <meta name="keywords" content="csharp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity游戏内存回收的优化(译)">
@@ -99,713 +24,423 @@
 <meta name="twitter:description" content="原文Optimizing garbage collection in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。 Garbage Collector在这里被翻译成名词GC。对于Garbage Collection这里翻译成GC内存回收。 内存垃圾: 代码中销毁了(disposed)但是GC还没有清理的内存。  Unity的托管内存的简单介绍为了理解GC（本文GC指代Gar">
 <meta name="twitter:image" content="http://elangduan.github.com/images/unity_performance_ways/window_with_data.png">
 
-
-
-<script type="text/javascript" id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Mist',
-    sidebar: {"position":"left","display":"hide"},
-    fancybox: true,
-    motion: true,
-    duoshuo: {
-      userId: '0',
-      author: 'elangduan'
-    },
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
+    <script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Person",
+  "email": "mailto:elangduan@126.com",
+  "image": "/uploads/avatar.png",
+  "name": "elangduan@126.com",
+  "url": "http://elangduan.github.com"
+}
+</script>
+    <script>
+    var algoliaEnabled = false;
+    
 </script>
 
+    
 
+    
+    
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+    
+    
+    
+        <!-- stylesheets list from config.yml -->
+        
+        <link rel="stylesheet" href="/css/aloha.css">
+        
+        <link rel="stylesheet" href="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.css">
+        
+        <link rel="stylesheet" href="//cdn.bootcss.com/magnific-popup.js/1.1.0/magnific-popup.min.css">
+        
+    
 
-  <link rel="canonical" href="http://elangduan.github.com/2017/11/18/optimizing_garbage_collection_in_unity_games/"/>
-
-
-
-
-
-  <title> Unity游戏内存回收的优化(译) | elangduan </title>
 </head>
+<body id="body" style="margin-bottom: 0;" class="pushable">
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
-
-  
-
-
-
-
-
-
-
-
-
-
-  
-  
-    
-  
-
-  <div class="container one-collumn sidebar-position-left page-post-detail ">
-    <div class="headband"></div>
-
-    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-meta ">
-  
-
-  <div class="custom-logo-site-title">
-    <a href="/"  class="brand" rel="start">
-      <span class="logo-line-before"><i></i></span>
-      <span class="site-title">elangduan</span>
-      <span class="logo-line-after"><i></i></span>
-    </a>
-  </div>
-  <p class="site-subtitle"></p>
-</div>
-
-<div class="site-nav-toggle">
-  <button>
-    <span class="btn-bar"></span>
-    <span class="btn-bar"></span>
-    <span class="btn-bar"></span>
-  </button>
-</div>
-
-<nav class="site-nav">
-  
-
-  
-    <ul id="menu" class="menu">
-      
-        
-        <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
-            
-            首页
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-archives">
-          <a href="/archives" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
-            
-            归档
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-reading">
-          <a href="/reading" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
-            
-            阅读
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-movie">
-          <a href="/movie" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-camera"></i> <br />
-            
-            电影
-          </a>
-        </li>
-      
-
-      
-    </ul>
-  
-
-  
-</nav>
-
-
-
- </div>
-    </header>
-
-    <main id="main" class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
-    
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2017/11/18/optimizing_garbage_collection_in_unity_games/">
-
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="elangduan@126.com">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/uploads/avatar.png">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="elangduan">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="elangduan" src="">
-    </span>
-  </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                Unity游戏内存回收的优化(译)
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-11-18T20:58:35+08:00">
-              2017-11-18
-            </time>
-            
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/2017/11/18/optimizing_garbage_collection_in_unity_games/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/11/18/optimizing_garbage_collection_in_unity_games/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-
-          
-          
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        <blockquote>
-<p>原文<a href="https://unity3d.com/cn/learn/tutorials/topics/performance-optimization/optimizing-garbage-collection-unity-games" target="_blank" rel="external">Optimizing garbage collection in Unity games</a>。这里对这篇文章的粗略翻译，当作自己的笔记。</p>
-<p>Garbage Collector在这里被翻译成名词GC。对于Garbage Collection这里翻译成GC内存回收。</p>
-<p>内存垃圾: 代码中销毁了(disposed)但是GC还没有清理的内存。</p>
-</blockquote>
-<h1 id="Unity的托管内存的简单介绍"><a href="#Unity的托管内存的简单介绍" class="headerlink" title="Unity的托管内存的简单介绍"></a>Unity的托管内存的简单介绍</h1><p>为了理解GC（本文GC指代Garbage Collector）在内存分配和回收时是怎样工作的，我们必须首先了解Unity的引擎代码和我们自己编写的脚本是怎么利用内存来工作的。</p>
-<p>Unity引擎代码运行时管理内存的方式叫做手动管理内存(manual memory management)。也就是说引擎代码必须显示的声明内存是怎么使用的。手动管理内存没有用到GC，这部分内容本文不做介绍。</p>
-<p>当运行我们自己编写的脚本时Unity管理这部分内存的方式叫做自动内存管理(automatic memory management).这意味这我们自己编写的代码不需要很详细的去告诉Unity怎样去管理这部分内存。Unity都帮我们做好了。</p>
-<p>简而言之，Unity的自动管理内存工作方式如下：</p>
-<ul>
-<li>Unity有两个可以访问的内存池：栈(stack)和堆 (heap)(也被叫做托管堆。栈内存被用在短期存储一些小片段的数据，堆则用来存储一些长期并且比较大的片段数据)。</li>
-<li>当一个变量创建好了，Unity会在栈或者堆中申请一个内存块。</li>
-<li>只要这个创建的变量在作用范围之内(我们的代码一直可以访问到它)，为它分配的相应的那块内存就一直是保持可用状态。我们把这块内存成为已经被分配的(allocated)。我们把在栈中分配内存的变量叫做栈上的对象，把内存分配在堆上的变量成为堆上的对象。</li>
-<li>当这个变量已经脱离了它的作用区域，相应的这个变量所分配的内存也就不再需要了，这块内存随之就会把返回给分配时的那个内存池。我们称这块内存叫做已回收(deallocated)。栈上的内存一旦离开了作用区域就会立即被回收。如果是堆上的内存即便是它的引用已经超出了作用区域也不会被立即回收，它还会保持它的分配状态。</li>
-<li>GC会标记并且回收堆上没有被使用的内存。它会周期性的对堆上的内存进行清理。</li>
-</ul>
-<p>现在我们了解了内存使用的流程，让我们来更深入的来了解栈和堆上的内存的分配和释放。</p>
-<a id="more"></a> 
-<h2 id="栈在分配和释放内存的时候发生了什么？"><a href="#栈在分配和释放内存的时候发生了什么？" class="headerlink" title="栈在分配和释放内存的时候发生了什么？"></a>栈在分配和释放内存的时候发生了什么？</h2><p>栈内存的分配和回收比较快速和简单。这是因为栈仅仅用于存储一些小片段短周期的数据。分配和回收的操作基本上是按照预期的顺序和规模(多少量的内存)发生的。</p>
-<p>栈的工作原理类似与数据结构类型的栈: 它是一个简单的元素收集器，在这种情况下栈的内存块只能按照严格的顺序来进行添加和删除。简单和严格的规则使得这个操作非常的快,当一个变量需要存储到栈上，内存会为它在栈底简单的分配一块内存。当一个栈的变量已经超出了作用域，存储这个变量的这块内存会立即释放掉变成可用内存。</p>
-<h2 id="堆在分配和释放内存的时候发生了什么？"><a href="#堆在分配和释放内存的时候发生了什么？" class="headerlink" title="堆在分配和释放内存的时候发生了什么？"></a>堆在分配和释放内存的时候发生了什么？</h2><p>堆的内存分配要比栈的内存分配负责很多。这是因为堆既能够用来存储长周期的的数据也能够用来存储短周期的数据。并且这些数据可以是各种不同类型和不同大小。分配和回收不会按照预期的顺序经常发生，并且这个分配和回收的内存有可能是大小差异比较大的内存块。</p>
-<p>当创建了一个堆内存的变量，它会顺序执行一下这些步骤:</p>
-<ul>
-<li>首先, Unity必须检查在堆上是否有足够的剩余可以分配的内存。如果足够了则会为这个变量分配相应大小的内存</li>
-<li>如果在堆上的内存不够分配这个变量所需的内存。 Unity的GC触发器会去尝试释放堆上的没有被使用的内存。这将会是一个比较慢的操作。如果释放之后有了足够的剩余内存，则为这个变量分配相应大小的内存。</li>
-<li>如果GC在释放内存之后堆上的剩余内存还是不够这个变量所需要的内存，Unity将会增加堆内存的大小。这也是一个比较慢的操作。这个操作之后将会为这个变量分配到相应大小的内存空间。</li>
-</ul>
-<p>堆内存分配比较慢，尤其是触发了GC运行和堆内存的扩展。</p>
-<h2 id="GC进行内存回收的时候发生了什么？"><a href="#GC进行内存回收的时候发生了什么？" class="headerlink" title="GC进行内存回收的时候发生了什么？"></a>GC进行内存回收的时候发生了什么？</h2><p>当一个堆内存变量已经超出了它的作用范围(或者说生命周期)时，存储这个变量的那块内存不会立即被回收，这块内存可以被称作未被使用的内存。未被使用的内存只有当GC运行的时候才会被回收。</p>
-<p>每当GC运行一次，它会顺序执行一下步骤:</p>
-<ul>
-<li>GC会检查每个在堆上的对象</li>
-<li>GC会查找所有当前对象的引用情况来决定这个对象是否还在作用范围之内。</li>
-<li>任何对象只要不在作用范围之内就会被GC标记为需要删除的对象。</li>
-<li>删除被标记的对象然后回收这些变量所占用的内存。</li>
-</ul>
-<p>GC回收内存是一个比较昂贵的操作。堆上的对象越多，对象的引用也会越多，GC需要处理的工作随之也会更多。</p>
-<h2 id="什么情况下会导致GC的运行"><a href="#什么情况下会导致GC的运行" class="headerlink" title="什么情况下会导致GC的运行"></a>什么情况下会导致GC的运行</h2><p>有三种情况会导致GC的运行:</p>
-<ul>
-<li>不管什么时候只要堆的内存已经不能满足用户申请的内存的时候。</li>
-<li>GC会自己不定时的执行（这个频率是根据平台来定的）。</li>
-<li>用户主动强制调用GC回收的时候</li>
-</ul>
-<p>GC回收内存是一个比较频繁的操作。不管何时只要堆内存不能满足变量申请的内存的大小GC回收内存操作将会被触发，这也意味着频繁的堆内存的申请和释放操作会导致GC的频繁运行。</p>
-<h1 id="GC回收内存的问题"><a href="#GC回收内存的问题" class="headerlink" title="GC回收内存的问题"></a>GC回收内存的问题</h1><p>现在我们已经了解了GC回收内存在Unity的内存管理中所扮演的角色，接下来我们可以考虑下在GC回收内存的时候可能发生的各种问题。</p>
-<p>一个很明显的问题是GC会花费很多的时间。如果GC需要检查大量的堆内存对象或者是大量的对象引用关系，这个检查的过程将会非常的慢，这也会导致我们的游戏出现卡顿(stutter)或者运行缓慢。</p>
-<p>另外一个问题是GC可能在不恰当的时间执行。如果CPU在执行我们游戏的性能关键部分已经承受了非常承重的负担了，这个时候即使想CPU添加一个很小的额外负担都会造成我们游戏的帧率下降并且性能会明显变差。</p>
-<p>还有个不太明显的问题是堆内存的碎片化。当从堆中分配内存的时候，需要根据存储数据的大小从剩余的内存块从分配，当这些被分配的内存重新回收后，堆内存就会得到大量的被分割成很多小的不连续的可用的内存块。这意味着GC没有进行内存回收的情况下即时总共的可用内存会比较多，但是我们却不能分配一个比较大的一块连续内存。</p>
-<p>这里我们总结了两个内存碎片化将会导致的问题。一方面我们的游戏内存使用比我们需要的会更高，另一方面GC内存回收操作将会更加频繁。想要堆内存碎片化更详细的讨论, 可以看这篇文章 <a href="https://docs.unity3d.com/Manual/BestPracticeUnderstandingPerformanceInUnity4-1.html?_ga=2.83231508.342435300.1511170133-741569329.1509691291" target="_blank" rel="external">this Unity best practice guide on performance</a></p>
-<h2 id="寻找堆内存的分配点"><a href="#寻找堆内存的分配点" class="headerlink" title="寻找堆内存的分配点"></a>寻找堆内存的分配点</h2><p>如果我们知道在我们游戏中导致GC运行的原因，我们需要知道哪一部分代码产生了内存垃圾。内存垃圾产生于超出了作用域的堆内存变量，因此我们首先需要知道变量把内存分配在堆中的原因。</p>
-<p>下面列出的代码是一个在栈上分配内存的例子，变量localInt是局部的同时也是值类型的变量(value-type)这个变量的内存将会在这个函数运行之后被立即回收到栈中。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ExampleFunction</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> localInt = <span class="number">5</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>下面列出的代码是一个在堆上分配内存的例子，变量localList是局部变量但是是引用类型的(reference-type)。这个变量的内存回收是在GC运行的时候(函数执行完并不会立即释放)。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ExampleFunction</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  List localList = <span class="keyword">new</span> List();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="使用Unity的Profile窗口可以找到堆内存的分配"><a href="#使用Unity的Profile窗口可以找到堆内存的分配" class="headerlink" title="使用Unity的Profile窗口可以找到堆内存的分配"></a>使用Unity的Profile窗口可以找到堆内存的分配</h2><p>我们可以通过Profiler窗口看到我们代码创建堆内存的地方</p>
-<p><img src="/images/unity_performance_ways/window_with_data.png" alt=""></p>
-<p>在CPU使用情况的分析器中，我们可以选择任何一帧然后在Profiler窗口的底部部分查看这一帧的CPU的数据使用情况，其中有一列数据叫做 <strong>GC Alloc</strong> 。这一列显示了这一帧正在进行的内存分配情况。如果我们选择这一列的头部我们可以对这些统计好的数据进行排序，以便更能轻松的看出来在我们游戏中是哪些函数产生最大的堆内存分配。一旦我们知道是哪个函数产生分配堆内存，我们可以检查这个函数。</p>
-<p>当我们知道了在这个函数中引起内存分配的那段代码，我们可以决定怎样去解决这个问题使得这里的分配的内存量最小化。</p>
-<h2 id="减少GC回收内存带来的影响"><a href="#减少GC回收内存带来的影响" class="headerlink" title="减少GC回收内存带来的影响"></a>减少GC回收内存带来的影响</h2><p>概括来说，我们可以通过三种方式来降少GC回收内存给游戏带来的影响:</p>
-<ul>
-<li>我们可以减少GC运行的时间</li>
-<li>我们可以减少个GC运行的频率</li>
-<li>我们可以谨慎的在性能压力比较小的时候触发GC回收内存，例如在loading界面</li>
-</ul>
-<p>基于这几个想法，这里有三个策略可以帮助我们：</p>
-<ul>
-<li>我们可以构造好我们的游戏以便我们有更少的堆内存分配和更少的对象引用。堆上对象较少并且检查的对象引用更少意味着当GC被触发，GC回收内存需要更少的时间。</li>
-<li>我们可以减少堆内存的分配和释放的频率，尤其是当性能压力比较大的时候。更少的内存分配和释放就会有更少场景触发GC进行垃圾回收。这也较少了堆内存碎片的风险</li>
-<li>我们可以尝试在预期的在方便的时间时主动调用GC垃圾回收进行内存的拓展。这样做比较困难且比较难达到预期，但是当这个方式作为整个内存管理策略的一部分时可以减少GC垃圾回收的影响。</li>
-</ul>
-<h2 id="减少垃圾内存创建的数量"><a href="#减少垃圾内存创建的数量" class="headerlink" title="减少垃圾内存创建的数量"></a>减少垃圾内存创建的数量</h2><p>让我们来做一些技术上的测试来帮助我们减少我们自己的代码中产生的垃圾内存。</p>
-<h3 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h3><p>如果我们的代码在重复的调用一个函数，这个函数会导致堆内存分配而且每次我们调用完这个函数之后会丢弃这个函数的计算结果，这里会产生不必要的内存垃圾。取而代之，我们应该存储这个这些对象来重复使用。这个技术叫做缓存。</p>
-<p>在下面列出的例子中，这段代码每次调用都会产生堆内存分配。这是因为会创建一个新的数组。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">OnTriggerEnter</span>(<span class="params">Collider other</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  Renderer[] allRenderers = FindObjectsOfType&lt;Renderer&gt;()</span><br><span class="line">  ExampleFunction(allRenderers);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>下面列出的代码是修改之后的，现在无论调用OnTriggerEnter多少次都只会造成一次堆内存分配，这个数组被创建好并赋值然后缓存起来。这个缓存数组可以被重复使用并不会产生额外的内存。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> Renderer[] allRenderers;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">start</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  allRenderes = FindObjectsOfType&lt;Renderer&gt;()  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">OnTriggerEnter</span>(<span class="params">Collider other</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  ExampleFunction(allRenderers);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="不要在频繁调用的函数里面分配内存"><a href="#不要在频繁调用的函数里面分配内存" class="headerlink" title="不要在频繁调用的函数里面分配内存"></a>不要在频繁调用的函数里面分配内存</h3><p>如果我们必须在MonoBehaviour脚本里面分配堆内存，最糟糕的是我们把这个操作放在频繁运行的函数里。例如Update()和LateUpdate, 这两个函数每帧都会调用。所以如果我们会分配堆内存的代码放在这这种函数里面，内存非常快的增加。这种情况我们尽可能的考虑让这个对象在Start()或者Awake()函数中创建好然后使用引用来保存这个对象,或者确保这段代码只有在需要的时候才分配内存。</p>
-<p>来看个非常简单的例子，这个例子稍作改动使得函数只有当条件改变的时候才运行。下面列出的代码，有个会产生内存分配的函数每帧都会被Update()调用，会频繁的创建内存垃圾。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  ExampleGarbageGeneratingFunction(transform.position.x);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>做一个简单的改动，我们现在确保只有当transform.position.x的值发生改变的时候才调用ExampleGarbageGeneratingFunction。改动之后只有当我们需要的时候才会分配内存而不是每帧都会分配一次。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">float</span> previousTransformPositionX;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">float</span> transformPositionX = transform.position.x;</span><br><span class="line">  <span class="keyword">if</span> (transformPositionX != previousTransformPositionX)</span><br><span class="line">  &#123;</span><br><span class="line">    ExampleGarbageGeneratingFunction(transformPositionX);</span><br><span class="line">    previousTransformPositionX = transformPositionX;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>另外一个可以减少生成内存垃圾的方法是在Update()里面使用计时器。这个方法比较适合用于我们的这个会产生内存垃圾的函数ExampleGarbageGeneratingFunction必须有规律的运行，但是不需要每帧那么频繁。</p>
-<p>下列例子中的代码，函数ExampleGarbageGeneratingFunction会每帧都会被调用，这个函数内部会生成内存垃圾。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  ExampleGarbageGeneratingFunction();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们使用计时器的方式来修改下这个这段代码，确保这个会生成内存垃圾的函数每秒才调用一次。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">float</span> timeSinceLastCalled;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">float</span> delay = <span class="number">1</span>f;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  timeSinceLastCalled += Time.deltaTime;</span><br><span class="line">  <span class="keyword">if</span> (timeSinceLastCalled &gt; delay)</span><br><span class="line">  &#123;</span><br><span class="line">    ExampleGarbageGeneratingFunction();</span><br><span class="line">    timeSinceLastCalled = <span class="number">0</span>f;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>当我们的代码运行的非常频繁的时候，只做一点小的改动就能够大幅度较少内存内存垃圾量。</p>
-<h2 id="清理容器"><a href="#清理容器" class="headerlink" title="清理容器"></a>清理容器</h2><p>创建一个新的容器(List、Dictionary等)会申请分配堆上的内存。如果我们发现在代码中有超过一次的创建新的容器，那么我们应缓存起来这个指向这个容器的引用，然后使用Clear()来清空这个容器而不是重复调用New来重新创建。</p>
-<p>下面这个例子中，每次调用new关键字都会引起分配一次堆内存。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  List myList = <span class="keyword">new</span> List();</span><br><span class="line">  PopulateList(myList);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>下面这个例子，只有当容器创建或者容器内部必须改变存储大小的时候才会发生内存分配。这能够大幅减少产生内存垃圾的量。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> List myList = <span class="keyword">new</span> List();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  myList.Clear();</span><br><span class="line">  PopulateList(myList);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="对象池"><a href="#对象池" class="headerlink" title="对象池"></a>对象池</h3><p>即使我们减少我们脚本中的内存分配，如果我们在游戏运行时大量的创建和销毁对象那么GC回收内存的问题任然存在。对于重复使用的对象，我们没有必要每次使用到都去重复的创建和销毁，利用<strong>Object pooling</strong>可以减少对于重复利用的对象的内存的分配和释放。Object pooling被广泛的应用在游戏中频繁生成和销毁的小对象的场合。例如，从枪中射出的子弹。</p>
-<p>本文不讨论完整的object pooling使用规范，但是这是一项非常有用且值得学习的技术。<a href="https://unity3d.com/learn/tutorials/topics/scripting/object-pooling" target="_blank" rel="external">This tutorial on object pooling on the Unity Learn site</a> 是一个非常好的针对于Unity的object pooling系统的实现规范。</p>
-<h2 id="常见的导致不必要的堆内存分配的一些原因"><a href="#常见的导致不必要的堆内存分配的一些原因" class="headerlink" title="常见的导致不必要的堆内存分配的一些原因"></a>常见的导致不必要的堆内存分配的一些原因</h2><p>我们已经理解了值类型的变量是分配的栈内存，引用类型的变量分配的堆内存。然而有很多分配堆内存的地方会让我们自己感到惊讶，因为根本就没必要分配堆内存。下面让我们来看一些常见的不必要的堆内存分配情况并且想出最好的办法去减少这种情况。</p>
-<h3 id="String"><a href="#String" class="headerlink" title="String"></a>String</h3><p>在C#中, <a href="https://msdn.microsoft.com/en-us/library/362314fe.aspx" target="_blank" rel="external">string是引用类型</a>而不是值类型，尽管它看上去像是持有了字符串的值。这意味着string创建和丢弃之后会产生内存垃圾。作为一个在大量代码中常用的类型，这些内存垃圾会一直增长。</p>
-<p>C#中的String类型同事也是不可变类型，意思就是在它创建之后就不能改变它的值了。当我们每次操作一个字符串(例如，使用重载运算符+来连接两个string)。Unity如果需要更新一个字符串的值，它会创建一个新的字符串来保存新值然后丢弃当前这个字符串。这会产生内存垃圾。</p>
-<p>我们可以遵循一些简单的规则让string产生的内存垃圾最小化。先考虑下这些规则，然后在例子中看看它是怎么被应用的。</p>
-<ul>
-<li>我们应该减少那些不必要的string创建。如果我们使用同一个string的值超过一次，那么我们应该创建好这个string然后缓存起来。</li>
-<li>我们应该减少哪些不必要的string的值的更改。例如，如果我们有个频繁更新的Text组件，Text组件显示的值是每次两个string的连接成一个新string得到的。我们应该考虑把把这个Text组件分成两个Text组件，这样分别显示两个string的值，就不需要每次会创建一个新的string了。</li>
-<li>如果我们在游戏运行时需要构建一个string(如多个字符串值连接成一个字符串)。我们应该使用<a href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110" target="_blank" rel="external">StringBuilder类</a>.aspx)。StringBuilder类是专门为了构建string而设计的，它不会产生内存分配而且在我们连接一个比较复杂的string时会避免产生大量的内存垃圾。</li>
-<li>一旦我们不需要调试项目时我们应该把项目里面的Debug.Log()全部去掉。在我们游戏中调用Debug.Log()会持续的构建string，即使它们不在输出任何调试日志。每调用一次Debug.Log()会创建和销毁至少一个string对象，所以如果我们游戏里面包含了大量的这种调用，那么内存垃圾会增加很多。</li>
-</ul>
-<p>让我们来写个例子来测试下，这个例子包含无效率的string而导致产生了不必要的内存垃圾的代码。在下面这段代码中，我们创建了一个记录分数值的string对象，它在Update()里面和值为“TIME:”的float类型对象<em>timer</em>进行合并。这里产生了不必要的内存垃圾。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Text timerText;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">float</span> timer;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  timer += Time.deltaTime;</span><br><span class="line">  timerText.text = <span class="string">"TIME:"</span> + timer.ToString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>再来看看下面列出的代码，我们对一些地方做了比较有效的改进。我们把”TIME:”字符串独立出来在Start()中赋值给一个单独Text组件。这意味着在Update()函数中我们不再需要并合字符串了。这非常有效的减少了大量的内存垃圾的产生。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Text timerHeaderText;</span><br><span class="line"><span class="keyword">public</span> Text timerValueText;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">float</span> timer;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Start</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  timerHeaderText.text = <span class="string">"TIME:"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  timerValueText.text = timer.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="Unity的函数调用"><a href="#Unity的函数调用" class="headerlink" title="Unity的函数调用"></a>Unity的函数调用</h3><p>当我们调用不是自己实现的代码的时候一定要非常的注意，这些代码包括Unity自己的引擎代码或者是第三方的插件代码，这种情况可能会产生内存垃圾。调用一些Unity的函数会分配堆内存，所以我们应该比较细心去避免一些不必要的内存垃圾产生。</p>
-<p>这里没有一个应该禁止调用的函数的清单。每个函数在一些情形中有非常有用，但是在其他的情况就用处不大了。还是那句话，最好是仔细分下分析我们的游戏，找出内存垃圾创建的地方，仔细考虑下怎么处理它比较合适。在一些情况中，缓存函数的结果是比较明智的；但是另一些情况中，最明智的方式是减少这个函数的调用频率；还有些情况，最好的方式是重构这段代码把按照不同的情况来分成不同的函数。老方法，让我们来看两个Unity中常见的函数，这两个函数会造成堆内存分配。我么考虑下怎么去最好的处理这两个函数。</p>
-<p>每个我们访问Unity的函数都会放返回一个数组，这个函数内存会创建一个新的数组作为返回值返回给我们。这种行为并不总是明显或者可以意料到的，尤其是这个函数是被定义为<a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/get" target="_blank" rel="external"><em>get</em>形式访问的变量</a>(例如，Mesh.normals)。</p>
-<p> 下面列出的代码，在这个迭代循环中，没循环一次都会创建一个新的数组。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ExampleFunction</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;meMesh.normals.Length; i++)</span><br><span class="line">  &#123;</span><br><span class="line">    Vector3 normal = myMesh.normals[i];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在这个例子中很容易采取这些方法来减少内存分配: 我们可以简单的缓存一个指向这个数组的引用。当我们要做代码中事情的时候只需要创建一个数组即可，这样就减少了大量的内存分配从而会导致大量内存垃圾的产生。</p>
-<p>下面的代码就是经过这个改动的一个演示。在这段代码中，我们在循环运行之前首先调用Mesh.normals来缓存了的数组的引用以便只有一个数组呗创建。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ExampleFunction</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  Vector3[] meshNormals = myMesh.normals;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;meshNormals.Length; i++)</span><br><span class="line">  &#123;</span><br><span class="line">    Vector3 normal = meshNormals[i];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>堆内存分配的另外一个比较意外的原因可以在<em>GameObject.name</em>或者<em>GameObject.tag</em>中找到。这两个函数也是<em>get类型访问的变量</em>返回一个新的字符串，这意味着调用这些函数将会产生内存垃圾。一个比较有效的方法是缓存这些变量值，但在一些情况中我们可以使用Unity的函数来代替调用这些会产生内存垃圾的方法。要在不生成内存垃圾的前提下去检查GameObject的tag值，我们可以使用<em><a href="https://docs.unity3d.com/ScriptReference/GameObject.CompareTag.html?_ga=2.97011549.316260478.1511584816-1497166853.1503199345" target="_blank" rel="external">GameObject.CompareTag()</a></em>。</p>
-<p>在下列代码中，调用GameObject.tag创建了内存垃圾。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">string</span> palyerTag = <span class="string">"Player"</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">OnTriggerEnter</span>(<span class="params">Collider other</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">bool</span> isPlayer = other.gameObject.tag == playerTag;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>如果我们使用<em>GameObject.CompareTag()</em>，这个函数就不再会生成任何内存垃圾了。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> playerTag = <span class="string">"Player"</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">OnTriggerEnter</span>(<span class="params">Collider other</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">bool</span> isPlayer = other.gameObject.CompareTag(playerTag);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><em>GameObject.CompateTag</em>不是Unity唯一的这类函数；很多Unity的函数都有不会引起对内存分配的版本。比如，我们可以使用<em><a href="https://docs.unity3d.com/ScriptReference/Input.GetTouch.html?_ga=2.99577052.316260478.1511584816-1497166853.1503199345" target="_blank" rel="external">Input.GetTouch()</a></em>和<em><a href="https://docs.unity3d.com/ScriptReference/Input-touchCount.html?_ga=2.99577052.316260478.1511584816-1497166853.1503199345" target="_blank" rel="external">Input.touchCount</a></em>来代替<em><a href="https://docs.unity3d.com/ScriptReference/Input-touchCount.html?_ga=2.99577052.316260478.1511584816-1497166853.1503199345" target="_blank" rel="external">Input.touches</a></em>，可以使用<em><a href="https://docs.unity3d.com/ScriptReference/Physics.SphereCastNonAlloc.html?_ga=2.159211768.316260478.1511584816-1497166853.1503199345" target="_blank" rel="external">Physics.SpereCastNonAlloc()</a></em>来代替<em><a href="https://docs.unity3d.com/ScriptReference/Physics.SphereCastAll.html?_ga=2.159211768.316260478.1511584816-1497166853.1503199345" target="_blank" rel="external">Physics.SphereCastAll()</a></em></p>
-<h3 id="装箱"><a href="#装箱" class="headerlink" title="装箱"></a>装箱</h3><p>装箱(Boxing)是值类型变量被用做引用类型变量的地方发生的。它通常发生在我们传入一个值类型的变量给一个参数是引用类型的函数。比如给Object.Equals()传入的值是int或者float值，但是Object.Equals()的参数类型是一个引用类型的。</p>
-<p>举个例子，在函数<em>Stirng.Format()</em>使用了字符串和对象参数，当我们传入一个string和一个int类型的参数，这个int类型的变量就会被装箱。下列的代码包含了一个装箱的例子:</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ExampleFunction</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> cost = <span class="number">5</span>;</span><br><span class="line">  <span class="keyword">string</span> displayString = String.Format(<span class="string">"Price:&#123;0&#125;gold"</span>,cost);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>装箱在内部会创建内存垃圾。当一个值类型的变量被装箱，Unity会在堆上创建一个零时的System.Object对象包包裹这个值类型的变量。System.Object时引用类型的变量，所以当这个零时的变量被销毁时产生了内存垃圾。</p>
-<p>装箱是一个非常常见的引起不必要的堆内存分配的原因。即使我们在自己的代码中去避免这种变量的装箱操作，但是我们可能使用了第三方的插件会造成装箱或者是插件的代码内部实现存在装箱。最好的习惯是避免任何可能出现装箱的代码，同时去掉所有的导致装箱的函数。</p>
-<h3 id="协程"><a href="#协程" class="headerlink" title="协程"></a>协程</h3><p>调用<em>StartCoroutine()</em>会创建少量的内存垃圾，因为Unity必须创建一个实例来管理<em>StartCoroutine()</em>所返回的coroutine实例。考虑到这点，尽量减少对<em>StartConoroutine</em>的调用，因为我们游戏的交互和性能是一个核心所在。为了减少协程所带来的内存垃圾，任何在性能负载高的时期运行的协程应该提前执行同时我们应该特别注意那些嵌套的协程，这些协程里面可能也包含延迟调用<em>StartCoroutine</em>。</p>
-<p>协程内的yield生命不会自己创建堆内存。然而，我们传递的yield状态的值可能会导致不必要的堆内存分配。例如，下面的代码会产生内存垃圾:</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
-<p>这段代码因为值0会装箱(Boxing)会导致内存垃圾。在这个例子中，如果我们想不会产生任何堆内存实现简单的等待一帧效果，最好的方式是这样做:</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yiled <span class="keyword">return</span> <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
-<p>另外一个比较常见的错误是在协程里面使用new操作多次创建一个值相同的yield状态变量。例如,下面的代码每次循环都会创建和销毁一个WaitForSeconds对象。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(!isComplete)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="function"><span class="keyword">yield</span> return new <span class="title">WaitForSeconds</span>(<span class="params"><span class="number">1</span>f</span>)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>如果我们缓存WaitForSeconds这个变量然后重复使用，这回极大的减少内存垃圾。下面的代码展示了修改之后的方式：</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">WaitForSeconds delay = <span class="keyword">new</span> WaitForSeconds(<span class="number">1</span>f);</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> (!isComplete)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">yield</span> <span class="keyword">return</span> delay;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>如果我们的代码在协程运行期间会产生大量的内存垃圾，我们可能希望考虑下使用非协程的方式来重构这部分代码。重构代码是一个复杂的主题同时每个项目都是唯一的，但是这里也提供两个常用的协程的替代方式我们希望能够记住。例如，如果我们使用协程主要是用来管理时间的话，我们可以在<em>Update()</em>函数里面保持简单的时间记录。如果我们使用协程主要是用来控制我们游戏中一些逻辑业务执行顺序时，我们可以创建一些有序的消息发送系统来允许对象间的通信。没有一些方法能够适合所有的情况，但是请记住，在代码中往往不止一种方式可以实现相同的目的。</p>
-<h3 id="foreach-循环"><a href="#foreach-循环" class="headerlink" title="foreach 循环"></a>foreach 循环</h3><blockquote>
-<p>译: 这个问题的具体分析可以看<a href="http://www.elangduan.com/2016/10/29/Mono%20V2.0.5%E7%9A%84foreach%E5%86%85%E5%AD%98%E9%97%AE%E9%A2%98/" target="_blank" rel="external">C# foreach带来的内存问题</a>这篇文章</p>
-</blockquote>
-<p>在Unity5.5之前的版本中，一个foreach遍历出了数组之外的任何集合，每次循环结束之后都会产生内存垃圾。这是由于在foreach内部发生了装箱操作。当一个循环开始的时候会在创建一个System.Object堆内存对象，当循环结束的时候这个对象会被销毁，从而产生了一个内存垃圾。这个问题在Unity5.5的版本中修复了。</p>
-<p>举个例子，在Unity5.5之前的版本中，下面这段吗的循环会产生内存垃圾:</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ExampleFunction</span>(<span class="params">List listOfInts</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">foreach</span>(<span class="keyword">int</span> currentInt <span class="keyword">in</span> listOfInts)</span><br><span class="line">  &#123;</span><br><span class="line">    DoSomething(currentInt);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>如果我们不能够升级我们的Unity版本，这里又一个简单的解决方法。<em>for</em>和<em>while</em>循环不会在内部导致装箱操作因此也不会产生堆内存垃圾。当我们要遍历的集合不是数组的时候，我们应该更偏向于使用这两个方式。</p>
-<p>下面的代码循环遍历不会导致产生内存垃圾:</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ExampleFunction</span>(<span class="params">List listOfInts</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;listOfInts.Count; ++i)</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">int</span> currentInt = listOfInts[i];</span><br><span class="line">    DoSomething(currentInt);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="函数的引用"><a href="#函数的引用" class="headerlink" title="函数的引用"></a>函数的引用</h3><p>不管是<a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/statements-expressions-operators/anonymous-methods" target="_blank" rel="external">匿名函数</a>还是普通函数，在Unity中都是引用类型的变量。他们都会产生堆内存分配。把一个匿名方法转换为闭包(匿名函数内部访问了外部变量)会增加很多内存开销同时创建多个堆内存对象。</p>
-<p>更加精确和详细的函数引用和闭包的内存分配变化依赖于所在的平台和编译器的设置。但是如果GC内存回收是一个比较需要注意的问题，那么在游戏运行过程中最好减少函数的引用和闭包的使用。[<a href="https://docs.unity3d.com/Manual/BestPracticeUnderstandingPerformanceInUnity4-1.html?_ga=2.69215250.342435300.1511170133-741569329.1509691291" target="_blank" rel="external">This Unity best practice guide on performance</a>]针对这个主题有更加深入的技术细节的介绍。</p>
-<h3 id="LINQ和正则表达式"><a href="#LINQ和正则表达式" class="headerlink" title="LINQ和正则表达式"></a>LINQ和正则表达式</h3><p>LINQ和正则表达式内部都会因为装箱产生内存垃圾。最好的做法是在性能消耗的集中点禁止使用它们。还是这篇文章，<a href="https://docs.unity3d.com/Manual/BestPracticeUnderstandingPerformanceInUnity4-1.html" target="_blank" rel="external">this Unity best practice guide on performance</a> 提供了非常好的关于这个主题的技术细节</p>
-<h2 id="重构我们的代码把GC内存回收的影响减小到最小"><a href="#重构我们的代码把GC内存回收的影响减小到最小" class="headerlink" title="重构我们的代码把GC内存回收的影响减小到最小"></a>重构我们的代码把GC内存回收的影响减小到最小</h2><p>我们代码的架构方式会影响GC的内存回收。即使我们代码没有创建任何堆内存，它也会增加GC的负担。</p>
-<p>我们的代码没必要增加GC的负担的一种情况是它需要去检查(译:判断这个对象是否引用情况来决定是否回收这个对象)本该不需要检查的事情。结构体是一个值类型的变量，但是当我们有一个结构体包含了一个引用类型的变量的时候GC必须去检查这整个结构体了。如果我们有个很大这种结构体的数组，这样就给GC造成了非常多的额外工作。</p>
-<p>在这个例子中，这个结构体包含了一个string类型的对象，它是引用类型的。当这段代码运行时GC必须对这整个结构体数组都进行检查。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> strct ItemData</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">string</span> name;</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">int</span> cost;</span><br><span class="line">  <span class="keyword">public</span> Vector3 position;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> ItemData[] itemData;</span><br></pre></td></tr></table></figure>
-<p>在下面这个例子中，我们将数据存储在单独的数组中。当GC运行起来的时候，它只需要检查string类型的数组同时忽略调用其他值类型的数组。这使得GC只需要做必要的工作。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">string</span>[] itemNames;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span>[] itemCosts;</span><br><span class="line"><span class="keyword">private</span> Vector3[] itemPositions;</span><br></pre></td></tr></table></figure>
-<p>另外一种在我们代码中给GC增加了不必要的负担的情况是只有了不必要的内存引用。当GC查找堆内存上的对象的引用的时候，它必须检查当前我们代码每个对象的引用，即使我们不需要减少总的堆内存上的对象的数量，代码中更少的对象引用意味着GC需要做的工作就更少。</p>
-<p>下面这个例子中，我们实现了个对话框的类。当用户查看这个对话时，将会显示一个对话框。我们的代码包含了指向下一个应该显示的对话框数据实例的引用。这意味GC必须去检查这部分操作的引用:</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">DialogData</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">private</span> DialogData nextDialog;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> DialogData <span class="title">GetNextDialog</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> nextDialog;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里我们重构下这段代码，让这个函数返回一个指向像个对话数据实例的标识符来代替返回实例本身。修改之后没有引用，这就不会增加GC的时间开销了。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">DialogData</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">int</span> nextDialogID;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">GetNextDialogID</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> nextDialogID;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这是一个非常简单的例子。然而，如果我们的游戏中包含了很多持有了其他对象的引用的对象。那么我们需要考虑使用这种方式来重构我们的代码，减少堆内存对象的复杂度。</p>
-<h2 id="定时进行GC内存回收"><a href="#定时进行GC内存回收" class="headerlink" title="定时进行GC内存回收"></a>定时进行GC内存回收</h2><h3 id="手动强制进行内存回收"><a href="#手动强制进行内存回收" class="headerlink" title="手动强制进行内存回收"></a>手动强制进行内存回收</h3><p>最终，我们可能希望自己去触发GC回收内存。如果我们知道存在堆内存已经分配了但是不再使用了(例如, 如我们的代码在加载资源时产生了内存垃圾)同时我们知道GC回收内存操作不会影响到玩家(例如，loading界面一直显示的时候)，我们可以通过下面的代码来要求GC执行内存回收操作。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.GC.Collect();</span><br></pre></td></tr></table></figure>
-<p>这段代码会强制GC运行，方便我们在这个时间点释放那些没有任何引用的对象的的内存。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我们学习了Unity的GC内存回收的工作原理，引起性能问题的原因是什么? 怎么去减少这些问题对我们的游戏的影响。使用本文介绍的知识和我们的性能优化工具，我们可以修正GC内存回收的性能问题和重构我们的代码使得他们更有效率的管理内存。</p>
-
-      
+    <div class="ui top fixed menu">
+        <a class="item" id="menu-icon"><i class="sidebar icon"></i></a>
     </div>
 
-    <div>
-      
-        
+    <div id="menu-sidebar" class="ui left vertical sidebar menu">
 
-      
-    </div>
-
-    <div>
-      
-        
-
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/csharp/" rel="tag"># csharp</a>
-          
+    <div id="sidebar-top">
+        <div class="content">
+            <h3>elangduan</h3>
         </div>
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2017/08/30/unity_quaternion_interpolation_note/" rel="next" title="Quaternion的插值分析及总结">
-                <i class="fa fa-chevron-left"></i> Quaternion的插值分析及总结
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/12/03/optimizing_graphics_rendering_in_unity_games/" rel="prev" title="Unity游戏的图形渲染优化(译)">
-                Unity游戏的图形渲染优化(译) <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
-      
-    </footer>
-  </article>
-
-
-
-    <div class="post-spread">
-      
     </div>
-  </div>
+    <div class="ui container sidebar-card">
+    <div class="ui people shape content">
+        <div class="active side">
+            <div class="ui card">
+                <div class="image">
+                    <img class="ui medium bordered image" src="/images/avatar.jpg">
+                </div>
+                <div class="content">
+                    <a class="header">elangduan@126.com</a>
+                    
+                        <div class="meta">
+                            Game Developer
+                        </div>
+                    
+                </div>
+                <div class="extra content">
+                    <div class="ui list">
+                        
+                        <div class="item">
+                            <i class="marker icon" style="float: left"></i>
+                            <div class="content">Shanghai</div>
+                        </div>
+                        
+                        
+                        <div class="item">
+                            <i class="mail icon" style="float: left"></i>
+                            <div class="content">
+                                <a href="mailto:elangduan@126.com">elangduan@126.com</a>
+                            </div>
+                        </div>
+                        
+                    </div>
 
-
-          </div>
-          
-
-
-          
-  <div class="comments" id="comments">
-    
-      <div class="ds-thread" data-thread-key="2017/11/18/optimizing_garbage_collection_in_unity_games/"
-           data-title="Unity游戏内存回收的优化(译)" data-url="http://elangduan.github.com/2017/11/18/optimizing_garbage_collection_in_unity_games/">
-      </div>
-    
-  </div>
-
-
-        </div>
-        
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <section class="site-overview sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image"
-               src="/uploads/avatar.png"
-               alt="elangduan@126.com" />
-          <p class="site-author-name" itemprop="name">elangduan@126.com</p>
-          <p class="site-description motion-element" itemprop="description"></p>
-        </div>
-        <nav class="site-state motion-element">
-          <div class="site-state-item site-state-posts">
-            <a href="/archives">
-              <span class="site-state-item-count">29</span>
-              <span class="site-state-item-name">日志</span>
-            </a>
-          </div>
-
-          
-
-          
-            <div class="site-state-item site-state-tags">
-              
-                <span class="site-state-item-count">6</span>
-                <span class="site-state-item-name">标签</span>
-              
+                </div>
+                <div class="extra content">
+                    <div class="ui list">
+                        
+                    </div>
+                </div>
             </div>
-          
-
-        </nav>
-
-        
-
-        <div class="links-of-author motion-element">
-          
         </div>
-
-        
-        
-
-        
-        
-
-        
-
-
-      </section>
-
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Unity的托管内存的简单介绍"><span class="nav-number">1.</span> <span class="nav-text">Unity的托管内存的简单介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#栈在分配和释放内存的时候发生了什么？"><span class="nav-number">1.1.</span> <span class="nav-text">栈在分配和释放内存的时候发生了什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#堆在分配和释放内存的时候发生了什么？"><span class="nav-number">1.2.</span> <span class="nav-text">堆在分配和释放内存的时候发生了什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GC进行内存回收的时候发生了什么？"><span class="nav-number">1.3.</span> <span class="nav-text">GC进行内存回收的时候发生了什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么情况下会导致GC的运行"><span class="nav-number">1.4.</span> <span class="nav-text">什么情况下会导致GC的运行</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GC回收内存的问题"><span class="nav-number">2.</span> <span class="nav-text">GC回收内存的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#寻找堆内存的分配点"><span class="nav-number">2.1.</span> <span class="nav-text">寻找堆内存的分配点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用Unity的Profile窗口可以找到堆内存的分配"><span class="nav-number">2.2.</span> <span class="nav-text">使用Unity的Profile窗口可以找到堆内存的分配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#减少GC回收内存带来的影响"><span class="nav-number">2.3.</span> <span class="nav-text">减少GC回收内存带来的影响</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#减少垃圾内存创建的数量"><span class="nav-number">2.4.</span> <span class="nav-text">减少垃圾内存创建的数量</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存"><span class="nav-number">2.4.1.</span> <span class="nav-text">缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不要在频繁调用的函数里面分配内存"><span class="nav-number">2.4.2.</span> <span class="nav-text">不要在频繁调用的函数里面分配内存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#清理容器"><span class="nav-number">2.5.</span> <span class="nav-text">清理容器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#对象池"><span class="nav-number">2.5.1.</span> <span class="nav-text">对象池</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常见的导致不必要的堆内存分配的一些原因"><span class="nav-number">2.6.</span> <span class="nav-text">常见的导致不必要的堆内存分配的一些原因</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#String"><span class="nav-number">2.6.1.</span> <span class="nav-text">String</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Unity的函数调用"><span class="nav-number">2.6.2.</span> <span class="nav-text">Unity的函数调用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#装箱"><span class="nav-number">2.6.3.</span> <span class="nav-text">装箱</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#协程"><span class="nav-number">2.6.4.</span> <span class="nav-text">协程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#foreach-循环"><span class="nav-number">2.6.5.</span> <span class="nav-text">foreach 循环</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#函数的引用"><span class="nav-number">2.6.6.</span> <span class="nav-text">函数的引用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LINQ和正则表达式"><span class="nav-number">2.6.7.</span> <span class="nav-text">LINQ和正则表达式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重构我们的代码把GC内存回收的影响减小到最小"><span class="nav-number">2.7.</span> <span class="nav-text">重构我们的代码把GC内存回收的影响减小到最小</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#定时进行GC内存回收"><span class="nav-number">2.8.</span> <span class="nav-text">定时进行GC内存回收</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#手动强制进行内存回收"><span class="nav-number">2.8.1.</span> <span class="nav-text">手动强制进行内存回收</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">2.9.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
-      
-
     </div>
-  </aside>
 
 
-        
-      </div>
-    </main>
-
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <div class="copyright" align="center">
-  
-  &copy; 
-  <span itemprop="copyrightYear">2018</span>
-
-  <span class="author" itemprop="copyrightHolder">elangduan@126.com | </span>
-
-  <span>
-    powered by <a class="theme-link" href="https://hexo.io">hexo</a>
-  </span>
-
-  <span>
-    & theme <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next"> NexT</a>
-  </span>
 </div>
 
+    
+    
+
+    
+
+    
+    <a href="/index.html" class="item" >
+        <i class="home icon"></i>
+        HOME
+    </a>
+
+    
+
+    
+</div>
+
+    <div class="pusher body-content">
+        <div id="content" class="ui main container">
+            <!--<div class="ui one column grid">-->
+                <!--<div class="column">-->
+                    <!--<div class="ui main container">-->
+                        <div id="post-optimizing_garbage_collection_in_unity_games" class="ui main container article-type-post">
+
+    
+
+    <div class="ui divided grid">
+
+        <div class="two column row" id="article-content">
+
+            <div class="thirteen wide computer thirteen wide tablet sixteen wide mobile column">
+                
+
+<h1 class="ui header">
+    
+    Unity游戏内存回收的优化(译)
+</h1>
+
+
+
+                <div class="article-inner">
+
+                    <div class="article-entry" itemprop="articleBody">
+                        
+                        <blockquote>
+<p>&#x539F;&#x6587;<a href="https://unity3d.com/cn/learn/tutorials/topics/performance-optimization/optimizing-garbage-collection-unity-games" target="_blank" rel="external">Optimizing garbage collection in Unity games</a>&#x3002;&#x8FD9;&#x91CC;&#x5BF9;&#x8FD9;&#x7BC7;&#x6587;&#x7AE0;&#x7684;&#x7C97;&#x7565;&#x7FFB;&#x8BD1;&#xFF0C;&#x5F53;&#x4F5C;&#x81EA;&#x5DF1;&#x7684;&#x7B14;&#x8BB0;&#x3002;</p>
+<p>Garbage Collector&#x5728;&#x8FD9;&#x91CC;&#x88AB;&#x7FFB;&#x8BD1;&#x6210;&#x540D;&#x8BCD;GC&#x3002;&#x5BF9;&#x4E8E;Garbage Collection&#x8FD9;&#x91CC;&#x7FFB;&#x8BD1;&#x6210;GC&#x5185;&#x5B58;&#x56DE;&#x6536;&#x3002;</p>
+<p>&#x5185;&#x5B58;&#x5783;&#x573E;: &#x4EE3;&#x7801;&#x4E2D;&#x9500;&#x6BC1;&#x4E86;(disposed)&#x4F46;&#x662F;GC&#x8FD8;&#x6CA1;&#x6709;&#x6E05;&#x7406;&#x7684;&#x5185;&#x5B58;&#x3002;</p>
+</blockquote>
+<h1 id="Unity&#x7684;&#x6258;&#x7BA1;&#x5185;&#x5B58;&#x7684;&#x7B80;&#x5355;&#x4ECB;&#x7ECD;"><a href="#Unity&#x7684;&#x6258;&#x7BA1;&#x5185;&#x5B58;&#x7684;&#x7B80;&#x5355;&#x4ECB;&#x7ECD;" class="headerlink" title="Unity&#x7684;&#x6258;&#x7BA1;&#x5185;&#x5B58;&#x7684;&#x7B80;&#x5355;&#x4ECB;&#x7ECD;"></a>Unity&#x7684;&#x6258;&#x7BA1;&#x5185;&#x5B58;&#x7684;&#x7B80;&#x5355;&#x4ECB;&#x7ECD;</h1><p>&#x4E3A;&#x4E86;&#x7406;&#x89E3;GC&#xFF08;&#x672C;&#x6587;GC&#x6307;&#x4EE3;Garbage Collector&#xFF09;&#x5728;&#x5185;&#x5B58;&#x5206;&#x914D;&#x548C;&#x56DE;&#x6536;&#x65F6;&#x662F;&#x600E;&#x6837;&#x5DE5;&#x4F5C;&#x7684;&#xFF0C;&#x6211;&#x4EEC;&#x5FC5;&#x987B;&#x9996;&#x5148;&#x4E86;&#x89E3;Unity&#x7684;&#x5F15;&#x64CE;&#x4EE3;&#x7801;&#x548C;&#x6211;&#x4EEC;&#x81EA;&#x5DF1;&#x7F16;&#x5199;&#x7684;&#x811A;&#x672C;&#x662F;&#x600E;&#x4E48;&#x5229;&#x7528;&#x5185;&#x5B58;&#x6765;&#x5DE5;&#x4F5C;&#x7684;&#x3002;</p>
+<p>Unity&#x5F15;&#x64CE;&#x4EE3;&#x7801;&#x8FD0;&#x884C;&#x65F6;&#x7BA1;&#x7406;&#x5185;&#x5B58;&#x7684;&#x65B9;&#x5F0F;&#x53EB;&#x505A;&#x624B;&#x52A8;&#x7BA1;&#x7406;&#x5185;&#x5B58;(manual memory management)&#x3002;&#x4E5F;&#x5C31;&#x662F;&#x8BF4;&#x5F15;&#x64CE;&#x4EE3;&#x7801;&#x5FC5;&#x987B;&#x663E;&#x793A;&#x7684;&#x58F0;&#x660E;&#x5185;&#x5B58;&#x662F;&#x600E;&#x4E48;&#x4F7F;&#x7528;&#x7684;&#x3002;&#x624B;&#x52A8;&#x7BA1;&#x7406;&#x5185;&#x5B58;&#x6CA1;&#x6709;&#x7528;&#x5230;GC&#xFF0C;&#x8FD9;&#x90E8;&#x5206;&#x5185;&#x5BB9;&#x672C;&#x6587;&#x4E0D;&#x505A;&#x4ECB;&#x7ECD;&#x3002;</p>
+<p>&#x5F53;&#x8FD0;&#x884C;&#x6211;&#x4EEC;&#x81EA;&#x5DF1;&#x7F16;&#x5199;&#x7684;&#x811A;&#x672C;&#x65F6;Unity&#x7BA1;&#x7406;&#x8FD9;&#x90E8;&#x5206;&#x5185;&#x5B58;&#x7684;&#x65B9;&#x5F0F;&#x53EB;&#x505A;&#x81EA;&#x52A8;&#x5185;&#x5B58;&#x7BA1;&#x7406;(automatic memory management).&#x8FD9;&#x610F;&#x5473;&#x8FD9;&#x6211;&#x4EEC;&#x81EA;&#x5DF1;&#x7F16;&#x5199;&#x7684;&#x4EE3;&#x7801;&#x4E0D;&#x9700;&#x8981;&#x5F88;&#x8BE6;&#x7EC6;&#x7684;&#x53BB;&#x544A;&#x8BC9;Unity&#x600E;&#x6837;&#x53BB;&#x7BA1;&#x7406;&#x8FD9;&#x90E8;&#x5206;&#x5185;&#x5B58;&#x3002;Unity&#x90FD;&#x5E2E;&#x6211;&#x4EEC;&#x505A;&#x597D;&#x4E86;&#x3002;</p>
+<p>&#x7B80;&#x800C;&#x8A00;&#x4E4B;&#xFF0C;Unity&#x7684;&#x81EA;&#x52A8;&#x7BA1;&#x7406;&#x5185;&#x5B58;&#x5DE5;&#x4F5C;&#x65B9;&#x5F0F;&#x5982;&#x4E0B;&#xFF1A;</p>
+<ul class="ui list">
+<li>Unity&#x6709;&#x4E24;&#x4E2A;&#x53EF;&#x4EE5;&#x8BBF;&#x95EE;&#x7684;&#x5185;&#x5B58;&#x6C60;&#xFF1A;&#x6808;(stack)&#x548C;&#x5806; (heap)(&#x4E5F;&#x88AB;&#x53EB;&#x505A;&#x6258;&#x7BA1;&#x5806;&#x3002;&#x6808;&#x5185;&#x5B58;&#x88AB;&#x7528;&#x5728;&#x77ED;&#x671F;&#x5B58;&#x50A8;&#x4E00;&#x4E9B;&#x5C0F;&#x7247;&#x6BB5;&#x7684;&#x6570;&#x636E;&#xFF0C;&#x5806;&#x5219;&#x7528;&#x6765;&#x5B58;&#x50A8;&#x4E00;&#x4E9B;&#x957F;&#x671F;&#x5E76;&#x4E14;&#x6BD4;&#x8F83;&#x5927;&#x7684;&#x7247;&#x6BB5;&#x6570;&#x636E;)&#x3002;</li>
+<li>&#x5F53;&#x4E00;&#x4E2A;&#x53D8;&#x91CF;&#x521B;&#x5EFA;&#x597D;&#x4E86;&#xFF0C;Unity&#x4F1A;&#x5728;&#x6808;&#x6216;&#x8005;&#x5806;&#x4E2D;&#x7533;&#x8BF7;&#x4E00;&#x4E2A;&#x5185;&#x5B58;&#x5757;&#x3002;</li>
+<li>&#x53EA;&#x8981;&#x8FD9;&#x4E2A;&#x521B;&#x5EFA;&#x7684;&#x53D8;&#x91CF;&#x5728;&#x4F5C;&#x7528;&#x8303;&#x56F4;&#x4E4B;&#x5185;(&#x6211;&#x4EEC;&#x7684;&#x4EE3;&#x7801;&#x4E00;&#x76F4;&#x53EF;&#x4EE5;&#x8BBF;&#x95EE;&#x5230;&#x5B83;)&#xFF0C;&#x4E3A;&#x5B83;&#x5206;&#x914D;&#x7684;&#x76F8;&#x5E94;&#x7684;&#x90A3;&#x5757;&#x5185;&#x5B58;&#x5C31;&#x4E00;&#x76F4;&#x662F;&#x4FDD;&#x6301;&#x53EF;&#x7528;&#x72B6;&#x6001;&#x3002;&#x6211;&#x4EEC;&#x628A;&#x8FD9;&#x5757;&#x5185;&#x5B58;&#x6210;&#x4E3A;&#x5DF2;&#x7ECF;&#x88AB;&#x5206;&#x914D;&#x7684;(allocated)&#x3002;&#x6211;&#x4EEC;&#x628A;&#x5728;&#x6808;&#x4E2D;&#x5206;&#x914D;&#x5185;&#x5B58;&#x7684;&#x53D8;&#x91CF;&#x53EB;&#x505A;&#x6808;&#x4E0A;&#x7684;&#x5BF9;&#x8C61;&#xFF0C;&#x628A;&#x5185;&#x5B58;&#x5206;&#x914D;&#x5728;&#x5806;&#x4E0A;&#x7684;&#x53D8;&#x91CF;&#x6210;&#x4E3A;&#x5806;&#x4E0A;&#x7684;&#x5BF9;&#x8C61;&#x3002;</li>
+<li>&#x5F53;&#x8FD9;&#x4E2A;&#x53D8;&#x91CF;&#x5DF2;&#x7ECF;&#x8131;&#x79BB;&#x4E86;&#x5B83;&#x7684;&#x4F5C;&#x7528;&#x533A;&#x57DF;&#xFF0C;&#x76F8;&#x5E94;&#x7684;&#x8FD9;&#x4E2A;&#x53D8;&#x91CF;&#x6240;&#x5206;&#x914D;&#x7684;&#x5185;&#x5B58;&#x4E5F;&#x5C31;&#x4E0D;&#x518D;&#x9700;&#x8981;&#x4E86;&#xFF0C;&#x8FD9;&#x5757;&#x5185;&#x5B58;&#x968F;&#x4E4B;&#x5C31;&#x4F1A;&#x628A;&#x8FD4;&#x56DE;&#x7ED9;&#x5206;&#x914D;&#x65F6;&#x7684;&#x90A3;&#x4E2A;&#x5185;&#x5B58;&#x6C60;&#x3002;&#x6211;&#x4EEC;&#x79F0;&#x8FD9;&#x5757;&#x5185;&#x5B58;&#x53EB;&#x505A;&#x5DF2;&#x56DE;&#x6536;(deallocated)&#x3002;&#x6808;&#x4E0A;&#x7684;&#x5185;&#x5B58;&#x4E00;&#x65E6;&#x79BB;&#x5F00;&#x4E86;&#x4F5C;&#x7528;&#x533A;&#x57DF;&#x5C31;&#x4F1A;&#x7ACB;&#x5373;&#x88AB;&#x56DE;&#x6536;&#x3002;&#x5982;&#x679C;&#x662F;&#x5806;&#x4E0A;&#x7684;&#x5185;&#x5B58;&#x5373;&#x4FBF;&#x662F;&#x5B83;&#x7684;&#x5F15;&#x7528;&#x5DF2;&#x7ECF;&#x8D85;&#x51FA;&#x4E86;&#x4F5C;&#x7528;&#x533A;&#x57DF;&#x4E5F;&#x4E0D;&#x4F1A;&#x88AB;&#x7ACB;&#x5373;&#x56DE;&#x6536;&#xFF0C;&#x5B83;&#x8FD8;&#x4F1A;&#x4FDD;&#x6301;&#x5B83;&#x7684;&#x5206;&#x914D;&#x72B6;&#x6001;&#x3002;</li>
+<li>GC&#x4F1A;&#x6807;&#x8BB0;&#x5E76;&#x4E14;&#x56DE;&#x6536;&#x5806;&#x4E0A;&#x6CA1;&#x6709;&#x88AB;&#x4F7F;&#x7528;&#x7684;&#x5185;&#x5B58;&#x3002;&#x5B83;&#x4F1A;&#x5468;&#x671F;&#x6027;&#x7684;&#x5BF9;&#x5806;&#x4E0A;&#x7684;&#x5185;&#x5B58;&#x8FDB;&#x884C;&#x6E05;&#x7406;&#x3002;</li>
+</ul>
+<p>&#x73B0;&#x5728;&#x6211;&#x4EEC;&#x4E86;&#x89E3;&#x4E86;&#x5185;&#x5B58;&#x4F7F;&#x7528;&#x7684;&#x6D41;&#x7A0B;&#xFF0C;&#x8BA9;&#x6211;&#x4EEC;&#x6765;&#x66F4;&#x6DF1;&#x5165;&#x7684;&#x6765;&#x4E86;&#x89E3;&#x6808;&#x548C;&#x5806;&#x4E0A;&#x7684;&#x5185;&#x5B58;&#x7684;&#x5206;&#x914D;&#x548C;&#x91CA;&#x653E;&#x3002;</p>
+<a id="more"></a> 
+<h2 id="&#x6808;&#x5728;&#x5206;&#x914D;&#x548C;&#x91CA;&#x653E;&#x5185;&#x5B58;&#x7684;&#x65F6;&#x5019;&#x53D1;&#x751F;&#x4E86;&#x4EC0;&#x4E48;&#xFF1F;"><a href="#&#x6808;&#x5728;&#x5206;&#x914D;&#x548C;&#x91CA;&#x653E;&#x5185;&#x5B58;&#x7684;&#x65F6;&#x5019;&#x53D1;&#x751F;&#x4E86;&#x4EC0;&#x4E48;&#xFF1F;" class="headerlink" title="&#x6808;&#x5728;&#x5206;&#x914D;&#x548C;&#x91CA;&#x653E;&#x5185;&#x5B58;&#x7684;&#x65F6;&#x5019;&#x53D1;&#x751F;&#x4E86;&#x4EC0;&#x4E48;&#xFF1F;"></a>&#x6808;&#x5728;&#x5206;&#x914D;&#x548C;&#x91CA;&#x653E;&#x5185;&#x5B58;&#x7684;&#x65F6;&#x5019;&#x53D1;&#x751F;&#x4E86;&#x4EC0;&#x4E48;&#xFF1F;</h2><p>&#x6808;&#x5185;&#x5B58;&#x7684;&#x5206;&#x914D;&#x548C;&#x56DE;&#x6536;&#x6BD4;&#x8F83;&#x5FEB;&#x901F;&#x548C;&#x7B80;&#x5355;&#x3002;&#x8FD9;&#x662F;&#x56E0;&#x4E3A;&#x6808;&#x4EC5;&#x4EC5;&#x7528;&#x4E8E;&#x5B58;&#x50A8;&#x4E00;&#x4E9B;&#x5C0F;&#x7247;&#x6BB5;&#x77ED;&#x5468;&#x671F;&#x7684;&#x6570;&#x636E;&#x3002;&#x5206;&#x914D;&#x548C;&#x56DE;&#x6536;&#x7684;&#x64CD;&#x4F5C;&#x57FA;&#x672C;&#x4E0A;&#x662F;&#x6309;&#x7167;&#x9884;&#x671F;&#x7684;&#x987A;&#x5E8F;&#x548C;&#x89C4;&#x6A21;(&#x591A;&#x5C11;&#x91CF;&#x7684;&#x5185;&#x5B58;)&#x53D1;&#x751F;&#x7684;&#x3002;</p>
+<p>&#x6808;&#x7684;&#x5DE5;&#x4F5C;&#x539F;&#x7406;&#x7C7B;&#x4F3C;&#x4E0E;&#x6570;&#x636E;&#x7ED3;&#x6784;&#x7C7B;&#x578B;&#x7684;&#x6808;: &#x5B83;&#x662F;&#x4E00;&#x4E2A;&#x7B80;&#x5355;&#x7684;&#x5143;&#x7D20;&#x6536;&#x96C6;&#x5668;&#xFF0C;&#x5728;&#x8FD9;&#x79CD;&#x60C5;&#x51B5;&#x4E0B;&#x6808;&#x7684;&#x5185;&#x5B58;&#x5757;&#x53EA;&#x80FD;&#x6309;&#x7167;&#x4E25;&#x683C;&#x7684;&#x987A;&#x5E8F;&#x6765;&#x8FDB;&#x884C;&#x6DFB;&#x52A0;&#x548C;&#x5220;&#x9664;&#x3002;&#x7B80;&#x5355;&#x548C;&#x4E25;&#x683C;&#x7684;&#x89C4;&#x5219;&#x4F7F;&#x5F97;&#x8FD9;&#x4E2A;&#x64CD;&#x4F5C;&#x975E;&#x5E38;&#x7684;&#x5FEB;,&#x5F53;&#x4E00;&#x4E2A;&#x53D8;&#x91CF;&#x9700;&#x8981;&#x5B58;&#x50A8;&#x5230;&#x6808;&#x4E0A;&#xFF0C;&#x5185;&#x5B58;&#x4F1A;&#x4E3A;&#x5B83;&#x5728;&#x6808;&#x5E95;&#x7B80;&#x5355;&#x7684;&#x5206;&#x914D;&#x4E00;&#x5757;&#x5185;&#x5B58;&#x3002;&#x5F53;&#x4E00;&#x4E2A;&#x6808;&#x7684;&#x53D8;&#x91CF;&#x5DF2;&#x7ECF;&#x8D85;&#x51FA;&#x4E86;&#x4F5C;&#x7528;&#x57DF;&#xFF0C;&#x5B58;&#x50A8;&#x8FD9;&#x4E2A;&#x53D8;&#x91CF;&#x7684;&#x8FD9;&#x5757;&#x5185;&#x5B58;&#x4F1A;&#x7ACB;&#x5373;&#x91CA;&#x653E;&#x6389;&#x53D8;&#x6210;&#x53EF;&#x7528;&#x5185;&#x5B58;&#x3002;</p>
+<h2 id="&#x5806;&#x5728;&#x5206;&#x914D;&#x548C;&#x91CA;&#x653E;&#x5185;&#x5B58;&#x7684;&#x65F6;&#x5019;&#x53D1;&#x751F;&#x4E86;&#x4EC0;&#x4E48;&#xFF1F;"><a href="#&#x5806;&#x5728;&#x5206;&#x914D;&#x548C;&#x91CA;&#x653E;&#x5185;&#x5B58;&#x7684;&#x65F6;&#x5019;&#x53D1;&#x751F;&#x4E86;&#x4EC0;&#x4E48;&#xFF1F;" class="headerlink" title="&#x5806;&#x5728;&#x5206;&#x914D;&#x548C;&#x91CA;&#x653E;&#x5185;&#x5B58;&#x7684;&#x65F6;&#x5019;&#x53D1;&#x751F;&#x4E86;&#x4EC0;&#x4E48;&#xFF1F;"></a>&#x5806;&#x5728;&#x5206;&#x914D;&#x548C;&#x91CA;&#x653E;&#x5185;&#x5B58;&#x7684;&#x65F6;&#x5019;&#x53D1;&#x751F;&#x4E86;&#x4EC0;&#x4E48;&#xFF1F;</h2><p>&#x5806;&#x7684;&#x5185;&#x5B58;&#x5206;&#x914D;&#x8981;&#x6BD4;&#x6808;&#x7684;&#x5185;&#x5B58;&#x5206;&#x914D;&#x8D1F;&#x8D23;&#x5F88;&#x591A;&#x3002;&#x8FD9;&#x662F;&#x56E0;&#x4E3A;&#x5806;&#x65E2;&#x80FD;&#x591F;&#x7528;&#x6765;&#x5B58;&#x50A8;&#x957F;&#x5468;&#x671F;&#x7684;&#x7684;&#x6570;&#x636E;&#x4E5F;&#x80FD;&#x591F;&#x7528;&#x6765;&#x5B58;&#x50A8;&#x77ED;&#x5468;&#x671F;&#x7684;&#x6570;&#x636E;&#x3002;&#x5E76;&#x4E14;&#x8FD9;&#x4E9B;&#x6570;&#x636E;&#x53EF;&#x4EE5;&#x662F;&#x5404;&#x79CD;&#x4E0D;&#x540C;&#x7C7B;&#x578B;&#x548C;&#x4E0D;&#x540C;&#x5927;&#x5C0F;&#x3002;&#x5206;&#x914D;&#x548C;&#x56DE;&#x6536;&#x4E0D;&#x4F1A;&#x6309;&#x7167;&#x9884;&#x671F;&#x7684;&#x987A;&#x5E8F;&#x7ECF;&#x5E38;&#x53D1;&#x751F;&#xFF0C;&#x5E76;&#x4E14;&#x8FD9;&#x4E2A;&#x5206;&#x914D;&#x548C;&#x56DE;&#x6536;&#x7684;&#x5185;&#x5B58;&#x6709;&#x53EF;&#x80FD;&#x662F;&#x5927;&#x5C0F;&#x5DEE;&#x5F02;&#x6BD4;&#x8F83;&#x5927;&#x7684;&#x5185;&#x5B58;&#x5757;&#x3002;</p>
+<p>&#x5F53;&#x521B;&#x5EFA;&#x4E86;&#x4E00;&#x4E2A;&#x5806;&#x5185;&#x5B58;&#x7684;&#x53D8;&#x91CF;&#xFF0C;&#x5B83;&#x4F1A;&#x987A;&#x5E8F;&#x6267;&#x884C;&#x4E00;&#x4E0B;&#x8FD9;&#x4E9B;&#x6B65;&#x9AA4;:</p>
+<ul class="ui list">
+<li>&#x9996;&#x5148;, Unity&#x5FC5;&#x987B;&#x68C0;&#x67E5;&#x5728;&#x5806;&#x4E0A;&#x662F;&#x5426;&#x6709;&#x8DB3;&#x591F;&#x7684;&#x5269;&#x4F59;&#x53EF;&#x4EE5;&#x5206;&#x914D;&#x7684;&#x5185;&#x5B58;&#x3002;&#x5982;&#x679C;&#x8DB3;&#x591F;&#x4E86;&#x5219;&#x4F1A;&#x4E3A;&#x8FD9;&#x4E2A;&#x53D8;&#x91CF;&#x5206;&#x914D;&#x76F8;&#x5E94;&#x5927;&#x5C0F;&#x7684;&#x5185;&#x5B58;</li>
+<li>&#x5982;&#x679C;&#x5728;&#x5806;&#x4E0A;&#x7684;&#x5185;&#x5B58;&#x4E0D;&#x591F;&#x5206;&#x914D;&#x8FD9;&#x4E2A;&#x53D8;&#x91CF;&#x6240;&#x9700;&#x7684;&#x5185;&#x5B58;&#x3002; Unity&#x7684;GC&#x89E6;&#x53D1;&#x5668;&#x4F1A;&#x53BB;&#x5C1D;&#x8BD5;&#x91CA;&#x653E;&#x5806;&#x4E0A;&#x7684;&#x6CA1;&#x6709;&#x88AB;&#x4F7F;&#x7528;&#x7684;&#x5185;&#x5B58;&#x3002;&#x8FD9;&#x5C06;&#x4F1A;&#x662F;&#x4E00;&#x4E2A;&#x6BD4;&#x8F83;&#x6162;&#x7684;&#x64CD;&#x4F5C;&#x3002;&#x5982;&#x679C;&#x91CA;&#x653E;&#x4E4B;&#x540E;&#x6709;&#x4E86;&#x8DB3;&#x591F;&#x7684;&#x5269;&#x4F59;&#x5185;&#x5B58;&#xFF0C;&#x5219;&#x4E3A;&#x8FD9;&#x4E2A;&#x53D8;&#x91CF;&#x5206;&#x914D;&#x76F8;&#x5E94;&#x5927;&#x5C0F;&#x7684;&#x5185;&#x5B58;&#x3002;</li>
+<li>&#x5982;&#x679C;GC&#x5728;&#x91CA;&#x653E;&#x5185;&#x5B58;&#x4E4B;&#x540E;&#x5806;&#x4E0A;&#x7684;&#x5269;&#x4F59;&#x5185;&#x5B58;&#x8FD8;&#x662F;&#x4E0D;&#x591F;&#x8FD9;&#x4E2A;&#x53D8;&#x91CF;&#x6240;&#x9700;&#x8981;&#x7684;&#x5185;&#x5B58;&#xFF0C;Unity&#x5C06;&#x4F1A;&#x589E;&#x52A0;&#x5806;&#x5185;&#x5B58;&#x7684;&#x5927;&#x5C0F;&#x3002;&#x8FD9;&#x4E5F;&#x662F;&#x4E00;&#x4E2A;&#x6BD4;&#x8F83;&#x6162;&#x7684;&#x64CD;&#x4F5C;&#x3002;&#x8FD9;&#x4E2A;&#x64CD;&#x4F5C;&#x4E4B;&#x540E;&#x5C06;&#x4F1A;&#x4E3A;&#x8FD9;&#x4E2A;&#x53D8;&#x91CF;&#x5206;&#x914D;&#x5230;&#x76F8;&#x5E94;&#x5927;&#x5C0F;&#x7684;&#x5185;&#x5B58;&#x7A7A;&#x95F4;&#x3002;</li>
+</ul>
+<p>&#x5806;&#x5185;&#x5B58;&#x5206;&#x914D;&#x6BD4;&#x8F83;&#x6162;&#xFF0C;&#x5C24;&#x5176;&#x662F;&#x89E6;&#x53D1;&#x4E86;GC&#x8FD0;&#x884C;&#x548C;&#x5806;&#x5185;&#x5B58;&#x7684;&#x6269;&#x5C55;&#x3002;</p>
+<h2 id="GC&#x8FDB;&#x884C;&#x5185;&#x5B58;&#x56DE;&#x6536;&#x7684;&#x65F6;&#x5019;&#x53D1;&#x751F;&#x4E86;&#x4EC0;&#x4E48;&#xFF1F;"><a href="#GC&#x8FDB;&#x884C;&#x5185;&#x5B58;&#x56DE;&#x6536;&#x7684;&#x65F6;&#x5019;&#x53D1;&#x751F;&#x4E86;&#x4EC0;&#x4E48;&#xFF1F;" class="headerlink" title="GC&#x8FDB;&#x884C;&#x5185;&#x5B58;&#x56DE;&#x6536;&#x7684;&#x65F6;&#x5019;&#x53D1;&#x751F;&#x4E86;&#x4EC0;&#x4E48;&#xFF1F;"></a>GC&#x8FDB;&#x884C;&#x5185;&#x5B58;&#x56DE;&#x6536;&#x7684;&#x65F6;&#x5019;&#x53D1;&#x751F;&#x4E86;&#x4EC0;&#x4E48;&#xFF1F;</h2><p>&#x5F53;&#x4E00;&#x4E2A;&#x5806;&#x5185;&#x5B58;&#x53D8;&#x91CF;&#x5DF2;&#x7ECF;&#x8D85;&#x51FA;&#x4E86;&#x5B83;&#x7684;&#x4F5C;&#x7528;&#x8303;&#x56F4;(&#x6216;&#x8005;&#x8BF4;&#x751F;&#x547D;&#x5468;&#x671F;)&#x65F6;&#xFF0C;&#x5B58;&#x50A8;&#x8FD9;&#x4E2A;&#x53D8;&#x91CF;&#x7684;&#x90A3;&#x5757;&#x5185;&#x5B58;&#x4E0D;&#x4F1A;&#x7ACB;&#x5373;&#x88AB;&#x56DE;&#x6536;&#xFF0C;&#x8FD9;&#x5757;&#x5185;&#x5B58;&#x53EF;&#x4EE5;&#x88AB;&#x79F0;&#x4F5C;&#x672A;&#x88AB;&#x4F7F;&#x7528;&#x7684;&#x5185;&#x5B58;&#x3002;&#x672A;&#x88AB;&#x4F7F;&#x7528;&#x7684;&#x5185;&#x5B58;&#x53EA;&#x6709;&#x5F53;GC&#x8FD0;&#x884C;&#x7684;&#x65F6;&#x5019;&#x624D;&#x4F1A;&#x88AB;&#x56DE;&#x6536;&#x3002;</p>
+<p>&#x6BCF;&#x5F53;GC&#x8FD0;&#x884C;&#x4E00;&#x6B21;&#xFF0C;&#x5B83;&#x4F1A;&#x987A;&#x5E8F;&#x6267;&#x884C;&#x4E00;&#x4E0B;&#x6B65;&#x9AA4;:</p>
+<ul class="ui list">
+<li>GC&#x4F1A;&#x68C0;&#x67E5;&#x6BCF;&#x4E2A;&#x5728;&#x5806;&#x4E0A;&#x7684;&#x5BF9;&#x8C61;</li>
+<li>GC&#x4F1A;&#x67E5;&#x627E;&#x6240;&#x6709;&#x5F53;&#x524D;&#x5BF9;&#x8C61;&#x7684;&#x5F15;&#x7528;&#x60C5;&#x51B5;&#x6765;&#x51B3;&#x5B9A;&#x8FD9;&#x4E2A;&#x5BF9;&#x8C61;&#x662F;&#x5426;&#x8FD8;&#x5728;&#x4F5C;&#x7528;&#x8303;&#x56F4;&#x4E4B;&#x5185;&#x3002;</li>
+<li>&#x4EFB;&#x4F55;&#x5BF9;&#x8C61;&#x53EA;&#x8981;&#x4E0D;&#x5728;&#x4F5C;&#x7528;&#x8303;&#x56F4;&#x4E4B;&#x5185;&#x5C31;&#x4F1A;&#x88AB;GC&#x6807;&#x8BB0;&#x4E3A;&#x9700;&#x8981;&#x5220;&#x9664;&#x7684;&#x5BF9;&#x8C61;&#x3002;</li>
+<li>&#x5220;&#x9664;&#x88AB;&#x6807;&#x8BB0;&#x7684;&#x5BF9;&#x8C61;&#x7136;&#x540E;&#x56DE;&#x6536;&#x8FD9;&#x4E9B;&#x53D8;&#x91CF;&#x6240;&#x5360;&#x7528;&#x7684;&#x5185;&#x5B58;&#x3002;</li>
+</ul>
+<p>GC&#x56DE;&#x6536;&#x5185;&#x5B58;&#x662F;&#x4E00;&#x4E2A;&#x6BD4;&#x8F83;&#x6602;&#x8D35;&#x7684;&#x64CD;&#x4F5C;&#x3002;&#x5806;&#x4E0A;&#x7684;&#x5BF9;&#x8C61;&#x8D8A;&#x591A;&#xFF0C;&#x5BF9;&#x8C61;&#x7684;&#x5F15;&#x7528;&#x4E5F;&#x4F1A;&#x8D8A;&#x591A;&#xFF0C;GC&#x9700;&#x8981;&#x5904;&#x7406;&#x7684;&#x5DE5;&#x4F5C;&#x968F;&#x4E4B;&#x4E5F;&#x4F1A;&#x66F4;&#x591A;&#x3002;</p>
+<h2 id="&#x4EC0;&#x4E48;&#x60C5;&#x51B5;&#x4E0B;&#x4F1A;&#x5BFC;&#x81F4;GC&#x7684;&#x8FD0;&#x884C;"><a href="#&#x4EC0;&#x4E48;&#x60C5;&#x51B5;&#x4E0B;&#x4F1A;&#x5BFC;&#x81F4;GC&#x7684;&#x8FD0;&#x884C;" class="headerlink" title="&#x4EC0;&#x4E48;&#x60C5;&#x51B5;&#x4E0B;&#x4F1A;&#x5BFC;&#x81F4;GC&#x7684;&#x8FD0;&#x884C;"></a>&#x4EC0;&#x4E48;&#x60C5;&#x51B5;&#x4E0B;&#x4F1A;&#x5BFC;&#x81F4;GC&#x7684;&#x8FD0;&#x884C;</h2><p>&#x6709;&#x4E09;&#x79CD;&#x60C5;&#x51B5;&#x4F1A;&#x5BFC;&#x81F4;GC&#x7684;&#x8FD0;&#x884C;:</p>
+<ul class="ui list">
+<li>&#x4E0D;&#x7BA1;&#x4EC0;&#x4E48;&#x65F6;&#x5019;&#x53EA;&#x8981;&#x5806;&#x7684;&#x5185;&#x5B58;&#x5DF2;&#x7ECF;&#x4E0D;&#x80FD;&#x6EE1;&#x8DB3;&#x7528;&#x6237;&#x7533;&#x8BF7;&#x7684;&#x5185;&#x5B58;&#x7684;&#x65F6;&#x5019;&#x3002;</li>
+<li>GC&#x4F1A;&#x81EA;&#x5DF1;&#x4E0D;&#x5B9A;&#x65F6;&#x7684;&#x6267;&#x884C;&#xFF08;&#x8FD9;&#x4E2A;&#x9891;&#x7387;&#x662F;&#x6839;&#x636E;&#x5E73;&#x53F0;&#x6765;&#x5B9A;&#x7684;&#xFF09;&#x3002;</li>
+<li>&#x7528;&#x6237;&#x4E3B;&#x52A8;&#x5F3A;&#x5236;&#x8C03;&#x7528;GC&#x56DE;&#x6536;&#x7684;&#x65F6;&#x5019;</li>
+</ul>
+<p>GC&#x56DE;&#x6536;&#x5185;&#x5B58;&#x662F;&#x4E00;&#x4E2A;&#x6BD4;&#x8F83;&#x9891;&#x7E41;&#x7684;&#x64CD;&#x4F5C;&#x3002;&#x4E0D;&#x7BA1;&#x4F55;&#x65F6;&#x53EA;&#x8981;&#x5806;&#x5185;&#x5B58;&#x4E0D;&#x80FD;&#x6EE1;&#x8DB3;&#x53D8;&#x91CF;&#x7533;&#x8BF7;&#x7684;&#x5185;&#x5B58;&#x7684;&#x5927;&#x5C0F;GC&#x56DE;&#x6536;&#x5185;&#x5B58;&#x64CD;&#x4F5C;&#x5C06;&#x4F1A;&#x88AB;&#x89E6;&#x53D1;&#xFF0C;&#x8FD9;&#x4E5F;&#x610F;&#x5473;&#x7740;&#x9891;&#x7E41;&#x7684;&#x5806;&#x5185;&#x5B58;&#x7684;&#x7533;&#x8BF7;&#x548C;&#x91CA;&#x653E;&#x64CD;&#x4F5C;&#x4F1A;&#x5BFC;&#x81F4;GC&#x7684;&#x9891;&#x7E41;&#x8FD0;&#x884C;&#x3002;</p>
+<h1 id="GC&#x56DE;&#x6536;&#x5185;&#x5B58;&#x7684;&#x95EE;&#x9898;"><a href="#GC&#x56DE;&#x6536;&#x5185;&#x5B58;&#x7684;&#x95EE;&#x9898;" class="headerlink" title="GC&#x56DE;&#x6536;&#x5185;&#x5B58;&#x7684;&#x95EE;&#x9898;"></a>GC&#x56DE;&#x6536;&#x5185;&#x5B58;&#x7684;&#x95EE;&#x9898;</h1><p>&#x73B0;&#x5728;&#x6211;&#x4EEC;&#x5DF2;&#x7ECF;&#x4E86;&#x89E3;&#x4E86;GC&#x56DE;&#x6536;&#x5185;&#x5B58;&#x5728;Unity&#x7684;&#x5185;&#x5B58;&#x7BA1;&#x7406;&#x4E2D;&#x6240;&#x626E;&#x6F14;&#x7684;&#x89D2;&#x8272;&#xFF0C;&#x63A5;&#x4E0B;&#x6765;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x8003;&#x8651;&#x4E0B;&#x5728;GC&#x56DE;&#x6536;&#x5185;&#x5B58;&#x7684;&#x65F6;&#x5019;&#x53EF;&#x80FD;&#x53D1;&#x751F;&#x7684;&#x5404;&#x79CD;&#x95EE;&#x9898;&#x3002;</p>
+<p>&#x4E00;&#x4E2A;&#x5F88;&#x660E;&#x663E;&#x7684;&#x95EE;&#x9898;&#x662F;GC&#x4F1A;&#x82B1;&#x8D39;&#x5F88;&#x591A;&#x7684;&#x65F6;&#x95F4;&#x3002;&#x5982;&#x679C;GC&#x9700;&#x8981;&#x68C0;&#x67E5;&#x5927;&#x91CF;&#x7684;&#x5806;&#x5185;&#x5B58;&#x5BF9;&#x8C61;&#x6216;&#x8005;&#x662F;&#x5927;&#x91CF;&#x7684;&#x5BF9;&#x8C61;&#x5F15;&#x7528;&#x5173;&#x7CFB;&#xFF0C;&#x8FD9;&#x4E2A;&#x68C0;&#x67E5;&#x7684;&#x8FC7;&#x7A0B;&#x5C06;&#x4F1A;&#x975E;&#x5E38;&#x7684;&#x6162;&#xFF0C;&#x8FD9;&#x4E5F;&#x4F1A;&#x5BFC;&#x81F4;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x51FA;&#x73B0;&#x5361;&#x987F;(stutter)&#x6216;&#x8005;&#x8FD0;&#x884C;&#x7F13;&#x6162;&#x3002;</p>
+<p>&#x53E6;&#x5916;&#x4E00;&#x4E2A;&#x95EE;&#x9898;&#x662F;GC&#x53EF;&#x80FD;&#x5728;&#x4E0D;&#x6070;&#x5F53;&#x7684;&#x65F6;&#x95F4;&#x6267;&#x884C;&#x3002;&#x5982;&#x679C;CPU&#x5728;&#x6267;&#x884C;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x7684;&#x6027;&#x80FD;&#x5173;&#x952E;&#x90E8;&#x5206;&#x5DF2;&#x7ECF;&#x627F;&#x53D7;&#x4E86;&#x975E;&#x5E38;&#x627F;&#x91CD;&#x7684;&#x8D1F;&#x62C5;&#x4E86;&#xFF0C;&#x8FD9;&#x4E2A;&#x65F6;&#x5019;&#x5373;&#x4F7F;&#x60F3;CPU&#x6DFB;&#x52A0;&#x4E00;&#x4E2A;&#x5F88;&#x5C0F;&#x7684;&#x989D;&#x5916;&#x8D1F;&#x62C5;&#x90FD;&#x4F1A;&#x9020;&#x6210;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x7684;&#x5E27;&#x7387;&#x4E0B;&#x964D;&#x5E76;&#x4E14;&#x6027;&#x80FD;&#x4F1A;&#x660E;&#x663E;&#x53D8;&#x5DEE;&#x3002;</p>
+<p>&#x8FD8;&#x6709;&#x4E2A;&#x4E0D;&#x592A;&#x660E;&#x663E;&#x7684;&#x95EE;&#x9898;&#x662F;&#x5806;&#x5185;&#x5B58;&#x7684;&#x788E;&#x7247;&#x5316;&#x3002;&#x5F53;&#x4ECE;&#x5806;&#x4E2D;&#x5206;&#x914D;&#x5185;&#x5B58;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x9700;&#x8981;&#x6839;&#x636E;&#x5B58;&#x50A8;&#x6570;&#x636E;&#x7684;&#x5927;&#x5C0F;&#x4ECE;&#x5269;&#x4F59;&#x7684;&#x5185;&#x5B58;&#x5757;&#x4ECE;&#x5206;&#x914D;&#xFF0C;&#x5F53;&#x8FD9;&#x4E9B;&#x88AB;&#x5206;&#x914D;&#x7684;&#x5185;&#x5B58;&#x91CD;&#x65B0;&#x56DE;&#x6536;&#x540E;&#xFF0C;&#x5806;&#x5185;&#x5B58;&#x5C31;&#x4F1A;&#x5F97;&#x5230;&#x5927;&#x91CF;&#x7684;&#x88AB;&#x5206;&#x5272;&#x6210;&#x5F88;&#x591A;&#x5C0F;&#x7684;&#x4E0D;&#x8FDE;&#x7EED;&#x7684;&#x53EF;&#x7528;&#x7684;&#x5185;&#x5B58;&#x5757;&#x3002;&#x8FD9;&#x610F;&#x5473;&#x7740;GC&#x6CA1;&#x6709;&#x8FDB;&#x884C;&#x5185;&#x5B58;&#x56DE;&#x6536;&#x7684;&#x60C5;&#x51B5;&#x4E0B;&#x5373;&#x65F6;&#x603B;&#x5171;&#x7684;&#x53EF;&#x7528;&#x5185;&#x5B58;&#x4F1A;&#x6BD4;&#x8F83;&#x591A;&#xFF0C;&#x4F46;&#x662F;&#x6211;&#x4EEC;&#x5374;&#x4E0D;&#x80FD;&#x5206;&#x914D;&#x4E00;&#x4E2A;&#x6BD4;&#x8F83;&#x5927;&#x7684;&#x4E00;&#x5757;&#x8FDE;&#x7EED;&#x5185;&#x5B58;&#x3002;</p>
+<p>&#x8FD9;&#x91CC;&#x6211;&#x4EEC;&#x603B;&#x7ED3;&#x4E86;&#x4E24;&#x4E2A;&#x5185;&#x5B58;&#x788E;&#x7247;&#x5316;&#x5C06;&#x4F1A;&#x5BFC;&#x81F4;&#x7684;&#x95EE;&#x9898;&#x3002;&#x4E00;&#x65B9;&#x9762;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x5185;&#x5B58;&#x4F7F;&#x7528;&#x6BD4;&#x6211;&#x4EEC;&#x9700;&#x8981;&#x7684;&#x4F1A;&#x66F4;&#x9AD8;&#xFF0C;&#x53E6;&#x4E00;&#x65B9;&#x9762;GC&#x5185;&#x5B58;&#x56DE;&#x6536;&#x64CD;&#x4F5C;&#x5C06;&#x4F1A;&#x66F4;&#x52A0;&#x9891;&#x7E41;&#x3002;&#x60F3;&#x8981;&#x5806;&#x5185;&#x5B58;&#x788E;&#x7247;&#x5316;&#x66F4;&#x8BE6;&#x7EC6;&#x7684;&#x8BA8;&#x8BBA;, &#x53EF;&#x4EE5;&#x770B;&#x8FD9;&#x7BC7;&#x6587;&#x7AE0; <a href="https://docs.unity3d.com/Manual/BestPracticeUnderstandingPerformanceInUnity4-1.html?_ga=2.83231508.342435300.1511170133-741569329.1509691291" target="_blank" rel="external">this Unity best practice guide on performance</a></p>
+<h2 id="&#x5BFB;&#x627E;&#x5806;&#x5185;&#x5B58;&#x7684;&#x5206;&#x914D;&#x70B9;"><a href="#&#x5BFB;&#x627E;&#x5806;&#x5185;&#x5B58;&#x7684;&#x5206;&#x914D;&#x70B9;" class="headerlink" title="&#x5BFB;&#x627E;&#x5806;&#x5185;&#x5B58;&#x7684;&#x5206;&#x914D;&#x70B9;"></a>&#x5BFB;&#x627E;&#x5806;&#x5185;&#x5B58;&#x7684;&#x5206;&#x914D;&#x70B9;</h2><p>&#x5982;&#x679C;&#x6211;&#x4EEC;&#x77E5;&#x9053;&#x5728;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x4E2D;&#x5BFC;&#x81F4;GC&#x8FD0;&#x884C;&#x7684;&#x539F;&#x56E0;&#xFF0C;&#x6211;&#x4EEC;&#x9700;&#x8981;&#x77E5;&#x9053;&#x54EA;&#x4E00;&#x90E8;&#x5206;&#x4EE3;&#x7801;&#x4EA7;&#x751F;&#x4E86;&#x5185;&#x5B58;&#x5783;&#x573E;&#x3002;&#x5185;&#x5B58;&#x5783;&#x573E;&#x4EA7;&#x751F;&#x4E8E;&#x8D85;&#x51FA;&#x4E86;&#x4F5C;&#x7528;&#x57DF;&#x7684;&#x5806;&#x5185;&#x5B58;&#x53D8;&#x91CF;&#xFF0C;&#x56E0;&#x6B64;&#x6211;&#x4EEC;&#x9996;&#x5148;&#x9700;&#x8981;&#x77E5;&#x9053;&#x53D8;&#x91CF;&#x628A;&#x5185;&#x5B58;&#x5206;&#x914D;&#x5728;&#x5806;&#x4E2D;&#x7684;&#x539F;&#x56E0;&#x3002;</p>
+<p>&#x4E0B;&#x9762;&#x5217;&#x51FA;&#x7684;&#x4EE3;&#x7801;&#x662F;&#x4E00;&#x4E2A;&#x5728;&#x6808;&#x4E0A;&#x5206;&#x914D;&#x5185;&#x5B58;&#x7684;&#x4F8B;&#x5B50;&#xFF0C;&#x53D8;&#x91CF;localInt&#x662F;&#x5C40;&#x90E8;&#x7684;&#x540C;&#x65F6;&#x4E5F;&#x662F;&#x503C;&#x7C7B;&#x578B;&#x7684;&#x53D8;&#x91CF;(value-type)&#x8FD9;&#x4E2A;&#x53D8;&#x91CF;&#x7684;&#x5185;&#x5B58;&#x5C06;&#x4F1A;&#x5728;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x8FD0;&#x884C;&#x4E4B;&#x540E;&#x88AB;&#x7ACB;&#x5373;&#x56DE;&#x6536;&#x5230;&#x6808;&#x4E2D;&#x3002;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ExampleFunction</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  <span class="keyword">int</span> localInt = <span class="number">5</span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>&#x4E0B;&#x9762;&#x5217;&#x51FA;&#x7684;&#x4EE3;&#x7801;&#x662F;&#x4E00;&#x4E2A;&#x5728;&#x5806;&#x4E0A;&#x5206;&#x914D;&#x5185;&#x5B58;&#x7684;&#x4F8B;&#x5B50;&#xFF0C;&#x53D8;&#x91CF;localList&#x662F;&#x5C40;&#x90E8;&#x53D8;&#x91CF;&#x4F46;&#x662F;&#x662F;&#x5F15;&#x7528;&#x7C7B;&#x578B;&#x7684;(reference-type)&#x3002;&#x8FD9;&#x4E2A;&#x53D8;&#x91CF;&#x7684;&#x5185;&#x5B58;&#x56DE;&#x6536;&#x662F;&#x5728;GC&#x8FD0;&#x884C;&#x7684;&#x65F6;&#x5019;(&#x51FD;&#x6570;&#x6267;&#x884C;&#x5B8C;&#x5E76;&#x4E0D;&#x4F1A;&#x7ACB;&#x5373;&#x91CA;&#x653E;)&#x3002;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ExampleFunction</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  List localList = <span class="keyword">new</span> List();</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<h2 id="&#x4F7F;&#x7528;Unity&#x7684;Profile&#x7A97;&#x53E3;&#x53EF;&#x4EE5;&#x627E;&#x5230;&#x5806;&#x5185;&#x5B58;&#x7684;&#x5206;&#x914D;"><a href="#&#x4F7F;&#x7528;Unity&#x7684;Profile&#x7A97;&#x53E3;&#x53EF;&#x4EE5;&#x627E;&#x5230;&#x5806;&#x5185;&#x5B58;&#x7684;&#x5206;&#x914D;" class="headerlink" title="&#x4F7F;&#x7528;Unity&#x7684;Profile&#x7A97;&#x53E3;&#x53EF;&#x4EE5;&#x627E;&#x5230;&#x5806;&#x5185;&#x5B58;&#x7684;&#x5206;&#x914D;"></a>&#x4F7F;&#x7528;Unity&#x7684;Profile&#x7A97;&#x53E3;&#x53EF;&#x4EE5;&#x627E;&#x5230;&#x5806;&#x5185;&#x5B58;&#x7684;&#x5206;&#x914D;</h2><p>&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;Profiler&#x7A97;&#x53E3;&#x770B;&#x5230;&#x6211;&#x4EEC;&#x4EE3;&#x7801;&#x521B;&#x5EFA;&#x5806;&#x5185;&#x5B58;&#x7684;&#x5730;&#x65B9;</p>
+<p><a class="magnific-img" href="/images/unity_performance_ways/window_with_data.png"><img src="/images/unity_performance_ways/window_with_data.png" alt="" class="ui centered image"></a></p>
+<p>&#x5728;CPU&#x4F7F;&#x7528;&#x60C5;&#x51B5;&#x7684;&#x5206;&#x6790;&#x5668;&#x4E2D;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x9009;&#x62E9;&#x4EFB;&#x4F55;&#x4E00;&#x5E27;&#x7136;&#x540E;&#x5728;Profiler&#x7A97;&#x53E3;&#x7684;&#x5E95;&#x90E8;&#x90E8;&#x5206;&#x67E5;&#x770B;&#x8FD9;&#x4E00;&#x5E27;&#x7684;CPU&#x7684;&#x6570;&#x636E;&#x4F7F;&#x7528;&#x60C5;&#x51B5;&#xFF0C;&#x5176;&#x4E2D;&#x6709;&#x4E00;&#x5217;&#x6570;&#x636E;&#x53EB;&#x505A; <strong>GC Alloc</strong> &#x3002;&#x8FD9;&#x4E00;&#x5217;&#x663E;&#x793A;&#x4E86;&#x8FD9;&#x4E00;&#x5E27;&#x6B63;&#x5728;&#x8FDB;&#x884C;&#x7684;&#x5185;&#x5B58;&#x5206;&#x914D;&#x60C5;&#x51B5;&#x3002;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x9009;&#x62E9;&#x8FD9;&#x4E00;&#x5217;&#x7684;&#x5934;&#x90E8;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x5BF9;&#x8FD9;&#x4E9B;&#x7EDF;&#x8BA1;&#x597D;&#x7684;&#x6570;&#x636E;&#x8FDB;&#x884C;&#x6392;&#x5E8F;&#xFF0C;&#x4EE5;&#x4FBF;&#x66F4;&#x80FD;&#x8F7B;&#x677E;&#x7684;&#x770B;&#x51FA;&#x6765;&#x5728;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x4E2D;&#x662F;&#x54EA;&#x4E9B;&#x51FD;&#x6570;&#x4EA7;&#x751F;&#x6700;&#x5927;&#x7684;&#x5806;&#x5185;&#x5B58;&#x5206;&#x914D;&#x3002;&#x4E00;&#x65E6;&#x6211;&#x4EEC;&#x77E5;&#x9053;&#x662F;&#x54EA;&#x4E2A;&#x51FD;&#x6570;&#x4EA7;&#x751F;&#x5206;&#x914D;&#x5806;&#x5185;&#x5B58;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x68C0;&#x67E5;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x3002;</p>
+<p>&#x5F53;&#x6211;&#x4EEC;&#x77E5;&#x9053;&#x4E86;&#x5728;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x4E2D;&#x5F15;&#x8D77;&#x5185;&#x5B58;&#x5206;&#x914D;&#x7684;&#x90A3;&#x6BB5;&#x4EE3;&#x7801;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x51B3;&#x5B9A;&#x600E;&#x6837;&#x53BB;&#x89E3;&#x51B3;&#x8FD9;&#x4E2A;&#x95EE;&#x9898;&#x4F7F;&#x5F97;&#x8FD9;&#x91CC;&#x7684;&#x5206;&#x914D;&#x7684;&#x5185;&#x5B58;&#x91CF;&#x6700;&#x5C0F;&#x5316;&#x3002;</p>
+<h2 id="&#x51CF;&#x5C11;GC&#x56DE;&#x6536;&#x5185;&#x5B58;&#x5E26;&#x6765;&#x7684;&#x5F71;&#x54CD;"><a href="#&#x51CF;&#x5C11;GC&#x56DE;&#x6536;&#x5185;&#x5B58;&#x5E26;&#x6765;&#x7684;&#x5F71;&#x54CD;" class="headerlink" title="&#x51CF;&#x5C11;GC&#x56DE;&#x6536;&#x5185;&#x5B58;&#x5E26;&#x6765;&#x7684;&#x5F71;&#x54CD;"></a>&#x51CF;&#x5C11;GC&#x56DE;&#x6536;&#x5185;&#x5B58;&#x5E26;&#x6765;&#x7684;&#x5F71;&#x54CD;</h2><p>&#x6982;&#x62EC;&#x6765;&#x8BF4;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x4E09;&#x79CD;&#x65B9;&#x5F0F;&#x6765;&#x964D;&#x5C11;GC&#x56DE;&#x6536;&#x5185;&#x5B58;&#x7ED9;&#x6E38;&#x620F;&#x5E26;&#x6765;&#x7684;&#x5F71;&#x54CD;:</p>
+<ul class="ui list">
+<li>&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x51CF;&#x5C11;GC&#x8FD0;&#x884C;&#x7684;&#x65F6;&#x95F4;</li>
+<li>&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x51CF;&#x5C11;&#x4E2A;GC&#x8FD0;&#x884C;&#x7684;&#x9891;&#x7387;</li>
+<li>&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x8C28;&#x614E;&#x7684;&#x5728;&#x6027;&#x80FD;&#x538B;&#x529B;&#x6BD4;&#x8F83;&#x5C0F;&#x7684;&#x65F6;&#x5019;&#x89E6;&#x53D1;GC&#x56DE;&#x6536;&#x5185;&#x5B58;&#xFF0C;&#x4F8B;&#x5982;&#x5728;loading&#x754C;&#x9762;</li>
+</ul>
+<p>&#x57FA;&#x4E8E;&#x8FD9;&#x51E0;&#x4E2A;&#x60F3;&#x6CD5;&#xFF0C;&#x8FD9;&#x91CC;&#x6709;&#x4E09;&#x4E2A;&#x7B56;&#x7565;&#x53EF;&#x4EE5;&#x5E2E;&#x52A9;&#x6211;&#x4EEC;&#xFF1A;</p>
+<ul class="ui list">
+<li>&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x6784;&#x9020;&#x597D;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x4EE5;&#x4FBF;&#x6211;&#x4EEC;&#x6709;&#x66F4;&#x5C11;&#x7684;&#x5806;&#x5185;&#x5B58;&#x5206;&#x914D;&#x548C;&#x66F4;&#x5C11;&#x7684;&#x5BF9;&#x8C61;&#x5F15;&#x7528;&#x3002;&#x5806;&#x4E0A;&#x5BF9;&#x8C61;&#x8F83;&#x5C11;&#x5E76;&#x4E14;&#x68C0;&#x67E5;&#x7684;&#x5BF9;&#x8C61;&#x5F15;&#x7528;&#x66F4;&#x5C11;&#x610F;&#x5473;&#x7740;&#x5F53;GC&#x88AB;&#x89E6;&#x53D1;&#xFF0C;GC&#x56DE;&#x6536;&#x5185;&#x5B58;&#x9700;&#x8981;&#x66F4;&#x5C11;&#x7684;&#x65F6;&#x95F4;&#x3002;</li>
+<li>&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x51CF;&#x5C11;&#x5806;&#x5185;&#x5B58;&#x7684;&#x5206;&#x914D;&#x548C;&#x91CA;&#x653E;&#x7684;&#x9891;&#x7387;&#xFF0C;&#x5C24;&#x5176;&#x662F;&#x5F53;&#x6027;&#x80FD;&#x538B;&#x529B;&#x6BD4;&#x8F83;&#x5927;&#x7684;&#x65F6;&#x5019;&#x3002;&#x66F4;&#x5C11;&#x7684;&#x5185;&#x5B58;&#x5206;&#x914D;&#x548C;&#x91CA;&#x653E;&#x5C31;&#x4F1A;&#x6709;&#x66F4;&#x5C11;&#x573A;&#x666F;&#x89E6;&#x53D1;GC&#x8FDB;&#x884C;&#x5783;&#x573E;&#x56DE;&#x6536;&#x3002;&#x8FD9;&#x4E5F;&#x8F83;&#x5C11;&#x4E86;&#x5806;&#x5185;&#x5B58;&#x788E;&#x7247;&#x7684;&#x98CE;&#x9669;</li>
+<li>&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x5C1D;&#x8BD5;&#x5728;&#x9884;&#x671F;&#x7684;&#x5728;&#x65B9;&#x4FBF;&#x7684;&#x65F6;&#x95F4;&#x65F6;&#x4E3B;&#x52A8;&#x8C03;&#x7528;GC&#x5783;&#x573E;&#x56DE;&#x6536;&#x8FDB;&#x884C;&#x5185;&#x5B58;&#x7684;&#x62D3;&#x5C55;&#x3002;&#x8FD9;&#x6837;&#x505A;&#x6BD4;&#x8F83;&#x56F0;&#x96BE;&#x4E14;&#x6BD4;&#x8F83;&#x96BE;&#x8FBE;&#x5230;&#x9884;&#x671F;&#xFF0C;&#x4F46;&#x662F;&#x5F53;&#x8FD9;&#x4E2A;&#x65B9;&#x5F0F;&#x4F5C;&#x4E3A;&#x6574;&#x4E2A;&#x5185;&#x5B58;&#x7BA1;&#x7406;&#x7B56;&#x7565;&#x7684;&#x4E00;&#x90E8;&#x5206;&#x65F6;&#x53EF;&#x4EE5;&#x51CF;&#x5C11;GC&#x5783;&#x573E;&#x56DE;&#x6536;&#x7684;&#x5F71;&#x54CD;&#x3002;</li>
+</ul>
+<h2 id="&#x51CF;&#x5C11;&#x5783;&#x573E;&#x5185;&#x5B58;&#x521B;&#x5EFA;&#x7684;&#x6570;&#x91CF;"><a href="#&#x51CF;&#x5C11;&#x5783;&#x573E;&#x5185;&#x5B58;&#x521B;&#x5EFA;&#x7684;&#x6570;&#x91CF;" class="headerlink" title="&#x51CF;&#x5C11;&#x5783;&#x573E;&#x5185;&#x5B58;&#x521B;&#x5EFA;&#x7684;&#x6570;&#x91CF;"></a>&#x51CF;&#x5C11;&#x5783;&#x573E;&#x5185;&#x5B58;&#x521B;&#x5EFA;&#x7684;&#x6570;&#x91CF;</h2><p>&#x8BA9;&#x6211;&#x4EEC;&#x6765;&#x505A;&#x4E00;&#x4E9B;&#x6280;&#x672F;&#x4E0A;&#x7684;&#x6D4B;&#x8BD5;&#x6765;&#x5E2E;&#x52A9;&#x6211;&#x4EEC;&#x51CF;&#x5C11;&#x6211;&#x4EEC;&#x81EA;&#x5DF1;&#x7684;&#x4EE3;&#x7801;&#x4E2D;&#x4EA7;&#x751F;&#x7684;&#x5783;&#x573E;&#x5185;&#x5B58;&#x3002;</p>
+<h3 id="&#x7F13;&#x5B58;"><a href="#&#x7F13;&#x5B58;" class="headerlink" title="&#x7F13;&#x5B58;"></a>&#x7F13;&#x5B58;</h3><p>&#x5982;&#x679C;&#x6211;&#x4EEC;&#x7684;&#x4EE3;&#x7801;&#x5728;&#x91CD;&#x590D;&#x7684;&#x8C03;&#x7528;&#x4E00;&#x4E2A;&#x51FD;&#x6570;&#xFF0C;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x4F1A;&#x5BFC;&#x81F4;&#x5806;&#x5185;&#x5B58;&#x5206;&#x914D;&#x800C;&#x4E14;&#x6BCF;&#x6B21;&#x6211;&#x4EEC;&#x8C03;&#x7528;&#x5B8C;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x4E4B;&#x540E;&#x4F1A;&#x4E22;&#x5F03;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x7684;&#x8BA1;&#x7B97;&#x7ED3;&#x679C;&#xFF0C;&#x8FD9;&#x91CC;&#x4F1A;&#x4EA7;&#x751F;&#x4E0D;&#x5FC5;&#x8981;&#x7684;&#x5185;&#x5B58;&#x5783;&#x573E;&#x3002;&#x53D6;&#x800C;&#x4EE3;&#x4E4B;&#xFF0C;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x5B58;&#x50A8;&#x8FD9;&#x4E2A;&#x8FD9;&#x4E9B;&#x5BF9;&#x8C61;&#x6765;&#x91CD;&#x590D;&#x4F7F;&#x7528;&#x3002;&#x8FD9;&#x4E2A;&#x6280;&#x672F;&#x53EB;&#x505A;&#x7F13;&#x5B58;&#x3002;</p>
+<p>&#x5728;&#x4E0B;&#x9762;&#x5217;&#x51FA;&#x7684;&#x4F8B;&#x5B50;&#x4E2D;&#xFF0C;&#x8FD9;&#x6BB5;&#x4EE3;&#x7801;&#x6BCF;&#x6B21;&#x8C03;&#x7528;&#x90FD;&#x4F1A;&#x4EA7;&#x751F;&#x5806;&#x5185;&#x5B58;&#x5206;&#x914D;&#x3002;&#x8FD9;&#x662F;&#x56E0;&#x4E3A;&#x4F1A;&#x521B;&#x5EFA;&#x4E00;&#x4E2A;&#x65B0;&#x7684;&#x6570;&#x7EC4;&#x3002;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">OnTriggerEnter</span>(<span class="params">Collider other</span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  Renderer[] allRenderers = FindObjectsOfType&lt;Renderer&gt;()</span><br><span class="line">  ExampleFunction(allRenderers);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>&#x4E0B;&#x9762;&#x5217;&#x51FA;&#x7684;&#x4EE3;&#x7801;&#x662F;&#x4FEE;&#x6539;&#x4E4B;&#x540E;&#x7684;&#xFF0C;&#x73B0;&#x5728;&#x65E0;&#x8BBA;&#x8C03;&#x7528;OnTriggerEnter&#x591A;&#x5C11;&#x6B21;&#x90FD;&#x53EA;&#x4F1A;&#x9020;&#x6210;&#x4E00;&#x6B21;&#x5806;&#x5185;&#x5B58;&#x5206;&#x914D;&#xFF0C;&#x8FD9;&#x4E2A;&#x6570;&#x7EC4;&#x88AB;&#x521B;&#x5EFA;&#x597D;&#x5E76;&#x8D4B;&#x503C;&#x7136;&#x540E;&#x7F13;&#x5B58;&#x8D77;&#x6765;&#x3002;&#x8FD9;&#x4E2A;&#x7F13;&#x5B58;&#x6570;&#x7EC4;&#x53EF;&#x4EE5;&#x88AB;&#x91CD;&#x590D;&#x4F7F;&#x7528;&#x5E76;&#x4E0D;&#x4F1A;&#x4EA7;&#x751F;&#x989D;&#x5916;&#x7684;&#x5185;&#x5B58;&#x3002;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> Renderer[] allRenderers;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">start</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  allRenderes = FindObjectsOfType&lt;Renderer&gt;()  </span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">OnTriggerEnter</span>(<span class="params">Collider other</span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  ExampleFunction(allRenderers);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<h3 id="&#x4E0D;&#x8981;&#x5728;&#x9891;&#x7E41;&#x8C03;&#x7528;&#x7684;&#x51FD;&#x6570;&#x91CC;&#x9762;&#x5206;&#x914D;&#x5185;&#x5B58;"><a href="#&#x4E0D;&#x8981;&#x5728;&#x9891;&#x7E41;&#x8C03;&#x7528;&#x7684;&#x51FD;&#x6570;&#x91CC;&#x9762;&#x5206;&#x914D;&#x5185;&#x5B58;" class="headerlink" title="&#x4E0D;&#x8981;&#x5728;&#x9891;&#x7E41;&#x8C03;&#x7528;&#x7684;&#x51FD;&#x6570;&#x91CC;&#x9762;&#x5206;&#x914D;&#x5185;&#x5B58;"></a>&#x4E0D;&#x8981;&#x5728;&#x9891;&#x7E41;&#x8C03;&#x7528;&#x7684;&#x51FD;&#x6570;&#x91CC;&#x9762;&#x5206;&#x914D;&#x5185;&#x5B58;</h3><p>&#x5982;&#x679C;&#x6211;&#x4EEC;&#x5FC5;&#x987B;&#x5728;MonoBehaviour&#x811A;&#x672C;&#x91CC;&#x9762;&#x5206;&#x914D;&#x5806;&#x5185;&#x5B58;&#xFF0C;&#x6700;&#x7CDF;&#x7CD5;&#x7684;&#x662F;&#x6211;&#x4EEC;&#x628A;&#x8FD9;&#x4E2A;&#x64CD;&#x4F5C;&#x653E;&#x5728;&#x9891;&#x7E41;&#x8FD0;&#x884C;&#x7684;&#x51FD;&#x6570;&#x91CC;&#x3002;&#x4F8B;&#x5982;Update()&#x548C;LateUpdate, &#x8FD9;&#x4E24;&#x4E2A;&#x51FD;&#x6570;&#x6BCF;&#x5E27;&#x90FD;&#x4F1A;&#x8C03;&#x7528;&#x3002;&#x6240;&#x4EE5;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x4F1A;&#x5206;&#x914D;&#x5806;&#x5185;&#x5B58;&#x7684;&#x4EE3;&#x7801;&#x653E;&#x5728;&#x8FD9;&#x8FD9;&#x79CD;&#x51FD;&#x6570;&#x91CC;&#x9762;&#xFF0C;&#x5185;&#x5B58;&#x975E;&#x5E38;&#x5FEB;&#x7684;&#x589E;&#x52A0;&#x3002;&#x8FD9;&#x79CD;&#x60C5;&#x51B5;&#x6211;&#x4EEC;&#x5C3D;&#x53EF;&#x80FD;&#x7684;&#x8003;&#x8651;&#x8BA9;&#x8FD9;&#x4E2A;&#x5BF9;&#x8C61;&#x5728;Start()&#x6216;&#x8005;Awake()&#x51FD;&#x6570;&#x4E2D;&#x521B;&#x5EFA;&#x597D;&#x7136;&#x540E;&#x4F7F;&#x7528;&#x5F15;&#x7528;&#x6765;&#x4FDD;&#x5B58;&#x8FD9;&#x4E2A;&#x5BF9;&#x8C61;,&#x6216;&#x8005;&#x786E;&#x4FDD;&#x8FD9;&#x6BB5;&#x4EE3;&#x7801;&#x53EA;&#x6709;&#x5728;&#x9700;&#x8981;&#x7684;&#x65F6;&#x5019;&#x624D;&#x5206;&#x914D;&#x5185;&#x5B58;&#x3002;</p>
+<p>&#x6765;&#x770B;&#x4E2A;&#x975E;&#x5E38;&#x7B80;&#x5355;&#x7684;&#x4F8B;&#x5B50;&#xFF0C;&#x8FD9;&#x4E2A;&#x4F8B;&#x5B50;&#x7A0D;&#x4F5C;&#x6539;&#x52A8;&#x4F7F;&#x5F97;&#x51FD;&#x6570;&#x53EA;&#x6709;&#x5F53;&#x6761;&#x4EF6;&#x6539;&#x53D8;&#x7684;&#x65F6;&#x5019;&#x624D;&#x8FD0;&#x884C;&#x3002;&#x4E0B;&#x9762;&#x5217;&#x51FA;&#x7684;&#x4EE3;&#x7801;&#xFF0C;&#x6709;&#x4E2A;&#x4F1A;&#x4EA7;&#x751F;&#x5185;&#x5B58;&#x5206;&#x914D;&#x7684;&#x51FD;&#x6570;&#x6BCF;&#x5E27;&#x90FD;&#x4F1A;&#x88AB;Update()&#x8C03;&#x7528;&#xFF0C;&#x4F1A;&#x9891;&#x7E41;&#x7684;&#x521B;&#x5EFA;&#x5185;&#x5B58;&#x5783;&#x573E;&#x3002;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  ExampleGarbageGeneratingFunction(transform.position.x);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>&#x505A;&#x4E00;&#x4E2A;&#x7B80;&#x5355;&#x7684;&#x6539;&#x52A8;&#xFF0C;&#x6211;&#x4EEC;&#x73B0;&#x5728;&#x786E;&#x4FDD;&#x53EA;&#x6709;&#x5F53;transform.position.x&#x7684;&#x503C;&#x53D1;&#x751F;&#x6539;&#x53D8;&#x7684;&#x65F6;&#x5019;&#x624D;&#x8C03;&#x7528;ExampleGarbageGeneratingFunction&#x3002;&#x6539;&#x52A8;&#x4E4B;&#x540E;&#x53EA;&#x6709;&#x5F53;&#x6211;&#x4EEC;&#x9700;&#x8981;&#x7684;&#x65F6;&#x5019;&#x624D;&#x4F1A;&#x5206;&#x914D;&#x5185;&#x5B58;&#x800C;&#x4E0D;&#x662F;&#x6BCF;&#x5E27;&#x90FD;&#x4F1A;&#x5206;&#x914D;&#x4E00;&#x6B21;&#x3002;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">float</span> previousTransformPositionX;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  <span class="keyword">float</span> transformPositionX = transform.position.x;</span><br><span class="line">  <span class="keyword">if</span> (transformPositionX != previousTransformPositionX)</span><br><span class="line">  {</span><br><span class="line">    ExampleGarbageGeneratingFunction(transformPositionX);</span><br><span class="line">    previousTransformPositionX = transformPositionX;</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>&#x53E6;&#x5916;&#x4E00;&#x4E2A;&#x53EF;&#x4EE5;&#x51CF;&#x5C11;&#x751F;&#x6210;&#x5185;&#x5B58;&#x5783;&#x573E;&#x7684;&#x65B9;&#x6CD5;&#x662F;&#x5728;Update()&#x91CC;&#x9762;&#x4F7F;&#x7528;&#x8BA1;&#x65F6;&#x5668;&#x3002;&#x8FD9;&#x4E2A;&#x65B9;&#x6CD5;&#x6BD4;&#x8F83;&#x9002;&#x5408;&#x7528;&#x4E8E;&#x6211;&#x4EEC;&#x7684;&#x8FD9;&#x4E2A;&#x4F1A;&#x4EA7;&#x751F;&#x5185;&#x5B58;&#x5783;&#x573E;&#x7684;&#x51FD;&#x6570;ExampleGarbageGeneratingFunction&#x5FC5;&#x987B;&#x6709;&#x89C4;&#x5F8B;&#x7684;&#x8FD0;&#x884C;&#xFF0C;&#x4F46;&#x662F;&#x4E0D;&#x9700;&#x8981;&#x6BCF;&#x5E27;&#x90A3;&#x4E48;&#x9891;&#x7E41;&#x3002;</p>
+<p>&#x4E0B;&#x5217;&#x4F8B;&#x5B50;&#x4E2D;&#x7684;&#x4EE3;&#x7801;&#xFF0C;&#x51FD;&#x6570;ExampleGarbageGeneratingFunction&#x4F1A;&#x6BCF;&#x5E27;&#x90FD;&#x4F1A;&#x88AB;&#x8C03;&#x7528;&#xFF0C;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x5185;&#x90E8;&#x4F1A;&#x751F;&#x6210;&#x5185;&#x5B58;&#x5783;&#x573E;&#x3002;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  ExampleGarbageGeneratingFunction();</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>&#x6211;&#x4EEC;&#x4F7F;&#x7528;&#x8BA1;&#x65F6;&#x5668;&#x7684;&#x65B9;&#x5F0F;&#x6765;&#x4FEE;&#x6539;&#x4E0B;&#x8FD9;&#x4E2A;&#x8FD9;&#x6BB5;&#x4EE3;&#x7801;&#xFF0C;&#x786E;&#x4FDD;&#x8FD9;&#x4E2A;&#x4F1A;&#x751F;&#x6210;&#x5185;&#x5B58;&#x5783;&#x573E;&#x7684;&#x51FD;&#x6570;&#x6BCF;&#x79D2;&#x624D;&#x8C03;&#x7528;&#x4E00;&#x6B21;&#x3002;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">float</span> timeSinceLastCalled;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">float</span> delay = <span class="number">1</span>f;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  timeSinceLastCalled += Time.deltaTime;</span><br><span class="line">  <span class="keyword">if</span> (timeSinceLastCalled &gt; delay)</span><br><span class="line">  {</span><br><span class="line">    ExampleGarbageGeneratingFunction();</span><br><span class="line">    timeSinceLastCalled = <span class="number">0</span>f;</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>&#x5F53;&#x6211;&#x4EEC;&#x7684;&#x4EE3;&#x7801;&#x8FD0;&#x884C;&#x7684;&#x975E;&#x5E38;&#x9891;&#x7E41;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x53EA;&#x505A;&#x4E00;&#x70B9;&#x5C0F;&#x7684;&#x6539;&#x52A8;&#x5C31;&#x80FD;&#x591F;&#x5927;&#x5E45;&#x5EA6;&#x8F83;&#x5C11;&#x5185;&#x5B58;&#x5185;&#x5B58;&#x5783;&#x573E;&#x91CF;&#x3002;</p>
+<h2 id="&#x6E05;&#x7406;&#x5BB9;&#x5668;"><a href="#&#x6E05;&#x7406;&#x5BB9;&#x5668;" class="headerlink" title="&#x6E05;&#x7406;&#x5BB9;&#x5668;"></a>&#x6E05;&#x7406;&#x5BB9;&#x5668;</h2><p>&#x521B;&#x5EFA;&#x4E00;&#x4E2A;&#x65B0;&#x7684;&#x5BB9;&#x5668;(List&#x3001;Dictionary&#x7B49;)&#x4F1A;&#x7533;&#x8BF7;&#x5206;&#x914D;&#x5806;&#x4E0A;&#x7684;&#x5185;&#x5B58;&#x3002;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x53D1;&#x73B0;&#x5728;&#x4EE3;&#x7801;&#x4E2D;&#x6709;&#x8D85;&#x8FC7;&#x4E00;&#x6B21;&#x7684;&#x521B;&#x5EFA;&#x65B0;&#x7684;&#x5BB9;&#x5668;&#xFF0C;&#x90A3;&#x4E48;&#x6211;&#x4EEC;&#x5E94;&#x7F13;&#x5B58;&#x8D77;&#x6765;&#x8FD9;&#x4E2A;&#x6307;&#x5411;&#x8FD9;&#x4E2A;&#x5BB9;&#x5668;&#x7684;&#x5F15;&#x7528;&#xFF0C;&#x7136;&#x540E;&#x4F7F;&#x7528;Clear()&#x6765;&#x6E05;&#x7A7A;&#x8FD9;&#x4E2A;&#x5BB9;&#x5668;&#x800C;&#x4E0D;&#x662F;&#x91CD;&#x590D;&#x8C03;&#x7528;New&#x6765;&#x91CD;&#x65B0;&#x521B;&#x5EFA;&#x3002;</p>
+<p>&#x4E0B;&#x9762;&#x8FD9;&#x4E2A;&#x4F8B;&#x5B50;&#x4E2D;&#xFF0C;&#x6BCF;&#x6B21;&#x8C03;&#x7528;new&#x5173;&#x952E;&#x5B57;&#x90FD;&#x4F1A;&#x5F15;&#x8D77;&#x5206;&#x914D;&#x4E00;&#x6B21;&#x5806;&#x5185;&#x5B58;&#x3002;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  List myList = <span class="keyword">new</span> List();</span><br><span class="line">  PopulateList(myList);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>&#x4E0B;&#x9762;&#x8FD9;&#x4E2A;&#x4F8B;&#x5B50;&#xFF0C;&#x53EA;&#x6709;&#x5F53;&#x5BB9;&#x5668;&#x521B;&#x5EFA;&#x6216;&#x8005;&#x5BB9;&#x5668;&#x5185;&#x90E8;&#x5FC5;&#x987B;&#x6539;&#x53D8;&#x5B58;&#x50A8;&#x5927;&#x5C0F;&#x7684;&#x65F6;&#x5019;&#x624D;&#x4F1A;&#x53D1;&#x751F;&#x5185;&#x5B58;&#x5206;&#x914D;&#x3002;&#x8FD9;&#x80FD;&#x591F;&#x5927;&#x5E45;&#x51CF;&#x5C11;&#x4EA7;&#x751F;&#x5185;&#x5B58;&#x5783;&#x573E;&#x7684;&#x91CF;&#x3002;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> List myList = <span class="keyword">new</span> List();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  myList.Clear();</span><br><span class="line">  PopulateList(myList);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<h3 id="&#x5BF9;&#x8C61;&#x6C60;"><a href="#&#x5BF9;&#x8C61;&#x6C60;" class="headerlink" title="&#x5BF9;&#x8C61;&#x6C60;"></a>&#x5BF9;&#x8C61;&#x6C60;</h3><p>&#x5373;&#x4F7F;&#x6211;&#x4EEC;&#x51CF;&#x5C11;&#x6211;&#x4EEC;&#x811A;&#x672C;&#x4E2D;&#x7684;&#x5185;&#x5B58;&#x5206;&#x914D;&#xFF0C;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x5728;&#x6E38;&#x620F;&#x8FD0;&#x884C;&#x65F6;&#x5927;&#x91CF;&#x7684;&#x521B;&#x5EFA;&#x548C;&#x9500;&#x6BC1;&#x5BF9;&#x8C61;&#x90A3;&#x4E48;GC&#x56DE;&#x6536;&#x5185;&#x5B58;&#x7684;&#x95EE;&#x9898;&#x4EFB;&#x7136;&#x5B58;&#x5728;&#x3002;&#x5BF9;&#x4E8E;&#x91CD;&#x590D;&#x4F7F;&#x7528;&#x7684;&#x5BF9;&#x8C61;&#xFF0C;&#x6211;&#x4EEC;&#x6CA1;&#x6709;&#x5FC5;&#x8981;&#x6BCF;&#x6B21;&#x4F7F;&#x7528;&#x5230;&#x90FD;&#x53BB;&#x91CD;&#x590D;&#x7684;&#x521B;&#x5EFA;&#x548C;&#x9500;&#x6BC1;&#xFF0C;&#x5229;&#x7528;<strong>Object pooling</strong>&#x53EF;&#x4EE5;&#x51CF;&#x5C11;&#x5BF9;&#x4E8E;&#x91CD;&#x590D;&#x5229;&#x7528;&#x7684;&#x5BF9;&#x8C61;&#x7684;&#x5185;&#x5B58;&#x7684;&#x5206;&#x914D;&#x548C;&#x91CA;&#x653E;&#x3002;Object pooling&#x88AB;&#x5E7F;&#x6CDB;&#x7684;&#x5E94;&#x7528;&#x5728;&#x6E38;&#x620F;&#x4E2D;&#x9891;&#x7E41;&#x751F;&#x6210;&#x548C;&#x9500;&#x6BC1;&#x7684;&#x5C0F;&#x5BF9;&#x8C61;&#x7684;&#x573A;&#x5408;&#x3002;&#x4F8B;&#x5982;&#xFF0C;&#x4ECE;&#x67AA;&#x4E2D;&#x5C04;&#x51FA;&#x7684;&#x5B50;&#x5F39;&#x3002;</p>
+<p>&#x672C;&#x6587;&#x4E0D;&#x8BA8;&#x8BBA;&#x5B8C;&#x6574;&#x7684;object pooling&#x4F7F;&#x7528;&#x89C4;&#x8303;&#xFF0C;&#x4F46;&#x662F;&#x8FD9;&#x662F;&#x4E00;&#x9879;&#x975E;&#x5E38;&#x6709;&#x7528;&#x4E14;&#x503C;&#x5F97;&#x5B66;&#x4E60;&#x7684;&#x6280;&#x672F;&#x3002;<a href="https://unity3d.com/learn/tutorials/topics/scripting/object-pooling" target="_blank" rel="external">This tutorial on object pooling on the Unity Learn site</a> &#x662F;&#x4E00;&#x4E2A;&#x975E;&#x5E38;&#x597D;&#x7684;&#x9488;&#x5BF9;&#x4E8E;Unity&#x7684;object pooling&#x7CFB;&#x7EDF;&#x7684;&#x5B9E;&#x73B0;&#x89C4;&#x8303;&#x3002;</p>
+<h2 id="&#x5E38;&#x89C1;&#x7684;&#x5BFC;&#x81F4;&#x4E0D;&#x5FC5;&#x8981;&#x7684;&#x5806;&#x5185;&#x5B58;&#x5206;&#x914D;&#x7684;&#x4E00;&#x4E9B;&#x539F;&#x56E0;"><a href="#&#x5E38;&#x89C1;&#x7684;&#x5BFC;&#x81F4;&#x4E0D;&#x5FC5;&#x8981;&#x7684;&#x5806;&#x5185;&#x5B58;&#x5206;&#x914D;&#x7684;&#x4E00;&#x4E9B;&#x539F;&#x56E0;" class="headerlink" title="&#x5E38;&#x89C1;&#x7684;&#x5BFC;&#x81F4;&#x4E0D;&#x5FC5;&#x8981;&#x7684;&#x5806;&#x5185;&#x5B58;&#x5206;&#x914D;&#x7684;&#x4E00;&#x4E9B;&#x539F;&#x56E0;"></a>&#x5E38;&#x89C1;&#x7684;&#x5BFC;&#x81F4;&#x4E0D;&#x5FC5;&#x8981;&#x7684;&#x5806;&#x5185;&#x5B58;&#x5206;&#x914D;&#x7684;&#x4E00;&#x4E9B;&#x539F;&#x56E0;</h2><p>&#x6211;&#x4EEC;&#x5DF2;&#x7ECF;&#x7406;&#x89E3;&#x4E86;&#x503C;&#x7C7B;&#x578B;&#x7684;&#x53D8;&#x91CF;&#x662F;&#x5206;&#x914D;&#x7684;&#x6808;&#x5185;&#x5B58;&#xFF0C;&#x5F15;&#x7528;&#x7C7B;&#x578B;&#x7684;&#x53D8;&#x91CF;&#x5206;&#x914D;&#x7684;&#x5806;&#x5185;&#x5B58;&#x3002;&#x7136;&#x800C;&#x6709;&#x5F88;&#x591A;&#x5206;&#x914D;&#x5806;&#x5185;&#x5B58;&#x7684;&#x5730;&#x65B9;&#x4F1A;&#x8BA9;&#x6211;&#x4EEC;&#x81EA;&#x5DF1;&#x611F;&#x5230;&#x60CA;&#x8BB6;&#xFF0C;&#x56E0;&#x4E3A;&#x6839;&#x672C;&#x5C31;&#x6CA1;&#x5FC5;&#x8981;&#x5206;&#x914D;&#x5806;&#x5185;&#x5B58;&#x3002;&#x4E0B;&#x9762;&#x8BA9;&#x6211;&#x4EEC;&#x6765;&#x770B;&#x4E00;&#x4E9B;&#x5E38;&#x89C1;&#x7684;&#x4E0D;&#x5FC5;&#x8981;&#x7684;&#x5806;&#x5185;&#x5B58;&#x5206;&#x914D;&#x60C5;&#x51B5;&#x5E76;&#x4E14;&#x60F3;&#x51FA;&#x6700;&#x597D;&#x7684;&#x529E;&#x6CD5;&#x53BB;&#x51CF;&#x5C11;&#x8FD9;&#x79CD;&#x60C5;&#x51B5;&#x3002;</p>
+<h3 id="String"><a href="#String" class="headerlink" title="String"></a>String</h3><p>&#x5728;C#&#x4E2D;, <a href="https://msdn.microsoft.com/en-us/library/362314fe.aspx" target="_blank" rel="external">string&#x662F;&#x5F15;&#x7528;&#x7C7B;&#x578B;</a>&#x800C;&#x4E0D;&#x662F;&#x503C;&#x7C7B;&#x578B;&#xFF0C;&#x5C3D;&#x7BA1;&#x5B83;&#x770B;&#x4E0A;&#x53BB;&#x50CF;&#x662F;&#x6301;&#x6709;&#x4E86;&#x5B57;&#x7B26;&#x4E32;&#x7684;&#x503C;&#x3002;&#x8FD9;&#x610F;&#x5473;&#x7740;string&#x521B;&#x5EFA;&#x548C;&#x4E22;&#x5F03;&#x4E4B;&#x540E;&#x4F1A;&#x4EA7;&#x751F;&#x5185;&#x5B58;&#x5783;&#x573E;&#x3002;&#x4F5C;&#x4E3A;&#x4E00;&#x4E2A;&#x5728;&#x5927;&#x91CF;&#x4EE3;&#x7801;&#x4E2D;&#x5E38;&#x7528;&#x7684;&#x7C7B;&#x578B;&#xFF0C;&#x8FD9;&#x4E9B;&#x5185;&#x5B58;&#x5783;&#x573E;&#x4F1A;&#x4E00;&#x76F4;&#x589E;&#x957F;&#x3002;</p>
+<p>C#&#x4E2D;&#x7684;String&#x7C7B;&#x578B;&#x540C;&#x4E8B;&#x4E5F;&#x662F;&#x4E0D;&#x53EF;&#x53D8;&#x7C7B;&#x578B;&#xFF0C;&#x610F;&#x601D;&#x5C31;&#x662F;&#x5728;&#x5B83;&#x521B;&#x5EFA;&#x4E4B;&#x540E;&#x5C31;&#x4E0D;&#x80FD;&#x6539;&#x53D8;&#x5B83;&#x7684;&#x503C;&#x4E86;&#x3002;&#x5F53;&#x6211;&#x4EEC;&#x6BCF;&#x6B21;&#x64CD;&#x4F5C;&#x4E00;&#x4E2A;&#x5B57;&#x7B26;&#x4E32;(&#x4F8B;&#x5982;&#xFF0C;&#x4F7F;&#x7528;&#x91CD;&#x8F7D;&#x8FD0;&#x7B97;&#x7B26;+&#x6765;&#x8FDE;&#x63A5;&#x4E24;&#x4E2A;string)&#x3002;Unity&#x5982;&#x679C;&#x9700;&#x8981;&#x66F4;&#x65B0;&#x4E00;&#x4E2A;&#x5B57;&#x7B26;&#x4E32;&#x7684;&#x503C;&#xFF0C;&#x5B83;&#x4F1A;&#x521B;&#x5EFA;&#x4E00;&#x4E2A;&#x65B0;&#x7684;&#x5B57;&#x7B26;&#x4E32;&#x6765;&#x4FDD;&#x5B58;&#x65B0;&#x503C;&#x7136;&#x540E;&#x4E22;&#x5F03;&#x5F53;&#x524D;&#x8FD9;&#x4E2A;&#x5B57;&#x7B26;&#x4E32;&#x3002;&#x8FD9;&#x4F1A;&#x4EA7;&#x751F;&#x5185;&#x5B58;&#x5783;&#x573E;&#x3002;</p>
+<p>&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x9075;&#x5FAA;&#x4E00;&#x4E9B;&#x7B80;&#x5355;&#x7684;&#x89C4;&#x5219;&#x8BA9;string&#x4EA7;&#x751F;&#x7684;&#x5185;&#x5B58;&#x5783;&#x573E;&#x6700;&#x5C0F;&#x5316;&#x3002;&#x5148;&#x8003;&#x8651;&#x4E0B;&#x8FD9;&#x4E9B;&#x89C4;&#x5219;&#xFF0C;&#x7136;&#x540E;&#x5728;&#x4F8B;&#x5B50;&#x4E2D;&#x770B;&#x770B;&#x5B83;&#x662F;&#x600E;&#x4E48;&#x88AB;&#x5E94;&#x7528;&#x7684;&#x3002;</p>
+<ul class="ui list">
+<li>&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x51CF;&#x5C11;&#x90A3;&#x4E9B;&#x4E0D;&#x5FC5;&#x8981;&#x7684;string&#x521B;&#x5EFA;&#x3002;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x4F7F;&#x7528;&#x540C;&#x4E00;&#x4E2A;string&#x7684;&#x503C;&#x8D85;&#x8FC7;&#x4E00;&#x6B21;&#xFF0C;&#x90A3;&#x4E48;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x521B;&#x5EFA;&#x597D;&#x8FD9;&#x4E2A;string&#x7136;&#x540E;&#x7F13;&#x5B58;&#x8D77;&#x6765;&#x3002;</li>
+<li>&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x51CF;&#x5C11;&#x54EA;&#x4E9B;&#x4E0D;&#x5FC5;&#x8981;&#x7684;string&#x7684;&#x503C;&#x7684;&#x66F4;&#x6539;&#x3002;&#x4F8B;&#x5982;&#xFF0C;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x6709;&#x4E2A;&#x9891;&#x7E41;&#x66F4;&#x65B0;&#x7684;Text&#x7EC4;&#x4EF6;&#xFF0C;Text&#x7EC4;&#x4EF6;&#x663E;&#x793A;&#x7684;&#x503C;&#x662F;&#x6BCF;&#x6B21;&#x4E24;&#x4E2A;string&#x7684;&#x8FDE;&#x63A5;&#x6210;&#x4E00;&#x4E2A;&#x65B0;string&#x5F97;&#x5230;&#x7684;&#x3002;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x8003;&#x8651;&#x628A;&#x628A;&#x8FD9;&#x4E2A;Text&#x7EC4;&#x4EF6;&#x5206;&#x6210;&#x4E24;&#x4E2A;Text&#x7EC4;&#x4EF6;&#xFF0C;&#x8FD9;&#x6837;&#x5206;&#x522B;&#x663E;&#x793A;&#x4E24;&#x4E2A;string&#x7684;&#x503C;&#xFF0C;&#x5C31;&#x4E0D;&#x9700;&#x8981;&#x6BCF;&#x6B21;&#x4F1A;&#x521B;&#x5EFA;&#x4E00;&#x4E2A;&#x65B0;&#x7684;string&#x4E86;&#x3002;</li>
+<li>&#x5982;&#x679C;&#x6211;&#x4EEC;&#x5728;&#x6E38;&#x620F;&#x8FD0;&#x884C;&#x65F6;&#x9700;&#x8981;&#x6784;&#x5EFA;&#x4E00;&#x4E2A;string(&#x5982;&#x591A;&#x4E2A;&#x5B57;&#x7B26;&#x4E32;&#x503C;&#x8FDE;&#x63A5;&#x6210;&#x4E00;&#x4E2A;&#x5B57;&#x7B26;&#x4E32;)&#x3002;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x4F7F;&#x7528;<a href="https://msdn.microsoft.com/en-us/library/system.text.stringbuilder(v=vs.110" target="_blank" rel="external">StringBuilder&#x7C7B;</a>.aspx)&#x3002;StringBuilder&#x7C7B;&#x662F;&#x4E13;&#x95E8;&#x4E3A;&#x4E86;&#x6784;&#x5EFA;string&#x800C;&#x8BBE;&#x8BA1;&#x7684;&#xFF0C;&#x5B83;&#x4E0D;&#x4F1A;&#x4EA7;&#x751F;&#x5185;&#x5B58;&#x5206;&#x914D;&#x800C;&#x4E14;&#x5728;&#x6211;&#x4EEC;&#x8FDE;&#x63A5;&#x4E00;&#x4E2A;&#x6BD4;&#x8F83;&#x590D;&#x6742;&#x7684;string&#x65F6;&#x4F1A;&#x907F;&#x514D;&#x4EA7;&#x751F;&#x5927;&#x91CF;&#x7684;&#x5185;&#x5B58;&#x5783;&#x573E;&#x3002;</li>
+<li>&#x4E00;&#x65E6;&#x6211;&#x4EEC;&#x4E0D;&#x9700;&#x8981;&#x8C03;&#x8BD5;&#x9879;&#x76EE;&#x65F6;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x628A;&#x9879;&#x76EE;&#x91CC;&#x9762;&#x7684;Debug.Log()&#x5168;&#x90E8;&#x53BB;&#x6389;&#x3002;&#x5728;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x4E2D;&#x8C03;&#x7528;Debug.Log()&#x4F1A;&#x6301;&#x7EED;&#x7684;&#x6784;&#x5EFA;string&#xFF0C;&#x5373;&#x4F7F;&#x5B83;&#x4EEC;&#x4E0D;&#x5728;&#x8F93;&#x51FA;&#x4EFB;&#x4F55;&#x8C03;&#x8BD5;&#x65E5;&#x5FD7;&#x3002;&#x6BCF;&#x8C03;&#x7528;&#x4E00;&#x6B21;Debug.Log()&#x4F1A;&#x521B;&#x5EFA;&#x548C;&#x9500;&#x6BC1;&#x81F3;&#x5C11;&#x4E00;&#x4E2A;string&#x5BF9;&#x8C61;&#xFF0C;&#x6240;&#x4EE5;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x91CC;&#x9762;&#x5305;&#x542B;&#x4E86;&#x5927;&#x91CF;&#x7684;&#x8FD9;&#x79CD;&#x8C03;&#x7528;&#xFF0C;&#x90A3;&#x4E48;&#x5185;&#x5B58;&#x5783;&#x573E;&#x4F1A;&#x589E;&#x52A0;&#x5F88;&#x591A;&#x3002;</li>
+</ul>
+<p>&#x8BA9;&#x6211;&#x4EEC;&#x6765;&#x5199;&#x4E2A;&#x4F8B;&#x5B50;&#x6765;&#x6D4B;&#x8BD5;&#x4E0B;&#xFF0C;&#x8FD9;&#x4E2A;&#x4F8B;&#x5B50;&#x5305;&#x542B;&#x65E0;&#x6548;&#x7387;&#x7684;string&#x800C;&#x5BFC;&#x81F4;&#x4EA7;&#x751F;&#x4E86;&#x4E0D;&#x5FC5;&#x8981;&#x7684;&#x5185;&#x5B58;&#x5783;&#x573E;&#x7684;&#x4EE3;&#x7801;&#x3002;&#x5728;&#x4E0B;&#x9762;&#x8FD9;&#x6BB5;&#x4EE3;&#x7801;&#x4E2D;&#xFF0C;&#x6211;&#x4EEC;&#x521B;&#x5EFA;&#x4E86;&#x4E00;&#x4E2A;&#x8BB0;&#x5F55;&#x5206;&#x6570;&#x503C;&#x7684;string&#x5BF9;&#x8C61;&#xFF0C;&#x5B83;&#x5728;Update()&#x91CC;&#x9762;&#x548C;&#x503C;&#x4E3A;&#x201C;TIME:&#x201D;&#x7684;float&#x7C7B;&#x578B;&#x5BF9;&#x8C61;<em>timer</em>&#x8FDB;&#x884C;&#x5408;&#x5E76;&#x3002;&#x8FD9;&#x91CC;&#x4EA7;&#x751F;&#x4E86;&#x4E0D;&#x5FC5;&#x8981;&#x7684;&#x5185;&#x5B58;&#x5783;&#x573E;&#x3002;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Text timerText;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">float</span> timer;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  timer += Time.deltaTime;</span><br><span class="line">  timerText.text = <span class="string">&quot;TIME:&quot;</span> + timer.ToString();</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>&#x518D;&#x6765;&#x770B;&#x770B;&#x4E0B;&#x9762;&#x5217;&#x51FA;&#x7684;&#x4EE3;&#x7801;&#xFF0C;&#x6211;&#x4EEC;&#x5BF9;&#x4E00;&#x4E9B;&#x5730;&#x65B9;&#x505A;&#x4E86;&#x6BD4;&#x8F83;&#x6709;&#x6548;&#x7684;&#x6539;&#x8FDB;&#x3002;&#x6211;&#x4EEC;&#x628A;&#x201D;TIME:&#x201D;&#x5B57;&#x7B26;&#x4E32;&#x72EC;&#x7ACB;&#x51FA;&#x6765;&#x5728;Start()&#x4E2D;&#x8D4B;&#x503C;&#x7ED9;&#x4E00;&#x4E2A;&#x5355;&#x72EC;Text&#x7EC4;&#x4EF6;&#x3002;&#x8FD9;&#x610F;&#x5473;&#x7740;&#x5728;Update()&#x51FD;&#x6570;&#x4E2D;&#x6211;&#x4EEC;&#x4E0D;&#x518D;&#x9700;&#x8981;&#x5E76;&#x5408;&#x5B57;&#x7B26;&#x4E32;&#x4E86;&#x3002;&#x8FD9;&#x975E;&#x5E38;&#x6709;&#x6548;&#x7684;&#x51CF;&#x5C11;&#x4E86;&#x5927;&#x91CF;&#x7684;&#x5185;&#x5B58;&#x5783;&#x573E;&#x7684;&#x4EA7;&#x751F;&#x3002;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Text timerHeaderText;</span><br><span class="line"><span class="keyword">public</span> Text timerValueText;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">float</span> timer;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Start</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  timerHeaderText.text = <span class="string">&quot;TIME:&quot;</span>;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  timerValueText.text = timer.toString();</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<h3 id="Unity&#x7684;&#x51FD;&#x6570;&#x8C03;&#x7528;"><a href="#Unity&#x7684;&#x51FD;&#x6570;&#x8C03;&#x7528;" class="headerlink" title="Unity&#x7684;&#x51FD;&#x6570;&#x8C03;&#x7528;"></a>Unity&#x7684;&#x51FD;&#x6570;&#x8C03;&#x7528;</h3><p>&#x5F53;&#x6211;&#x4EEC;&#x8C03;&#x7528;&#x4E0D;&#x662F;&#x81EA;&#x5DF1;&#x5B9E;&#x73B0;&#x7684;&#x4EE3;&#x7801;&#x7684;&#x65F6;&#x5019;&#x4E00;&#x5B9A;&#x8981;&#x975E;&#x5E38;&#x7684;&#x6CE8;&#x610F;&#xFF0C;&#x8FD9;&#x4E9B;&#x4EE3;&#x7801;&#x5305;&#x62EC;Unity&#x81EA;&#x5DF1;&#x7684;&#x5F15;&#x64CE;&#x4EE3;&#x7801;&#x6216;&#x8005;&#x662F;&#x7B2C;&#x4E09;&#x65B9;&#x7684;&#x63D2;&#x4EF6;&#x4EE3;&#x7801;&#xFF0C;&#x8FD9;&#x79CD;&#x60C5;&#x51B5;&#x53EF;&#x80FD;&#x4F1A;&#x4EA7;&#x751F;&#x5185;&#x5B58;&#x5783;&#x573E;&#x3002;&#x8C03;&#x7528;&#x4E00;&#x4E9B;Unity&#x7684;&#x51FD;&#x6570;&#x4F1A;&#x5206;&#x914D;&#x5806;&#x5185;&#x5B58;&#xFF0C;&#x6240;&#x4EE5;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x6BD4;&#x8F83;&#x7EC6;&#x5FC3;&#x53BB;&#x907F;&#x514D;&#x4E00;&#x4E9B;&#x4E0D;&#x5FC5;&#x8981;&#x7684;&#x5185;&#x5B58;&#x5783;&#x573E;&#x4EA7;&#x751F;&#x3002;</p>
+<p>&#x8FD9;&#x91CC;&#x6CA1;&#x6709;&#x4E00;&#x4E2A;&#x5E94;&#x8BE5;&#x7981;&#x6B62;&#x8C03;&#x7528;&#x7684;&#x51FD;&#x6570;&#x7684;&#x6E05;&#x5355;&#x3002;&#x6BCF;&#x4E2A;&#x51FD;&#x6570;&#x5728;&#x4E00;&#x4E9B;&#x60C5;&#x5F62;&#x4E2D;&#x6709;&#x975E;&#x5E38;&#x6709;&#x7528;&#xFF0C;&#x4F46;&#x662F;&#x5728;&#x5176;&#x4ED6;&#x7684;&#x60C5;&#x51B5;&#x5C31;&#x7528;&#x5904;&#x4E0D;&#x5927;&#x4E86;&#x3002;&#x8FD8;&#x662F;&#x90A3;&#x53E5;&#x8BDD;&#xFF0C;&#x6700;&#x597D;&#x662F;&#x4ED4;&#x7EC6;&#x5206;&#x4E0B;&#x5206;&#x6790;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#xFF0C;&#x627E;&#x51FA;&#x5185;&#x5B58;&#x5783;&#x573E;&#x521B;&#x5EFA;&#x7684;&#x5730;&#x65B9;&#xFF0C;&#x4ED4;&#x7EC6;&#x8003;&#x8651;&#x4E0B;&#x600E;&#x4E48;&#x5904;&#x7406;&#x5B83;&#x6BD4;&#x8F83;&#x5408;&#x9002;&#x3002;&#x5728;&#x4E00;&#x4E9B;&#x60C5;&#x51B5;&#x4E2D;&#xFF0C;&#x7F13;&#x5B58;&#x51FD;&#x6570;&#x7684;&#x7ED3;&#x679C;&#x662F;&#x6BD4;&#x8F83;&#x660E;&#x667A;&#x7684;&#xFF1B;&#x4F46;&#x662F;&#x53E6;&#x4E00;&#x4E9B;&#x60C5;&#x51B5;&#x4E2D;&#xFF0C;&#x6700;&#x660E;&#x667A;&#x7684;&#x65B9;&#x5F0F;&#x662F;&#x51CF;&#x5C11;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x7684;&#x8C03;&#x7528;&#x9891;&#x7387;&#xFF1B;&#x8FD8;&#x6709;&#x4E9B;&#x60C5;&#x51B5;&#xFF0C;&#x6700;&#x597D;&#x7684;&#x65B9;&#x5F0F;&#x662F;&#x91CD;&#x6784;&#x8FD9;&#x6BB5;&#x4EE3;&#x7801;&#x628A;&#x6309;&#x7167;&#x4E0D;&#x540C;&#x7684;&#x60C5;&#x51B5;&#x6765;&#x5206;&#x6210;&#x4E0D;&#x540C;&#x7684;&#x51FD;&#x6570;&#x3002;&#x8001;&#x65B9;&#x6CD5;&#xFF0C;&#x8BA9;&#x6211;&#x4EEC;&#x6765;&#x770B;&#x4E24;&#x4E2A;Unity&#x4E2D;&#x5E38;&#x89C1;&#x7684;&#x51FD;&#x6570;&#xFF0C;&#x8FD9;&#x4E24;&#x4E2A;&#x51FD;&#x6570;&#x4F1A;&#x9020;&#x6210;&#x5806;&#x5185;&#x5B58;&#x5206;&#x914D;&#x3002;&#x6211;&#x4E48;&#x8003;&#x8651;&#x4E0B;&#x600E;&#x4E48;&#x53BB;&#x6700;&#x597D;&#x7684;&#x5904;&#x7406;&#x8FD9;&#x4E24;&#x4E2A;&#x51FD;&#x6570;&#x3002;</p>
+<p>&#x6BCF;&#x4E2A;&#x6211;&#x4EEC;&#x8BBF;&#x95EE;Unity&#x7684;&#x51FD;&#x6570;&#x90FD;&#x4F1A;&#x653E;&#x8FD4;&#x56DE;&#x4E00;&#x4E2A;&#x6570;&#x7EC4;&#xFF0C;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x5185;&#x5B58;&#x4F1A;&#x521B;&#x5EFA;&#x4E00;&#x4E2A;&#x65B0;&#x7684;&#x6570;&#x7EC4;&#x4F5C;&#x4E3A;&#x8FD4;&#x56DE;&#x503C;&#x8FD4;&#x56DE;&#x7ED9;&#x6211;&#x4EEC;&#x3002;&#x8FD9;&#x79CD;&#x884C;&#x4E3A;&#x5E76;&#x4E0D;&#x603B;&#x662F;&#x660E;&#x663E;&#x6216;&#x8005;&#x53EF;&#x4EE5;&#x610F;&#x6599;&#x5230;&#x7684;&#xFF0C;&#x5C24;&#x5176;&#x662F;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x662F;&#x88AB;&#x5B9A;&#x4E49;&#x4E3A;<a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/get" target="_blank" rel="external"><em>get</em>&#x5F62;&#x5F0F;&#x8BBF;&#x95EE;&#x7684;&#x53D8;&#x91CF;</a>(&#x4F8B;&#x5982;&#xFF0C;Mesh.normals)&#x3002;</p>
+<p> &#x4E0B;&#x9762;&#x5217;&#x51FA;&#x7684;&#x4EE3;&#x7801;&#xFF0C;&#x5728;&#x8FD9;&#x4E2A;&#x8FED;&#x4EE3;&#x5FAA;&#x73AF;&#x4E2D;&#xFF0C;&#x6CA1;&#x5FAA;&#x73AF;&#x4E00;&#x6B21;&#x90FD;&#x4F1A;&#x521B;&#x5EFA;&#x4E00;&#x4E2A;&#x65B0;&#x7684;&#x6570;&#x7EC4;&#x3002;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ExampleFunction</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;meMesh.normals.Length; i++)</span><br><span class="line">  {</span><br><span class="line">    Vector3 normal = myMesh.normals[i];</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>&#x5728;&#x8FD9;&#x4E2A;&#x4F8B;&#x5B50;&#x4E2D;&#x5F88;&#x5BB9;&#x6613;&#x91C7;&#x53D6;&#x8FD9;&#x4E9B;&#x65B9;&#x6CD5;&#x6765;&#x51CF;&#x5C11;&#x5185;&#x5B58;&#x5206;&#x914D;: &#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x7B80;&#x5355;&#x7684;&#x7F13;&#x5B58;&#x4E00;&#x4E2A;&#x6307;&#x5411;&#x8FD9;&#x4E2A;&#x6570;&#x7EC4;&#x7684;&#x5F15;&#x7528;&#x3002;&#x5F53;&#x6211;&#x4EEC;&#x8981;&#x505A;&#x4EE3;&#x7801;&#x4E2D;&#x4E8B;&#x60C5;&#x7684;&#x65F6;&#x5019;&#x53EA;&#x9700;&#x8981;&#x521B;&#x5EFA;&#x4E00;&#x4E2A;&#x6570;&#x7EC4;&#x5373;&#x53EF;&#xFF0C;&#x8FD9;&#x6837;&#x5C31;&#x51CF;&#x5C11;&#x4E86;&#x5927;&#x91CF;&#x7684;&#x5185;&#x5B58;&#x5206;&#x914D;&#x4ECE;&#x800C;&#x4F1A;&#x5BFC;&#x81F4;&#x5927;&#x91CF;&#x5185;&#x5B58;&#x5783;&#x573E;&#x7684;&#x4EA7;&#x751F;&#x3002;</p>
+<p>&#x4E0B;&#x9762;&#x7684;&#x4EE3;&#x7801;&#x5C31;&#x662F;&#x7ECF;&#x8FC7;&#x8FD9;&#x4E2A;&#x6539;&#x52A8;&#x7684;&#x4E00;&#x4E2A;&#x6F14;&#x793A;&#x3002;&#x5728;&#x8FD9;&#x6BB5;&#x4EE3;&#x7801;&#x4E2D;&#xFF0C;&#x6211;&#x4EEC;&#x5728;&#x5FAA;&#x73AF;&#x8FD0;&#x884C;&#x4E4B;&#x524D;&#x9996;&#x5148;&#x8C03;&#x7528;Mesh.normals&#x6765;&#x7F13;&#x5B58;&#x4E86;&#x7684;&#x6570;&#x7EC4;&#x7684;&#x5F15;&#x7528;&#x4EE5;&#x4FBF;&#x53EA;&#x6709;&#x4E00;&#x4E2A;&#x6570;&#x7EC4;&#x5457;&#x521B;&#x5EFA;&#x3002;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ExampleFunction</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  Vector3[] meshNormals = myMesh.normals;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;meshNormals.Length; i++)</span><br><span class="line">  {</span><br><span class="line">    Vector3 normal = meshNormals[i];</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>&#x5806;&#x5185;&#x5B58;&#x5206;&#x914D;&#x7684;&#x53E6;&#x5916;&#x4E00;&#x4E2A;&#x6BD4;&#x8F83;&#x610F;&#x5916;&#x7684;&#x539F;&#x56E0;&#x53EF;&#x4EE5;&#x5728;<em>GameObject.name</em>&#x6216;&#x8005;<em>GameObject.tag</em>&#x4E2D;&#x627E;&#x5230;&#x3002;&#x8FD9;&#x4E24;&#x4E2A;&#x51FD;&#x6570;&#x4E5F;&#x662F;<em>get&#x7C7B;&#x578B;&#x8BBF;&#x95EE;&#x7684;&#x53D8;&#x91CF;</em>&#x8FD4;&#x56DE;&#x4E00;&#x4E2A;&#x65B0;&#x7684;&#x5B57;&#x7B26;&#x4E32;&#xFF0C;&#x8FD9;&#x610F;&#x5473;&#x7740;&#x8C03;&#x7528;&#x8FD9;&#x4E9B;&#x51FD;&#x6570;&#x5C06;&#x4F1A;&#x4EA7;&#x751F;&#x5185;&#x5B58;&#x5783;&#x573E;&#x3002;&#x4E00;&#x4E2A;&#x6BD4;&#x8F83;&#x6709;&#x6548;&#x7684;&#x65B9;&#x6CD5;&#x662F;&#x7F13;&#x5B58;&#x8FD9;&#x4E9B;&#x53D8;&#x91CF;&#x503C;&#xFF0C;&#x4F46;&#x5728;&#x4E00;&#x4E9B;&#x60C5;&#x51B5;&#x4E2D;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;Unity&#x7684;&#x51FD;&#x6570;&#x6765;&#x4EE3;&#x66FF;&#x8C03;&#x7528;&#x8FD9;&#x4E9B;&#x4F1A;&#x4EA7;&#x751F;&#x5185;&#x5B58;&#x5783;&#x573E;&#x7684;&#x65B9;&#x6CD5;&#x3002;&#x8981;&#x5728;&#x4E0D;&#x751F;&#x6210;&#x5185;&#x5B58;&#x5783;&#x573E;&#x7684;&#x524D;&#x63D0;&#x4E0B;&#x53BB;&#x68C0;&#x67E5;GameObject&#x7684;tag&#x503C;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;<em><a href="https://docs.unity3d.com/ScriptReference/GameObject.CompareTag.html?_ga=2.97011549.316260478.1511584816-1497166853.1503199345" target="_blank" rel="external">GameObject.CompareTag()</a></em>&#x3002;</p>
+<p>&#x5728;&#x4E0B;&#x5217;&#x4EE3;&#x7801;&#x4E2D;&#xFF0C;&#x8C03;&#x7528;GameObject.tag&#x521B;&#x5EFA;&#x4E86;&#x5185;&#x5B58;&#x5783;&#x573E;&#x3002;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">string</span> palyerTag = <span class="string">&quot;Player&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">OnTriggerEnter</span>(<span class="params">Collider other</span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  <span class="keyword">bool</span> isPlayer = other.gameObject.tag == playerTag;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>&#x5982;&#x679C;&#x6211;&#x4EEC;&#x4F7F;&#x7528;<em>GameObject.CompareTag()</em>&#xFF0C;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x5C31;&#x4E0D;&#x518D;&#x4F1A;&#x751F;&#x6210;&#x4EFB;&#x4F55;&#x5185;&#x5B58;&#x5783;&#x573E;&#x4E86;&#x3002;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> playerTag = <span class="string">&quot;Player&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">OnTriggerEnter</span>(<span class="params">Collider other</span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  <span class="keyword">bool</span> isPlayer = other.gameObject.CompareTag(playerTag);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p><em>GameObject.CompateTag</em>&#x4E0D;&#x662F;Unity&#x552F;&#x4E00;&#x7684;&#x8FD9;&#x7C7B;&#x51FD;&#x6570;&#xFF1B;&#x5F88;&#x591A;Unity&#x7684;&#x51FD;&#x6570;&#x90FD;&#x6709;&#x4E0D;&#x4F1A;&#x5F15;&#x8D77;&#x5BF9;&#x5185;&#x5B58;&#x5206;&#x914D;&#x7684;&#x7248;&#x672C;&#x3002;&#x6BD4;&#x5982;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;<em><a href="https://docs.unity3d.com/ScriptReference/Input.GetTouch.html?_ga=2.99577052.316260478.1511584816-1497166853.1503199345" target="_blank" rel="external">Input.GetTouch()</a></em>&#x548C;<em><a href="https://docs.unity3d.com/ScriptReference/Input-touchCount.html?_ga=2.99577052.316260478.1511584816-1497166853.1503199345" target="_blank" rel="external">Input.touchCount</a></em>&#x6765;&#x4EE3;&#x66FF;<em><a href="https://docs.unity3d.com/ScriptReference/Input-touchCount.html?_ga=2.99577052.316260478.1511584816-1497166853.1503199345" target="_blank" rel="external">Input.touches</a></em>&#xFF0C;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;<em><a href="https://docs.unity3d.com/ScriptReference/Physics.SphereCastNonAlloc.html?_ga=2.159211768.316260478.1511584816-1497166853.1503199345" target="_blank" rel="external">Physics.SpereCastNonAlloc()</a></em>&#x6765;&#x4EE3;&#x66FF;<em><a href="https://docs.unity3d.com/ScriptReference/Physics.SphereCastAll.html?_ga=2.159211768.316260478.1511584816-1497166853.1503199345" target="_blank" rel="external">Physics.SphereCastAll()</a></em></p>
+<h3 id="&#x88C5;&#x7BB1;"><a href="#&#x88C5;&#x7BB1;" class="headerlink" title="&#x88C5;&#x7BB1;"></a>&#x88C5;&#x7BB1;</h3><p>&#x88C5;&#x7BB1;(Boxing)&#x662F;&#x503C;&#x7C7B;&#x578B;&#x53D8;&#x91CF;&#x88AB;&#x7528;&#x505A;&#x5F15;&#x7528;&#x7C7B;&#x578B;&#x53D8;&#x91CF;&#x7684;&#x5730;&#x65B9;&#x53D1;&#x751F;&#x7684;&#x3002;&#x5B83;&#x901A;&#x5E38;&#x53D1;&#x751F;&#x5728;&#x6211;&#x4EEC;&#x4F20;&#x5165;&#x4E00;&#x4E2A;&#x503C;&#x7C7B;&#x578B;&#x7684;&#x53D8;&#x91CF;&#x7ED9;&#x4E00;&#x4E2A;&#x53C2;&#x6570;&#x662F;&#x5F15;&#x7528;&#x7C7B;&#x578B;&#x7684;&#x51FD;&#x6570;&#x3002;&#x6BD4;&#x5982;&#x7ED9;Object.Equals()&#x4F20;&#x5165;&#x7684;&#x503C;&#x662F;int&#x6216;&#x8005;float&#x503C;&#xFF0C;&#x4F46;&#x662F;Object.Equals()&#x7684;&#x53C2;&#x6570;&#x7C7B;&#x578B;&#x662F;&#x4E00;&#x4E2A;&#x5F15;&#x7528;&#x7C7B;&#x578B;&#x7684;&#x3002;</p>
+<p>&#x4E3E;&#x4E2A;&#x4F8B;&#x5B50;&#xFF0C;&#x5728;&#x51FD;&#x6570;<em>Stirng.Format()</em>&#x4F7F;&#x7528;&#x4E86;&#x5B57;&#x7B26;&#x4E32;&#x548C;&#x5BF9;&#x8C61;&#x53C2;&#x6570;&#xFF0C;&#x5F53;&#x6211;&#x4EEC;&#x4F20;&#x5165;&#x4E00;&#x4E2A;string&#x548C;&#x4E00;&#x4E2A;int&#x7C7B;&#x578B;&#x7684;&#x53C2;&#x6570;&#xFF0C;&#x8FD9;&#x4E2A;int&#x7C7B;&#x578B;&#x7684;&#x53D8;&#x91CF;&#x5C31;&#x4F1A;&#x88AB;&#x88C5;&#x7BB1;&#x3002;&#x4E0B;&#x5217;&#x7684;&#x4EE3;&#x7801;&#x5305;&#x542B;&#x4E86;&#x4E00;&#x4E2A;&#x88C5;&#x7BB1;&#x7684;&#x4F8B;&#x5B50;:</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ExampleFunction</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  <span class="keyword">int</span> cost = <span class="number">5</span>;</span><br><span class="line">  <span class="keyword">string</span> displayString = String.Format(<span class="string">&quot;Price:{0}gold&quot;</span>,cost);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>&#x88C5;&#x7BB1;&#x5728;&#x5185;&#x90E8;&#x4F1A;&#x521B;&#x5EFA;&#x5185;&#x5B58;&#x5783;&#x573E;&#x3002;&#x5F53;&#x4E00;&#x4E2A;&#x503C;&#x7C7B;&#x578B;&#x7684;&#x53D8;&#x91CF;&#x88AB;&#x88C5;&#x7BB1;&#xFF0C;Unity&#x4F1A;&#x5728;&#x5806;&#x4E0A;&#x521B;&#x5EFA;&#x4E00;&#x4E2A;&#x96F6;&#x65F6;&#x7684;System.Object&#x5BF9;&#x8C61;&#x5305;&#x5305;&#x88F9;&#x8FD9;&#x4E2A;&#x503C;&#x7C7B;&#x578B;&#x7684;&#x53D8;&#x91CF;&#x3002;System.Object&#x65F6;&#x5F15;&#x7528;&#x7C7B;&#x578B;&#x7684;&#x53D8;&#x91CF;&#xFF0C;&#x6240;&#x4EE5;&#x5F53;&#x8FD9;&#x4E2A;&#x96F6;&#x65F6;&#x7684;&#x53D8;&#x91CF;&#x88AB;&#x9500;&#x6BC1;&#x65F6;&#x4EA7;&#x751F;&#x4E86;&#x5185;&#x5B58;&#x5783;&#x573E;&#x3002;</p>
+<p>&#x88C5;&#x7BB1;&#x662F;&#x4E00;&#x4E2A;&#x975E;&#x5E38;&#x5E38;&#x89C1;&#x7684;&#x5F15;&#x8D77;&#x4E0D;&#x5FC5;&#x8981;&#x7684;&#x5806;&#x5185;&#x5B58;&#x5206;&#x914D;&#x7684;&#x539F;&#x56E0;&#x3002;&#x5373;&#x4F7F;&#x6211;&#x4EEC;&#x5728;&#x81EA;&#x5DF1;&#x7684;&#x4EE3;&#x7801;&#x4E2D;&#x53BB;&#x907F;&#x514D;&#x8FD9;&#x79CD;&#x53D8;&#x91CF;&#x7684;&#x88C5;&#x7BB1;&#x64CD;&#x4F5C;&#xFF0C;&#x4F46;&#x662F;&#x6211;&#x4EEC;&#x53EF;&#x80FD;&#x4F7F;&#x7528;&#x4E86;&#x7B2C;&#x4E09;&#x65B9;&#x7684;&#x63D2;&#x4EF6;&#x4F1A;&#x9020;&#x6210;&#x88C5;&#x7BB1;&#x6216;&#x8005;&#x662F;&#x63D2;&#x4EF6;&#x7684;&#x4EE3;&#x7801;&#x5185;&#x90E8;&#x5B9E;&#x73B0;&#x5B58;&#x5728;&#x88C5;&#x7BB1;&#x3002;&#x6700;&#x597D;&#x7684;&#x4E60;&#x60EF;&#x662F;&#x907F;&#x514D;&#x4EFB;&#x4F55;&#x53EF;&#x80FD;&#x51FA;&#x73B0;&#x88C5;&#x7BB1;&#x7684;&#x4EE3;&#x7801;&#xFF0C;&#x540C;&#x65F6;&#x53BB;&#x6389;&#x6240;&#x6709;&#x7684;&#x5BFC;&#x81F4;&#x88C5;&#x7BB1;&#x7684;&#x51FD;&#x6570;&#x3002;</p>
+<h3 id="&#x534F;&#x7A0B;"><a href="#&#x534F;&#x7A0B;" class="headerlink" title="&#x534F;&#x7A0B;"></a>&#x534F;&#x7A0B;</h3><p>&#x8C03;&#x7528;<em>StartCoroutine()</em>&#x4F1A;&#x521B;&#x5EFA;&#x5C11;&#x91CF;&#x7684;&#x5185;&#x5B58;&#x5783;&#x573E;&#xFF0C;&#x56E0;&#x4E3A;Unity&#x5FC5;&#x987B;&#x521B;&#x5EFA;&#x4E00;&#x4E2A;&#x5B9E;&#x4F8B;&#x6765;&#x7BA1;&#x7406;<em>StartCoroutine()</em>&#x6240;&#x8FD4;&#x56DE;&#x7684;coroutine&#x5B9E;&#x4F8B;&#x3002;&#x8003;&#x8651;&#x5230;&#x8FD9;&#x70B9;&#xFF0C;&#x5C3D;&#x91CF;&#x51CF;&#x5C11;&#x5BF9;<em>StartConoroutine</em>&#x7684;&#x8C03;&#x7528;&#xFF0C;&#x56E0;&#x4E3A;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x7684;&#x4EA4;&#x4E92;&#x548C;&#x6027;&#x80FD;&#x662F;&#x4E00;&#x4E2A;&#x6838;&#x5FC3;&#x6240;&#x5728;&#x3002;&#x4E3A;&#x4E86;&#x51CF;&#x5C11;&#x534F;&#x7A0B;&#x6240;&#x5E26;&#x6765;&#x7684;&#x5185;&#x5B58;&#x5783;&#x573E;&#xFF0C;&#x4EFB;&#x4F55;&#x5728;&#x6027;&#x80FD;&#x8D1F;&#x8F7D;&#x9AD8;&#x7684;&#x65F6;&#x671F;&#x8FD0;&#x884C;&#x7684;&#x534F;&#x7A0B;&#x5E94;&#x8BE5;&#x63D0;&#x524D;&#x6267;&#x884C;&#x540C;&#x65F6;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x7279;&#x522B;&#x6CE8;&#x610F;&#x90A3;&#x4E9B;&#x5D4C;&#x5957;&#x7684;&#x534F;&#x7A0B;&#xFF0C;&#x8FD9;&#x4E9B;&#x534F;&#x7A0B;&#x91CC;&#x9762;&#x53EF;&#x80FD;&#x4E5F;&#x5305;&#x542B;&#x5EF6;&#x8FDF;&#x8C03;&#x7528;<em>StartCoroutine</em>&#x3002;</p>
+<p>&#x534F;&#x7A0B;&#x5185;&#x7684;yield&#x751F;&#x547D;&#x4E0D;&#x4F1A;&#x81EA;&#x5DF1;&#x521B;&#x5EFA;&#x5806;&#x5185;&#x5B58;&#x3002;&#x7136;&#x800C;&#xFF0C;&#x6211;&#x4EEC;&#x4F20;&#x9012;&#x7684;yield&#x72B6;&#x6001;&#x7684;&#x503C;&#x53EF;&#x80FD;&#x4F1A;&#x5BFC;&#x81F4;&#x4E0D;&#x5FC5;&#x8981;&#x7684;&#x5806;&#x5185;&#x5B58;&#x5206;&#x914D;&#x3002;&#x4F8B;&#x5982;&#xFF0C;&#x4E0B;&#x9762;&#x7684;&#x4EE3;&#x7801;&#x4F1A;&#x4EA7;&#x751F;&#x5185;&#x5B58;&#x5783;&#x573E;:</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">yield</span> <span class="keyword">return</span> <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+<p>&#x8FD9;&#x6BB5;&#x4EE3;&#x7801;&#x56E0;&#x4E3A;&#x503C;0&#x4F1A;&#x88C5;&#x7BB1;(Boxing)&#x4F1A;&#x5BFC;&#x81F4;&#x5185;&#x5B58;&#x5783;&#x573E;&#x3002;&#x5728;&#x8FD9;&#x4E2A;&#x4F8B;&#x5B50;&#x4E2D;&#xFF0C;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x60F3;&#x4E0D;&#x4F1A;&#x4EA7;&#x751F;&#x4EFB;&#x4F55;&#x5806;&#x5185;&#x5B58;&#x5B9E;&#x73B0;&#x7B80;&#x5355;&#x7684;&#x7B49;&#x5F85;&#x4E00;&#x5E27;&#x6548;&#x679C;&#xFF0C;&#x6700;&#x597D;&#x7684;&#x65B9;&#x5F0F;&#x662F;&#x8FD9;&#x6837;&#x505A;:</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yiled <span class="keyword">return</span> <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
+<p>&#x53E6;&#x5916;&#x4E00;&#x4E2A;&#x6BD4;&#x8F83;&#x5E38;&#x89C1;&#x7684;&#x9519;&#x8BEF;&#x662F;&#x5728;&#x534F;&#x7A0B;&#x91CC;&#x9762;&#x4F7F;&#x7528;new&#x64CD;&#x4F5C;&#x591A;&#x6B21;&#x521B;&#x5EFA;&#x4E00;&#x4E2A;&#x503C;&#x76F8;&#x540C;&#x7684;yield&#x72B6;&#x6001;&#x53D8;&#x91CF;&#x3002;&#x4F8B;&#x5982;,&#x4E0B;&#x9762;&#x7684;&#x4EE3;&#x7801;&#x6BCF;&#x6B21;&#x5FAA;&#x73AF;&#x90FD;&#x4F1A;&#x521B;&#x5EFA;&#x548C;&#x9500;&#x6BC1;&#x4E00;&#x4E2A;WaitForSeconds&#x5BF9;&#x8C61;&#x3002;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(!isComplete)</span><br><span class="line">{</span><br><span class="line">  <span class="function"><span class="keyword">yield</span> return new <span class="title">WaitForSeconds</span>(<span class="params"><span class="number">1</span>f</span>)</span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>&#x5982;&#x679C;&#x6211;&#x4EEC;&#x7F13;&#x5B58;WaitForSeconds&#x8FD9;&#x4E2A;&#x53D8;&#x91CF;&#x7136;&#x540E;&#x91CD;&#x590D;&#x4F7F;&#x7528;&#xFF0C;&#x8FD9;&#x56DE;&#x6781;&#x5927;&#x7684;&#x51CF;&#x5C11;&#x5185;&#x5B58;&#x5783;&#x573E;&#x3002;&#x4E0B;&#x9762;&#x7684;&#x4EE3;&#x7801;&#x5C55;&#x793A;&#x4E86;&#x4FEE;&#x6539;&#x4E4B;&#x540E;&#x7684;&#x65B9;&#x5F0F;&#xFF1A;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">WaitForSeconds delay = <span class="keyword">new</span> WaitForSeconds(<span class="number">1</span>f);</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> (!isComplete)</span><br><span class="line">{</span><br><span class="line">  <span class="keyword">yield</span> <span class="keyword">return</span> delay;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>&#x5982;&#x679C;&#x6211;&#x4EEC;&#x7684;&#x4EE3;&#x7801;&#x5728;&#x534F;&#x7A0B;&#x8FD0;&#x884C;&#x671F;&#x95F4;&#x4F1A;&#x4EA7;&#x751F;&#x5927;&#x91CF;&#x7684;&#x5185;&#x5B58;&#x5783;&#x573E;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x80FD;&#x5E0C;&#x671B;&#x8003;&#x8651;&#x4E0B;&#x4F7F;&#x7528;&#x975E;&#x534F;&#x7A0B;&#x7684;&#x65B9;&#x5F0F;&#x6765;&#x91CD;&#x6784;&#x8FD9;&#x90E8;&#x5206;&#x4EE3;&#x7801;&#x3002;&#x91CD;&#x6784;&#x4EE3;&#x7801;&#x662F;&#x4E00;&#x4E2A;&#x590D;&#x6742;&#x7684;&#x4E3B;&#x9898;&#x540C;&#x65F6;&#x6BCF;&#x4E2A;&#x9879;&#x76EE;&#x90FD;&#x662F;&#x552F;&#x4E00;&#x7684;&#xFF0C;&#x4F46;&#x662F;&#x8FD9;&#x91CC;&#x4E5F;&#x63D0;&#x4F9B;&#x4E24;&#x4E2A;&#x5E38;&#x7528;&#x7684;&#x534F;&#x7A0B;&#x7684;&#x66FF;&#x4EE3;&#x65B9;&#x5F0F;&#x6211;&#x4EEC;&#x5E0C;&#x671B;&#x80FD;&#x591F;&#x8BB0;&#x4F4F;&#x3002;&#x4F8B;&#x5982;&#xFF0C;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x4F7F;&#x7528;&#x534F;&#x7A0B;&#x4E3B;&#x8981;&#x662F;&#x7528;&#x6765;&#x7BA1;&#x7406;&#x65F6;&#x95F4;&#x7684;&#x8BDD;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x5728;<em>Update()</em>&#x51FD;&#x6570;&#x91CC;&#x9762;&#x4FDD;&#x6301;&#x7B80;&#x5355;&#x7684;&#x65F6;&#x95F4;&#x8BB0;&#x5F55;&#x3002;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x4F7F;&#x7528;&#x534F;&#x7A0B;&#x4E3B;&#x8981;&#x662F;&#x7528;&#x6765;&#x63A7;&#x5236;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x4E2D;&#x4E00;&#x4E9B;&#x903B;&#x8F91;&#x4E1A;&#x52A1;&#x6267;&#x884C;&#x987A;&#x5E8F;&#x65F6;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x521B;&#x5EFA;&#x4E00;&#x4E9B;&#x6709;&#x5E8F;&#x7684;&#x6D88;&#x606F;&#x53D1;&#x9001;&#x7CFB;&#x7EDF;&#x6765;&#x5141;&#x8BB8;&#x5BF9;&#x8C61;&#x95F4;&#x7684;&#x901A;&#x4FE1;&#x3002;&#x6CA1;&#x6709;&#x4E00;&#x4E9B;&#x65B9;&#x6CD5;&#x80FD;&#x591F;&#x9002;&#x5408;&#x6240;&#x6709;&#x7684;&#x60C5;&#x51B5;&#xFF0C;&#x4F46;&#x662F;&#x8BF7;&#x8BB0;&#x4F4F;&#xFF0C;&#x5728;&#x4EE3;&#x7801;&#x4E2D;&#x5F80;&#x5F80;&#x4E0D;&#x6B62;&#x4E00;&#x79CD;&#x65B9;&#x5F0F;&#x53EF;&#x4EE5;&#x5B9E;&#x73B0;&#x76F8;&#x540C;&#x7684;&#x76EE;&#x7684;&#x3002;</p>
+<h3 id="foreach-&#x5FAA;&#x73AF;"><a href="#foreach-&#x5FAA;&#x73AF;" class="headerlink" title="foreach &#x5FAA;&#x73AF;"></a>foreach &#x5FAA;&#x73AF;</h3><blockquote>
+<p>&#x8BD1;: &#x8FD9;&#x4E2A;&#x95EE;&#x9898;&#x7684;&#x5177;&#x4F53;&#x5206;&#x6790;&#x53EF;&#x4EE5;&#x770B;<a href="http://www.elangduan.com/2016/10/29/Mono%20V2.0.5%E7%9A%84foreach%E5%86%85%E5%AD%98%E9%97%AE%E9%A2%98/" target="_blank" rel="external">C# foreach&#x5E26;&#x6765;&#x7684;&#x5185;&#x5B58;&#x95EE;&#x9898;</a>&#x8FD9;&#x7BC7;&#x6587;&#x7AE0;</p>
+</blockquote>
+<p>&#x5728;Unity5.5&#x4E4B;&#x524D;&#x7684;&#x7248;&#x672C;&#x4E2D;&#xFF0C;&#x4E00;&#x4E2A;foreach&#x904D;&#x5386;&#x51FA;&#x4E86;&#x6570;&#x7EC4;&#x4E4B;&#x5916;&#x7684;&#x4EFB;&#x4F55;&#x96C6;&#x5408;&#xFF0C;&#x6BCF;&#x6B21;&#x5FAA;&#x73AF;&#x7ED3;&#x675F;&#x4E4B;&#x540E;&#x90FD;&#x4F1A;&#x4EA7;&#x751F;&#x5185;&#x5B58;&#x5783;&#x573E;&#x3002;&#x8FD9;&#x662F;&#x7531;&#x4E8E;&#x5728;foreach&#x5185;&#x90E8;&#x53D1;&#x751F;&#x4E86;&#x88C5;&#x7BB1;&#x64CD;&#x4F5C;&#x3002;&#x5F53;&#x4E00;&#x4E2A;&#x5FAA;&#x73AF;&#x5F00;&#x59CB;&#x7684;&#x65F6;&#x5019;&#x4F1A;&#x5728;&#x521B;&#x5EFA;&#x4E00;&#x4E2A;System.Object&#x5806;&#x5185;&#x5B58;&#x5BF9;&#x8C61;&#xFF0C;&#x5F53;&#x5FAA;&#x73AF;&#x7ED3;&#x675F;&#x7684;&#x65F6;&#x5019;&#x8FD9;&#x4E2A;&#x5BF9;&#x8C61;&#x4F1A;&#x88AB;&#x9500;&#x6BC1;&#xFF0C;&#x4ECE;&#x800C;&#x4EA7;&#x751F;&#x4E86;&#x4E00;&#x4E2A;&#x5185;&#x5B58;&#x5783;&#x573E;&#x3002;&#x8FD9;&#x4E2A;&#x95EE;&#x9898;&#x5728;Unity5.5&#x7684;&#x7248;&#x672C;&#x4E2D;&#x4FEE;&#x590D;&#x4E86;&#x3002;</p>
+<p>&#x4E3E;&#x4E2A;&#x4F8B;&#x5B50;&#xFF0C;&#x5728;Unity5.5&#x4E4B;&#x524D;&#x7684;&#x7248;&#x672C;&#x4E2D;&#xFF0C;&#x4E0B;&#x9762;&#x8FD9;&#x6BB5;&#x5417;&#x7684;&#x5FAA;&#x73AF;&#x4F1A;&#x4EA7;&#x751F;&#x5185;&#x5B58;&#x5783;&#x573E;:</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ExampleFunction</span>(<span class="params">List listOfInts</span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  <span class="keyword">foreach</span>(<span class="keyword">int</span> currentInt <span class="keyword">in</span> listOfInts)</span><br><span class="line">  {</span><br><span class="line">    DoSomething(currentInt);</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>&#x5982;&#x679C;&#x6211;&#x4EEC;&#x4E0D;&#x80FD;&#x591F;&#x5347;&#x7EA7;&#x6211;&#x4EEC;&#x7684;Unity&#x7248;&#x672C;&#xFF0C;&#x8FD9;&#x91CC;&#x53C8;&#x4E00;&#x4E2A;&#x7B80;&#x5355;&#x7684;&#x89E3;&#x51B3;&#x65B9;&#x6CD5;&#x3002;<em>for</em>&#x548C;<em>while</em>&#x5FAA;&#x73AF;&#x4E0D;&#x4F1A;&#x5728;&#x5185;&#x90E8;&#x5BFC;&#x81F4;&#x88C5;&#x7BB1;&#x64CD;&#x4F5C;&#x56E0;&#x6B64;&#x4E5F;&#x4E0D;&#x4F1A;&#x4EA7;&#x751F;&#x5806;&#x5185;&#x5B58;&#x5783;&#x573E;&#x3002;&#x5F53;&#x6211;&#x4EEC;&#x8981;&#x904D;&#x5386;&#x7684;&#x96C6;&#x5408;&#x4E0D;&#x662F;&#x6570;&#x7EC4;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x66F4;&#x504F;&#x5411;&#x4E8E;&#x4F7F;&#x7528;&#x8FD9;&#x4E24;&#x4E2A;&#x65B9;&#x5F0F;&#x3002;</p>
+<p>&#x4E0B;&#x9762;&#x7684;&#x4EE3;&#x7801;&#x5FAA;&#x73AF;&#x904D;&#x5386;&#x4E0D;&#x4F1A;&#x5BFC;&#x81F4;&#x4EA7;&#x751F;&#x5185;&#x5B58;&#x5783;&#x573E;:</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ExampleFunction</span>(<span class="params">List listOfInts</span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;listOfInts.Count; ++i)</span><br><span class="line">  {</span><br><span class="line">    <span class="keyword">int</span> currentInt = listOfInts[i];</span><br><span class="line">    DoSomething(currentInt);</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<h3 id="&#x51FD;&#x6570;&#x7684;&#x5F15;&#x7528;"><a href="#&#x51FD;&#x6570;&#x7684;&#x5F15;&#x7528;" class="headerlink" title="&#x51FD;&#x6570;&#x7684;&#x5F15;&#x7528;"></a>&#x51FD;&#x6570;&#x7684;&#x5F15;&#x7528;</h3><p>&#x4E0D;&#x7BA1;&#x662F;<a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/statements-expressions-operators/anonymous-methods" target="_blank" rel="external">&#x533F;&#x540D;&#x51FD;&#x6570;</a>&#x8FD8;&#x662F;&#x666E;&#x901A;&#x51FD;&#x6570;&#xFF0C;&#x5728;Unity&#x4E2D;&#x90FD;&#x662F;&#x5F15;&#x7528;&#x7C7B;&#x578B;&#x7684;&#x53D8;&#x91CF;&#x3002;&#x4ED6;&#x4EEC;&#x90FD;&#x4F1A;&#x4EA7;&#x751F;&#x5806;&#x5185;&#x5B58;&#x5206;&#x914D;&#x3002;&#x628A;&#x4E00;&#x4E2A;&#x533F;&#x540D;&#x65B9;&#x6CD5;&#x8F6C;&#x6362;&#x4E3A;&#x95ED;&#x5305;(&#x533F;&#x540D;&#x51FD;&#x6570;&#x5185;&#x90E8;&#x8BBF;&#x95EE;&#x4E86;&#x5916;&#x90E8;&#x53D8;&#x91CF;)&#x4F1A;&#x589E;&#x52A0;&#x5F88;&#x591A;&#x5185;&#x5B58;&#x5F00;&#x9500;&#x540C;&#x65F6;&#x521B;&#x5EFA;&#x591A;&#x4E2A;&#x5806;&#x5185;&#x5B58;&#x5BF9;&#x8C61;&#x3002;</p>
+<p>&#x66F4;&#x52A0;&#x7CBE;&#x786E;&#x548C;&#x8BE6;&#x7EC6;&#x7684;&#x51FD;&#x6570;&#x5F15;&#x7528;&#x548C;&#x95ED;&#x5305;&#x7684;&#x5185;&#x5B58;&#x5206;&#x914D;&#x53D8;&#x5316;&#x4F9D;&#x8D56;&#x4E8E;&#x6240;&#x5728;&#x7684;&#x5E73;&#x53F0;&#x548C;&#x7F16;&#x8BD1;&#x5668;&#x7684;&#x8BBE;&#x7F6E;&#x3002;&#x4F46;&#x662F;&#x5982;&#x679C;GC&#x5185;&#x5B58;&#x56DE;&#x6536;&#x662F;&#x4E00;&#x4E2A;&#x6BD4;&#x8F83;&#x9700;&#x8981;&#x6CE8;&#x610F;&#x7684;&#x95EE;&#x9898;&#xFF0C;&#x90A3;&#x4E48;&#x5728;&#x6E38;&#x620F;&#x8FD0;&#x884C;&#x8FC7;&#x7A0B;&#x4E2D;&#x6700;&#x597D;&#x51CF;&#x5C11;&#x51FD;&#x6570;&#x7684;&#x5F15;&#x7528;&#x548C;&#x95ED;&#x5305;&#x7684;&#x4F7F;&#x7528;&#x3002;[<a href="https://docs.unity3d.com/Manual/BestPracticeUnderstandingPerformanceInUnity4-1.html?_ga=2.69215250.342435300.1511170133-741569329.1509691291" target="_blank" rel="external">This Unity best practice guide on performance</a>]&#x9488;&#x5BF9;&#x8FD9;&#x4E2A;&#x4E3B;&#x9898;&#x6709;&#x66F4;&#x52A0;&#x6DF1;&#x5165;&#x7684;&#x6280;&#x672F;&#x7EC6;&#x8282;&#x7684;&#x4ECB;&#x7ECD;&#x3002;</p>
+<h3 id="LINQ&#x548C;&#x6B63;&#x5219;&#x8868;&#x8FBE;&#x5F0F;"><a href="#LINQ&#x548C;&#x6B63;&#x5219;&#x8868;&#x8FBE;&#x5F0F;" class="headerlink" title="LINQ&#x548C;&#x6B63;&#x5219;&#x8868;&#x8FBE;&#x5F0F;"></a>LINQ&#x548C;&#x6B63;&#x5219;&#x8868;&#x8FBE;&#x5F0F;</h3><p>LINQ&#x548C;&#x6B63;&#x5219;&#x8868;&#x8FBE;&#x5F0F;&#x5185;&#x90E8;&#x90FD;&#x4F1A;&#x56E0;&#x4E3A;&#x88C5;&#x7BB1;&#x4EA7;&#x751F;&#x5185;&#x5B58;&#x5783;&#x573E;&#x3002;&#x6700;&#x597D;&#x7684;&#x505A;&#x6CD5;&#x662F;&#x5728;&#x6027;&#x80FD;&#x6D88;&#x8017;&#x7684;&#x96C6;&#x4E2D;&#x70B9;&#x7981;&#x6B62;&#x4F7F;&#x7528;&#x5B83;&#x4EEC;&#x3002;&#x8FD8;&#x662F;&#x8FD9;&#x7BC7;&#x6587;&#x7AE0;&#xFF0C;<a href="https://docs.unity3d.com/Manual/BestPracticeUnderstandingPerformanceInUnity4-1.html" target="_blank" rel="external">this Unity best practice guide on performance</a> &#x63D0;&#x4F9B;&#x4E86;&#x975E;&#x5E38;&#x597D;&#x7684;&#x5173;&#x4E8E;&#x8FD9;&#x4E2A;&#x4E3B;&#x9898;&#x7684;&#x6280;&#x672F;&#x7EC6;&#x8282;</p>
+<h2 id="&#x91CD;&#x6784;&#x6211;&#x4EEC;&#x7684;&#x4EE3;&#x7801;&#x628A;GC&#x5185;&#x5B58;&#x56DE;&#x6536;&#x7684;&#x5F71;&#x54CD;&#x51CF;&#x5C0F;&#x5230;&#x6700;&#x5C0F;"><a href="#&#x91CD;&#x6784;&#x6211;&#x4EEC;&#x7684;&#x4EE3;&#x7801;&#x628A;GC&#x5185;&#x5B58;&#x56DE;&#x6536;&#x7684;&#x5F71;&#x54CD;&#x51CF;&#x5C0F;&#x5230;&#x6700;&#x5C0F;" class="headerlink" title="&#x91CD;&#x6784;&#x6211;&#x4EEC;&#x7684;&#x4EE3;&#x7801;&#x628A;GC&#x5185;&#x5B58;&#x56DE;&#x6536;&#x7684;&#x5F71;&#x54CD;&#x51CF;&#x5C0F;&#x5230;&#x6700;&#x5C0F;"></a>&#x91CD;&#x6784;&#x6211;&#x4EEC;&#x7684;&#x4EE3;&#x7801;&#x628A;GC&#x5185;&#x5B58;&#x56DE;&#x6536;&#x7684;&#x5F71;&#x54CD;&#x51CF;&#x5C0F;&#x5230;&#x6700;&#x5C0F;</h2><p>&#x6211;&#x4EEC;&#x4EE3;&#x7801;&#x7684;&#x67B6;&#x6784;&#x65B9;&#x5F0F;&#x4F1A;&#x5F71;&#x54CD;GC&#x7684;&#x5185;&#x5B58;&#x56DE;&#x6536;&#x3002;&#x5373;&#x4F7F;&#x6211;&#x4EEC;&#x4EE3;&#x7801;&#x6CA1;&#x6709;&#x521B;&#x5EFA;&#x4EFB;&#x4F55;&#x5806;&#x5185;&#x5B58;&#xFF0C;&#x5B83;&#x4E5F;&#x4F1A;&#x589E;&#x52A0;GC&#x7684;&#x8D1F;&#x62C5;&#x3002;</p>
+<p>&#x6211;&#x4EEC;&#x7684;&#x4EE3;&#x7801;&#x6CA1;&#x5FC5;&#x8981;&#x589E;&#x52A0;GC&#x7684;&#x8D1F;&#x62C5;&#x7684;&#x4E00;&#x79CD;&#x60C5;&#x51B5;&#x662F;&#x5B83;&#x9700;&#x8981;&#x53BB;&#x68C0;&#x67E5;(&#x8BD1;:&#x5224;&#x65AD;&#x8FD9;&#x4E2A;&#x5BF9;&#x8C61;&#x662F;&#x5426;&#x5F15;&#x7528;&#x60C5;&#x51B5;&#x6765;&#x51B3;&#x5B9A;&#x662F;&#x5426;&#x56DE;&#x6536;&#x8FD9;&#x4E2A;&#x5BF9;&#x8C61;)&#x672C;&#x8BE5;&#x4E0D;&#x9700;&#x8981;&#x68C0;&#x67E5;&#x7684;&#x4E8B;&#x60C5;&#x3002;&#x7ED3;&#x6784;&#x4F53;&#x662F;&#x4E00;&#x4E2A;&#x503C;&#x7C7B;&#x578B;&#x7684;&#x53D8;&#x91CF;&#xFF0C;&#x4F46;&#x662F;&#x5F53;&#x6211;&#x4EEC;&#x6709;&#x4E00;&#x4E2A;&#x7ED3;&#x6784;&#x4F53;&#x5305;&#x542B;&#x4E86;&#x4E00;&#x4E2A;&#x5F15;&#x7528;&#x7C7B;&#x578B;&#x7684;&#x53D8;&#x91CF;&#x7684;&#x65F6;&#x5019;GC&#x5FC5;&#x987B;&#x53BB;&#x68C0;&#x67E5;&#x8FD9;&#x6574;&#x4E2A;&#x7ED3;&#x6784;&#x4F53;&#x4E86;&#x3002;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x6709;&#x4E2A;&#x5F88;&#x5927;&#x8FD9;&#x79CD;&#x7ED3;&#x6784;&#x4F53;&#x7684;&#x6570;&#x7EC4;&#xFF0C;&#x8FD9;&#x6837;&#x5C31;&#x7ED9;GC&#x9020;&#x6210;&#x4E86;&#x975E;&#x5E38;&#x591A;&#x7684;&#x989D;&#x5916;&#x5DE5;&#x4F5C;&#x3002;</p>
+<p>&#x5728;&#x8FD9;&#x4E2A;&#x4F8B;&#x5B50;&#x4E2D;&#xFF0C;&#x8FD9;&#x4E2A;&#x7ED3;&#x6784;&#x4F53;&#x5305;&#x542B;&#x4E86;&#x4E00;&#x4E2A;string&#x7C7B;&#x578B;&#x7684;&#x5BF9;&#x8C61;&#xFF0C;&#x5B83;&#x662F;&#x5F15;&#x7528;&#x7C7B;&#x578B;&#x7684;&#x3002;&#x5F53;&#x8FD9;&#x6BB5;&#x4EE3;&#x7801;&#x8FD0;&#x884C;&#x65F6;GC&#x5FC5;&#x987B;&#x5BF9;&#x8FD9;&#x6574;&#x4E2A;&#x7ED3;&#x6784;&#x4F53;&#x6570;&#x7EC4;&#x90FD;&#x8FDB;&#x884C;&#x68C0;&#x67E5;&#x3002;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> strct ItemData</span><br><span class="line">{</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">string</span> name;</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">int</span> cost;</span><br><span class="line">  <span class="keyword">public</span> Vector3 position;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> ItemData[] itemData;</span><br></pre></td></tr></table></figure>
+<p>&#x5728;&#x4E0B;&#x9762;&#x8FD9;&#x4E2A;&#x4F8B;&#x5B50;&#x4E2D;&#xFF0C;&#x6211;&#x4EEC;&#x5C06;&#x6570;&#x636E;&#x5B58;&#x50A8;&#x5728;&#x5355;&#x72EC;&#x7684;&#x6570;&#x7EC4;&#x4E2D;&#x3002;&#x5F53;GC&#x8FD0;&#x884C;&#x8D77;&#x6765;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x5B83;&#x53EA;&#x9700;&#x8981;&#x68C0;&#x67E5;string&#x7C7B;&#x578B;&#x7684;&#x6570;&#x7EC4;&#x540C;&#x65F6;&#x5FFD;&#x7565;&#x8C03;&#x7528;&#x5176;&#x4ED6;&#x503C;&#x7C7B;&#x578B;&#x7684;&#x6570;&#x7EC4;&#x3002;&#x8FD9;&#x4F7F;&#x5F97;GC&#x53EA;&#x9700;&#x8981;&#x505A;&#x5FC5;&#x8981;&#x7684;&#x5DE5;&#x4F5C;&#x3002;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">string</span>[] itemNames;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span>[] itemCosts;</span><br><span class="line"><span class="keyword">private</span> Vector3[] itemPositions;</span><br></pre></td></tr></table></figure>
+<p>&#x53E6;&#x5916;&#x4E00;&#x79CD;&#x5728;&#x6211;&#x4EEC;&#x4EE3;&#x7801;&#x4E2D;&#x7ED9;GC&#x589E;&#x52A0;&#x4E86;&#x4E0D;&#x5FC5;&#x8981;&#x7684;&#x8D1F;&#x62C5;&#x7684;&#x60C5;&#x51B5;&#x662F;&#x53EA;&#x6709;&#x4E86;&#x4E0D;&#x5FC5;&#x8981;&#x7684;&#x5185;&#x5B58;&#x5F15;&#x7528;&#x3002;&#x5F53;GC&#x67E5;&#x627E;&#x5806;&#x5185;&#x5B58;&#x4E0A;&#x7684;&#x5BF9;&#x8C61;&#x7684;&#x5F15;&#x7528;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x5B83;&#x5FC5;&#x987B;&#x68C0;&#x67E5;&#x5F53;&#x524D;&#x6211;&#x4EEC;&#x4EE3;&#x7801;&#x6BCF;&#x4E2A;&#x5BF9;&#x8C61;&#x7684;&#x5F15;&#x7528;&#xFF0C;&#x5373;&#x4F7F;&#x6211;&#x4EEC;&#x4E0D;&#x9700;&#x8981;&#x51CF;&#x5C11;&#x603B;&#x7684;&#x5806;&#x5185;&#x5B58;&#x4E0A;&#x7684;&#x5BF9;&#x8C61;&#x7684;&#x6570;&#x91CF;&#xFF0C;&#x4EE3;&#x7801;&#x4E2D;&#x66F4;&#x5C11;&#x7684;&#x5BF9;&#x8C61;&#x5F15;&#x7528;&#x610F;&#x5473;&#x7740;GC&#x9700;&#x8981;&#x505A;&#x7684;&#x5DE5;&#x4F5C;&#x5C31;&#x66F4;&#x5C11;&#x3002;</p>
+<p>&#x4E0B;&#x9762;&#x8FD9;&#x4E2A;&#x4F8B;&#x5B50;&#x4E2D;&#xFF0C;&#x6211;&#x4EEC;&#x5B9E;&#x73B0;&#x4E86;&#x4E2A;&#x5BF9;&#x8BDD;&#x6846;&#x7684;&#x7C7B;&#x3002;&#x5F53;&#x7528;&#x6237;&#x67E5;&#x770B;&#x8FD9;&#x4E2A;&#x5BF9;&#x8BDD;&#x65F6;&#xFF0C;&#x5C06;&#x4F1A;&#x663E;&#x793A;&#x4E00;&#x4E2A;&#x5BF9;&#x8BDD;&#x6846;&#x3002;&#x6211;&#x4EEC;&#x7684;&#x4EE3;&#x7801;&#x5305;&#x542B;&#x4E86;&#x6307;&#x5411;&#x4E0B;&#x4E00;&#x4E2A;&#x5E94;&#x8BE5;&#x663E;&#x793A;&#x7684;&#x5BF9;&#x8BDD;&#x6846;&#x6570;&#x636E;&#x5B9E;&#x4F8B;&#x7684;&#x5F15;&#x7528;&#x3002;&#x8FD9;&#x610F;&#x5473;GC&#x5FC5;&#x987B;&#x53BB;&#x68C0;&#x67E5;&#x8FD9;&#x90E8;&#x5206;&#x64CD;&#x4F5C;&#x7684;&#x5F15;&#x7528;:</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">DialogData</span></span><br><span class="line">{</span><br><span class="line">  <span class="keyword">private</span> DialogData nextDialog;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> DialogData <span class="title">GetNextDialog</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">  </span>{</span><br><span class="line">    <span class="keyword">return</span> nextDialog;</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>&#x8FD9;&#x91CC;&#x6211;&#x4EEC;&#x91CD;&#x6784;&#x4E0B;&#x8FD9;&#x6BB5;&#x4EE3;&#x7801;&#xFF0C;&#x8BA9;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x8FD4;&#x56DE;&#x4E00;&#x4E2A;&#x6307;&#x5411;&#x50CF;&#x4E2A;&#x5BF9;&#x8BDD;&#x6570;&#x636E;&#x5B9E;&#x4F8B;&#x7684;&#x6807;&#x8BC6;&#x7B26;&#x6765;&#x4EE3;&#x66FF;&#x8FD4;&#x56DE;&#x5B9E;&#x4F8B;&#x672C;&#x8EAB;&#x3002;&#x4FEE;&#x6539;&#x4E4B;&#x540E;&#x6CA1;&#x6709;&#x5F15;&#x7528;&#xFF0C;&#x8FD9;&#x5C31;&#x4E0D;&#x4F1A;&#x589E;&#x52A0;GC&#x7684;&#x65F6;&#x95F4;&#x5F00;&#x9500;&#x4E86;&#x3002;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">DialogData</span></span><br><span class="line">{</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">int</span> nextDialogID;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">GetNextDialogID</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">  </span>{</span><br><span class="line">    <span class="keyword">return</span> nextDialogID;</span><br><span class="line">  }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>&#x8FD9;&#x662F;&#x4E00;&#x4E2A;&#x975E;&#x5E38;&#x7B80;&#x5355;&#x7684;&#x4F8B;&#x5B50;&#x3002;&#x7136;&#x800C;&#xFF0C;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x4E2D;&#x5305;&#x542B;&#x4E86;&#x5F88;&#x591A;&#x6301;&#x6709;&#x4E86;&#x5176;&#x4ED6;&#x5BF9;&#x8C61;&#x7684;&#x5F15;&#x7528;&#x7684;&#x5BF9;&#x8C61;&#x3002;&#x90A3;&#x4E48;&#x6211;&#x4EEC;&#x9700;&#x8981;&#x8003;&#x8651;&#x4F7F;&#x7528;&#x8FD9;&#x79CD;&#x65B9;&#x5F0F;&#x6765;&#x91CD;&#x6784;&#x6211;&#x4EEC;&#x7684;&#x4EE3;&#x7801;&#xFF0C;&#x51CF;&#x5C11;&#x5806;&#x5185;&#x5B58;&#x5BF9;&#x8C61;&#x7684;&#x590D;&#x6742;&#x5EA6;&#x3002;</p>
+<h2 id="&#x5B9A;&#x65F6;&#x8FDB;&#x884C;GC&#x5185;&#x5B58;&#x56DE;&#x6536;"><a href="#&#x5B9A;&#x65F6;&#x8FDB;&#x884C;GC&#x5185;&#x5B58;&#x56DE;&#x6536;" class="headerlink" title="&#x5B9A;&#x65F6;&#x8FDB;&#x884C;GC&#x5185;&#x5B58;&#x56DE;&#x6536;"></a>&#x5B9A;&#x65F6;&#x8FDB;&#x884C;GC&#x5185;&#x5B58;&#x56DE;&#x6536;</h2><h3 id="&#x624B;&#x52A8;&#x5F3A;&#x5236;&#x8FDB;&#x884C;&#x5185;&#x5B58;&#x56DE;&#x6536;"><a href="#&#x624B;&#x52A8;&#x5F3A;&#x5236;&#x8FDB;&#x884C;&#x5185;&#x5B58;&#x56DE;&#x6536;" class="headerlink" title="&#x624B;&#x52A8;&#x5F3A;&#x5236;&#x8FDB;&#x884C;&#x5185;&#x5B58;&#x56DE;&#x6536;"></a>&#x624B;&#x52A8;&#x5F3A;&#x5236;&#x8FDB;&#x884C;&#x5185;&#x5B58;&#x56DE;&#x6536;</h3><p>&#x6700;&#x7EC8;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x80FD;&#x5E0C;&#x671B;&#x81EA;&#x5DF1;&#x53BB;&#x89E6;&#x53D1;GC&#x56DE;&#x6536;&#x5185;&#x5B58;&#x3002;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x77E5;&#x9053;&#x5B58;&#x5728;&#x5806;&#x5185;&#x5B58;&#x5DF2;&#x7ECF;&#x5206;&#x914D;&#x4E86;&#x4F46;&#x662F;&#x4E0D;&#x518D;&#x4F7F;&#x7528;&#x4E86;(&#x4F8B;&#x5982;, &#x5982;&#x6211;&#x4EEC;&#x7684;&#x4EE3;&#x7801;&#x5728;&#x52A0;&#x8F7D;&#x8D44;&#x6E90;&#x65F6;&#x4EA7;&#x751F;&#x4E86;&#x5185;&#x5B58;&#x5783;&#x573E;)&#x540C;&#x65F6;&#x6211;&#x4EEC;&#x77E5;&#x9053;GC&#x56DE;&#x6536;&#x5185;&#x5B58;&#x64CD;&#x4F5C;&#x4E0D;&#x4F1A;&#x5F71;&#x54CD;&#x5230;&#x73A9;&#x5BB6;(&#x4F8B;&#x5982;&#xFF0C;loading&#x754C;&#x9762;&#x4E00;&#x76F4;&#x663E;&#x793A;&#x7684;&#x65F6;&#x5019;)&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x4E0B;&#x9762;&#x7684;&#x4EE3;&#x7801;&#x6765;&#x8981;&#x6C42;GC&#x6267;&#x884C;&#x5185;&#x5B58;&#x56DE;&#x6536;&#x64CD;&#x4F5C;&#x3002;</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.GC.Collect();</span><br></pre></td></tr></table></figure>
+<p>&#x8FD9;&#x6BB5;&#x4EE3;&#x7801;&#x4F1A;&#x5F3A;&#x5236;GC&#x8FD0;&#x884C;&#xFF0C;&#x65B9;&#x4FBF;&#x6211;&#x4EEC;&#x5728;&#x8FD9;&#x4E2A;&#x65F6;&#x95F4;&#x70B9;&#x91CA;&#x653E;&#x90A3;&#x4E9B;&#x6CA1;&#x6709;&#x4EFB;&#x4F55;&#x5F15;&#x7528;&#x7684;&#x5BF9;&#x8C61;&#x7684;&#x7684;&#x5185;&#x5B58;&#x3002;</p>
+<h2 id="&#x603B;&#x7ED3;"><a href="#&#x603B;&#x7ED3;" class="headerlink" title="&#x603B;&#x7ED3;"></a>&#x603B;&#x7ED3;</h2><p>&#x6211;&#x4EEC;&#x5B66;&#x4E60;&#x4E86;Unity&#x7684;GC&#x5185;&#x5B58;&#x56DE;&#x6536;&#x7684;&#x5DE5;&#x4F5C;&#x539F;&#x7406;&#xFF0C;&#x5F15;&#x8D77;&#x6027;&#x80FD;&#x95EE;&#x9898;&#x7684;&#x539F;&#x56E0;&#x662F;&#x4EC0;&#x4E48;? &#x600E;&#x4E48;&#x53BB;&#x51CF;&#x5C11;&#x8FD9;&#x4E9B;&#x95EE;&#x9898;&#x5BF9;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x7684;&#x5F71;&#x54CD;&#x3002;&#x4F7F;&#x7528;&#x672C;&#x6587;&#x4ECB;&#x7ECD;&#x7684;&#x77E5;&#x8BC6;&#x548C;&#x6211;&#x4EEC;&#x7684;&#x6027;&#x80FD;&#x4F18;&#x5316;&#x5DE5;&#x5177;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x4FEE;&#x6B63;GC&#x5185;&#x5B58;&#x56DE;&#x6536;&#x7684;&#x6027;&#x80FD;&#x95EE;&#x9898;&#x548C;&#x91CD;&#x6784;&#x6211;&#x4EEC;&#x7684;&#x4EE3;&#x7801;&#x4F7F;&#x5F97;&#x4ED6;&#x4EEC;&#x66F4;&#x6709;&#x6548;&#x7387;&#x7684;&#x7BA1;&#x7406;&#x5185;&#x5B58;&#x3002;</p>
+
+                        
+                    </div>
+
+                    
+                    
+                    
+
+                    <div class="description post-description">
+    <span class="post-description-item">
+        <time datetime="2017-11-18T12:58:35.000Z" itemprop="datePublished">2017-11-18</time>
+
+    </span>
+    <span class="post-description-item">
         
 
-        
-      </div>
-    </footer>
+    <span>
+        <i class="tags icon"></i>
+    </span>
 
-    <div class="back-to-top">
-      <i class="fa fa-arrow-up"></i>
+    
+    <span class="ui tiny label">
+        <a href="/tags/csharp/">csharp</a>
+    </span>
+
+    
+
+    </span>
+</div>
+
+                </div>
+                
+                <div id="pagination" class="nav-web ui text container pagination">
+
+    <div class="ui stackable two column divided grid container">
+        <div class="row">
+            <div class="column nav-left">
+                
+
+                <a href="/2017/12/03/optimizing_graphics_rendering_in_unity_games/" class="ui tiny button">
+
+                    <i class="angle left icon"></i>
+                    
+                    Unity游戏的图形渲染优化(译)
+                    
+
+                </a>
+
+                
+            </div>
+            <div class="column nav-right">
+                
+
+                <a href="/2017/08/30/unity_quaternion_interpolation_note/" class="ui tiny button">
+                    
+                    Quaternion的插值分析及总结
+                    
+                    <i class="angle right icon"></i></a>
+                
+            </div>
+        </div>
     </div>
-  </div>
 
-  
+</div>
+                
+            </div>
 
-<script type="text/javascript">
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
-</script>
+            
+            <div class="three wide computer three wide tablet column">
 
+                <div class="ui sticky article-toc" id="article-toc">
+                    <!-- toc -->
+                    <ol class="ui ordered list"><li><a href="#Unity的托管内存的简单介绍"><span>Unity的托管内存的简单介绍</span></a><ol><li><a href="#栈在分配和释放内存的时候发生了什么？"><span>栈在分配和释放内存的时候发生了什么？</span></a></li><li><a href="#堆在分配和释放内存的时候发生了什么？"><span>堆在分配和释放内存的时候发生了什么？</span></a></li><li><a href="#GC进行内存回收的时候发生了什么？"><span>GC进行内存回收的时候发生了什么？</span></a></li><li><a href="#什么情况下会导致GC的运行"><span>什么情况下会导致GC的运行</span></a></li></ol></li><li><a href="#GC回收内存的问题"><span>GC回收内存的问题</span></a><ol><li><a href="#寻找堆内存的分配点"><span>寻找堆内存的分配点</span></a></li><li><a href="#使用Unity的Profile窗口可以找到堆内存的分配"><span>使用Unity的Profile窗口可以找到堆内存的分配</span></a></li><li><a href="#减少GC回收内存带来的影响"><span>减少GC回收内存带来的影响</span></a></li><li><a href="#减少垃圾内存创建的数量"><span>减少垃圾内存创建的数量</span></a><ol><li><a href="#缓存"><span>缓存</span></a></li><li><a href="#不要在频繁调用的函数里面分配内存"><span>不要在频繁调用的函数里面分配内存</span></a></li></ol></li><li><a href="#清理容器"><span>清理容器</span></a><ol><li><a href="#对象池"><span>对象池</span></a></li></ol></li><li><a href="#常见的导致不必要的堆内存分配的一些原因"><span>常见的导致不必要的堆内存分配的一些原因</span></a><ol><li><a href="#String"><span>String</span></a></li><li><a href="#Unity的函数调用"><span>Unity的函数调用</span></a></li><li><a href="#装箱"><span>装箱</span></a></li><li><a href="#协程"><span>协程</span></a></li><li><a href="#foreach-循环"><span>foreach 循环</span></a></li><li><a href="#函数的引用"><span>函数的引用</span></a></li><li><a href="#LINQ和正则表达式"><span>LINQ和正则表达式</span></a></li></ol></li><li><a href="#重构我们的代码把GC内存回收的影响减小到最小"><span>重构我们的代码把GC内存回收的影响减小到最小</span></a></li><li><a href="#定时进行GC内存回收"><span>定时进行GC内存回收</span></a><ol><li><a href="#手动强制进行内存回收"><span>手动强制进行内存回收</span></a></li></ol></li><li><a href="#总结"><span>总结</span></a></li></ol></li></ol>
+                </div>
 
+            </div>
+            
 
-
-
-
-
-
-
-  
-
-
-
-  
-  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-
-  
-  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-
-  
-  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-
-  
-  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+        </div>
+    </div>
+</div>
 
 
-  
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        </div>
+        <div class="ui vertical footer segment">
+    <div class="ui center aligned container">
+        <div class="ui inverted section divider"></div>
+        &copy; 2018 <a href="/">elangduan@126.com</a>,
+        Powered by <a href="https://github.com/henryhuang/hexo-theme-aloha" target="_blank">Aloha</a> and <a
+                href="http://hexo.io/" target="_blank">Hexo</a>.
+    </div>
+</div>
 
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
-
-
-
-  
-
-  
-    
-  
-
-  <script type="text/javascript">
-    var duoshuoQuery = {short_name:"elangduan"};
-    (function() {
-      var ds = document.createElement('script');
-      ds.type = 'text/javascript';ds.async = true;
-      ds.id = 'duoshuo-script';
-      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-      ds.charset = 'UTF-8';
-      (document.getElementsByTagName('head')[0]
-      || document.getElementsByTagName('body')[0]).appendChild(ds);
-    })();
-  </script>
-
-  
-    
-    
-    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
-    <script src="/js/src/hook-duoshuo.js"></script>
-  
+    </div>
 
 
 
 
+<!-- scripts list from theme config.yml -->
 
+<script src="//cdn.bootcss.com/jquery/3.1.0/jquery.min.js"></script>
 
+<script src="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.js"></script>
 
+<script src="//cdn.bootcss.com/algoliasearch/3.18.1/algoliasearch.min.js"></script>
 
-  
-  
+<script src="//cdn.bootcss.com/algoliasearch-helper-js/2.13.0/algoliasearch.helper.min.js"></script>
 
-  
+<script src="/js/semantic-ui-algolia.js"></script>
 
-  
+<script src="/js/aloha-events.js"></script>
 
-  
-
-  
 
 
 </body>

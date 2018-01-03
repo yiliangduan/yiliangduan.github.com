@@ -1,611 +1,288 @@
-<!doctype html>
 
 
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head prefix="og: http://ogp.me/ns#">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <meta name="description" content="">
+    <title>Unity3D的UIPanel隐藏的处理方式 | elangduan</title>
 
-  
-
-
-<html class="theme-next mist use-motion" lang="zh-Hans">
-<head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-
-
-
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
-
-
-
-
-  
-  
-  
-  
-
-  
-    
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    
-    
-    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
-  
-
-
-
-
-
-
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
-
-<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
-
-
-  <meta name="keywords" content="unity," />
-
-
-
-
-
-
-
-
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
-
-
-
-
-
-
-<meta name="description" content="隐藏的方式 1.1 设置Active为false方式。这种方式UIPanel的所有脚本逻辑、Rendering、Canvas.BuildBatch都会停止。构建的渲染的Mesh也会被清理。 1.2 设置不被渲染的Camera的Layer层上。这种方式相当于只是停掉了Rendering，其他的逻辑照常执行。  优缺点比较 2.1 方式1隐藏Panel的时候构建的Mesh会被清理掉，会节省这部分内存">
+    <!-- Open Graph -->
+    <meta name="description" content="&amp;#x9690;&amp;#x85CF;&amp;#x7684;&amp;#x65B9;&amp;#x5F0F; 1.1 &amp;#x8BBE;&amp;#x7F6E;Active&amp;#x4E3A;false&amp;#x65B9;&amp;#x5F0F;&amp;#x3002;&amp;#x8FD9;&amp;#x79CD;&amp;#x65B9;&amp;#x5F0F;UIPanel&amp;#x7684;&amp;#x6240;&amp;#x6709;&amp;#x811A;&amp;#x672C;&amp;#x903B;&amp;#x8F91;">
 <meta name="keywords" content="unity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity3D的UIPanel隐藏的处理方式">
 <meta property="og:url" content="http://elangduan.github.com/2017/07/13/unity_ugui_panel_visible_manage/index.html">
 <meta property="og:site_name" content="elangduan">
-<meta property="og:description" content="隐藏的方式 1.1 设置Active为false方式。这种方式UIPanel的所有脚本逻辑、Rendering、Canvas.BuildBatch都会停止。构建的渲染的Mesh也会被清理。 1.2 设置不被渲染的Camera的Layer层上。这种方式相当于只是停掉了Rendering，其他的逻辑照常执行。  优缺点比较 2.1 方式1隐藏Panel的时候构建的Mesh会被清理掉，会节省这部分内存">
+<meta property="og:description" content="&amp;#x9690;&amp;#x85CF;&amp;#x7684;&amp;#x65B9;&amp;#x5F0F; 1.1 &amp;#x8BBE;&amp;#x7F6E;Active&amp;#x4E3A;false&amp;#x65B9;&amp;#x5F0F;&amp;#x3002;&amp;#x8FD9;&amp;#x79CD;&amp;#x65B9;&amp;#x5F0F;UIPanel&amp;#x7684;&amp;#x6240;&amp;#x6709;&amp;#x811A;&amp;#x672C;&amp;#x903B;&amp;#x8F91;">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2018-01-02T11:05:19.416Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity3D的UIPanel隐藏的处理方式">
-<meta name="twitter:description" content="隐藏的方式 1.1 设置Active为false方式。这种方式UIPanel的所有脚本逻辑、Rendering、Canvas.BuildBatch都会停止。构建的渲染的Mesh也会被清理。 1.2 设置不被渲染的Camera的Layer层上。这种方式相当于只是停掉了Rendering，其他的逻辑照常执行。  优缺点比较 2.1 方式1隐藏Panel的时候构建的Mesh会被清理掉，会节省这部分内存">
+<meta name="twitter:description" content="&amp;#x9690;&amp;#x85CF;&amp;#x7684;&amp;#x65B9;&amp;#x5F0F; 1.1 &amp;#x8BBE;&amp;#x7F6E;Active&amp;#x4E3A;false&amp;#x65B9;&amp;#x5F0F;&amp;#x3002;&amp;#x8FD9;&amp;#x79CD;&amp;#x65B9;&amp;#x5F0F;UIPanel&amp;#x7684;&amp;#x6240;&amp;#x6709;&amp;#x811A;&amp;#x672C;&amp;#x903B;&amp;#x8F91;">
 
-
-
-<script type="text/javascript" id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Mist',
-    sidebar: {"position":"left","display":"hide"},
-    fancybox: true,
-    motion: true,
-    duoshuo: {
-      userId: '0',
-      author: 'elangduan'
-    },
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
+    <script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Person",
+  "email": "mailto:elangduan@126.com",
+  "image": "/uploads/avatar.png",
+  "name": "elangduan@126.com",
+  "url": "http://elangduan.github.com"
+}
+</script>
+    <script>
+    var algoliaEnabled = false;
+    
 </script>
 
+    
 
+    
+    
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+    
+    
+    
+        <!-- stylesheets list from config.yml -->
+        
+        <link rel="stylesheet" href="/css/aloha.css">
+        
+        <link rel="stylesheet" href="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.css">
+        
+        <link rel="stylesheet" href="//cdn.bootcss.com/magnific-popup.js/1.1.0/magnific-popup.min.css">
+        
+    
 
-  <link rel="canonical" href="http://elangduan.github.com/2017/07/13/unity_ugui_panel_visible_manage/"/>
-
-
-
-
-
-  <title> Unity3D的UIPanel隐藏的处理方式 | elangduan </title>
 </head>
+<body id="body" style="margin-bottom: 0;" class="pushable">
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+    <div class="ui top fixed menu">
+        <a class="item" id="menu-icon"><i class="sidebar icon"></i></a>
+    </div>
 
-  
+    <div id="menu-sidebar" class="ui left vertical sidebar menu">
 
-
-
-
-
-
-
-
-
-
-  
-  
-    
-  
-
-  <div class="container one-collumn sidebar-position-left page-post-detail ">
-    <div class="headband"></div>
-
-    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-meta ">
-  
-
-  <div class="custom-logo-site-title">
-    <a href="/"  class="brand" rel="start">
-      <span class="logo-line-before"><i></i></span>
-      <span class="site-title">elangduan</span>
-      <span class="logo-line-after"><i></i></span>
-    </a>
-  </div>
-  <p class="site-subtitle"></p>
-</div>
-
-<div class="site-nav-toggle">
-  <button>
-    <span class="btn-bar"></span>
-    <span class="btn-bar"></span>
-    <span class="btn-bar"></span>
-  </button>
-</div>
-
-<nav class="site-nav">
-  
-
-  
-    <ul id="menu" class="menu">
-      
-        
-        <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
-            
-            首页
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-archives">
-          <a href="/archives" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
-            
-            归档
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-reading">
-          <a href="/reading" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
-            
-            阅读
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-movie">
-          <a href="/movie" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-camera"></i> <br />
-            
-            电影
-          </a>
-        </li>
-      
-
-      
-    </ul>
-  
-
-  
-</nav>
-
-
-
- </div>
-    </header>
-
-    <main id="main" class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
-    
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2017/07/13/unity_ugui_panel_visible_manage/">
-
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="elangduan@126.com">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/uploads/avatar.png">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="elangduan">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="elangduan" src="">
-    </span>
-  </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                Unity3D的UIPanel隐藏的处理方式
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-13T23:40:10+08:00">
-              2017-07-13
-            </time>
-            
-          </span>
-
-          
-
-          
-
-          
-
-          
-          
-
-          
-          
-          
-
+    <div id="sidebar-top">
+        <div class="content">
+            <h3>elangduan</h3>
         </div>
-      </header>
+    </div>
+    <div class="ui container sidebar-card">
+    <div class="ui people shape content">
+        <div class="active side">
+            <div class="ui card">
+                <div class="image">
+                    <img class="ui medium bordered image" src="/images/avatar.jpg">
+                </div>
+                <div class="content">
+                    <a class="header">elangduan@126.com</a>
+                    
+                        <div class="meta">
+                            Game Developer
+                        </div>
+                    
+                </div>
+                <div class="extra content">
+                    <div class="ui list">
+                        
+                        <div class="item">
+                            <i class="marker icon" style="float: left"></i>
+                            <div class="content">Shanghai</div>
+                        </div>
+                        
+                        
+                        <div class="item">
+                            <i class="mail icon" style="float: left"></i>
+                            <div class="content">
+                                <a href="mailto:elangduan@126.com">elangduan@126.com</a>
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                </div>
+                <div class="extra content">
+                    <div class="ui list">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+    
     
 
+    
 
-    <div class="post-body" itemprop="articleBody">
+    
+    <a href="/index.html" class="item" >
+        <i class="home icon"></i>
+        HOME
+    </a>
 
-      
-      
+    
 
-      
-        <ol>
-<li><p>隐藏的方式</p>
-<p>1.1 设置Active为false方式。这种方式UIPanel的所有脚本逻辑、Rendering、Canvas.BuildBatch都会停止。构建的渲染的Mesh也会被清理。</p>
-<p>1.2 设置不被渲染的Camera的Layer层上。这种方式相当于只是停掉了Rendering，其他的逻辑照常执行。</p>
+    
+</div>
+
+    <div class="pusher body-content">
+        <div id="content" class="ui main container">
+            <!--<div class="ui one column grid">-->
+                <!--<div class="column">-->
+                    <!--<div class="ui main container">-->
+                        <div id="post-unity_ugui_panel_visible_manage" class="ui main container article-type-post">
+
+    
+
+    <div class="ui divided grid">
+
+        <div class="two column row" id="article-content">
+
+            <div class="thirteen wide computer thirteen wide tablet sixteen wide mobile column">
+                
+
+<h1 class="ui header">
+    
+    Unity3D的UIPanel隐藏的处理方式
+</h1>
+
+
+
+                <div class="article-inner">
+
+                    <div class="article-entry" itemprop="articleBody">
+                        
+                        <ol class="ui list">
+<li><p>&#x9690;&#x85CF;&#x7684;&#x65B9;&#x5F0F;</p>
+<p>1.1 &#x8BBE;&#x7F6E;Active&#x4E3A;false&#x65B9;&#x5F0F;&#x3002;&#x8FD9;&#x79CD;&#x65B9;&#x5F0F;UIPanel&#x7684;&#x6240;&#x6709;&#x811A;&#x672C;&#x903B;&#x8F91;&#x3001;Rendering&#x3001;Canvas.BuildBatch&#x90FD;&#x4F1A;&#x505C;&#x6B62;&#x3002;&#x6784;&#x5EFA;&#x7684;&#x6E32;&#x67D3;&#x7684;Mesh&#x4E5F;&#x4F1A;&#x88AB;&#x6E05;&#x7406;&#x3002;</p>
+<p>1.2 &#x8BBE;&#x7F6E;&#x4E0D;&#x88AB;&#x6E32;&#x67D3;&#x7684;Camera&#x7684;Layer&#x5C42;&#x4E0A;&#x3002;&#x8FD9;&#x79CD;&#x65B9;&#x5F0F;&#x76F8;&#x5F53;&#x4E8E;&#x53EA;&#x662F;&#x505C;&#x6389;&#x4E86;Rendering&#xFF0C;&#x5176;&#x4ED6;&#x7684;&#x903B;&#x8F91;&#x7167;&#x5E38;&#x6267;&#x884C;&#x3002;</p>
 </li>
-<li><p>优缺点比较</p>
-<p>2.1 方式1隐藏Panel的时候构建的Mesh会被清理掉，会节省这部分内存。而且在动态Panel的时候(Panel上包含移动变化的GameObject)，Canvas的BuildBatch不会再调用，这会节省CPU(节省的程度根据Panel的复杂度决定的)。但是这种方式在隐藏和重新显示的时候由于需要重新构建渲染的Mesh，会消耗一定的CPU和产生GC.Allocate。</p>
-<p>2.2 方式2的好处在于Panel隐藏和重新显示的时候不需要重新构建渲染的Mesh，不会产生额外的CPU消耗和GC.Allocate。但是这种方式在隐藏的时候Panel的所有逻辑任然在执行(Update等)，在动态Panel的话Canvas的BuildBatch也会照常执行，这会一直消耗CPU资源。</p>
+<li><p>&#x4F18;&#x7F3A;&#x70B9;&#x6BD4;&#x8F83;</p>
+<p>2.1 &#x65B9;&#x5F0F;1&#x9690;&#x85CF;Panel&#x7684;&#x65F6;&#x5019;&#x6784;&#x5EFA;&#x7684;Mesh&#x4F1A;&#x88AB;&#x6E05;&#x7406;&#x6389;&#xFF0C;&#x4F1A;&#x8282;&#x7701;&#x8FD9;&#x90E8;&#x5206;&#x5185;&#x5B58;&#x3002;&#x800C;&#x4E14;&#x5728;&#x52A8;&#x6001;Panel&#x7684;&#x65F6;&#x5019;(Panel&#x4E0A;&#x5305;&#x542B;&#x79FB;&#x52A8;&#x53D8;&#x5316;&#x7684;GameObject)&#xFF0C;Canvas&#x7684;BuildBatch&#x4E0D;&#x4F1A;&#x518D;&#x8C03;&#x7528;&#xFF0C;&#x8FD9;&#x4F1A;&#x8282;&#x7701;CPU(&#x8282;&#x7701;&#x7684;&#x7A0B;&#x5EA6;&#x6839;&#x636E;Panel&#x7684;&#x590D;&#x6742;&#x5EA6;&#x51B3;&#x5B9A;&#x7684;)&#x3002;&#x4F46;&#x662F;&#x8FD9;&#x79CD;&#x65B9;&#x5F0F;&#x5728;&#x9690;&#x85CF;&#x548C;&#x91CD;&#x65B0;&#x663E;&#x793A;&#x7684;&#x65F6;&#x5019;&#x7531;&#x4E8E;&#x9700;&#x8981;&#x91CD;&#x65B0;&#x6784;&#x5EFA;&#x6E32;&#x67D3;&#x7684;Mesh&#xFF0C;&#x4F1A;&#x6D88;&#x8017;&#x4E00;&#x5B9A;&#x7684;CPU&#x548C;&#x4EA7;&#x751F;GC.Allocate&#x3002;</p>
+<p>2.2 &#x65B9;&#x5F0F;2&#x7684;&#x597D;&#x5904;&#x5728;&#x4E8E;Panel&#x9690;&#x85CF;&#x548C;&#x91CD;&#x65B0;&#x663E;&#x793A;&#x7684;&#x65F6;&#x5019;&#x4E0D;&#x9700;&#x8981;&#x91CD;&#x65B0;&#x6784;&#x5EFA;&#x6E32;&#x67D3;&#x7684;Mesh&#xFF0C;&#x4E0D;&#x4F1A;&#x4EA7;&#x751F;&#x989D;&#x5916;&#x7684;CPU&#x6D88;&#x8017;&#x548C;GC.Allocate&#x3002;&#x4F46;&#x662F;&#x8FD9;&#x79CD;&#x65B9;&#x5F0F;&#x5728;&#x9690;&#x85CF;&#x7684;&#x65F6;&#x5019;Panel&#x7684;&#x6240;&#x6709;&#x903B;&#x8F91;&#x4EFB;&#x7136;&#x5728;&#x6267;&#x884C;(Update&#x7B49;)&#xFF0C;&#x5728;&#x52A8;&#x6001;Panel&#x7684;&#x8BDD;Canvas&#x7684;BuildBatch&#x4E5F;&#x4F1A;&#x7167;&#x5E38;&#x6267;&#x884C;&#xFF0C;&#x8FD9;&#x4F1A;&#x4E00;&#x76F4;&#x6D88;&#x8017;CPU&#x8D44;&#x6E90;&#x3002;</p>
 </li>
 </ol>
 
-      
-    </div>
+                        
+                    </div>
 
-    <div>
-      
+                    
+                    
+                    
+
+                    <div class="description post-description">
+    <span class="post-description-item">
+        <time datetime="2017-07-13T15:40:10.000Z" itemprop="datePublished">2017-07-13</time>
+
+    </span>
+    <span class="post-description-item">
         
 
-      
-    </div>
+    <span>
+        <i class="tags icon"></i>
+    </span>
 
-    <div>
-      
-        
+    
+    <span class="ui tiny label">
+        <a href="/tags/unity/">unity</a>
+    </span>
 
-      
-    </div>
+    
 
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/unity/" rel="tag"># unity</a>
-          
-        </div>
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2017/07/08/unity_render_order_question/" rel="next" title="Unity模型渲染层级顺序问题">
-                <i class="fa fa-chevron-left"></i> Unity模型渲染层级顺序问题
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/07/14/unity_sprite_format_summary/" rel="prev" title="Unity3D Sprite常用存储格式性能对比">
-                Unity3D Sprite常用存储格式性能对比 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
-      
-    </footer>
-  </article>
-
-
-
-    <div class="post-spread">
-      
-    </div>
-  </div>
-
-
-          </div>
-          
-
-
-          
-
-        </div>
-        
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    <div class="sidebar-inner">
-
-      
-
-      
-
-      <section class="site-overview sidebar-panel sidebar-panel-active">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image"
-               src="/uploads/avatar.png"
-               alt="elangduan@126.com" />
-          <p class="site-author-name" itemprop="name">elangduan@126.com</p>
-          <p class="site-description motion-element" itemprop="description"></p>
-        </div>
-        <nav class="site-state motion-element">
-          <div class="site-state-item site-state-posts">
-            <a href="/archives">
-              <span class="site-state-item-count">29</span>
-              <span class="site-state-item-name">日志</span>
-            </a>
-          </div>
-
-          
-
-          
-            <div class="site-state-item site-state-tags">
-              
-                <span class="site-state-item-count">6</span>
-                <span class="site-state-item-name">标签</span>
-              
-            </div>
-          
-
-        </nav>
-
-        
-
-        <div class="links-of-author motion-element">
-          
-        </div>
-
-        
-        
-
-        
-        
-
-        
-
-
-      </section>
-
-      
-
-    </div>
-  </aside>
-
-
-        
-      </div>
-    </main>
-
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <div class="copyright" align="center">
-  
-  &copy; 
-  <span itemprop="copyrightYear">2018</span>
-
-  <span class="author" itemprop="copyrightHolder">elangduan@126.com | </span>
-
-  <span>
-    powered by <a class="theme-link" href="https://hexo.io">hexo</a>
-  </span>
-
-  <span>
-    & theme <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next"> NexT</a>
-  </span>
+    </span>
 </div>
 
-        
+                </div>
+                
+                <div id="pagination" class="nav-web ui text container pagination">
 
-        
-      </div>
-    </footer>
+    <div class="ui stackable two column divided grid container">
+        <div class="row">
+            <div class="column nav-left">
+                
 
-    <div class="back-to-top">
-      <i class="fa fa-arrow-up"></i>
+                <a href="/2017/07/14/unity_sprite_format_summary/" class="ui tiny button">
+
+                    <i class="angle left icon"></i>
+                    
+                    Unity3D Sprite常用存储格式性能对比
+                    
+
+                </a>
+
+                
+            </div>
+            <div class="column nav-right">
+                
+
+                <a href="/2017/07/08/unity_render_order_question/" class="ui tiny button">
+                    
+                    Unity模型渲染层级顺序问题
+                    
+                    <i class="angle right icon"></i></a>
+                
+            </div>
+        </div>
     </div>
-  </div>
 
-  
+</div>
+                
+            </div>
 
-<script type="text/javascript">
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
-</script>
+            
+            <div class="three wide computer three wide tablet column">
 
+                <div class="ui sticky article-toc" id="article-toc">
+                    <!-- toc -->
+                    
+                </div>
 
+            </div>
+            
 
-
-
-
-
-
-
-  
-
-
-
-  
-  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-
-  
-  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-
-  
-  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-
-  
-  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+        </div>
+    </div>
+</div>
 
 
-  
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        </div>
+        <div class="ui vertical footer segment">
+    <div class="ui center aligned container">
+        <div class="ui inverted section divider"></div>
+        &copy; 2018 <a href="/">elangduan@126.com</a>,
+        Powered by <a href="https://github.com/henryhuang/hexo-theme-aloha" target="_blank">Aloha</a> and <a
+                href="http://hexo.io/" target="_blank">Hexo</a>.
+    </div>
+</div>
 
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
-
-
-
-  
-
-  
-    
-  
-
-  <script type="text/javascript">
-    var duoshuoQuery = {short_name:"elangduan"};
-    (function() {
-      var ds = document.createElement('script');
-      ds.type = 'text/javascript';ds.async = true;
-      ds.id = 'duoshuo-script';
-      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-      ds.charset = 'UTF-8';
-      (document.getElementsByTagName('head')[0]
-      || document.getElementsByTagName('body')[0]).appendChild(ds);
-    })();
-  </script>
-
-  
-    
-    
-    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
-    <script src="/js/src/hook-duoshuo.js"></script>
-  
+    </div>
 
 
 
 
+<!-- scripts list from theme config.yml -->
 
+<script src="//cdn.bootcss.com/jquery/3.1.0/jquery.min.js"></script>
 
+<script src="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.js"></script>
 
+<script src="//cdn.bootcss.com/algoliasearch/3.18.1/algoliasearch.min.js"></script>
 
-  
-  
+<script src="//cdn.bootcss.com/algoliasearch-helper-js/2.13.0/algoliasearch.helper.min.js"></script>
 
-  
+<script src="/js/semantic-ui-algolia.js"></script>
 
-  
+<script src="/js/aloha-events.js"></script>
 
-  
-
-  
 
 
 </body>

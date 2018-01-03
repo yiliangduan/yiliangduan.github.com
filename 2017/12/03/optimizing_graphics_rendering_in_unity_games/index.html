@@ -1,90 +1,15 @@
-<!doctype html>
 
 
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head prefix="og: http://ogp.me/ns#">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <meta name="description" content="">
+    <title>Unity游戏的图形渲染优化(译) | elangduan</title>
 
-  
-
-
-<html class="theme-next mist use-motion" lang="zh-Hans">
-<head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-
-
-
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
-
-
-
-
-  
-  
-  
-  
-
-  
-    
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    
-    
-    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
-  
-
-
-
-
-
-
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
-
-<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
-
-
-  <meta name="keywords" content="graphics," />
-
-
-
-
-
-
-
-
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
-
-
-
-
-
-
-<meta name="description" content="原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。  介绍在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。 在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非常依">
+    <!-- Open Graph -->
+    <meta name="description" content="原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。  介绍在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。 在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非常依">
 <meta name="keywords" content="graphics">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity游戏的图形渲染优化(译)">
@@ -97,700 +22,427 @@
 <meta name="twitter:title" content="Unity游戏的图形渲染优化(译)">
 <meta name="twitter:description" content="原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。  介绍在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。 在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非常依">
 
-
-
-<script type="text/javascript" id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Mist',
-    sidebar: {"position":"left","display":"hide"},
-    fancybox: true,
-    motion: true,
-    duoshuo: {
-      userId: '0',
-      author: 'elangduan'
-    },
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
+    <script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Person",
+  "email": "mailto:elangduan@126.com",
+  "image": "/uploads/avatar.png",
+  "name": "elangduan@126.com",
+  "url": "http://elangduan.github.com"
+}
+</script>
+    <script>
+    var algoliaEnabled = false;
+    
 </script>
 
+    
 
+    
+    
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+    
+    
+    
+        <!-- stylesheets list from config.yml -->
+        
+        <link rel="stylesheet" href="/css/aloha.css">
+        
+        <link rel="stylesheet" href="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.css">
+        
+        <link rel="stylesheet" href="//cdn.bootcss.com/magnific-popup.js/1.1.0/magnific-popup.min.css">
+        
+    
 
-  <link rel="canonical" href="http://elangduan.github.com/2017/12/03/optimizing_graphics_rendering_in_unity_games/"/>
-
-
-
-
-
-  <title> Unity游戏的图形渲染优化(译) | elangduan </title>
 </head>
+<body id="body" style="margin-bottom: 0;" class="pushable">
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
-
-  
-
-
-
-
-
-
-
-
-
-
-  
-  
-    
-  
-
-  <div class="container one-collumn sidebar-position-left page-post-detail ">
-    <div class="headband"></div>
-
-    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-meta ">
-  
-
-  <div class="custom-logo-site-title">
-    <a href="/"  class="brand" rel="start">
-      <span class="logo-line-before"><i></i></span>
-      <span class="site-title">elangduan</span>
-      <span class="logo-line-after"><i></i></span>
-    </a>
-  </div>
-  <p class="site-subtitle"></p>
-</div>
-
-<div class="site-nav-toggle">
-  <button>
-    <span class="btn-bar"></span>
-    <span class="btn-bar"></span>
-    <span class="btn-bar"></span>
-  </button>
-</div>
-
-<nav class="site-nav">
-  
-
-  
-    <ul id="menu" class="menu">
-      
-        
-        <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
-            
-            首页
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-archives">
-          <a href="/archives" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
-            
-            归档
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-reading">
-          <a href="/reading" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
-            
-            阅读
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-movie">
-          <a href="/movie" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-camera"></i> <br />
-            
-            电影
-          </a>
-        </li>
-      
-
-      
-    </ul>
-  
-
-  
-</nav>
-
-
-
- </div>
-    </header>
-
-    <main id="main" class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
-    
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2017/12/03/optimizing_graphics_rendering_in_unity_games/">
-
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="elangduan@126.com">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/uploads/avatar.png">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="elangduan">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="elangduan" src="">
-    </span>
-  </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                Unity游戏的图形渲染优化(译)
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-12-03T16:15:35+08:00">
-              2017-12-03
-            </time>
-            
-          </span>
-
-          
-
-          
-
-          
-
-          
-          
-
-          
-          
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        <blockquote>
-<p>原文<a href="https://unity3d.com/cn/learn/tutorials/temas/performance-optimization/optimizing-graphics-rendering-unity-games?playlist=44069" target="_blank" rel="external">Optimizing graphics rendering in Unity games</a>。这里对这篇文章的粗略翻译，当作自己的笔记。</p>
-</blockquote>
-<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。</p>
-<p>在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非常依赖游戏运行的硬件和操作系统。通过调查，实验和细心的分析实验结果来解决性能问题是我们最重要的方式。</p>
-<p>这篇文章包含的信息主要是大部分常见的性能问题的修改建议和一些更深层次的阅读链接。我们的游戏中可能也存在这其中的一个问题或者一些问题或者都没有包含。但是这篇文章仍然将帮助我们理解我们自己的问题同时给予我们去搜索我们问题的知识和线索。</p>
-<h1 id="渲染的简介"><a href="#渲染的简介" class="headerlink" title="渲染的简介"></a>渲染的简介</h1><p>在我们开始介绍之前，让我们快速简单看下Unity渲染一帧时其内部发生了什么。理解事件流和正确的术语将会帮助我们 理解，调查和解决我们的性能问题。</p>
-<p><strong>注:</strong>在这篇文章中，我们将会使用”对象(object)”术语来表示一个我们游戏的渲染的对象。任何渲染组件的GameObject将会被统称为对象。</p>
-<p>在最基本的层面上，渲染可以描述为一下几步：</p>
-<ul>
-<li>CPU计算出必须渲染的对象和决定怎么去绘制。</li>
-<li>CPU发送指令到GPU。</li>
-<li>GPU根据CPU的指令来确定绘制的内容。</li>
-</ul>
-<p>现在让我们来更近一步看看究竟发生了什么。这篇文章后面将会详细的介绍上面的每一个步骤。但是现在让我们先来熟悉下文中使用的词语和理解CPU和GPU在渲染中扮演的不同角色。</p>
-<p>描述渲染的词语通常用<strong>渲染管线(rendering pipeline)</strong>，记住这是一个非常有用的情景。高效的渲染都是关于保持更高信息的传送能力。</p>
-<p>对于每一个渲染的帧，CPU会做如下的工作:</p>
-<ul>
-<li>CPU会检查场景中的每一个对象来决定这个对象是否需要被渲染。只有当这个对象满足特定的条件的时候才会被渲染；例如，它的包围盒的一些部分在<a href="https://docs.unity3d.com/Manual/UnderstandingFrustum.html?_ga=2.151286320.801370543.1512275945-1497166853.1503199345" target="_blank" rel="external">相机视锥体</a>内。一个对象如果将不会被渲染我们称之为这个对象被裁剪了(culled)。关于相机的视锥体和视锥体裁剪的更多信息可以看着<a href="https://docs.unity3d.com/Manual/UnderstandingFrustum.html?_ga=2.147021758.801370543.1512275945-1497166853.1503199345" target="_blank" rel="external">这篇文章</a>。</li>
-<li>CPU搜集每一个将会被渲染的对象的信息然后将这些数据分类放入叫做<strong>draw calls</strong>命令中。一个draw call包含了一个mesh和这个mesh怎样被渲染的数据；例如，这个mesh用哪一张贴图。基于这些情况，共享设置的图像会合并到一些相同的draw call中。合并不同对象的数据到同一个draw call中我们称之为<strong>batching</strong>。</li>
-<li>CPU为每次draw call创建一个叫batch的数据包。batchs有可能包含了draw calls之外的数据，但是这种情况不像常见的一个性能问题，因此我们不会在这篇文章里面来讨论。</li>
-</ul>
-<p>对于每个draw call包含的batchs，CPU现在必须要入如下的工作:</p>
-<ul>
-<li>CPU可以向GPU发送一个命令来改变一些被统称为渲染状态的变量。这个命令叫做<strong>SetPass call</strong>。SetPass call告诉GPU哪个设置被用来渲染下一个mesh。只有当上一个mesh渲染完成下一个mesh准备渲染的时候需要改变渲染状态的时候才需要发送SetPass call命令。</li>
-<li>CPU发送draw call命令到GPU。draw call会指示GPU使用上一次设置好的SetPass call去渲染制定的mesh。</li>
-<li>基于这些情况，batchs的数据被渲染可能需要不止一个<em>pass</em>。一个pass是一段着色器的代码，使用一个新的pass需要改变渲染状态。对于一个batchs中的每个pass，CPU必须发送一个新的SetPass call命令同时必须再次发送draw call命令。这个pass才会生效。</li>
-</ul>
-<p>同时，GPU会做如下的工作:</p>
-<ul>
-<li>GPU按照CPU发送的顺序来处理CPU发送的任务。</li>
-<li>如果当前的任务是SetPass call，GPU就更新渲染状态。</li>
-<li>如果当前的任务是draw call, GPU就渲染这个draw call的mesh。这个是分阶段进行的，每个阶段单独定义在着色器代码中。这部分渲染比较复杂我们不会详细的讨论，但是这部分对于我们去理解<strong>顶点着色器(vertex shader)</strong>这部分代码和<strong>片段着色器(fragment shader)</strong>这部分代码非常有用。顶点着色器是用来告诉GPU怎么去处理mesh的顶点数据的代码，片段着色器使用来怎样去处理每个单独像素代码。</li>
-<li>GPU重复处理从CPU发送过来的任务，直到所有的任务都处理完成。</li>
-</ul>
-<p>现在我们理解了当Unity渲染一帧时其内部发生了什么，接下来让我们思考下当渲染发生的时候会随之发生什么问题。</p>
-<a id="more"></a> 
-<h1 id="渲染问题的类型"><a href="#渲染问题的类型" class="headerlink" title="渲染问题的类型"></a>渲染问题的类型</h1><p>关于渲染需要理解的最终的一点:为了渲染一帧，CPU和GPU必须完成各自所有的任务。如果任何一个任务花费了太长的时间才完成，这个任务将会导致帧的渲染延迟。</p>
-<p>渲染问题有两个类型的根本的原因。第一种类型是管线无效率导致的。渲染管线中一个或者多个花费太长的时间才完成，中断了数据的平滑传送，这会导致管线无效率。管线内的低效率被称为<strong>瓶颈</strong>。第二种类型是简单的尝试将太多的数据压入到管线中。即使再有效率的管线处理一帧时也会有数据量的限制。</p>
-<p>当CPU花费太长的时间去执行它的渲染任务导致我们的游戏花费很长的时间去渲染一帧，我们的游戏就称为CPU性能受限(译:性能瓶颈在CPU这边)。当GPU花费太长的时间去执行它的渲染任务导致我们的游戏花费很长的时间去渲染一帧，我们的游戏称之为GPU性能受限(译:性能瓶颈在GPU这边) 。</p>
-<h1 id="理解渲染的问题"><a href="#理解渲染的问题" class="headerlink" title="理解渲染的问题"></a>理解渲染的问题</h1><p>在我们做出任何改变之前使用性能分析工具去理解性能问题的原因非常重要。不同的问题需要不同的解决方案。同样重要的是衡量我们每次的改动所带来的影响；修复性能问题是一个在各方面问题中取平衡的行为，改善这方面的性能问题会降低另一方面的性能。</p>
-<p>我们将使用两个工具来帮助我们理解和修复我们的渲染性能问题：<strong>Profiler window</strong> 和 <strong>Frame Debugger</strong> 。这两个工具都是Unity内置的。</p>
-<h2 id="Profiler-window"><a href="#Profiler-window" class="headerlink" title="Profiler window"></a>Profiler window</h2><p>Profiler window允许我们查看关于我们游戏执行情况的实时数据。我们可以使用Profiler window工具查看很多方面的数据，包括内存使用，渲染管线和用户脚本的性能。</p>
-<p>如果你对Profiler window还不熟悉，<a href="https://docs.unity3d.com/Manual/ProfilerWindow.html?_ga=2.239361802.801370543.1512275945-1497166853.1503199345" target="_blank" rel="external">这个Unity手册的页面</a>是一个非常好的介绍，<a href="https://unity3d.com/learn/tutorials/temas/performance-optimization/profiler-window?playlist=44069" target="_blank" rel="external">这个教程</a>详细展示了怎样使用这个工具。</p>
-<h2 id="Frame-Debugger"><a href="#Frame-Debugger" class="headerlink" title="Frame Debugger"></a>Frame Debugger</h2><p>Frame Debugger可以让我们查看一帧是怎样一步一步渲染出来的。使用Frame Debugger，我们可以看到很多详细的信息，例如每一个draw call中渲染的内容，没一个draw call的着色器的属性和发送到GPU的时间顺序。这些信息帮助我们去理解我们的游戏怎样被渲染的同时知道我们需要提高性能的地方。</p>
-<p>如果你对Frame Debugger还不熟悉，<a href="https://docs.unity3d.com/Manual/FrameDebugger.html?_ga=2.181688878.801370543.1512275945-1497166853.1503199345" target="_blank" rel="external">这个Unity手册页面</a>是一个非常有用的介绍它是怎样工作的，<a href="https://unity3d.com/learn/tutorials/topics/graphics/frame-debugger" target="_blank" rel="external">这个视频教程</a>展示了它怎样使用。</p>
-<h2 id="确定导致性能问题的原因"><a href="#确定导致性能问题的原因" class="headerlink" title="确定导致性能问题的原因"></a>确定导致性能问题的原因</h2><p>在我们尝试改进我们游戏的渲染性能之前，我们必须先确定我们的游戏运行慢是由于渲染问题导致的。如果我们的运行慢的原因是由于用户的脚本过于复杂导致的那么尝试着优化渲染性能是没有意义的！如果你还不确定你的性能问题是否和渲染有关，你应该先看看<a href="https://unity3d.com/learn/tutorials/temas/performance-optimization/diagnosing-performance-problems-using-profiler-window?playlist=44069" target="_blank" rel="external">这个教程</a>。</p>
-<p>一旦我们确定了我们的问题是和渲染相关的，我们必须先确定我们的游戏是CPU性能受限的还是GPU性能受限的。不同的问题需要不同的解决方案，所以在解决问题之前首先得理解问题产生的原因。如果我们还不确定我们的游戏是CPU性能受限的还是GPU性能受限的，你应该先看看<a href="https://unity3d.com/learn/tutorials/temas/performance-optimization/diagnosing-performance-problems-using-profiler-window?playlist=44069" target="_blank" rel="external">这个教程</a>。</p>
-<p>如果我们确定我们的问题是和渲染有关同时我们知道了我们的游戏是CPU性能受限还是GPU性能受限的，我们就已经准备好了。</p>
-<h1 id="CPU性能受限"><a href="#CPU性能受限" class="headerlink" title="CPU性能受限"></a>CPU性能受限</h1><p> 一般来讲，为了渲染一帧CPU必须执行的工作可分为三个类别:</p>
-<ul>
-<li>决定一定会绘制的内容</li>
-<li>准备发送到GPU的命令</li>
-<li>发送命令发GPU</li>
-</ul>
-<p>这些广义的类别包含了很多单独的任务并且这些任务可能在多线程中执行。线程允许单独的任务同时运行；然而一个线程执行一个任务，另外一个线程可以完全独立的执行任务。这意味着任务的处理可以更加的快速。当渲染的任务分开在不同的线程上执行，这就是所谓的<strong>多线程渲染</strong>;</p>
-<p>在Unity的渲染过程中有三种类型的线程: <strong>主线程</strong>，<strong>渲染线程</strong>和<strong>辅助线程(worker threads)</strong>。主线程是我们游戏中CPU处理任务的主要的地方，包括一些渲染的任务。渲染线程是比较特殊的线程，它的工作是发送渲染命令到GPU。辅助线程处理每个单独的任务，例如裁剪或者mesh的蒙皮。哪个任务由哪个线程来处理这取决于我们的游戏设置和我们游戏运行的硬件。例如，我们的目标硬件有更多的CPU核心，就有越多的辅助线程被分配。基于这个原因，在目标硬件上来剖析我们的游戏是非常重要的；我们的游戏可能在不同的平台上表现的非常不同。</p>
-<p>由于多线程渲染比较复杂并且依赖于不同的硬件，在我们改进性能之前我们必须明白哪个线程是造成我们游戏称为CPU性能受限的原因。如果我们的游戏运行慢是由于裁剪操作在一个线程上花费了太多的时间，那么它就不能帮助我们减少在不同线程上发送命令到GPU所花费的时间(译:因为裁剪操作花费的时间可能远超过辅助线程所节省的时间)。</p>
-<p><strong>注</strong>：并不是所有的平台都支持多线程渲染；在写这篇文章的时候，WebGL还没有支持这个特性。在不支持多线程渲染的平台上，所有的CPU任务都在同一个线程里面处理。如果我们是在这种平台上CPU性能受限，优化所有的CPU任务将会改进CPU的性能。如果这个情况发生在我们的游戏中，我们应该阅读接下来的所有部分同时思考哪些优化可能最适合我们的游戏。</p>
-<h2 id="图形工作"><a href="#图形工作" class="headerlink" title="图形工作"></a>图形工作</h2><p>在<strong>Player Settings</strong>里面的<a href="https://docs.unity3d.com/Manual/class-PlayerSettingsStandalone.html?_ga=2.184843040.801370543.1512275945-1497166853.1503199345" target="_blank" rel="external">图形工作</a>的设置项决定了Unity是否使用辅助线程来处理原本需要在主线程上处理的渲染任务，如果不选择则这些工作在主线程里面处理。在这个特性可用的平台上，它可以带来相当大的性能的提升。我们应该分析我们游戏在图形选项开启和不开启的情况，观察它给我们游戏性能带来的影响。</p>
-<h2 id="找出导致性能问题的任务"><a href="#找出导致性能问题的任务" class="headerlink" title="找出导致性能问题的任务"></a>找出导致性能问题的任务</h2><p>我们可以使用Profiler window来确定导致我们游戏CPU性能受限的任务。这个教程展示了怎样去确定问题的位置。</p>
-<p>现在我们了解了哪些任务导致了我们游戏的CPU性能受限，让我们来看看一些常见问题和这些问题的解决技术。</p>
-<h2 id="发送命令到GPU"><a href="#发送命令到GPU" class="headerlink" title="发送命令到GPU"></a>发送命令到GPU</h2><p>发送命令到GPU花费的时间是我们游戏中一个最普遍的导致CPU性能受限的原因。在大多数平台上这个任务是在渲染线程执行的，尽管在一些平台(例如，PS4)可能使用辅助线程执行。</p>
-<p>发送渲染命令打牌GPU时最消耗性能的操作是SetPass call。如果你的游戏CPU性能受限是由于向GPU发送命令，减少SetPass calls的数量可能是最好的改进性能的途径。</p>
-<p>我们可以在Unity的Profiler window工具中看到有多少SetPass calls和batches被发送到渲染分析器里面。在游戏性能受到影响之前可以发送多少数量的SetPass calls命名这取决于目标硬件；高端的电脑相比于手机能够发送更多的SetPass calls。</p>
-<p>SetPass calls的数量和它关联的batches数量取决于几个因素，我们会在接下来的内容详细的讨论这几个主题。然而，通常情况是这样的:</p>
-<ul>
-<li>减少batches的数量同时最好使更多的对象共享同一个渲染的状态。在大多数情况下可以减少SetPass calls的数量。</li>
-<li>减少SetPass calls的数量，在大多数情况下可以改进CPU的性能。</li>
-</ul>
-<p>如果减少了batches的数量并没有降低SetPass calls的数量，这样任然可能带来性能上的改进。这是因为CPU能够更有效率的处理的batch，即使batches包含相同数量的mesh数据。[FIXME]</p>
-<p>一般来说有三个技术减少batches和SetPass calls的数量。我们将更加深入的研究下面的每个技术：</p>
-<ul>
-<li>减少渲染对象的数量将很有可能减少batches和SetPass calls的数量。</li>
-<li>减少每个最终会渲染的对象的渲染时间通常会减少SestPass calls。</li>
-<li>合并需要渲染的对象的数据到更少的batches将会减少batches的数量。</li>
-</ul>
-<p>不同的技术适用于不同的游戏，所以我们应该考虑这些所有的选项来决定哪个技术在我们游戏和实验中有效。</p>
-<h3 id="减少渲染对象的数量"><a href="#减少渲染对象的数量" class="headerlink" title="减少渲染对象的数量"></a>减少渲染对象的数量</h3><p>减少最终会渲染的对象的数量是减少batches和SetPass calls数量的最简单的途径。这里有几个我们可以同来减少渲染对象的技术。</p>
-<ul>
-<li>简单的减少在我们场景中的可见对象的数量是一个有效的解决技术。例如，假设我们在人群中渲染了大量的不同的角色，我们尝试着逐渐减少场景中的角色。如果场景看起来逐渐更好同时性能逐渐提高，那么这个技术将比更加复杂在技术更加快速的解决我们的问题。</li>
-<li>我们可以使用摄像机的<a href="https://docs.unity3d.com/Manual/class-Camera.html" target="_blank" rel="external">远裁剪面</a>来降低我们的摄像机的绘制距离。如果对象的距离超出了摄像机设置的这个属性的距离，那么这个对象就不会被渲染。如果我们想伪装这些因为超出了摄像机的远裁剪面而不可见的对象，我们可以尝试用<a href="https://docs.unity3d.com/Manual/GlobalIllumination.html?_ga=2.101796744.848221231.1512275915-741569329.1509691291" target="_blank" rel="external">雾来遮住这些对象</a>。</li>
-<li>对于基于距离来隐藏对象更细致的做法，我们可以使用我们摄像机的<a href="https://docs.unity3d.com/ScriptReference/Camera-layerCullDistances.html?_ga=2.131092358.848221231.1512275915-741569329.1509691291" target="_blank" rel="external">层裁剪距离</a>属性为不同层的对象提供自定义的裁剪距离。这个技术对于我们有很多装饰细节的前景是个非常有用优化技术; 我们可以把这些细节在比大型的地形的特征点更短距离的时候隐藏。</li>
-<li>我们可以使用一个叫做<a href="https://docs.unity3d.com/Manual/OcclusionCulling.html?_ga=2.61236005.848221231.1512275915-741569329.1509691291" target="_blank" rel="external">封闭裁剪</a>的技术去隐藏那些被其他对象遮盖住的对象。例如，如果我们场景上有一个很大的建筑物我们可以使用封闭裁剪来关闭(disable)在这个建筑物后面的渲染对象。Unity的封闭裁剪并不适合所有的场景，这个技术会增加额外的CPU消耗和更加复杂的设置，但是它确实能给一些场景带来性能上的改善。<a href="https://blogs.unity3d.com/cn/2013/12/26/occlusion-culling-in-unity-4-3-best-practices/?_ga=2.102262536.848221231.1512275915-741569329.1509691291" target="_blank" rel="external">这篇Unity发布的封闭裁剪的最佳实践</a>是一篇很好的关于这个主题的指导。此外使用Unity的封闭裁剪我们也可以以自己的方式去手动停用(deactivating)一些我们知道用户已经不可见的对象。例如，如果我们场景中包含了用来过场动画用的对象，但是这些对像在过场动画展现之前和之后都不可见，我们应该停用(deactivate)它们。通常结合我们自己的游戏内容知识比要求Unity来解决我们的问题更加有效率。</li>
-</ul>
-<h3 id="减少每个最终会渲染的对象的渲染次数。"><a href="#减少每个最终会渲染的对象的渲染次数。" class="headerlink" title="减少每个最终会渲染的对象的渲染次数。"></a>减少每个最终会渲染的对象的渲染次数。</h3><p>实时光照、阴影和反射为游戏增加了很好的现实效果，但是这些效果非常的消耗性能。使用这些特性会带来很多对象被渲染多次，这些相当影响性能。</p>
-<p>这些特性的性能影响取决于我们游戏选择的<em>rendering path</em>。Rendering path 是指绘制场景的时候对象执行计算的顺序，rendering path之间的主要区别是它们是怎样处理实时光照、阴影和反射的。一般而言，<strong>Deferred Rendering</strong> 可能是我们游戏运行在高端硬件上使用了大量的实时光照、阴影和反射的更好的选择。<strong>Forward Rendering</strong>可能更适合用在我们游戏运行在低端硬件上同事没有使用这些特性的情况。然而，如果我们希望使用实时光照、阴影和折射这些特性这是个非常复杂的问题，最好是先去调查这个主题然后尝试做些尝试。<a href="https://docs.unity3d.com/Manual/RenderingPaths.html?_ga=2.32824956.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">这个Unity手册的页面</a>提供了更多的关于不同Unity的rendering paths信息，这是个不错的起点。这个<a href="https://unity3d.com/learn/tutorials/topics/graphics/unity-5-lighting-and-rendering" target="_blank" rel="external">教程</a>包含了Unity的光照光照的内容。</p>
-<p>不管选择哪个rendering path，使用了实时光照、阴影和反射都会影响游戏的性能，重要的是我们要知道怎样去优化它们。</p>
-<ul>
-<li>Unity的动态光照是一个非常复杂的主题，深入的讨论这个主题已经超出了这篇文章的范围了，但是<a href="https://unity3d.com/learn/tutorials/topics/graphics/unity-5-lighting-and-rendering" target="_blank" rel="external">这个教程</a>非常好的介绍了这个主题。<a href="https://docs.unity3d.com/Manual/LightPerformance.html?_ga=2.228585567.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">这个Unity的手册页面</a>非常详细介绍了场景的光照优化。</li>
-<li>Unity的动态光照是非常消耗性能的。当我们场景中包含了一些不会移动的对象，比如 背景，我们可以使用一个叫做<em>烘焙(baking)</em>的技术来提前计算好场景光照这样游戏运行起来时光照不再需要计算了。<a href="https://unity3d.com/learn/tutorials/topics/graphics/unity-5-lighting-overview?playlist=17102" target="_blank" rel="external">这个教程</a>介绍了这个技术，同时<a href="https://docs.unity3d.com/Manual/GIIntro.html?_ga=2.27302526.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">Unity手册的这个部分内容</a>详细介绍了关照的烘焙。</li>
-<li>如果我们希望在游戏中使用实时的阴影，这可能有非常多的优化的地方。<a href="https://docs.unity3d.com/Manual/DirLightShadows.html?_ga=2.192214376.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">Unity手册的这个页面</a>是个非常好的对阴影属性的指南。阴影可以在<strong>Quality Settings</strong>中调整同事这些调整影响着阴影的显示效果和性能。例如，我们可以使用<strong>Shadow Distance</strong>属性来去保证只有近距离的对象才会投射阴影。</li>
-<li><a href="https://docs.unity3d.com/Manual/ReflectionProbes.html?_ga=2.32980348.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">反射探测</a>创建了实时反射但是在批次(batches)的时候会非常消耗性能。在性能消耗比较集中的时候最好保持反射在我们游戏中最低限度的使用，同时尽可能的在使用反射的地方优化它们。<a href="https://docs.unity3d.com/Manual/RefProbePerformance.html?_ga=2.238522434.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">Unity手册的这个页面</a>是一个非常好的优化反射探测的指南。</li>
-</ul>
-<h3 id="将渲染对象合并到更少的批次-batches-里"><a href="#将渲染对象合并到更少的批次-batches-里" class="headerlink" title="将渲染对象合并到更少的批次(batches)里"></a>将渲染对象合并到更少的批次(batches)里</h3><p>当某些条件满足时，一个批次能够包含多个对象的数据。对象可以批处理的必须具备一下条件:</p>
-<ul>
-<li>共享同一个材质的同一个实例</li>
-<li>设置了同一个material（例如, 贴图，着色器和着色器的参数）</li>
-</ul>
-<p>符合批处理条件的对象能够提高性能。尽管如此，我们任然需要和所有优化技术一样非常细心的分析批处理，确保批处理的消耗不会超过性能优化所得。</p>
-<p>这里有几种不同的技术对符合批处理条件的对象进行批处理：</p>
-<ul>
-<li><em>静态合批</em>是一个允许在附近的符合合批的对象并且不会移动的进行合批的技术。静态合批非常有用的一个例子就是对于一堆相似的对象的处理。例如卵石。<a href="https://docs.unity3d.com/Manual/DrawCallBatching.html?_ga=2.189742441.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">这个Unity手册的页面</a>包含了在我们游戏中设置静态合批的说明。静态合批会导致更高的内存占用，所以我们应该在分析我们的游戏的时候记住这点。</li>
-<li><em>动态合批</em>是另外一种允许允许Unity批处理符合合批的对象，不管这些对象是否会移动。这里有一些对能够使用批处理的对象的限制。<a href="https://docs.unity3d.com/Manual/DrawCallBatching.html?_ga=2.202363219.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">这个Unity手册的页面</a>列出了这些限制。动态合批对CPU使用会有影响，它会引起比动态合批节省的部分更多的CPU时间消耗。当我们尝试这个技术的时候我们应该记住这个消耗同事非常谨慎的使用这个技术。</li>
-<li>Unity的UI元素合批会更复杂一点，这会影响我们UI的布局。<a href="https://www.youtube.com/watch?v=t_pdIFGh4Kg" target="_blank" rel="external">这个来自Unite曼谷2015的视频</a>对这个主题很好的全面的介绍，<a href="https://unity3d.com/learn/tutorials/topics/best-practices/guide-optimizing-unity-ui?playlist=30089" target="_blank" rel="external">Unity UI优化的指南</a>提供了怎样确保UI合批工作如我们希望的那样处理的更深入的信息。</li>
-<li><em><a href="https://en.wikipedia.org/wiki/Geometry_instancing" target="_blank" rel="external">GPU instancing</a></em>是允许大量相同对象变得非常有效的合批的一个技术。这个技术的使用有一些限制并且不是所有的硬件都支持，但是如果我们游戏里一次有很多相同的对象显示在屏幕上我们可能会从这个技术里面得到收益。<a href="https://docs.unity3d.com/Manual/GPUInstancing.html?_ga=2.26031615.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">这个Unity手册的页面</a>包含了Unity 中GPU instancing的一个指南，这个指南介绍了这个技术怎样使用，哪些平台支持这个技术，在什么样的环境下这个技术会有利于我们的有利。</li>
-<li><em>图集</em>是一个在多张贴图合并成一张大的贴图的地方使用的技术。它常被用在2D游戏和UI系统中，同样也可以用在3D游戏中。当为我们的游戏创作一个作品的时候我们使用这个技术，我们能够确保对象共享这张贴图，因此这些对象也是满足合批的条件的。Unity内置了一个针对2D游戏中使用图集的工具，它叫做<a href="https://docs.unity3d.com/Manual/SpritePacker.html?_ga=2.32953084.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">Sprite Packer</a>。</li>
-<li>无论是在编辑器中或者通过运行时的代码，我们都可以手动合并共享同一个材质和贴图的网格(meshs)。当使用合并网格这个方法时，我们必须注意到每个层级的对象任然会执行阴影，光照和裁剪这些操作；这意味着合并网格所带来的性能提升会被不再能够裁剪那些不被渲染的对象所抵消。如果我们希望研究这个方法，我们应该测试<a href="https://docs.unity3d.com/ScriptReference/Mesh.CombineMeshes.html?_ga=2.190829673.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">Mesh.CombineMeshes</a>函数。<a href="https://docs.unity3d.com/Manual/HOWTO-InstallStandardAssets.html?_ga=2.36060898.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">Unity的标准资源包</a>里面的CombineChildren就是使用这个技术的例子。</li>
-<li>当我们在脚本里访问<a href="https://docs.unity3d.com/ScriptReference/Renderer-material.html?_ga=2.229039582.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">Renderer.material</a>API时我们必须非常小心。这个API会复制一份这个材质然后返回复制的这份材质的引用。如果这个渲染器(renderer)是合批的一部分的话，那么这个操作会中断批处理操作。因为渲染器不再有相同的材质的相同实例引用。如果我们希望在脚本里访问合批的对象的材质，我们应该使用<a href="https://docs.unity3d.com/ScriptReference/Renderer-sharedMaterial.html?_ga=2.27080191.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">Renderer.shareMaterial</a>这个API。</li>
-</ul>
-<h2 id="裁剪，排序和合批"><a href="#裁剪，排序和合批" class="headerlink" title="裁剪，排序和合批"></a>裁剪，排序和合批</h2><p>裁剪，收集将要渲染的对象的数据，将这些数据分类到不同类型的批次中以及生成GPU命令这些都有可能导致CPU性能受限。这些任务不管是在主线程执行还是在独立的辅助(worker)线程上执行，这取决于你的游戏的设置和目标硬件。</p>
-<ul>
-<li>裁剪不太会是一个非常耗时的操作，但是减少不必要的裁剪可以有助于性能的提高。所有活动场景中的对象对每个相机都有一份开销。即使这些对象所在的层没有被渲染。为了减少这些开销，我们应该关闭(disable)相机和没有用的渲染器，以及可以停用(deactivate)没有用的渲染器。</li>
-<li>合批能够很大程度上提高发送到GPU命令的速度，但是有的时候合批会在其他地方增加不必要的消耗。如果合批操作导致了我们游戏的CPU性能收到限制，我们可能希望限制在我们游戏中的手动或者自动合批操作。</li>
-</ul>
-<h2 id="蒙皮网格"><a href="#蒙皮网格" class="headerlink" title="蒙皮网格"></a>蒙皮网格</h2><p>当我们使用一个叫做骨骼动画的技术使一个网格进行变形时会用到<a href="https://docs.unity3d.com/Manual/class-SkinnedMeshRenderer.html?_ga=2.264690255.139682236.1512800414-1143412728.1512800414" target="_blank" rel="external">SkinnedMeshRenderers</a>。它常用于角色动画上。与渲染相关的渲染蒙皮网格任务通常在主线程或者独立的辅助线程上执行，具体取决于你的游戏设置和目标硬件。</p>
-<p>渲染蒙皮网格是一个耗时的操作。如果我们通过Profiler window看到我们游戏由于渲染蒙皮网格导致CPU性能受限，这里有几个方法可以尝试提高我们的游戏性能:</p>
-<ul>
-<li>我们应该考虑是否需要为我们当前使用的每个对象都用到SkinnedMeshRenderer组件。有可能我们导入了一个模型挂载了SkinnedMeshRenderer组件但是我们实际上没有用到它的动画。例如，在这种情况中用MeshRenderer替换SkinnedMeshRenderer组件可以缓解性能压力。当导入一个模型到Unity中，如果我们没有在<a href="https://docs.unity3d.com/Manual/class-FBXImporter.html?_ga=2.230480988.139682236.1512800414-1143412728.1512800414" target="_blank" rel="external">模型Import Settings</a>中设置动画,这个模型将会用一个MeshRenderer替换掉SkinnedMeshRenderer。</li>
-<li>如果我们的动画只是在某些段时间播放(例如，只有当启动的时候或者是只有在距离摄像机一定距离的时候)，我们可以在动画不播放的时候把网格切换到一个少量细节的版本或者是用MeshRenderer组件来代替SkinnedMeshRenderer组件。SkinnedMeshRenderer组件有一个<em><a href="https://docs.unity3d.com/ScriptReference/SkinnedMeshRenderer.BakeMesh.html?_ga=2.87775071.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">BakeMesh</a></em> 函数，这个函数能够创建一个SkinnedMeshRenderer动画状态的mesh(译:相当于是SkinnedMeshRendere的某一个动作的一帧画面)，这对不同的网格或者渲染器之间进行交换而不改变对象的可见状态非常有用(译:如果把Mesh看作一个图片，这里的交换相当于播放帧动画。帧动画不需要额外计算，只需要一张图片接着一张图片的播放。类似的这里是切换不同的Mesh看起来像是有动作一样，省去了蒙皮的计算消耗)。</li>
-<li><a href="https://docs.unity3d.com/Manual/ModelingOptimizedCharacters.html?_ga=2.21328508.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Unity手册的这个页面</a>包含了对于使用了蒙皮网格(skinned meshs)的动画角色的优化建议，<a href="https://docs.unity3d.com/Manual/class-SkinnedMeshRenderer.html?_ga=2.121215695.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">SkinnedMeshRenderer组件在Unity手册中的这页</a>包含一些能够提高性能的调整。除了这些网页的介绍，值得我们记住的是蒙皮网格会增加每个顶点的消耗；因此在我们的模型中使用更少的顶点会降少大量的模型渲染的工作量。</li>
-<li>在一些平台上，蒙皮可以由GPU上处理而不是CPU上处理。如果我们的GPU的显存够高还是值得我们去尝试下。我们能够在当前平台的<em>Player Settings</em>中的quality target设置GPU skinning选项是否开启。</li>
-</ul>
-<h2 id="主线程的操作与渲染无关"><a href="#主线程的操作与渲染无关" class="headerlink" title="主线程的操作与渲染无关"></a>主线程的操作与渲染无关</h2><p>理解很多在主线程上的CPU的任务其实和渲染这块没有关系是很重要的。这意味如果我们是主线程导致CPU性能首先，我们可以通过减少与渲染不相关的任务所消耗的CPU时间来提高性能。</p>
-<p>来看一个例子,在我们游戏的某一些地方主线程上处理非常耗时的渲染操作和非常耗时的用户脚本，导致了我们游戏CPU性能首先。如果我们已经在不损失画面效果的前提下尽可能的优化了渲染操作，那么我们可以减少我们自己脚本的CPU消耗来提高性能。</p>
-<h1 id="GPU性能受限"><a href="#GPU性能受限" class="headerlink" title="GPU性能受限"></a>GPU性能受限</h1><p>如果我们游戏是GPU性能受限，我们首先要做的是找出导致GPU性能瓶颈的原因。GPU性能通常是由于<a href="https://en.wikipedia.org/wiki/Fillrate" target="_blank" rel="external">填充率</a>的限制。尤其在移动设备上，但是<a href="https://en.wikipedia.org/wiki/Memory_bandwidth" target="_blank" rel="external">内存带宽</a>和定点处理也是值得关注的点。让我们来对这些问题每个都测下下，同事研究下问题的原因，怎样去查证和修复这些问题。</p>
-<h2 id="填充率"><a href="#填充率" class="headerlink" title="填充率"></a>填充率</h2><p>填充率是指GPU每秒可以在屏幕上渲染的像素数量。如果我们游戏因为填充率收到性能的限制，这意味我们的游戏尝试每帧去画比GPU能够处理的量更多的像素。</p>
-<p>如果我们游戏中由于填充率导致GPU性能首先，我们可以简单的测试出来：</p>
-<ul>
-<li>分析我们游戏记录GPU时间</li>
-<li>在<strong>Player Settings</strong>设置降低显示分辨率。</li>
-<li>再次分析游戏，如果游戏性能提高了，这就很有可能是填充率的问题。</li>
-</ul>
-<p>如果是填充率引起的我们的问题，这里有几个方法帮助我们解决这些问题。</p>
-<ul>
-<li>片段着色器这部分代码的功能是告诉GPU怎样去绘出单个像素。每个最终会绘制的像素都会经过在GPU中执行的这部分代码的处理。所以如果这部分的代码没有效率的话，那么绘制的像素一多很容易堆积成性能问题。复杂的片段着色器经常造成填充率问题。<ul>
-<li>如果我们的游戏使用内置着色器。我们应该使用最简单的尽可能的优化了的着色器来达到我们期望的效果。举个列子，<a href="https://docs.unity3d.com/Manual/shader-Performance.html?_ga=2.20683263.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Unity提供的针对移动设备的着色器</a>是经过深度优化过的。我们应该尝试着使用它们看看这些着色器是否在没有损失我们游戏的表现效果的前提下提高了性能。这些着色器是针对移动设备上使用而设计的，但是适用于任何项目。如果使用在非移动设备上增加了性能并且表现的效果符合项目的要求自然是非常好的。</li>
-<li>如果我们游戏中的对象使用了Unity的<a href="https://docs.unity3d.com/Manual/shader-StandardShader.html?_ga=2.125484877.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Standard Shader</a>，要记住Unity是基于当前的材质的设置来编译这些shader的，只会编译当前使用的功能。这意味Unity编译时会移除例如地图细节这种功能，这样会大大的减少片段着色器的代码复杂度从而有利于提升性能。重申下，如果我们项目中出现了填充率问题，我们应该尝试这种设置看看我们游戏是否在没有损失效果的情况下提高了性能。</li>
-<li>如果我们项目使用了定制的着色器，我们应该尽可能的优化它们。优化着色器是一个复杂的主题，但是<a href="https://docs.unity3d.com/Manual/SL-ShaderPerformance.html?_ga=2.125139789.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Unity手册的这个页面</a>和<a href="https://docs.unity3d.com/Manual/MobileOptimisation.html?_ga=2.91340381.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Unity手册的这个页面</a>的<strong>着色器优化</strong>部分包含了优化我们着色器代码的有用的切入点。</li>
-</ul>
-</li>
-<li>过度绘制(Overdraw)是指当同一个像素被绘制多次。这发生在对象绘制在其他对象上层的时候，这很容易造成填充率的问题。为了理解过度绘制，我们必须知道Unity绘制场景中的对象的顺序。对象的着色器决定了<em>绘制顺序</em>，通常指明对象在哪个<a href="https://docs.unity3d.com/ScriptReference/Rendering.RenderQueue.html?_ga=2.20148991.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">渲染队列</a>中。Unity利用这个信息按照严格的顺序绘制对象，更详细的介绍在<a href="https://docs.unity3d.com/Manual/SL-SubShaderTags.html?_ga=2.16030577.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Unity手册的这页</a>。此外，在绘制之前在不同渲染队列中的对象会进行排序。例如，集合队列的项Unity会按照从前往后的顺序排序使得最小化过度绘制的情况。但是透明队列的对象为了达到要求的效果按照从后往前排序。透明队列上的对象从后往前排序实际上把过度绘制的影响最大化了。过度绘制是一个比较复杂的主题，没有一个统一的方法能够解决所有的过度绘制的问题，关键是减少重叠的对象的数量使得Unity不需要自动对这些对象排序。最好的切入点是在Unity场景视图中测试这个问题；我们场景中的<a href="https://docs.unity3d.com/Manual/ViewModes.html?_ga=2.21130748.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">绘制模式</a>允许我们查看过度绘制的情况，在这个模式下，确定可以减少过度绘制的地方。最普遍的导致过度绘制的是透明度材质，没有优化的粒子特效和重叠的UI元素，所以我们应该尝试优化或者减少它们。<a href="https://unity3d.com/cn/learn/tutorials/topics/best-practices/fill-rate-canvases-and-input?playlist=30089" target="_blank" rel="external">Unity学习网站的这篇文章</a>主要介绍了Unity UI，但是也包含了非常好的过度绘制的指南。</li>
-<li>使用图片后期效果(image effects)会极大的造成填充率问题，如果我们游戏使用了图片后期效果并且我们的游戏在填充率问题上挣扎着，我们可以尝试不同的设置或者使用更加优化的图片后期效果的版本(例如针对于<a href="https://docs.unity3d.com/560/Documentation/Manual/PostProcessing-Bloom.html" target="_blank" rel="external">Bloom</a>的优化版<a href="https://docs.unity3d.com/550/Documentation/Manual/script-BloomOptimized.html" target="_blank" rel="external">Bloom(优化版)</a>)。如果我们的游戏在同一个相机中使用了超过一个图片后期效果，这会导致这个效果需要多个着色器的SetPass calls来渲染。这种情况，我们最好是把我们图片后期效果的着色器代码合并到一个pass中，例如在<a href="https://github.com/Unity-Technologies/PostProcessing/wiki" target="_blank" rel="external">Unity的后期处理栈</a>。如果我们已经已经优化了我们的图片后期效果但是任然有填充率的问题，我们可能需要考虑关闭图片后期效果，尤其是在低端机器。</li>
-</ul>
-<h2 id="内存带宽"><a href="#内存带宽" class="headerlink" title="内存带宽"></a>内存带宽</h2><p>内存宽带是指GPU可以读写专用的内存的速率。如果我们游戏内存宽带受限，通常表示我们使用了大多的纹理，GPU已经无法快速的处理了。</p>
-<p>检查内存内存宽带是否有问题，我们可以这样做:</p>
-<ul>
-<li>分析我们的游戏，记下GPU的时间。</li>
-<li>在<a href="https://docs.unity3d.com/Manual/class-QualitySettings.html?_ga=2.73760529.2076163812.1513481094-741569329.1509691291" target="_blank" rel="external">Quality Settings</a>里面降低当前平台贴图质量(<strong>Texture Quality</strong>)和运行时画质</li>
-<li>再次分析游戏和记录下GPU的时间。如果性能得到提高，这似乎内存带宽是有问题的。</li>
-</ul>
-<p>如果我们游戏中存在内存带宽问题，我们需要减少我们游戏中贴图的内存使用量。重申一遍，减少贴图内存使用量对每个游戏的优化的最好的效果是不同的，但是这里有几个方法可以优化我们的贴图。</p>
-<ul>
-<li>贴图压缩是个能够很好的减少贴图的运行内存和物理内存的大小的技术。如果内存带宽在我们游戏中是一个显著的问题，使用贴图压缩能够来减少内存中纹理的大小有助于提高性能。Unity中有很多不同的贴图研所格式和可用设置。每个贴图都有独立的设置。一般而言，无论在什么时候尽可能的使用压缩格式。然而，为找到适合我们游戏的最好的贴图设置的最佳方式是去尝试和试错那些设置。<a href="https://docs.unity3d.com/Manual/class-TextureImporter.html?_ga=2.206366741.720931824.1513485390-1143412728.1512800414" target="_blank" rel="external">Unity手册的这页</a>包含了关于不同格式和设置的非常有用的信息。</li>
-<li><em>Mipmaps</em>是Unity能够在对象在处于远处时使用的低分辨率版本。如果我们场景中包含了远离摄像机的对象，我们可以使用mipmaps来缓解内存带宽问题。在场景视图中的<a href="https://docs.unity3d.com/Manual/ViewModes.html?_ga=2.240487557.720931824.1513485390-1143412728.1512800414" target="_blank" rel="external">Mipmaps绘制模式</a>允许我们看我们场景中的那些对象使用mipmaps是有利的，<a href="https://docs.unity3d.com/Manual/class-TextureImporter.html?_ga=2.46499873.720931824.1513485390-1143412728.1512800414" target="_blank" rel="external">Unity手册的这一页</a>包含了为贴图是否设置mipmaps的更多信息。</li>
-</ul>
-<h2 id="顶点处理"><a href="#顶点处理" class="headerlink" title="顶点处理"></a>顶点处理</h2><p>顶点处理是指GPU一定会渲染的mesh中的每个顶点的工作。影响顶点处理的消耗有两个方面:最终会渲染的顶点数量，需要处理的每个顶点的数量。如果我们游戏是GPU性能受限同时我们确定了不是填充率和内存带宽受限导致的，那么久很有可能是顶点处理引起的问题。如果是这个原因导致的，尝试减少GPU必须进行的顶点处理的量可能会提高提高性能。</p>
-<p>这里有几个方法我们可以考虑帮助我们在处理每个顶点时减少顶点数量或者顶点处理的数量。</p>
-<ul>
-<li>首先，我们应该期望减少任何不必要的复杂的网格。如果我们使用的网格有一些在我们游戏中看不到的细节，或者是由于创建时的错误导致太多顶点，这些会浪费很多GPU处理时间。最简单的减少顶点处理的消耗的方法是在我们3D美术程序(译:如,maya)里使用最少量的顶点数据创建网格。</li>
-<li>我们可以尝试一个叫做<em>法线贴图(normal mapping)</em>的技术，这是使用纹理创建更复杂的几何网格的错误看法的地方。尽管这个技术会有一些GPU开销，但是它在很多情况下会带来性能上的提升。<a href="https://docs.unity3d.com/Manual/StandardShaderMaterialParameterNormalMap.html?_ga=2.33120119.87762321.1513491116-66925982.1513491116" target="_blank" rel="external">Unity手册的这页</a>有实用的法线贴图指南，可以使用法线贴图模拟我们网格中复杂的几何图形。</li>
-<li>如果我们游戏中的mesh没有使用法线贴图，我们通常可以在网格的<a href="https://docs.unity3d.com/Manual/FBXImporter-Model.html?_ga=2.127309892.87762321.1513491116-66925982.1513491116" target="_blank" rel="external">导入设置</a>中关闭使用顶点切线。这回减少大量的发送到GPU的顶点数据。</li>
-<li><a href="https://zh.wikipedia.org/wiki/细节层次" target="_blank" rel="external">细节层次(Level of detail)</a>,也叫做LOD，是一对网格远离相机时减少复杂度的优化技术。这会减少GPU渲染的顶点的数量，同时不影响游戏的显示效果。<a href="https://docs.unity3d.com/Manual/class-LODGroup.html" target="_blank" rel="external">Unity手册关于LOD的页面</a>包含了更多怎样设置我们游戏的LOD的信息。</li>
-<li>顶点着色器是一块用来告诉GPU怎样去绘制每个顶点的着色器代码。如果我们游戏由于顶点处理受到性能限制，减少我们游戏顶点着色器的复杂度可能有帮助。<ul>
-<li>如果我们游戏使用的是Unity内置着色器，我们应该期望使用最简单的尽可能最优化的着色器来达到我们期望的显示效果。举个例子，<a href="https://docs.unity3d.com/Manual/shader-Performance.html" target="_blank" rel="external">Unity发布的移动设备的着色器</a>是高度优化了的；我们应该尝试使用这些材质，看看是否能提高性能但不影响我们游戏的显示效果 。</li>
-<li>如果我们项目使用了定制的着色器，我们应该尽可能的优化它们。优化着色器是一个复杂的主题，但是<a href="https://docs.unity3d.com/Manual/SL-ShaderPerformance.html?_ga=2.125139789.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Unity手册的这个页面</a>和<a href="https://docs.unity3d.com/Manual/MobileOptimisation.html?_ga=2.91340381.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Unity手册的这个页面</a>的<strong>着色器优化</strong>部分包含了优化我们着色器代码的有用的切入点。</li>
-</ul>
-</li>
-</ul>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>我们学习了Unity渲染是怎样工作的，当渲染的时候会出现什么类型的问题，怎样提高我们游戏的性能。使用这部分知识并且使用性能分析工具，我们可以修复渲染相关的性能问题，构建我们的游戏使得游戏的渲染管线更显平滑和高率。</p>
-
-      
+    <div class="ui top fixed menu">
+        <a class="item" id="menu-icon"><i class="sidebar icon"></i></a>
     </div>
 
-    <div>
-      
-        
+    <div id="menu-sidebar" class="ui left vertical sidebar menu">
 
-      
-    </div>
-
-    <div>
-      
-        
-
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/graphics/" rel="tag"># graphics</a>
-          
+    <div id="sidebar-top">
+        <div class="content">
+            <h3>elangduan</h3>
         </div>
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2017/11/18/optimizing_garbage_collection_in_unity_games/" rel="next" title="Unity游戏内存回收的优化(译)">
-                <i class="fa fa-chevron-left"></i> Unity游戏内存回收的优化(译)
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/12/05/ienumerator_generics_boxing_question/" rel="prev" title="C# 泛型集合的Boxing问题">
-                C# 泛型集合的Boxing问题 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
-      
-    </footer>
-  </article>
-
-
-
-    <div class="post-spread">
-      
     </div>
-  </div>
+    <div class="ui container sidebar-card">
+    <div class="ui people shape content">
+        <div class="active side">
+            <div class="ui card">
+                <div class="image">
+                    <img class="ui medium bordered image" src="/images/avatar.jpg">
+                </div>
+                <div class="content">
+                    <a class="header">elangduan@126.com</a>
+                    
+                        <div class="meta">
+                            Game Developer
+                        </div>
+                    
+                </div>
+                <div class="extra content">
+                    <div class="ui list">
+                        
+                        <div class="item">
+                            <i class="marker icon" style="float: left"></i>
+                            <div class="content">Shanghai</div>
+                        </div>
+                        
+                        
+                        <div class="item">
+                            <i class="mail icon" style="float: left"></i>
+                            <div class="content">
+                                <a href="mailto:elangduan@126.com">elangduan@126.com</a>
+                            </div>
+                        </div>
+                        
+                    </div>
 
-
-          </div>
-          
-
-
-          
-
-        </div>
-        
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <section class="site-overview sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image"
-               src="/uploads/avatar.png"
-               alt="elangduan@126.com" />
-          <p class="site-author-name" itemprop="name">elangduan@126.com</p>
-          <p class="site-description motion-element" itemprop="description"></p>
-        </div>
-        <nav class="site-state motion-element">
-          <div class="site-state-item site-state-posts">
-            <a href="/archives">
-              <span class="site-state-item-count">29</span>
-              <span class="site-state-item-name">日志</span>
-            </a>
-          </div>
-
-          
-
-          
-            <div class="site-state-item site-state-tags">
-              
-                <span class="site-state-item-count">6</span>
-                <span class="site-state-item-name">标签</span>
-              
+                </div>
+                <div class="extra content">
+                    <div class="ui list">
+                        
+                    </div>
+                </div>
             </div>
-          
-
-        </nav>
-
-        
-
-        <div class="links-of-author motion-element">
-          
         </div>
-
-        
-        
-
-        
-        
-
-        
-
-
-      </section>
-
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#介绍"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#渲染的简介"><span class="nav-number">2.</span> <span class="nav-text">渲染的简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#渲染问题的类型"><span class="nav-number">3.</span> <span class="nav-text">渲染问题的类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#理解渲染的问题"><span class="nav-number">4.</span> <span class="nav-text">理解渲染的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Profiler-window"><span class="nav-number">4.1.</span> <span class="nav-text">Profiler window</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Frame-Debugger"><span class="nav-number">4.2.</span> <span class="nav-text">Frame Debugger</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#确定导致性能问题的原因"><span class="nav-number">4.3.</span> <span class="nav-text">确定导致性能问题的原因</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CPU性能受限"><span class="nav-number">5.</span> <span class="nav-text">CPU性能受限</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#图形工作"><span class="nav-number">5.1.</span> <span class="nav-text">图形工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#找出导致性能问题的任务"><span class="nav-number">5.2.</span> <span class="nav-text">找出导致性能问题的任务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发送命令到GPU"><span class="nav-number">5.3.</span> <span class="nav-text">发送命令到GPU</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#减少渲染对象的数量"><span class="nav-number">5.3.1.</span> <span class="nav-text">减少渲染对象的数量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#减少每个最终会渲染的对象的渲染次数。"><span class="nav-number">5.3.2.</span> <span class="nav-text">减少每个最终会渲染的对象的渲染次数。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#将渲染对象合并到更少的批次-batches-里"><span class="nav-number">5.3.3.</span> <span class="nav-text">将渲染对象合并到更少的批次(batches)里</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#裁剪，排序和合批"><span class="nav-number">5.4.</span> <span class="nav-text">裁剪，排序和合批</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#蒙皮网格"><span class="nav-number">5.5.</span> <span class="nav-text">蒙皮网格</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#主线程的操作与渲染无关"><span class="nav-number">5.6.</span> <span class="nav-text">主线程的操作与渲染无关</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GPU性能受限"><span class="nav-number">6.</span> <span class="nav-text">GPU性能受限</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#填充率"><span class="nav-number">6.1.</span> <span class="nav-text">填充率</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内存带宽"><span class="nav-number">6.2.</span> <span class="nav-text">内存带宽</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#顶点处理"><span class="nav-number">6.3.</span> <span class="nav-text">顶点处理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
-      
-
     </div>
-  </aside>
 
 
-        
-      </div>
-    </main>
-
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <div class="copyright" align="center">
-  
-  &copy; 
-  <span itemprop="copyrightYear">2018</span>
-
-  <span class="author" itemprop="copyrightHolder">elangduan@126.com | </span>
-
-  <span>
-    powered by <a class="theme-link" href="https://hexo.io">hexo</a>
-  </span>
-
-  <span>
-    & theme <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next"> NexT</a>
-  </span>
 </div>
 
+    
+    
+
+    
+
+    
+    <a href="/index.html" class="item" >
+        <i class="home icon"></i>
+        HOME
+    </a>
+
+    
+
+    
+</div>
+
+    <div class="pusher body-content">
+        <div id="content" class="ui main container">
+            <!--<div class="ui one column grid">-->
+                <!--<div class="column">-->
+                    <!--<div class="ui main container">-->
+                        <div id="post-optimizing_graphics_rendering_in_unity_games" class="ui main container article-type-post">
+
+    
+
+    <div class="ui divided grid">
+
+        <div class="two column row" id="article-content">
+
+            <div class="thirteen wide computer thirteen wide tablet sixteen wide mobile column">
+                
+
+<h1 class="ui header">
+    
+    Unity游戏的图形渲染优化(译)
+</h1>
+
+
+
+                <div class="article-inner">
+
+                    <div class="article-entry" itemprop="articleBody">
+                        
+                        <blockquote>
+<p>&#x539F;&#x6587;<a href="https://unity3d.com/cn/learn/tutorials/temas/performance-optimization/optimizing-graphics-rendering-unity-games?playlist=44069" target="_blank" rel="external">Optimizing graphics rendering in Unity games</a>&#x3002;&#x8FD9;&#x91CC;&#x5BF9;&#x8FD9;&#x7BC7;&#x6587;&#x7AE0;&#x7684;&#x7C97;&#x7565;&#x7FFB;&#x8BD1;&#xFF0C;&#x5F53;&#x4F5C;&#x81EA;&#x5DF1;&#x7684;&#x7B14;&#x8BB0;&#x3002;</p>
+</blockquote>
+<h1 id="&#x4ECB;&#x7ECD;"><a href="#&#x4ECB;&#x7ECD;" class="headerlink" title="&#x4ECB;&#x7ECD;"></a>&#x4ECB;&#x7ECD;</h1><p>&#x5728;&#x8FD9;&#x7BC7;&#x6587;&#x7AE0;&#x4E2D;&#x6211;&#x4EEC;&#x5C06;&#x4F1A;&#x5B66;&#x4E60;Unity&#x5728;&#x6E32;&#x67D3;&#x4E00;&#x5E27;&#x7684;&#x65F6;&#x5019;&#x5176;&#x5185;&#x90E8;&#x7684;&#x53D1;&#x751F;&#x7684;&#x4E8B;&#x60C5;&#xFF0C;&#x5728;&#x6E32;&#x67D3;&#x7684;&#x65F6;&#x5019;&#x4F1A;&#x53D1;&#x751F;&#x4EC0;&#x4E48;&#x7C7B;&#x578B;&#x7684;&#x6027;&#x80FD;&#x95EE;&#x9898;&#x540C;&#x65F6;&#x6211;&#x4EEC;&#x600E;&#x6837;&#x53BB;&#x5904;&#x7406;&#x8FD9;&#x4E9B;&#x6027;&#x80FD;&#x95EE;&#x9898;&#x3002;</p>
+<p>&#x5728;&#x9605;&#x8BFB;&#x8FD9;&#x7BC7;&#x6587;&#x7AE0;&#x4E4B;&#x524D;&#xFF0C;&#x5FC5;&#x987B;&#x660E;&#x767D;&#x6CA1;&#x6709;&#x4E00;&#x4E2A;&#x540C;&#x6837;&#x7684;&#x5C3A;&#x5EA6;&#x6765;&#x63D0;&#x9AD8;&#x6E32;&#x67D3;&#x7684;&#x6027;&#x80FD;&#x95EE;&#x9898;&#x3002;&#x5728;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x4E2D;&#x5F71;&#x54CD;&#x6027;&#x80FD;&#x95EE;&#x9898;&#x7684;&#x539F;&#x56E0;&#x6709;&#x5F88;&#x591A;&#x540C;&#x65F6;&#x975E;&#x5E38;&#x4F9D;&#x8D56;&#x6E38;&#x620F;&#x8FD0;&#x884C;&#x7684;&#x786C;&#x4EF6;&#x548C;&#x64CD;&#x4F5C;&#x7CFB;&#x7EDF;&#x3002;&#x901A;&#x8FC7;&#x8C03;&#x67E5;&#xFF0C;&#x5B9E;&#x9A8C;&#x548C;&#x7EC6;&#x5FC3;&#x7684;&#x5206;&#x6790;&#x5B9E;&#x9A8C;&#x7ED3;&#x679C;&#x6765;&#x89E3;&#x51B3;&#x6027;&#x80FD;&#x95EE;&#x9898;&#x662F;&#x6211;&#x4EEC;&#x6700;&#x91CD;&#x8981;&#x7684;&#x65B9;&#x5F0F;&#x3002;</p>
+<p>&#x8FD9;&#x7BC7;&#x6587;&#x7AE0;&#x5305;&#x542B;&#x7684;&#x4FE1;&#x606F;&#x4E3B;&#x8981;&#x662F;&#x5927;&#x90E8;&#x5206;&#x5E38;&#x89C1;&#x7684;&#x6027;&#x80FD;&#x95EE;&#x9898;&#x7684;&#x4FEE;&#x6539;&#x5EFA;&#x8BAE;&#x548C;&#x4E00;&#x4E9B;&#x66F4;&#x6DF1;&#x5C42;&#x6B21;&#x7684;&#x9605;&#x8BFB;&#x94FE;&#x63A5;&#x3002;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x4E2D;&#x53EF;&#x80FD;&#x4E5F;&#x5B58;&#x5728;&#x8FD9;&#x5176;&#x4E2D;&#x7684;&#x4E00;&#x4E2A;&#x95EE;&#x9898;&#x6216;&#x8005;&#x4E00;&#x4E9B;&#x95EE;&#x9898;&#x6216;&#x8005;&#x90FD;&#x6CA1;&#x6709;&#x5305;&#x542B;&#x3002;&#x4F46;&#x662F;&#x8FD9;&#x7BC7;&#x6587;&#x7AE0;&#x4ECD;&#x7136;&#x5C06;&#x5E2E;&#x52A9;&#x6211;&#x4EEC;&#x7406;&#x89E3;&#x6211;&#x4EEC;&#x81EA;&#x5DF1;&#x7684;&#x95EE;&#x9898;&#x540C;&#x65F6;&#x7ED9;&#x4E88;&#x6211;&#x4EEC;&#x53BB;&#x641C;&#x7D22;&#x6211;&#x4EEC;&#x95EE;&#x9898;&#x7684;&#x77E5;&#x8BC6;&#x548C;&#x7EBF;&#x7D22;&#x3002;</p>
+<h1 id="&#x6E32;&#x67D3;&#x7684;&#x7B80;&#x4ECB;"><a href="#&#x6E32;&#x67D3;&#x7684;&#x7B80;&#x4ECB;" class="headerlink" title="&#x6E32;&#x67D3;&#x7684;&#x7B80;&#x4ECB;"></a>&#x6E32;&#x67D3;&#x7684;&#x7B80;&#x4ECB;</h1><p>&#x5728;&#x6211;&#x4EEC;&#x5F00;&#x59CB;&#x4ECB;&#x7ECD;&#x4E4B;&#x524D;&#xFF0C;&#x8BA9;&#x6211;&#x4EEC;&#x5FEB;&#x901F;&#x7B80;&#x5355;&#x770B;&#x4E0B;Unity&#x6E32;&#x67D3;&#x4E00;&#x5E27;&#x65F6;&#x5176;&#x5185;&#x90E8;&#x53D1;&#x751F;&#x4E86;&#x4EC0;&#x4E48;&#x3002;&#x7406;&#x89E3;&#x4E8B;&#x4EF6;&#x6D41;&#x548C;&#x6B63;&#x786E;&#x7684;&#x672F;&#x8BED;&#x5C06;&#x4F1A;&#x5E2E;&#x52A9;&#x6211;&#x4EEC; &#x7406;&#x89E3;&#xFF0C;&#x8C03;&#x67E5;&#x548C;&#x89E3;&#x51B3;&#x6211;&#x4EEC;&#x7684;&#x6027;&#x80FD;&#x95EE;&#x9898;&#x3002;</p>
+<p><strong>&#x6CE8;:</strong>&#x5728;&#x8FD9;&#x7BC7;&#x6587;&#x7AE0;&#x4E2D;&#xFF0C;&#x6211;&#x4EEC;&#x5C06;&#x4F1A;&#x4F7F;&#x7528;&#x201D;&#x5BF9;&#x8C61;(object)&#x201D;&#x672F;&#x8BED;&#x6765;&#x8868;&#x793A;&#x4E00;&#x4E2A;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x7684;&#x6E32;&#x67D3;&#x7684;&#x5BF9;&#x8C61;&#x3002;&#x4EFB;&#x4F55;&#x6E32;&#x67D3;&#x7EC4;&#x4EF6;&#x7684;GameObject&#x5C06;&#x4F1A;&#x88AB;&#x7EDF;&#x79F0;&#x4E3A;&#x5BF9;&#x8C61;&#x3002;</p>
+<p>&#x5728;&#x6700;&#x57FA;&#x672C;&#x7684;&#x5C42;&#x9762;&#x4E0A;&#xFF0C;&#x6E32;&#x67D3;&#x53EF;&#x4EE5;&#x63CF;&#x8FF0;&#x4E3A;&#x4E00;&#x4E0B;&#x51E0;&#x6B65;&#xFF1A;</p>
+<ul class="ui list">
+<li>CPU&#x8BA1;&#x7B97;&#x51FA;&#x5FC5;&#x987B;&#x6E32;&#x67D3;&#x7684;&#x5BF9;&#x8C61;&#x548C;&#x51B3;&#x5B9A;&#x600E;&#x4E48;&#x53BB;&#x7ED8;&#x5236;&#x3002;</li>
+<li>CPU&#x53D1;&#x9001;&#x6307;&#x4EE4;&#x5230;GPU&#x3002;</li>
+<li>GPU&#x6839;&#x636E;CPU&#x7684;&#x6307;&#x4EE4;&#x6765;&#x786E;&#x5B9A;&#x7ED8;&#x5236;&#x7684;&#x5185;&#x5BB9;&#x3002;</li>
+</ul>
+<p>&#x73B0;&#x5728;&#x8BA9;&#x6211;&#x4EEC;&#x6765;&#x66F4;&#x8FD1;&#x4E00;&#x6B65;&#x770B;&#x770B;&#x7A76;&#x7ADF;&#x53D1;&#x751F;&#x4E86;&#x4EC0;&#x4E48;&#x3002;&#x8FD9;&#x7BC7;&#x6587;&#x7AE0;&#x540E;&#x9762;&#x5C06;&#x4F1A;&#x8BE6;&#x7EC6;&#x7684;&#x4ECB;&#x7ECD;&#x4E0A;&#x9762;&#x7684;&#x6BCF;&#x4E00;&#x4E2A;&#x6B65;&#x9AA4;&#x3002;&#x4F46;&#x662F;&#x73B0;&#x5728;&#x8BA9;&#x6211;&#x4EEC;&#x5148;&#x6765;&#x719F;&#x6089;&#x4E0B;&#x6587;&#x4E2D;&#x4F7F;&#x7528;&#x7684;&#x8BCD;&#x8BED;&#x548C;&#x7406;&#x89E3;CPU&#x548C;GPU&#x5728;&#x6E32;&#x67D3;&#x4E2D;&#x626E;&#x6F14;&#x7684;&#x4E0D;&#x540C;&#x89D2;&#x8272;&#x3002;</p>
+<p>&#x63CF;&#x8FF0;&#x6E32;&#x67D3;&#x7684;&#x8BCD;&#x8BED;&#x901A;&#x5E38;&#x7528;<strong>&#x6E32;&#x67D3;&#x7BA1;&#x7EBF;(rendering pipeline)</strong>&#xFF0C;&#x8BB0;&#x4F4F;&#x8FD9;&#x662F;&#x4E00;&#x4E2A;&#x975E;&#x5E38;&#x6709;&#x7528;&#x7684;&#x60C5;&#x666F;&#x3002;&#x9AD8;&#x6548;&#x7684;&#x6E32;&#x67D3;&#x90FD;&#x662F;&#x5173;&#x4E8E;&#x4FDD;&#x6301;&#x66F4;&#x9AD8;&#x4FE1;&#x606F;&#x7684;&#x4F20;&#x9001;&#x80FD;&#x529B;&#x3002;</p>
+<p>&#x5BF9;&#x4E8E;&#x6BCF;&#x4E00;&#x4E2A;&#x6E32;&#x67D3;&#x7684;&#x5E27;&#xFF0C;CPU&#x4F1A;&#x505A;&#x5982;&#x4E0B;&#x7684;&#x5DE5;&#x4F5C;:</p>
+<ul class="ui list">
+<li>CPU&#x4F1A;&#x68C0;&#x67E5;&#x573A;&#x666F;&#x4E2D;&#x7684;&#x6BCF;&#x4E00;&#x4E2A;&#x5BF9;&#x8C61;&#x6765;&#x51B3;&#x5B9A;&#x8FD9;&#x4E2A;&#x5BF9;&#x8C61;&#x662F;&#x5426;&#x9700;&#x8981;&#x88AB;&#x6E32;&#x67D3;&#x3002;&#x53EA;&#x6709;&#x5F53;&#x8FD9;&#x4E2A;&#x5BF9;&#x8C61;&#x6EE1;&#x8DB3;&#x7279;&#x5B9A;&#x7684;&#x6761;&#x4EF6;&#x7684;&#x65F6;&#x5019;&#x624D;&#x4F1A;&#x88AB;&#x6E32;&#x67D3;&#xFF1B;&#x4F8B;&#x5982;&#xFF0C;&#x5B83;&#x7684;&#x5305;&#x56F4;&#x76D2;&#x7684;&#x4E00;&#x4E9B;&#x90E8;&#x5206;&#x5728;<a href="https://docs.unity3d.com/Manual/UnderstandingFrustum.html?_ga=2.151286320.801370543.1512275945-1497166853.1503199345" target="_blank" rel="external">&#x76F8;&#x673A;&#x89C6;&#x9525;&#x4F53;</a>&#x5185;&#x3002;&#x4E00;&#x4E2A;&#x5BF9;&#x8C61;&#x5982;&#x679C;&#x5C06;&#x4E0D;&#x4F1A;&#x88AB;&#x6E32;&#x67D3;&#x6211;&#x4EEC;&#x79F0;&#x4E4B;&#x4E3A;&#x8FD9;&#x4E2A;&#x5BF9;&#x8C61;&#x88AB;&#x88C1;&#x526A;&#x4E86;(culled)&#x3002;&#x5173;&#x4E8E;&#x76F8;&#x673A;&#x7684;&#x89C6;&#x9525;&#x4F53;&#x548C;&#x89C6;&#x9525;&#x4F53;&#x88C1;&#x526A;&#x7684;&#x66F4;&#x591A;&#x4FE1;&#x606F;&#x53EF;&#x4EE5;&#x770B;&#x7740;<a href="https://docs.unity3d.com/Manual/UnderstandingFrustum.html?_ga=2.147021758.801370543.1512275945-1497166853.1503199345" target="_blank" rel="external">&#x8FD9;&#x7BC7;&#x6587;&#x7AE0;</a>&#x3002;</li>
+<li>CPU&#x641C;&#x96C6;&#x6BCF;&#x4E00;&#x4E2A;&#x5C06;&#x4F1A;&#x88AB;&#x6E32;&#x67D3;&#x7684;&#x5BF9;&#x8C61;&#x7684;&#x4FE1;&#x606F;&#x7136;&#x540E;&#x5C06;&#x8FD9;&#x4E9B;&#x6570;&#x636E;&#x5206;&#x7C7B;&#x653E;&#x5165;&#x53EB;&#x505A;<strong>draw calls</strong>&#x547D;&#x4EE4;&#x4E2D;&#x3002;&#x4E00;&#x4E2A;draw call&#x5305;&#x542B;&#x4E86;&#x4E00;&#x4E2A;mesh&#x548C;&#x8FD9;&#x4E2A;mesh&#x600E;&#x6837;&#x88AB;&#x6E32;&#x67D3;&#x7684;&#x6570;&#x636E;&#xFF1B;&#x4F8B;&#x5982;&#xFF0C;&#x8FD9;&#x4E2A;mesh&#x7528;&#x54EA;&#x4E00;&#x5F20;&#x8D34;&#x56FE;&#x3002;&#x57FA;&#x4E8E;&#x8FD9;&#x4E9B;&#x60C5;&#x51B5;&#xFF0C;&#x5171;&#x4EAB;&#x8BBE;&#x7F6E;&#x7684;&#x56FE;&#x50CF;&#x4F1A;&#x5408;&#x5E76;&#x5230;&#x4E00;&#x4E9B;&#x76F8;&#x540C;&#x7684;draw call&#x4E2D;&#x3002;&#x5408;&#x5E76;&#x4E0D;&#x540C;&#x5BF9;&#x8C61;&#x7684;&#x6570;&#x636E;&#x5230;&#x540C;&#x4E00;&#x4E2A;draw call&#x4E2D;&#x6211;&#x4EEC;&#x79F0;&#x4E4B;&#x4E3A;<strong>batching</strong>&#x3002;</li>
+<li>CPU&#x4E3A;&#x6BCF;&#x6B21;draw call&#x521B;&#x5EFA;&#x4E00;&#x4E2A;&#x53EB;batch&#x7684;&#x6570;&#x636E;&#x5305;&#x3002;batchs&#x6709;&#x53EF;&#x80FD;&#x5305;&#x542B;&#x4E86;draw calls&#x4E4B;&#x5916;&#x7684;&#x6570;&#x636E;&#xFF0C;&#x4F46;&#x662F;&#x8FD9;&#x79CD;&#x60C5;&#x51B5;&#x4E0D;&#x50CF;&#x5E38;&#x89C1;&#x7684;&#x4E00;&#x4E2A;&#x6027;&#x80FD;&#x95EE;&#x9898;&#xFF0C;&#x56E0;&#x6B64;&#x6211;&#x4EEC;&#x4E0D;&#x4F1A;&#x5728;&#x8FD9;&#x7BC7;&#x6587;&#x7AE0;&#x91CC;&#x9762;&#x6765;&#x8BA8;&#x8BBA;&#x3002;</li>
+</ul>
+<p>&#x5BF9;&#x4E8E;&#x6BCF;&#x4E2A;draw call&#x5305;&#x542B;&#x7684;batchs&#xFF0C;CPU&#x73B0;&#x5728;&#x5FC5;&#x987B;&#x8981;&#x5165;&#x5982;&#x4E0B;&#x7684;&#x5DE5;&#x4F5C;:</p>
+<ul class="ui list">
+<li>CPU&#x53EF;&#x4EE5;&#x5411;GPU&#x53D1;&#x9001;&#x4E00;&#x4E2A;&#x547D;&#x4EE4;&#x6765;&#x6539;&#x53D8;&#x4E00;&#x4E9B;&#x88AB;&#x7EDF;&#x79F0;&#x4E3A;&#x6E32;&#x67D3;&#x72B6;&#x6001;&#x7684;&#x53D8;&#x91CF;&#x3002;&#x8FD9;&#x4E2A;&#x547D;&#x4EE4;&#x53EB;&#x505A;<strong>SetPass call</strong>&#x3002;SetPass call&#x544A;&#x8BC9;GPU&#x54EA;&#x4E2A;&#x8BBE;&#x7F6E;&#x88AB;&#x7528;&#x6765;&#x6E32;&#x67D3;&#x4E0B;&#x4E00;&#x4E2A;mesh&#x3002;&#x53EA;&#x6709;&#x5F53;&#x4E0A;&#x4E00;&#x4E2A;mesh&#x6E32;&#x67D3;&#x5B8C;&#x6210;&#x4E0B;&#x4E00;&#x4E2A;mesh&#x51C6;&#x5907;&#x6E32;&#x67D3;&#x7684;&#x65F6;&#x5019;&#x9700;&#x8981;&#x6539;&#x53D8;&#x6E32;&#x67D3;&#x72B6;&#x6001;&#x7684;&#x65F6;&#x5019;&#x624D;&#x9700;&#x8981;&#x53D1;&#x9001;SetPass call&#x547D;&#x4EE4;&#x3002;</li>
+<li>CPU&#x53D1;&#x9001;draw call&#x547D;&#x4EE4;&#x5230;GPU&#x3002;draw call&#x4F1A;&#x6307;&#x793A;GPU&#x4F7F;&#x7528;&#x4E0A;&#x4E00;&#x6B21;&#x8BBE;&#x7F6E;&#x597D;&#x7684;SetPass call&#x53BB;&#x6E32;&#x67D3;&#x5236;&#x5B9A;&#x7684;mesh&#x3002;</li>
+<li>&#x57FA;&#x4E8E;&#x8FD9;&#x4E9B;&#x60C5;&#x51B5;&#xFF0C;batchs&#x7684;&#x6570;&#x636E;&#x88AB;&#x6E32;&#x67D3;&#x53EF;&#x80FD;&#x9700;&#x8981;&#x4E0D;&#x6B62;&#x4E00;&#x4E2A;<em>pass</em>&#x3002;&#x4E00;&#x4E2A;pass&#x662F;&#x4E00;&#x6BB5;&#x7740;&#x8272;&#x5668;&#x7684;&#x4EE3;&#x7801;&#xFF0C;&#x4F7F;&#x7528;&#x4E00;&#x4E2A;&#x65B0;&#x7684;pass&#x9700;&#x8981;&#x6539;&#x53D8;&#x6E32;&#x67D3;&#x72B6;&#x6001;&#x3002;&#x5BF9;&#x4E8E;&#x4E00;&#x4E2A;batchs&#x4E2D;&#x7684;&#x6BCF;&#x4E2A;pass&#xFF0C;CPU&#x5FC5;&#x987B;&#x53D1;&#x9001;&#x4E00;&#x4E2A;&#x65B0;&#x7684;SetPass call&#x547D;&#x4EE4;&#x540C;&#x65F6;&#x5FC5;&#x987B;&#x518D;&#x6B21;&#x53D1;&#x9001;draw call&#x547D;&#x4EE4;&#x3002;&#x8FD9;&#x4E2A;pass&#x624D;&#x4F1A;&#x751F;&#x6548;&#x3002;</li>
+</ul>
+<p>&#x540C;&#x65F6;&#xFF0C;GPU&#x4F1A;&#x505A;&#x5982;&#x4E0B;&#x7684;&#x5DE5;&#x4F5C;:</p>
+<ul class="ui list">
+<li>GPU&#x6309;&#x7167;CPU&#x53D1;&#x9001;&#x7684;&#x987A;&#x5E8F;&#x6765;&#x5904;&#x7406;CPU&#x53D1;&#x9001;&#x7684;&#x4EFB;&#x52A1;&#x3002;</li>
+<li>&#x5982;&#x679C;&#x5F53;&#x524D;&#x7684;&#x4EFB;&#x52A1;&#x662F;SetPass call&#xFF0C;GPU&#x5C31;&#x66F4;&#x65B0;&#x6E32;&#x67D3;&#x72B6;&#x6001;&#x3002;</li>
+<li>&#x5982;&#x679C;&#x5F53;&#x524D;&#x7684;&#x4EFB;&#x52A1;&#x662F;draw call, GPU&#x5C31;&#x6E32;&#x67D3;&#x8FD9;&#x4E2A;draw call&#x7684;mesh&#x3002;&#x8FD9;&#x4E2A;&#x662F;&#x5206;&#x9636;&#x6BB5;&#x8FDB;&#x884C;&#x7684;&#xFF0C;&#x6BCF;&#x4E2A;&#x9636;&#x6BB5;&#x5355;&#x72EC;&#x5B9A;&#x4E49;&#x5728;&#x7740;&#x8272;&#x5668;&#x4EE3;&#x7801;&#x4E2D;&#x3002;&#x8FD9;&#x90E8;&#x5206;&#x6E32;&#x67D3;&#x6BD4;&#x8F83;&#x590D;&#x6742;&#x6211;&#x4EEC;&#x4E0D;&#x4F1A;&#x8BE6;&#x7EC6;&#x7684;&#x8BA8;&#x8BBA;&#xFF0C;&#x4F46;&#x662F;&#x8FD9;&#x90E8;&#x5206;&#x5BF9;&#x4E8E;&#x6211;&#x4EEC;&#x53BB;&#x7406;&#x89E3;<strong>&#x9876;&#x70B9;&#x7740;&#x8272;&#x5668;(vertex shader)</strong>&#x8FD9;&#x90E8;&#x5206;&#x4EE3;&#x7801;&#x548C;<strong>&#x7247;&#x6BB5;&#x7740;&#x8272;&#x5668;(fragment shader)</strong>&#x8FD9;&#x90E8;&#x5206;&#x4EE3;&#x7801;&#x975E;&#x5E38;&#x6709;&#x7528;&#x3002;&#x9876;&#x70B9;&#x7740;&#x8272;&#x5668;&#x662F;&#x7528;&#x6765;&#x544A;&#x8BC9;GPU&#x600E;&#x4E48;&#x53BB;&#x5904;&#x7406;mesh&#x7684;&#x9876;&#x70B9;&#x6570;&#x636E;&#x7684;&#x4EE3;&#x7801;&#xFF0C;&#x7247;&#x6BB5;&#x7740;&#x8272;&#x5668;&#x4F7F;&#x7528;&#x6765;&#x600E;&#x6837;&#x53BB;&#x5904;&#x7406;&#x6BCF;&#x4E2A;&#x5355;&#x72EC;&#x50CF;&#x7D20;&#x4EE3;&#x7801;&#x3002;</li>
+<li>GPU&#x91CD;&#x590D;&#x5904;&#x7406;&#x4ECE;CPU&#x53D1;&#x9001;&#x8FC7;&#x6765;&#x7684;&#x4EFB;&#x52A1;&#xFF0C;&#x76F4;&#x5230;&#x6240;&#x6709;&#x7684;&#x4EFB;&#x52A1;&#x90FD;&#x5904;&#x7406;&#x5B8C;&#x6210;&#x3002;</li>
+</ul>
+<p>&#x73B0;&#x5728;&#x6211;&#x4EEC;&#x7406;&#x89E3;&#x4E86;&#x5F53;Unity&#x6E32;&#x67D3;&#x4E00;&#x5E27;&#x65F6;&#x5176;&#x5185;&#x90E8;&#x53D1;&#x751F;&#x4E86;&#x4EC0;&#x4E48;&#xFF0C;&#x63A5;&#x4E0B;&#x6765;&#x8BA9;&#x6211;&#x4EEC;&#x601D;&#x8003;&#x4E0B;&#x5F53;&#x6E32;&#x67D3;&#x53D1;&#x751F;&#x7684;&#x65F6;&#x5019;&#x4F1A;&#x968F;&#x4E4B;&#x53D1;&#x751F;&#x4EC0;&#x4E48;&#x95EE;&#x9898;&#x3002;</p>
+<a id="more"></a> 
+<h1 id="&#x6E32;&#x67D3;&#x95EE;&#x9898;&#x7684;&#x7C7B;&#x578B;"><a href="#&#x6E32;&#x67D3;&#x95EE;&#x9898;&#x7684;&#x7C7B;&#x578B;" class="headerlink" title="&#x6E32;&#x67D3;&#x95EE;&#x9898;&#x7684;&#x7C7B;&#x578B;"></a>&#x6E32;&#x67D3;&#x95EE;&#x9898;&#x7684;&#x7C7B;&#x578B;</h1><p>&#x5173;&#x4E8E;&#x6E32;&#x67D3;&#x9700;&#x8981;&#x7406;&#x89E3;&#x7684;&#x6700;&#x7EC8;&#x7684;&#x4E00;&#x70B9;:&#x4E3A;&#x4E86;&#x6E32;&#x67D3;&#x4E00;&#x5E27;&#xFF0C;CPU&#x548C;GPU&#x5FC5;&#x987B;&#x5B8C;&#x6210;&#x5404;&#x81EA;&#x6240;&#x6709;&#x7684;&#x4EFB;&#x52A1;&#x3002;&#x5982;&#x679C;&#x4EFB;&#x4F55;&#x4E00;&#x4E2A;&#x4EFB;&#x52A1;&#x82B1;&#x8D39;&#x4E86;&#x592A;&#x957F;&#x7684;&#x65F6;&#x95F4;&#x624D;&#x5B8C;&#x6210;&#xFF0C;&#x8FD9;&#x4E2A;&#x4EFB;&#x52A1;&#x5C06;&#x4F1A;&#x5BFC;&#x81F4;&#x5E27;&#x7684;&#x6E32;&#x67D3;&#x5EF6;&#x8FDF;&#x3002;</p>
+<p>&#x6E32;&#x67D3;&#x95EE;&#x9898;&#x6709;&#x4E24;&#x4E2A;&#x7C7B;&#x578B;&#x7684;&#x6839;&#x672C;&#x7684;&#x539F;&#x56E0;&#x3002;&#x7B2C;&#x4E00;&#x79CD;&#x7C7B;&#x578B;&#x662F;&#x7BA1;&#x7EBF;&#x65E0;&#x6548;&#x7387;&#x5BFC;&#x81F4;&#x7684;&#x3002;&#x6E32;&#x67D3;&#x7BA1;&#x7EBF;&#x4E2D;&#x4E00;&#x4E2A;&#x6216;&#x8005;&#x591A;&#x4E2A;&#x82B1;&#x8D39;&#x592A;&#x957F;&#x7684;&#x65F6;&#x95F4;&#x624D;&#x5B8C;&#x6210;&#xFF0C;&#x4E2D;&#x65AD;&#x4E86;&#x6570;&#x636E;&#x7684;&#x5E73;&#x6ED1;&#x4F20;&#x9001;&#xFF0C;&#x8FD9;&#x4F1A;&#x5BFC;&#x81F4;&#x7BA1;&#x7EBF;&#x65E0;&#x6548;&#x7387;&#x3002;&#x7BA1;&#x7EBF;&#x5185;&#x7684;&#x4F4E;&#x6548;&#x7387;&#x88AB;&#x79F0;&#x4E3A;<strong>&#x74F6;&#x9888;</strong>&#x3002;&#x7B2C;&#x4E8C;&#x79CD;&#x7C7B;&#x578B;&#x662F;&#x7B80;&#x5355;&#x7684;&#x5C1D;&#x8BD5;&#x5C06;&#x592A;&#x591A;&#x7684;&#x6570;&#x636E;&#x538B;&#x5165;&#x5230;&#x7BA1;&#x7EBF;&#x4E2D;&#x3002;&#x5373;&#x4F7F;&#x518D;&#x6709;&#x6548;&#x7387;&#x7684;&#x7BA1;&#x7EBF;&#x5904;&#x7406;&#x4E00;&#x5E27;&#x65F6;&#x4E5F;&#x4F1A;&#x6709;&#x6570;&#x636E;&#x91CF;&#x7684;&#x9650;&#x5236;&#x3002;</p>
+<p>&#x5F53;CPU&#x82B1;&#x8D39;&#x592A;&#x957F;&#x7684;&#x65F6;&#x95F4;&#x53BB;&#x6267;&#x884C;&#x5B83;&#x7684;&#x6E32;&#x67D3;&#x4EFB;&#x52A1;&#x5BFC;&#x81F4;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x82B1;&#x8D39;&#x5F88;&#x957F;&#x7684;&#x65F6;&#x95F4;&#x53BB;&#x6E32;&#x67D3;&#x4E00;&#x5E27;&#xFF0C;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x5C31;&#x79F0;&#x4E3A;CPU&#x6027;&#x80FD;&#x53D7;&#x9650;(&#x8BD1;:&#x6027;&#x80FD;&#x74F6;&#x9888;&#x5728;CPU&#x8FD9;&#x8FB9;)&#x3002;&#x5F53;GPU&#x82B1;&#x8D39;&#x592A;&#x957F;&#x7684;&#x65F6;&#x95F4;&#x53BB;&#x6267;&#x884C;&#x5B83;&#x7684;&#x6E32;&#x67D3;&#x4EFB;&#x52A1;&#x5BFC;&#x81F4;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x82B1;&#x8D39;&#x5F88;&#x957F;&#x7684;&#x65F6;&#x95F4;&#x53BB;&#x6E32;&#x67D3;&#x4E00;&#x5E27;&#xFF0C;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x79F0;&#x4E4B;&#x4E3A;GPU&#x6027;&#x80FD;&#x53D7;&#x9650;(&#x8BD1;:&#x6027;&#x80FD;&#x74F6;&#x9888;&#x5728;GPU&#x8FD9;&#x8FB9;) &#x3002;</p>
+<h1 id="&#x7406;&#x89E3;&#x6E32;&#x67D3;&#x7684;&#x95EE;&#x9898;"><a href="#&#x7406;&#x89E3;&#x6E32;&#x67D3;&#x7684;&#x95EE;&#x9898;" class="headerlink" title="&#x7406;&#x89E3;&#x6E32;&#x67D3;&#x7684;&#x95EE;&#x9898;"></a>&#x7406;&#x89E3;&#x6E32;&#x67D3;&#x7684;&#x95EE;&#x9898;</h1><p>&#x5728;&#x6211;&#x4EEC;&#x505A;&#x51FA;&#x4EFB;&#x4F55;&#x6539;&#x53D8;&#x4E4B;&#x524D;&#x4F7F;&#x7528;&#x6027;&#x80FD;&#x5206;&#x6790;&#x5DE5;&#x5177;&#x53BB;&#x7406;&#x89E3;&#x6027;&#x80FD;&#x95EE;&#x9898;&#x7684;&#x539F;&#x56E0;&#x975E;&#x5E38;&#x91CD;&#x8981;&#x3002;&#x4E0D;&#x540C;&#x7684;&#x95EE;&#x9898;&#x9700;&#x8981;&#x4E0D;&#x540C;&#x7684;&#x89E3;&#x51B3;&#x65B9;&#x6848;&#x3002;&#x540C;&#x6837;&#x91CD;&#x8981;&#x7684;&#x662F;&#x8861;&#x91CF;&#x6211;&#x4EEC;&#x6BCF;&#x6B21;&#x7684;&#x6539;&#x52A8;&#x6240;&#x5E26;&#x6765;&#x7684;&#x5F71;&#x54CD;&#xFF1B;&#x4FEE;&#x590D;&#x6027;&#x80FD;&#x95EE;&#x9898;&#x662F;&#x4E00;&#x4E2A;&#x5728;&#x5404;&#x65B9;&#x9762;&#x95EE;&#x9898;&#x4E2D;&#x53D6;&#x5E73;&#x8861;&#x7684;&#x884C;&#x4E3A;&#xFF0C;&#x6539;&#x5584;&#x8FD9;&#x65B9;&#x9762;&#x7684;&#x6027;&#x80FD;&#x95EE;&#x9898;&#x4F1A;&#x964D;&#x4F4E;&#x53E6;&#x4E00;&#x65B9;&#x9762;&#x7684;&#x6027;&#x80FD;&#x3002;</p>
+<p>&#x6211;&#x4EEC;&#x5C06;&#x4F7F;&#x7528;&#x4E24;&#x4E2A;&#x5DE5;&#x5177;&#x6765;&#x5E2E;&#x52A9;&#x6211;&#x4EEC;&#x7406;&#x89E3;&#x548C;&#x4FEE;&#x590D;&#x6211;&#x4EEC;&#x7684;&#x6E32;&#x67D3;&#x6027;&#x80FD;&#x95EE;&#x9898;&#xFF1A;<strong>Profiler window</strong> &#x548C; <strong>Frame Debugger</strong> &#x3002;&#x8FD9;&#x4E24;&#x4E2A;&#x5DE5;&#x5177;&#x90FD;&#x662F;Unity&#x5185;&#x7F6E;&#x7684;&#x3002;</p>
+<h2 id="Profiler-window"><a href="#Profiler-window" class="headerlink" title="Profiler window"></a>Profiler window</h2><p>Profiler window&#x5141;&#x8BB8;&#x6211;&#x4EEC;&#x67E5;&#x770B;&#x5173;&#x4E8E;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x6267;&#x884C;&#x60C5;&#x51B5;&#x7684;&#x5B9E;&#x65F6;&#x6570;&#x636E;&#x3002;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;Profiler window&#x5DE5;&#x5177;&#x67E5;&#x770B;&#x5F88;&#x591A;&#x65B9;&#x9762;&#x7684;&#x6570;&#x636E;&#xFF0C;&#x5305;&#x62EC;&#x5185;&#x5B58;&#x4F7F;&#x7528;&#xFF0C;&#x6E32;&#x67D3;&#x7BA1;&#x7EBF;&#x548C;&#x7528;&#x6237;&#x811A;&#x672C;&#x7684;&#x6027;&#x80FD;&#x3002;</p>
+<p>&#x5982;&#x679C;&#x4F60;&#x5BF9;Profiler window&#x8FD8;&#x4E0D;&#x719F;&#x6089;&#xFF0C;<a href="https://docs.unity3d.com/Manual/ProfilerWindow.html?_ga=2.239361802.801370543.1512275945-1497166853.1503199345" target="_blank" rel="external">&#x8FD9;&#x4E2A;Unity&#x624B;&#x518C;&#x7684;&#x9875;&#x9762;</a>&#x662F;&#x4E00;&#x4E2A;&#x975E;&#x5E38;&#x597D;&#x7684;&#x4ECB;&#x7ECD;&#xFF0C;<a href="https://unity3d.com/learn/tutorials/temas/performance-optimization/profiler-window?playlist=44069" target="_blank" rel="external">&#x8FD9;&#x4E2A;&#x6559;&#x7A0B;</a>&#x8BE6;&#x7EC6;&#x5C55;&#x793A;&#x4E86;&#x600E;&#x6837;&#x4F7F;&#x7528;&#x8FD9;&#x4E2A;&#x5DE5;&#x5177;&#x3002;</p>
+<h2 id="Frame-Debugger"><a href="#Frame-Debugger" class="headerlink" title="Frame Debugger"></a>Frame Debugger</h2><p>Frame Debugger&#x53EF;&#x4EE5;&#x8BA9;&#x6211;&#x4EEC;&#x67E5;&#x770B;&#x4E00;&#x5E27;&#x662F;&#x600E;&#x6837;&#x4E00;&#x6B65;&#x4E00;&#x6B65;&#x6E32;&#x67D3;&#x51FA;&#x6765;&#x7684;&#x3002;&#x4F7F;&#x7528;Frame Debugger&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x770B;&#x5230;&#x5F88;&#x591A;&#x8BE6;&#x7EC6;&#x7684;&#x4FE1;&#x606F;&#xFF0C;&#x4F8B;&#x5982;&#x6BCF;&#x4E00;&#x4E2A;draw call&#x4E2D;&#x6E32;&#x67D3;&#x7684;&#x5185;&#x5BB9;&#xFF0C;&#x6CA1;&#x4E00;&#x4E2A;draw call&#x7684;&#x7740;&#x8272;&#x5668;&#x7684;&#x5C5E;&#x6027;&#x548C;&#x53D1;&#x9001;&#x5230;GPU&#x7684;&#x65F6;&#x95F4;&#x987A;&#x5E8F;&#x3002;&#x8FD9;&#x4E9B;&#x4FE1;&#x606F;&#x5E2E;&#x52A9;&#x6211;&#x4EEC;&#x53BB;&#x7406;&#x89E3;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x600E;&#x6837;&#x88AB;&#x6E32;&#x67D3;&#x7684;&#x540C;&#x65F6;&#x77E5;&#x9053;&#x6211;&#x4EEC;&#x9700;&#x8981;&#x63D0;&#x9AD8;&#x6027;&#x80FD;&#x7684;&#x5730;&#x65B9;&#x3002;</p>
+<p>&#x5982;&#x679C;&#x4F60;&#x5BF9;Frame Debugger&#x8FD8;&#x4E0D;&#x719F;&#x6089;&#xFF0C;<a href="https://docs.unity3d.com/Manual/FrameDebugger.html?_ga=2.181688878.801370543.1512275945-1497166853.1503199345" target="_blank" rel="external">&#x8FD9;&#x4E2A;Unity&#x624B;&#x518C;&#x9875;&#x9762;</a>&#x662F;&#x4E00;&#x4E2A;&#x975E;&#x5E38;&#x6709;&#x7528;&#x7684;&#x4ECB;&#x7ECD;&#x5B83;&#x662F;&#x600E;&#x6837;&#x5DE5;&#x4F5C;&#x7684;&#xFF0C;<a href="https://unity3d.com/learn/tutorials/topics/graphics/frame-debugger" target="_blank" rel="external">&#x8FD9;&#x4E2A;&#x89C6;&#x9891;&#x6559;&#x7A0B;</a>&#x5C55;&#x793A;&#x4E86;&#x5B83;&#x600E;&#x6837;&#x4F7F;&#x7528;&#x3002;</p>
+<h2 id="&#x786E;&#x5B9A;&#x5BFC;&#x81F4;&#x6027;&#x80FD;&#x95EE;&#x9898;&#x7684;&#x539F;&#x56E0;"><a href="#&#x786E;&#x5B9A;&#x5BFC;&#x81F4;&#x6027;&#x80FD;&#x95EE;&#x9898;&#x7684;&#x539F;&#x56E0;" class="headerlink" title="&#x786E;&#x5B9A;&#x5BFC;&#x81F4;&#x6027;&#x80FD;&#x95EE;&#x9898;&#x7684;&#x539F;&#x56E0;"></a>&#x786E;&#x5B9A;&#x5BFC;&#x81F4;&#x6027;&#x80FD;&#x95EE;&#x9898;&#x7684;&#x539F;&#x56E0;</h2><p>&#x5728;&#x6211;&#x4EEC;&#x5C1D;&#x8BD5;&#x6539;&#x8FDB;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x7684;&#x6E32;&#x67D3;&#x6027;&#x80FD;&#x4E4B;&#x524D;&#xFF0C;&#x6211;&#x4EEC;&#x5FC5;&#x987B;&#x5148;&#x786E;&#x5B9A;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x8FD0;&#x884C;&#x6162;&#x662F;&#x7531;&#x4E8E;&#x6E32;&#x67D3;&#x95EE;&#x9898;&#x5BFC;&#x81F4;&#x7684;&#x3002;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x7684;&#x8FD0;&#x884C;&#x6162;&#x7684;&#x539F;&#x56E0;&#x662F;&#x7531;&#x4E8E;&#x7528;&#x6237;&#x7684;&#x811A;&#x672C;&#x8FC7;&#x4E8E;&#x590D;&#x6742;&#x5BFC;&#x81F4;&#x7684;&#x90A3;&#x4E48;&#x5C1D;&#x8BD5;&#x7740;&#x4F18;&#x5316;&#x6E32;&#x67D3;&#x6027;&#x80FD;&#x662F;&#x6CA1;&#x6709;&#x610F;&#x4E49;&#x7684;&#xFF01;&#x5982;&#x679C;&#x4F60;&#x8FD8;&#x4E0D;&#x786E;&#x5B9A;&#x4F60;&#x7684;&#x6027;&#x80FD;&#x95EE;&#x9898;&#x662F;&#x5426;&#x548C;&#x6E32;&#x67D3;&#x6709;&#x5173;&#xFF0C;&#x4F60;&#x5E94;&#x8BE5;&#x5148;&#x770B;&#x770B;<a href="https://unity3d.com/learn/tutorials/temas/performance-optimization/diagnosing-performance-problems-using-profiler-window?playlist=44069" target="_blank" rel="external">&#x8FD9;&#x4E2A;&#x6559;&#x7A0B;</a>&#x3002;</p>
+<p>&#x4E00;&#x65E6;&#x6211;&#x4EEC;&#x786E;&#x5B9A;&#x4E86;&#x6211;&#x4EEC;&#x7684;&#x95EE;&#x9898;&#x662F;&#x548C;&#x6E32;&#x67D3;&#x76F8;&#x5173;&#x7684;&#xFF0C;&#x6211;&#x4EEC;&#x5FC5;&#x987B;&#x5148;&#x786E;&#x5B9A;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x662F;CPU&#x6027;&#x80FD;&#x53D7;&#x9650;&#x7684;&#x8FD8;&#x662F;GPU&#x6027;&#x80FD;&#x53D7;&#x9650;&#x7684;&#x3002;&#x4E0D;&#x540C;&#x7684;&#x95EE;&#x9898;&#x9700;&#x8981;&#x4E0D;&#x540C;&#x7684;&#x89E3;&#x51B3;&#x65B9;&#x6848;&#xFF0C;&#x6240;&#x4EE5;&#x5728;&#x89E3;&#x51B3;&#x95EE;&#x9898;&#x4E4B;&#x524D;&#x9996;&#x5148;&#x5F97;&#x7406;&#x89E3;&#x95EE;&#x9898;&#x4EA7;&#x751F;&#x7684;&#x539F;&#x56E0;&#x3002;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x8FD8;&#x4E0D;&#x786E;&#x5B9A;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x662F;CPU&#x6027;&#x80FD;&#x53D7;&#x9650;&#x7684;&#x8FD8;&#x662F;GPU&#x6027;&#x80FD;&#x53D7;&#x9650;&#x7684;&#xFF0C;&#x4F60;&#x5E94;&#x8BE5;&#x5148;&#x770B;&#x770B;<a href="https://unity3d.com/learn/tutorials/temas/performance-optimization/diagnosing-performance-problems-using-profiler-window?playlist=44069" target="_blank" rel="external">&#x8FD9;&#x4E2A;&#x6559;&#x7A0B;</a>&#x3002;</p>
+<p>&#x5982;&#x679C;&#x6211;&#x4EEC;&#x786E;&#x5B9A;&#x6211;&#x4EEC;&#x7684;&#x95EE;&#x9898;&#x662F;&#x548C;&#x6E32;&#x67D3;&#x6709;&#x5173;&#x540C;&#x65F6;&#x6211;&#x4EEC;&#x77E5;&#x9053;&#x4E86;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x662F;CPU&#x6027;&#x80FD;&#x53D7;&#x9650;&#x8FD8;&#x662F;GPU&#x6027;&#x80FD;&#x53D7;&#x9650;&#x7684;&#xFF0C;&#x6211;&#x4EEC;&#x5C31;&#x5DF2;&#x7ECF;&#x51C6;&#x5907;&#x597D;&#x4E86;&#x3002;</p>
+<h1 id="CPU&#x6027;&#x80FD;&#x53D7;&#x9650;"><a href="#CPU&#x6027;&#x80FD;&#x53D7;&#x9650;" class="headerlink" title="CPU&#x6027;&#x80FD;&#x53D7;&#x9650;"></a>CPU&#x6027;&#x80FD;&#x53D7;&#x9650;</h1><p> &#x4E00;&#x822C;&#x6765;&#x8BB2;&#xFF0C;&#x4E3A;&#x4E86;&#x6E32;&#x67D3;&#x4E00;&#x5E27;CPU&#x5FC5;&#x987B;&#x6267;&#x884C;&#x7684;&#x5DE5;&#x4F5C;&#x53EF;&#x5206;&#x4E3A;&#x4E09;&#x4E2A;&#x7C7B;&#x522B;:</p>
+<ul class="ui list">
+<li>&#x51B3;&#x5B9A;&#x4E00;&#x5B9A;&#x4F1A;&#x7ED8;&#x5236;&#x7684;&#x5185;&#x5BB9;</li>
+<li>&#x51C6;&#x5907;&#x53D1;&#x9001;&#x5230;GPU&#x7684;&#x547D;&#x4EE4;</li>
+<li>&#x53D1;&#x9001;&#x547D;&#x4EE4;&#x53D1;GPU</li>
+</ul>
+<p>&#x8FD9;&#x4E9B;&#x5E7F;&#x4E49;&#x7684;&#x7C7B;&#x522B;&#x5305;&#x542B;&#x4E86;&#x5F88;&#x591A;&#x5355;&#x72EC;&#x7684;&#x4EFB;&#x52A1;&#x5E76;&#x4E14;&#x8FD9;&#x4E9B;&#x4EFB;&#x52A1;&#x53EF;&#x80FD;&#x5728;&#x591A;&#x7EBF;&#x7A0B;&#x4E2D;&#x6267;&#x884C;&#x3002;&#x7EBF;&#x7A0B;&#x5141;&#x8BB8;&#x5355;&#x72EC;&#x7684;&#x4EFB;&#x52A1;&#x540C;&#x65F6;&#x8FD0;&#x884C;&#xFF1B;&#x7136;&#x800C;&#x4E00;&#x4E2A;&#x7EBF;&#x7A0B;&#x6267;&#x884C;&#x4E00;&#x4E2A;&#x4EFB;&#x52A1;&#xFF0C;&#x53E6;&#x5916;&#x4E00;&#x4E2A;&#x7EBF;&#x7A0B;&#x53EF;&#x4EE5;&#x5B8C;&#x5168;&#x72EC;&#x7ACB;&#x7684;&#x6267;&#x884C;&#x4EFB;&#x52A1;&#x3002;&#x8FD9;&#x610F;&#x5473;&#x7740;&#x4EFB;&#x52A1;&#x7684;&#x5904;&#x7406;&#x53EF;&#x4EE5;&#x66F4;&#x52A0;&#x7684;&#x5FEB;&#x901F;&#x3002;&#x5F53;&#x6E32;&#x67D3;&#x7684;&#x4EFB;&#x52A1;&#x5206;&#x5F00;&#x5728;&#x4E0D;&#x540C;&#x7684;&#x7EBF;&#x7A0B;&#x4E0A;&#x6267;&#x884C;&#xFF0C;&#x8FD9;&#x5C31;&#x662F;&#x6240;&#x8C13;&#x7684;<strong>&#x591A;&#x7EBF;&#x7A0B;&#x6E32;&#x67D3;</strong>;</p>
+<p>&#x5728;Unity&#x7684;&#x6E32;&#x67D3;&#x8FC7;&#x7A0B;&#x4E2D;&#x6709;&#x4E09;&#x79CD;&#x7C7B;&#x578B;&#x7684;&#x7EBF;&#x7A0B;: <strong>&#x4E3B;&#x7EBF;&#x7A0B;</strong>&#xFF0C;<strong>&#x6E32;&#x67D3;&#x7EBF;&#x7A0B;</strong>&#x548C;<strong>&#x8F85;&#x52A9;&#x7EBF;&#x7A0B;(worker threads)</strong>&#x3002;&#x4E3B;&#x7EBF;&#x7A0B;&#x662F;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x4E2D;CPU&#x5904;&#x7406;&#x4EFB;&#x52A1;&#x7684;&#x4E3B;&#x8981;&#x7684;&#x5730;&#x65B9;&#xFF0C;&#x5305;&#x62EC;&#x4E00;&#x4E9B;&#x6E32;&#x67D3;&#x7684;&#x4EFB;&#x52A1;&#x3002;&#x6E32;&#x67D3;&#x7EBF;&#x7A0B;&#x662F;&#x6BD4;&#x8F83;&#x7279;&#x6B8A;&#x7684;&#x7EBF;&#x7A0B;&#xFF0C;&#x5B83;&#x7684;&#x5DE5;&#x4F5C;&#x662F;&#x53D1;&#x9001;&#x6E32;&#x67D3;&#x547D;&#x4EE4;&#x5230;GPU&#x3002;&#x8F85;&#x52A9;&#x7EBF;&#x7A0B;&#x5904;&#x7406;&#x6BCF;&#x4E2A;&#x5355;&#x72EC;&#x7684;&#x4EFB;&#x52A1;&#xFF0C;&#x4F8B;&#x5982;&#x88C1;&#x526A;&#x6216;&#x8005;mesh&#x7684;&#x8499;&#x76AE;&#x3002;&#x54EA;&#x4E2A;&#x4EFB;&#x52A1;&#x7531;&#x54EA;&#x4E2A;&#x7EBF;&#x7A0B;&#x6765;&#x5904;&#x7406;&#x8FD9;&#x53D6;&#x51B3;&#x4E8E;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x8BBE;&#x7F6E;&#x548C;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x8FD0;&#x884C;&#x7684;&#x786C;&#x4EF6;&#x3002;&#x4F8B;&#x5982;&#xFF0C;&#x6211;&#x4EEC;&#x7684;&#x76EE;&#x6807;&#x786C;&#x4EF6;&#x6709;&#x66F4;&#x591A;&#x7684;CPU&#x6838;&#x5FC3;&#xFF0C;&#x5C31;&#x6709;&#x8D8A;&#x591A;&#x7684;&#x8F85;&#x52A9;&#x7EBF;&#x7A0B;&#x88AB;&#x5206;&#x914D;&#x3002;&#x57FA;&#x4E8E;&#x8FD9;&#x4E2A;&#x539F;&#x56E0;&#xFF0C;&#x5728;&#x76EE;&#x6807;&#x786C;&#x4EF6;&#x4E0A;&#x6765;&#x5256;&#x6790;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x662F;&#x975E;&#x5E38;&#x91CD;&#x8981;&#x7684;&#xFF1B;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x53EF;&#x80FD;&#x5728;&#x4E0D;&#x540C;&#x7684;&#x5E73;&#x53F0;&#x4E0A;&#x8868;&#x73B0;&#x7684;&#x975E;&#x5E38;&#x4E0D;&#x540C;&#x3002;</p>
+<p>&#x7531;&#x4E8E;&#x591A;&#x7EBF;&#x7A0B;&#x6E32;&#x67D3;&#x6BD4;&#x8F83;&#x590D;&#x6742;&#x5E76;&#x4E14;&#x4F9D;&#x8D56;&#x4E8E;&#x4E0D;&#x540C;&#x7684;&#x786C;&#x4EF6;&#xFF0C;&#x5728;&#x6211;&#x4EEC;&#x6539;&#x8FDB;&#x6027;&#x80FD;&#x4E4B;&#x524D;&#x6211;&#x4EEC;&#x5FC5;&#x987B;&#x660E;&#x767D;&#x54EA;&#x4E2A;&#x7EBF;&#x7A0B;&#x662F;&#x9020;&#x6210;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x79F0;&#x4E3A;CPU&#x6027;&#x80FD;&#x53D7;&#x9650;&#x7684;&#x539F;&#x56E0;&#x3002;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x8FD0;&#x884C;&#x6162;&#x662F;&#x7531;&#x4E8E;&#x88C1;&#x526A;&#x64CD;&#x4F5C;&#x5728;&#x4E00;&#x4E2A;&#x7EBF;&#x7A0B;&#x4E0A;&#x82B1;&#x8D39;&#x4E86;&#x592A;&#x591A;&#x7684;&#x65F6;&#x95F4;&#xFF0C;&#x90A3;&#x4E48;&#x5B83;&#x5C31;&#x4E0D;&#x80FD;&#x5E2E;&#x52A9;&#x6211;&#x4EEC;&#x51CF;&#x5C11;&#x5728;&#x4E0D;&#x540C;&#x7EBF;&#x7A0B;&#x4E0A;&#x53D1;&#x9001;&#x547D;&#x4EE4;&#x5230;GPU&#x6240;&#x82B1;&#x8D39;&#x7684;&#x65F6;&#x95F4;(&#x8BD1;:&#x56E0;&#x4E3A;&#x88C1;&#x526A;&#x64CD;&#x4F5C;&#x82B1;&#x8D39;&#x7684;&#x65F6;&#x95F4;&#x53EF;&#x80FD;&#x8FDC;&#x8D85;&#x8FC7;&#x8F85;&#x52A9;&#x7EBF;&#x7A0B;&#x6240;&#x8282;&#x7701;&#x7684;&#x65F6;&#x95F4;)&#x3002;</p>
+<p><strong>&#x6CE8;</strong>&#xFF1A;&#x5E76;&#x4E0D;&#x662F;&#x6240;&#x6709;&#x7684;&#x5E73;&#x53F0;&#x90FD;&#x652F;&#x6301;&#x591A;&#x7EBF;&#x7A0B;&#x6E32;&#x67D3;&#xFF1B;&#x5728;&#x5199;&#x8FD9;&#x7BC7;&#x6587;&#x7AE0;&#x7684;&#x65F6;&#x5019;&#xFF0C;WebGL&#x8FD8;&#x6CA1;&#x6709;&#x652F;&#x6301;&#x8FD9;&#x4E2A;&#x7279;&#x6027;&#x3002;&#x5728;&#x4E0D;&#x652F;&#x6301;&#x591A;&#x7EBF;&#x7A0B;&#x6E32;&#x67D3;&#x7684;&#x5E73;&#x53F0;&#x4E0A;&#xFF0C;&#x6240;&#x6709;&#x7684;CPU&#x4EFB;&#x52A1;&#x90FD;&#x5728;&#x540C;&#x4E00;&#x4E2A;&#x7EBF;&#x7A0B;&#x91CC;&#x9762;&#x5904;&#x7406;&#x3002;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x662F;&#x5728;&#x8FD9;&#x79CD;&#x5E73;&#x53F0;&#x4E0A;CPU&#x6027;&#x80FD;&#x53D7;&#x9650;&#xFF0C;&#x4F18;&#x5316;&#x6240;&#x6709;&#x7684;CPU&#x4EFB;&#x52A1;&#x5C06;&#x4F1A;&#x6539;&#x8FDB;CPU&#x7684;&#x6027;&#x80FD;&#x3002;&#x5982;&#x679C;&#x8FD9;&#x4E2A;&#x60C5;&#x51B5;&#x53D1;&#x751F;&#x5728;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x4E2D;&#xFF0C;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x9605;&#x8BFB;&#x63A5;&#x4E0B;&#x6765;&#x7684;&#x6240;&#x6709;&#x90E8;&#x5206;&#x540C;&#x65F6;&#x601D;&#x8003;&#x54EA;&#x4E9B;&#x4F18;&#x5316;&#x53EF;&#x80FD;&#x6700;&#x9002;&#x5408;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x3002;</p>
+<h2 id="&#x56FE;&#x5F62;&#x5DE5;&#x4F5C;"><a href="#&#x56FE;&#x5F62;&#x5DE5;&#x4F5C;" class="headerlink" title="&#x56FE;&#x5F62;&#x5DE5;&#x4F5C;"></a>&#x56FE;&#x5F62;&#x5DE5;&#x4F5C;</h2><p>&#x5728;<strong>Player Settings</strong>&#x91CC;&#x9762;&#x7684;<a href="https://docs.unity3d.com/Manual/class-PlayerSettingsStandalone.html?_ga=2.184843040.801370543.1512275945-1497166853.1503199345" target="_blank" rel="external">&#x56FE;&#x5F62;&#x5DE5;&#x4F5C;</a>&#x7684;&#x8BBE;&#x7F6E;&#x9879;&#x51B3;&#x5B9A;&#x4E86;Unity&#x662F;&#x5426;&#x4F7F;&#x7528;&#x8F85;&#x52A9;&#x7EBF;&#x7A0B;&#x6765;&#x5904;&#x7406;&#x539F;&#x672C;&#x9700;&#x8981;&#x5728;&#x4E3B;&#x7EBF;&#x7A0B;&#x4E0A;&#x5904;&#x7406;&#x7684;&#x6E32;&#x67D3;&#x4EFB;&#x52A1;&#xFF0C;&#x5982;&#x679C;&#x4E0D;&#x9009;&#x62E9;&#x5219;&#x8FD9;&#x4E9B;&#x5DE5;&#x4F5C;&#x5728;&#x4E3B;&#x7EBF;&#x7A0B;&#x91CC;&#x9762;&#x5904;&#x7406;&#x3002;&#x5728;&#x8FD9;&#x4E2A;&#x7279;&#x6027;&#x53EF;&#x7528;&#x7684;&#x5E73;&#x53F0;&#x4E0A;&#xFF0C;&#x5B83;&#x53EF;&#x4EE5;&#x5E26;&#x6765;&#x76F8;&#x5F53;&#x5927;&#x7684;&#x6027;&#x80FD;&#x7684;&#x63D0;&#x5347;&#x3002;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x5206;&#x6790;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x5728;&#x56FE;&#x5F62;&#x9009;&#x9879;&#x5F00;&#x542F;&#x548C;&#x4E0D;&#x5F00;&#x542F;&#x7684;&#x60C5;&#x51B5;&#xFF0C;&#x89C2;&#x5BDF;&#x5B83;&#x7ED9;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x6027;&#x80FD;&#x5E26;&#x6765;&#x7684;&#x5F71;&#x54CD;&#x3002;</p>
+<h2 id="&#x627E;&#x51FA;&#x5BFC;&#x81F4;&#x6027;&#x80FD;&#x95EE;&#x9898;&#x7684;&#x4EFB;&#x52A1;"><a href="#&#x627E;&#x51FA;&#x5BFC;&#x81F4;&#x6027;&#x80FD;&#x95EE;&#x9898;&#x7684;&#x4EFB;&#x52A1;" class="headerlink" title="&#x627E;&#x51FA;&#x5BFC;&#x81F4;&#x6027;&#x80FD;&#x95EE;&#x9898;&#x7684;&#x4EFB;&#x52A1;"></a>&#x627E;&#x51FA;&#x5BFC;&#x81F4;&#x6027;&#x80FD;&#x95EE;&#x9898;&#x7684;&#x4EFB;&#x52A1;</h2><p>&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;Profiler window&#x6765;&#x786E;&#x5B9A;&#x5BFC;&#x81F4;&#x6211;&#x4EEC;&#x6E38;&#x620F;CPU&#x6027;&#x80FD;&#x53D7;&#x9650;&#x7684;&#x4EFB;&#x52A1;&#x3002;&#x8FD9;&#x4E2A;&#x6559;&#x7A0B;&#x5C55;&#x793A;&#x4E86;&#x600E;&#x6837;&#x53BB;&#x786E;&#x5B9A;&#x95EE;&#x9898;&#x7684;&#x4F4D;&#x7F6E;&#x3002;</p>
+<p>&#x73B0;&#x5728;&#x6211;&#x4EEC;&#x4E86;&#x89E3;&#x4E86;&#x54EA;&#x4E9B;&#x4EFB;&#x52A1;&#x5BFC;&#x81F4;&#x4E86;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x7684;CPU&#x6027;&#x80FD;&#x53D7;&#x9650;&#xFF0C;&#x8BA9;&#x6211;&#x4EEC;&#x6765;&#x770B;&#x770B;&#x4E00;&#x4E9B;&#x5E38;&#x89C1;&#x95EE;&#x9898;&#x548C;&#x8FD9;&#x4E9B;&#x95EE;&#x9898;&#x7684;&#x89E3;&#x51B3;&#x6280;&#x672F;&#x3002;</p>
+<h2 id="&#x53D1;&#x9001;&#x547D;&#x4EE4;&#x5230;GPU"><a href="#&#x53D1;&#x9001;&#x547D;&#x4EE4;&#x5230;GPU" class="headerlink" title="&#x53D1;&#x9001;&#x547D;&#x4EE4;&#x5230;GPU"></a>&#x53D1;&#x9001;&#x547D;&#x4EE4;&#x5230;GPU</h2><p>&#x53D1;&#x9001;&#x547D;&#x4EE4;&#x5230;GPU&#x82B1;&#x8D39;&#x7684;&#x65F6;&#x95F4;&#x662F;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x4E2D;&#x4E00;&#x4E2A;&#x6700;&#x666E;&#x904D;&#x7684;&#x5BFC;&#x81F4;CPU&#x6027;&#x80FD;&#x53D7;&#x9650;&#x7684;&#x539F;&#x56E0;&#x3002;&#x5728;&#x5927;&#x591A;&#x6570;&#x5E73;&#x53F0;&#x4E0A;&#x8FD9;&#x4E2A;&#x4EFB;&#x52A1;&#x662F;&#x5728;&#x6E32;&#x67D3;&#x7EBF;&#x7A0B;&#x6267;&#x884C;&#x7684;&#xFF0C;&#x5C3D;&#x7BA1;&#x5728;&#x4E00;&#x4E9B;&#x5E73;&#x53F0;(&#x4F8B;&#x5982;&#xFF0C;PS4)&#x53EF;&#x80FD;&#x4F7F;&#x7528;&#x8F85;&#x52A9;&#x7EBF;&#x7A0B;&#x6267;&#x884C;&#x3002;</p>
+<p>&#x53D1;&#x9001;&#x6E32;&#x67D3;&#x547D;&#x4EE4;&#x6253;&#x724C;GPU&#x65F6;&#x6700;&#x6D88;&#x8017;&#x6027;&#x80FD;&#x7684;&#x64CD;&#x4F5C;&#x662F;SetPass call&#x3002;&#x5982;&#x679C;&#x4F60;&#x7684;&#x6E38;&#x620F;CPU&#x6027;&#x80FD;&#x53D7;&#x9650;&#x662F;&#x7531;&#x4E8E;&#x5411;GPU&#x53D1;&#x9001;&#x547D;&#x4EE4;&#xFF0C;&#x51CF;&#x5C11;SetPass calls&#x7684;&#x6570;&#x91CF;&#x53EF;&#x80FD;&#x662F;&#x6700;&#x597D;&#x7684;&#x6539;&#x8FDB;&#x6027;&#x80FD;&#x7684;&#x9014;&#x5F84;&#x3002;</p>
+<p>&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x5728;Unity&#x7684;Profiler window&#x5DE5;&#x5177;&#x4E2D;&#x770B;&#x5230;&#x6709;&#x591A;&#x5C11;SetPass calls&#x548C;batches&#x88AB;&#x53D1;&#x9001;&#x5230;&#x6E32;&#x67D3;&#x5206;&#x6790;&#x5668;&#x91CC;&#x9762;&#x3002;&#x5728;&#x6E38;&#x620F;&#x6027;&#x80FD;&#x53D7;&#x5230;&#x5F71;&#x54CD;&#x4E4B;&#x524D;&#x53EF;&#x4EE5;&#x53D1;&#x9001;&#x591A;&#x5C11;&#x6570;&#x91CF;&#x7684;SetPass calls&#x547D;&#x540D;&#x8FD9;&#x53D6;&#x51B3;&#x4E8E;&#x76EE;&#x6807;&#x786C;&#x4EF6;&#xFF1B;&#x9AD8;&#x7AEF;&#x7684;&#x7535;&#x8111;&#x76F8;&#x6BD4;&#x4E8E;&#x624B;&#x673A;&#x80FD;&#x591F;&#x53D1;&#x9001;&#x66F4;&#x591A;&#x7684;SetPass calls&#x3002;</p>
+<p>SetPass calls&#x7684;&#x6570;&#x91CF;&#x548C;&#x5B83;&#x5173;&#x8054;&#x7684;batches&#x6570;&#x91CF;&#x53D6;&#x51B3;&#x4E8E;&#x51E0;&#x4E2A;&#x56E0;&#x7D20;&#xFF0C;&#x6211;&#x4EEC;&#x4F1A;&#x5728;&#x63A5;&#x4E0B;&#x6765;&#x7684;&#x5185;&#x5BB9;&#x8BE6;&#x7EC6;&#x7684;&#x8BA8;&#x8BBA;&#x8FD9;&#x51E0;&#x4E2A;&#x4E3B;&#x9898;&#x3002;&#x7136;&#x800C;&#xFF0C;&#x901A;&#x5E38;&#x60C5;&#x51B5;&#x662F;&#x8FD9;&#x6837;&#x7684;:</p>
+<ul class="ui list">
+<li>&#x51CF;&#x5C11;batches&#x7684;&#x6570;&#x91CF;&#x540C;&#x65F6;&#x6700;&#x597D;&#x4F7F;&#x66F4;&#x591A;&#x7684;&#x5BF9;&#x8C61;&#x5171;&#x4EAB;&#x540C;&#x4E00;&#x4E2A;&#x6E32;&#x67D3;&#x7684;&#x72B6;&#x6001;&#x3002;&#x5728;&#x5927;&#x591A;&#x6570;&#x60C5;&#x51B5;&#x4E0B;&#x53EF;&#x4EE5;&#x51CF;&#x5C11;SetPass calls&#x7684;&#x6570;&#x91CF;&#x3002;</li>
+<li>&#x51CF;&#x5C11;SetPass calls&#x7684;&#x6570;&#x91CF;&#xFF0C;&#x5728;&#x5927;&#x591A;&#x6570;&#x60C5;&#x51B5;&#x4E0B;&#x53EF;&#x4EE5;&#x6539;&#x8FDB;CPU&#x7684;&#x6027;&#x80FD;&#x3002;</li>
+</ul>
+<p>&#x5982;&#x679C;&#x51CF;&#x5C11;&#x4E86;batches&#x7684;&#x6570;&#x91CF;&#x5E76;&#x6CA1;&#x6709;&#x964D;&#x4F4E;SetPass calls&#x7684;&#x6570;&#x91CF;&#xFF0C;&#x8FD9;&#x6837;&#x4EFB;&#x7136;&#x53EF;&#x80FD;&#x5E26;&#x6765;&#x6027;&#x80FD;&#x4E0A;&#x7684;&#x6539;&#x8FDB;&#x3002;&#x8FD9;&#x662F;&#x56E0;&#x4E3A;CPU&#x80FD;&#x591F;&#x66F4;&#x6709;&#x6548;&#x7387;&#x7684;&#x5904;&#x7406;&#x7684;batch&#xFF0C;&#x5373;&#x4F7F;batches&#x5305;&#x542B;&#x76F8;&#x540C;&#x6570;&#x91CF;&#x7684;mesh&#x6570;&#x636E;&#x3002;[FIXME]</p>
+<p>&#x4E00;&#x822C;&#x6765;&#x8BF4;&#x6709;&#x4E09;&#x4E2A;&#x6280;&#x672F;&#x51CF;&#x5C11;batches&#x548C;SetPass calls&#x7684;&#x6570;&#x91CF;&#x3002;&#x6211;&#x4EEC;&#x5C06;&#x66F4;&#x52A0;&#x6DF1;&#x5165;&#x7684;&#x7814;&#x7A76;&#x4E0B;&#x9762;&#x7684;&#x6BCF;&#x4E2A;&#x6280;&#x672F;&#xFF1A;</p>
+<ul class="ui list">
+<li>&#x51CF;&#x5C11;&#x6E32;&#x67D3;&#x5BF9;&#x8C61;&#x7684;&#x6570;&#x91CF;&#x5C06;&#x5F88;&#x6709;&#x53EF;&#x80FD;&#x51CF;&#x5C11;batches&#x548C;SetPass calls&#x7684;&#x6570;&#x91CF;&#x3002;</li>
+<li>&#x51CF;&#x5C11;&#x6BCF;&#x4E2A;&#x6700;&#x7EC8;&#x4F1A;&#x6E32;&#x67D3;&#x7684;&#x5BF9;&#x8C61;&#x7684;&#x6E32;&#x67D3;&#x65F6;&#x95F4;&#x901A;&#x5E38;&#x4F1A;&#x51CF;&#x5C11;SestPass calls&#x3002;</li>
+<li>&#x5408;&#x5E76;&#x9700;&#x8981;&#x6E32;&#x67D3;&#x7684;&#x5BF9;&#x8C61;&#x7684;&#x6570;&#x636E;&#x5230;&#x66F4;&#x5C11;&#x7684;batches&#x5C06;&#x4F1A;&#x51CF;&#x5C11;batches&#x7684;&#x6570;&#x91CF;&#x3002;</li>
+</ul>
+<p>&#x4E0D;&#x540C;&#x7684;&#x6280;&#x672F;&#x9002;&#x7528;&#x4E8E;&#x4E0D;&#x540C;&#x7684;&#x6E38;&#x620F;&#xFF0C;&#x6240;&#x4EE5;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x8003;&#x8651;&#x8FD9;&#x4E9B;&#x6240;&#x6709;&#x7684;&#x9009;&#x9879;&#x6765;&#x51B3;&#x5B9A;&#x54EA;&#x4E2A;&#x6280;&#x672F;&#x5728;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x548C;&#x5B9E;&#x9A8C;&#x4E2D;&#x6709;&#x6548;&#x3002;</p>
+<h3 id="&#x51CF;&#x5C11;&#x6E32;&#x67D3;&#x5BF9;&#x8C61;&#x7684;&#x6570;&#x91CF;"><a href="#&#x51CF;&#x5C11;&#x6E32;&#x67D3;&#x5BF9;&#x8C61;&#x7684;&#x6570;&#x91CF;" class="headerlink" title="&#x51CF;&#x5C11;&#x6E32;&#x67D3;&#x5BF9;&#x8C61;&#x7684;&#x6570;&#x91CF;"></a>&#x51CF;&#x5C11;&#x6E32;&#x67D3;&#x5BF9;&#x8C61;&#x7684;&#x6570;&#x91CF;</h3><p>&#x51CF;&#x5C11;&#x6700;&#x7EC8;&#x4F1A;&#x6E32;&#x67D3;&#x7684;&#x5BF9;&#x8C61;&#x7684;&#x6570;&#x91CF;&#x662F;&#x51CF;&#x5C11;batches&#x548C;SetPass calls&#x6570;&#x91CF;&#x7684;&#x6700;&#x7B80;&#x5355;&#x7684;&#x9014;&#x5F84;&#x3002;&#x8FD9;&#x91CC;&#x6709;&#x51E0;&#x4E2A;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x540C;&#x6765;&#x51CF;&#x5C11;&#x6E32;&#x67D3;&#x5BF9;&#x8C61;&#x7684;&#x6280;&#x672F;&#x3002;</p>
+<ul class="ui list">
+<li>&#x7B80;&#x5355;&#x7684;&#x51CF;&#x5C11;&#x5728;&#x6211;&#x4EEC;&#x573A;&#x666F;&#x4E2D;&#x7684;&#x53EF;&#x89C1;&#x5BF9;&#x8C61;&#x7684;&#x6570;&#x91CF;&#x662F;&#x4E00;&#x4E2A;&#x6709;&#x6548;&#x7684;&#x89E3;&#x51B3;&#x6280;&#x672F;&#x3002;&#x4F8B;&#x5982;&#xFF0C;&#x5047;&#x8BBE;&#x6211;&#x4EEC;&#x5728;&#x4EBA;&#x7FA4;&#x4E2D;&#x6E32;&#x67D3;&#x4E86;&#x5927;&#x91CF;&#x7684;&#x4E0D;&#x540C;&#x7684;&#x89D2;&#x8272;&#xFF0C;&#x6211;&#x4EEC;&#x5C1D;&#x8BD5;&#x7740;&#x9010;&#x6E10;&#x51CF;&#x5C11;&#x573A;&#x666F;&#x4E2D;&#x7684;&#x89D2;&#x8272;&#x3002;&#x5982;&#x679C;&#x573A;&#x666F;&#x770B;&#x8D77;&#x6765;&#x9010;&#x6E10;&#x66F4;&#x597D;&#x540C;&#x65F6;&#x6027;&#x80FD;&#x9010;&#x6E10;&#x63D0;&#x9AD8;&#xFF0C;&#x90A3;&#x4E48;&#x8FD9;&#x4E2A;&#x6280;&#x672F;&#x5C06;&#x6BD4;&#x66F4;&#x52A0;&#x590D;&#x6742;&#x5728;&#x6280;&#x672F;&#x66F4;&#x52A0;&#x5FEB;&#x901F;&#x7684;&#x89E3;&#x51B3;&#x6211;&#x4EEC;&#x7684;&#x95EE;&#x9898;&#x3002;</li>
+<li>&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x6444;&#x50CF;&#x673A;&#x7684;<a href="https://docs.unity3d.com/Manual/class-Camera.html" target="_blank" rel="external">&#x8FDC;&#x88C1;&#x526A;&#x9762;</a>&#x6765;&#x964D;&#x4F4E;&#x6211;&#x4EEC;&#x7684;&#x6444;&#x50CF;&#x673A;&#x7684;&#x7ED8;&#x5236;&#x8DDD;&#x79BB;&#x3002;&#x5982;&#x679C;&#x5BF9;&#x8C61;&#x7684;&#x8DDD;&#x79BB;&#x8D85;&#x51FA;&#x4E86;&#x6444;&#x50CF;&#x673A;&#x8BBE;&#x7F6E;&#x7684;&#x8FD9;&#x4E2A;&#x5C5E;&#x6027;&#x7684;&#x8DDD;&#x79BB;&#xFF0C;&#x90A3;&#x4E48;&#x8FD9;&#x4E2A;&#x5BF9;&#x8C61;&#x5C31;&#x4E0D;&#x4F1A;&#x88AB;&#x6E32;&#x67D3;&#x3002;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x60F3;&#x4F2A;&#x88C5;&#x8FD9;&#x4E9B;&#x56E0;&#x4E3A;&#x8D85;&#x51FA;&#x4E86;&#x6444;&#x50CF;&#x673A;&#x7684;&#x8FDC;&#x88C1;&#x526A;&#x9762;&#x800C;&#x4E0D;&#x53EF;&#x89C1;&#x7684;&#x5BF9;&#x8C61;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x5C1D;&#x8BD5;&#x7528;<a href="https://docs.unity3d.com/Manual/GlobalIllumination.html?_ga=2.101796744.848221231.1512275915-741569329.1509691291" target="_blank" rel="external">&#x96FE;&#x6765;&#x906E;&#x4F4F;&#x8FD9;&#x4E9B;&#x5BF9;&#x8C61;</a>&#x3002;</li>
+<li>&#x5BF9;&#x4E8E;&#x57FA;&#x4E8E;&#x8DDD;&#x79BB;&#x6765;&#x9690;&#x85CF;&#x5BF9;&#x8C61;&#x66F4;&#x7EC6;&#x81F4;&#x7684;&#x505A;&#x6CD5;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x6211;&#x4EEC;&#x6444;&#x50CF;&#x673A;&#x7684;<a href="https://docs.unity3d.com/ScriptReference/Camera-layerCullDistances.html?_ga=2.131092358.848221231.1512275915-741569329.1509691291" target="_blank" rel="external">&#x5C42;&#x88C1;&#x526A;&#x8DDD;&#x79BB;</a>&#x5C5E;&#x6027;&#x4E3A;&#x4E0D;&#x540C;&#x5C42;&#x7684;&#x5BF9;&#x8C61;&#x63D0;&#x4F9B;&#x81EA;&#x5B9A;&#x4E49;&#x7684;&#x88C1;&#x526A;&#x8DDD;&#x79BB;&#x3002;&#x8FD9;&#x4E2A;&#x6280;&#x672F;&#x5BF9;&#x4E8E;&#x6211;&#x4EEC;&#x6709;&#x5F88;&#x591A;&#x88C5;&#x9970;&#x7EC6;&#x8282;&#x7684;&#x524D;&#x666F;&#x662F;&#x4E2A;&#x975E;&#x5E38;&#x6709;&#x7528;&#x4F18;&#x5316;&#x6280;&#x672F;; &#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x628A;&#x8FD9;&#x4E9B;&#x7EC6;&#x8282;&#x5728;&#x6BD4;&#x5927;&#x578B;&#x7684;&#x5730;&#x5F62;&#x7684;&#x7279;&#x5F81;&#x70B9;&#x66F4;&#x77ED;&#x8DDD;&#x79BB;&#x7684;&#x65F6;&#x5019;&#x9690;&#x85CF;&#x3002;</li>
+<li>&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x4E00;&#x4E2A;&#x53EB;&#x505A;<a href="https://docs.unity3d.com/Manual/OcclusionCulling.html?_ga=2.61236005.848221231.1512275915-741569329.1509691291" target="_blank" rel="external">&#x5C01;&#x95ED;&#x88C1;&#x526A;</a>&#x7684;&#x6280;&#x672F;&#x53BB;&#x9690;&#x85CF;&#x90A3;&#x4E9B;&#x88AB;&#x5176;&#x4ED6;&#x5BF9;&#x8C61;&#x906E;&#x76D6;&#x4F4F;&#x7684;&#x5BF9;&#x8C61;&#x3002;&#x4F8B;&#x5982;&#xFF0C;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x573A;&#x666F;&#x4E0A;&#x6709;&#x4E00;&#x4E2A;&#x5F88;&#x5927;&#x7684;&#x5EFA;&#x7B51;&#x7269;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x5C01;&#x95ED;&#x88C1;&#x526A;&#x6765;&#x5173;&#x95ED;(disable)&#x5728;&#x8FD9;&#x4E2A;&#x5EFA;&#x7B51;&#x7269;&#x540E;&#x9762;&#x7684;&#x6E32;&#x67D3;&#x5BF9;&#x8C61;&#x3002;Unity&#x7684;&#x5C01;&#x95ED;&#x88C1;&#x526A;&#x5E76;&#x4E0D;&#x9002;&#x5408;&#x6240;&#x6709;&#x7684;&#x573A;&#x666F;&#xFF0C;&#x8FD9;&#x4E2A;&#x6280;&#x672F;&#x4F1A;&#x589E;&#x52A0;&#x989D;&#x5916;&#x7684;CPU&#x6D88;&#x8017;&#x548C;&#x66F4;&#x52A0;&#x590D;&#x6742;&#x7684;&#x8BBE;&#x7F6E;&#xFF0C;&#x4F46;&#x662F;&#x5B83;&#x786E;&#x5B9E;&#x80FD;&#x7ED9;&#x4E00;&#x4E9B;&#x573A;&#x666F;&#x5E26;&#x6765;&#x6027;&#x80FD;&#x4E0A;&#x7684;&#x6539;&#x5584;&#x3002;<a href="https://blogs.unity3d.com/cn/2013/12/26/occlusion-culling-in-unity-4-3-best-practices/?_ga=2.102262536.848221231.1512275915-741569329.1509691291" target="_blank" rel="external">&#x8FD9;&#x7BC7;Unity&#x53D1;&#x5E03;&#x7684;&#x5C01;&#x95ED;&#x88C1;&#x526A;&#x7684;&#x6700;&#x4F73;&#x5B9E;&#x8DF5;</a>&#x662F;&#x4E00;&#x7BC7;&#x5F88;&#x597D;&#x7684;&#x5173;&#x4E8E;&#x8FD9;&#x4E2A;&#x4E3B;&#x9898;&#x7684;&#x6307;&#x5BFC;&#x3002;&#x6B64;&#x5916;&#x4F7F;&#x7528;Unity&#x7684;&#x5C01;&#x95ED;&#x88C1;&#x526A;&#x6211;&#x4EEC;&#x4E5F;&#x53EF;&#x4EE5;&#x4EE5;&#x81EA;&#x5DF1;&#x7684;&#x65B9;&#x5F0F;&#x53BB;&#x624B;&#x52A8;&#x505C;&#x7528;(deactivating)&#x4E00;&#x4E9B;&#x6211;&#x4EEC;&#x77E5;&#x9053;&#x7528;&#x6237;&#x5DF2;&#x7ECF;&#x4E0D;&#x53EF;&#x89C1;&#x7684;&#x5BF9;&#x8C61;&#x3002;&#x4F8B;&#x5982;&#xFF0C;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x573A;&#x666F;&#x4E2D;&#x5305;&#x542B;&#x4E86;&#x7528;&#x6765;&#x8FC7;&#x573A;&#x52A8;&#x753B;&#x7528;&#x7684;&#x5BF9;&#x8C61;&#xFF0C;&#x4F46;&#x662F;&#x8FD9;&#x4E9B;&#x5BF9;&#x50CF;&#x5728;&#x8FC7;&#x573A;&#x52A8;&#x753B;&#x5C55;&#x73B0;&#x4E4B;&#x524D;&#x548C;&#x4E4B;&#x540E;&#x90FD;&#x4E0D;&#x53EF;&#x89C1;&#xFF0C;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x505C;&#x7528;(deactivate)&#x5B83;&#x4EEC;&#x3002;&#x901A;&#x5E38;&#x7ED3;&#x5408;&#x6211;&#x4EEC;&#x81EA;&#x5DF1;&#x7684;&#x6E38;&#x620F;&#x5185;&#x5BB9;&#x77E5;&#x8BC6;&#x6BD4;&#x8981;&#x6C42;Unity&#x6765;&#x89E3;&#x51B3;&#x6211;&#x4EEC;&#x7684;&#x95EE;&#x9898;&#x66F4;&#x52A0;&#x6709;&#x6548;&#x7387;&#x3002;</li>
+</ul>
+<h3 id="&#x51CF;&#x5C11;&#x6BCF;&#x4E2A;&#x6700;&#x7EC8;&#x4F1A;&#x6E32;&#x67D3;&#x7684;&#x5BF9;&#x8C61;&#x7684;&#x6E32;&#x67D3;&#x6B21;&#x6570;&#x3002;"><a href="#&#x51CF;&#x5C11;&#x6BCF;&#x4E2A;&#x6700;&#x7EC8;&#x4F1A;&#x6E32;&#x67D3;&#x7684;&#x5BF9;&#x8C61;&#x7684;&#x6E32;&#x67D3;&#x6B21;&#x6570;&#x3002;" class="headerlink" title="&#x51CF;&#x5C11;&#x6BCF;&#x4E2A;&#x6700;&#x7EC8;&#x4F1A;&#x6E32;&#x67D3;&#x7684;&#x5BF9;&#x8C61;&#x7684;&#x6E32;&#x67D3;&#x6B21;&#x6570;&#x3002;"></a>&#x51CF;&#x5C11;&#x6BCF;&#x4E2A;&#x6700;&#x7EC8;&#x4F1A;&#x6E32;&#x67D3;&#x7684;&#x5BF9;&#x8C61;&#x7684;&#x6E32;&#x67D3;&#x6B21;&#x6570;&#x3002;</h3><p>&#x5B9E;&#x65F6;&#x5149;&#x7167;&#x3001;&#x9634;&#x5F71;&#x548C;&#x53CD;&#x5C04;&#x4E3A;&#x6E38;&#x620F;&#x589E;&#x52A0;&#x4E86;&#x5F88;&#x597D;&#x7684;&#x73B0;&#x5B9E;&#x6548;&#x679C;&#xFF0C;&#x4F46;&#x662F;&#x8FD9;&#x4E9B;&#x6548;&#x679C;&#x975E;&#x5E38;&#x7684;&#x6D88;&#x8017;&#x6027;&#x80FD;&#x3002;&#x4F7F;&#x7528;&#x8FD9;&#x4E9B;&#x7279;&#x6027;&#x4F1A;&#x5E26;&#x6765;&#x5F88;&#x591A;&#x5BF9;&#x8C61;&#x88AB;&#x6E32;&#x67D3;&#x591A;&#x6B21;&#xFF0C;&#x8FD9;&#x4E9B;&#x76F8;&#x5F53;&#x5F71;&#x54CD;&#x6027;&#x80FD;&#x3002;</p>
+<p>&#x8FD9;&#x4E9B;&#x7279;&#x6027;&#x7684;&#x6027;&#x80FD;&#x5F71;&#x54CD;&#x53D6;&#x51B3;&#x4E8E;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x9009;&#x62E9;&#x7684;<em>rendering path</em>&#x3002;Rendering path &#x662F;&#x6307;&#x7ED8;&#x5236;&#x573A;&#x666F;&#x7684;&#x65F6;&#x5019;&#x5BF9;&#x8C61;&#x6267;&#x884C;&#x8BA1;&#x7B97;&#x7684;&#x987A;&#x5E8F;&#xFF0C;rendering path&#x4E4B;&#x95F4;&#x7684;&#x4E3B;&#x8981;&#x533A;&#x522B;&#x662F;&#x5B83;&#x4EEC;&#x662F;&#x600E;&#x6837;&#x5904;&#x7406;&#x5B9E;&#x65F6;&#x5149;&#x7167;&#x3001;&#x9634;&#x5F71;&#x548C;&#x53CD;&#x5C04;&#x7684;&#x3002;&#x4E00;&#x822C;&#x800C;&#x8A00;&#xFF0C;<strong>Deferred Rendering</strong> &#x53EF;&#x80FD;&#x662F;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x8FD0;&#x884C;&#x5728;&#x9AD8;&#x7AEF;&#x786C;&#x4EF6;&#x4E0A;&#x4F7F;&#x7528;&#x4E86;&#x5927;&#x91CF;&#x7684;&#x5B9E;&#x65F6;&#x5149;&#x7167;&#x3001;&#x9634;&#x5F71;&#x548C;&#x53CD;&#x5C04;&#x7684;&#x66F4;&#x597D;&#x7684;&#x9009;&#x62E9;&#x3002;<strong>Forward Rendering</strong>&#x53EF;&#x80FD;&#x66F4;&#x9002;&#x5408;&#x7528;&#x5728;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x8FD0;&#x884C;&#x5728;&#x4F4E;&#x7AEF;&#x786C;&#x4EF6;&#x4E0A;&#x540C;&#x4E8B;&#x6CA1;&#x6709;&#x4F7F;&#x7528;&#x8FD9;&#x4E9B;&#x7279;&#x6027;&#x7684;&#x60C5;&#x51B5;&#x3002;&#x7136;&#x800C;&#xFF0C;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x5E0C;&#x671B;&#x4F7F;&#x7528;&#x5B9E;&#x65F6;&#x5149;&#x7167;&#x3001;&#x9634;&#x5F71;&#x548C;&#x6298;&#x5C04;&#x8FD9;&#x4E9B;&#x7279;&#x6027;&#x8FD9;&#x662F;&#x4E2A;&#x975E;&#x5E38;&#x590D;&#x6742;&#x7684;&#x95EE;&#x9898;&#xFF0C;&#x6700;&#x597D;&#x662F;&#x5148;&#x53BB;&#x8C03;&#x67E5;&#x8FD9;&#x4E2A;&#x4E3B;&#x9898;&#x7136;&#x540E;&#x5C1D;&#x8BD5;&#x505A;&#x4E9B;&#x5C1D;&#x8BD5;&#x3002;<a href="https://docs.unity3d.com/Manual/RenderingPaths.html?_ga=2.32824956.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">&#x8FD9;&#x4E2A;Unity&#x624B;&#x518C;&#x7684;&#x9875;&#x9762;</a>&#x63D0;&#x4F9B;&#x4E86;&#x66F4;&#x591A;&#x7684;&#x5173;&#x4E8E;&#x4E0D;&#x540C;Unity&#x7684;rendering paths&#x4FE1;&#x606F;&#xFF0C;&#x8FD9;&#x662F;&#x4E2A;&#x4E0D;&#x9519;&#x7684;&#x8D77;&#x70B9;&#x3002;&#x8FD9;&#x4E2A;<a href="https://unity3d.com/learn/tutorials/topics/graphics/unity-5-lighting-and-rendering" target="_blank" rel="external">&#x6559;&#x7A0B;</a>&#x5305;&#x542B;&#x4E86;Unity&#x7684;&#x5149;&#x7167;&#x5149;&#x7167;&#x7684;&#x5185;&#x5BB9;&#x3002;</p>
+<p>&#x4E0D;&#x7BA1;&#x9009;&#x62E9;&#x54EA;&#x4E2A;rendering path&#xFF0C;&#x4F7F;&#x7528;&#x4E86;&#x5B9E;&#x65F6;&#x5149;&#x7167;&#x3001;&#x9634;&#x5F71;&#x548C;&#x53CD;&#x5C04;&#x90FD;&#x4F1A;&#x5F71;&#x54CD;&#x6E38;&#x620F;&#x7684;&#x6027;&#x80FD;&#xFF0C;&#x91CD;&#x8981;&#x7684;&#x662F;&#x6211;&#x4EEC;&#x8981;&#x77E5;&#x9053;&#x600E;&#x6837;&#x53BB;&#x4F18;&#x5316;&#x5B83;&#x4EEC;&#x3002;</p>
+<ul class="ui list">
+<li>Unity&#x7684;&#x52A8;&#x6001;&#x5149;&#x7167;&#x662F;&#x4E00;&#x4E2A;&#x975E;&#x5E38;&#x590D;&#x6742;&#x7684;&#x4E3B;&#x9898;&#xFF0C;&#x6DF1;&#x5165;&#x7684;&#x8BA8;&#x8BBA;&#x8FD9;&#x4E2A;&#x4E3B;&#x9898;&#x5DF2;&#x7ECF;&#x8D85;&#x51FA;&#x4E86;&#x8FD9;&#x7BC7;&#x6587;&#x7AE0;&#x7684;&#x8303;&#x56F4;&#x4E86;&#xFF0C;&#x4F46;&#x662F;<a href="https://unity3d.com/learn/tutorials/topics/graphics/unity-5-lighting-and-rendering" target="_blank" rel="external">&#x8FD9;&#x4E2A;&#x6559;&#x7A0B;</a>&#x975E;&#x5E38;&#x597D;&#x7684;&#x4ECB;&#x7ECD;&#x4E86;&#x8FD9;&#x4E2A;&#x4E3B;&#x9898;&#x3002;<a href="https://docs.unity3d.com/Manual/LightPerformance.html?_ga=2.228585567.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">&#x8FD9;&#x4E2A;Unity&#x7684;&#x624B;&#x518C;&#x9875;&#x9762;</a>&#x975E;&#x5E38;&#x8BE6;&#x7EC6;&#x4ECB;&#x7ECD;&#x4E86;&#x573A;&#x666F;&#x7684;&#x5149;&#x7167;&#x4F18;&#x5316;&#x3002;</li>
+<li>Unity&#x7684;&#x52A8;&#x6001;&#x5149;&#x7167;&#x662F;&#x975E;&#x5E38;&#x6D88;&#x8017;&#x6027;&#x80FD;&#x7684;&#x3002;&#x5F53;&#x6211;&#x4EEC;&#x573A;&#x666F;&#x4E2D;&#x5305;&#x542B;&#x4E86;&#x4E00;&#x4E9B;&#x4E0D;&#x4F1A;&#x79FB;&#x52A8;&#x7684;&#x5BF9;&#x8C61;&#xFF0C;&#x6BD4;&#x5982; &#x80CC;&#x666F;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x4E00;&#x4E2A;&#x53EB;&#x505A;<em>&#x70D8;&#x7119;(baking)</em>&#x7684;&#x6280;&#x672F;&#x6765;&#x63D0;&#x524D;&#x8BA1;&#x7B97;&#x597D;&#x573A;&#x666F;&#x5149;&#x7167;&#x8FD9;&#x6837;&#x6E38;&#x620F;&#x8FD0;&#x884C;&#x8D77;&#x6765;&#x65F6;&#x5149;&#x7167;&#x4E0D;&#x518D;&#x9700;&#x8981;&#x8BA1;&#x7B97;&#x4E86;&#x3002;<a href="https://unity3d.com/learn/tutorials/topics/graphics/unity-5-lighting-overview?playlist=17102" target="_blank" rel="external">&#x8FD9;&#x4E2A;&#x6559;&#x7A0B;</a>&#x4ECB;&#x7ECD;&#x4E86;&#x8FD9;&#x4E2A;&#x6280;&#x672F;&#xFF0C;&#x540C;&#x65F6;<a href="https://docs.unity3d.com/Manual/GIIntro.html?_ga=2.27302526.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">Unity&#x624B;&#x518C;&#x7684;&#x8FD9;&#x4E2A;&#x90E8;&#x5206;&#x5185;&#x5BB9;</a>&#x8BE6;&#x7EC6;&#x4ECB;&#x7ECD;&#x4E86;&#x5173;&#x7167;&#x7684;&#x70D8;&#x7119;&#x3002;</li>
+<li>&#x5982;&#x679C;&#x6211;&#x4EEC;&#x5E0C;&#x671B;&#x5728;&#x6E38;&#x620F;&#x4E2D;&#x4F7F;&#x7528;&#x5B9E;&#x65F6;&#x7684;&#x9634;&#x5F71;&#xFF0C;&#x8FD9;&#x53EF;&#x80FD;&#x6709;&#x975E;&#x5E38;&#x591A;&#x7684;&#x4F18;&#x5316;&#x7684;&#x5730;&#x65B9;&#x3002;<a href="https://docs.unity3d.com/Manual/DirLightShadows.html?_ga=2.192214376.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">Unity&#x624B;&#x518C;&#x7684;&#x8FD9;&#x4E2A;&#x9875;&#x9762;</a>&#x662F;&#x4E2A;&#x975E;&#x5E38;&#x597D;&#x7684;&#x5BF9;&#x9634;&#x5F71;&#x5C5E;&#x6027;&#x7684;&#x6307;&#x5357;&#x3002;&#x9634;&#x5F71;&#x53EF;&#x4EE5;&#x5728;<strong>Quality Settings</strong>&#x4E2D;&#x8C03;&#x6574;&#x540C;&#x4E8B;&#x8FD9;&#x4E9B;&#x8C03;&#x6574;&#x5F71;&#x54CD;&#x7740;&#x9634;&#x5F71;&#x7684;&#x663E;&#x793A;&#x6548;&#x679C;&#x548C;&#x6027;&#x80FD;&#x3002;&#x4F8B;&#x5982;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;<strong>Shadow Distance</strong>&#x5C5E;&#x6027;&#x6765;&#x53BB;&#x4FDD;&#x8BC1;&#x53EA;&#x6709;&#x8FD1;&#x8DDD;&#x79BB;&#x7684;&#x5BF9;&#x8C61;&#x624D;&#x4F1A;&#x6295;&#x5C04;&#x9634;&#x5F71;&#x3002;</li>
+<li><a href="https://docs.unity3d.com/Manual/ReflectionProbes.html?_ga=2.32980348.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">&#x53CD;&#x5C04;&#x63A2;&#x6D4B;</a>&#x521B;&#x5EFA;&#x4E86;&#x5B9E;&#x65F6;&#x53CD;&#x5C04;&#x4F46;&#x662F;&#x5728;&#x6279;&#x6B21;(batches)&#x7684;&#x65F6;&#x5019;&#x4F1A;&#x975E;&#x5E38;&#x6D88;&#x8017;&#x6027;&#x80FD;&#x3002;&#x5728;&#x6027;&#x80FD;&#x6D88;&#x8017;&#x6BD4;&#x8F83;&#x96C6;&#x4E2D;&#x7684;&#x65F6;&#x5019;&#x6700;&#x597D;&#x4FDD;&#x6301;&#x53CD;&#x5C04;&#x5728;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x4E2D;&#x6700;&#x4F4E;&#x9650;&#x5EA6;&#x7684;&#x4F7F;&#x7528;&#xFF0C;&#x540C;&#x65F6;&#x5C3D;&#x53EF;&#x80FD;&#x7684;&#x5728;&#x4F7F;&#x7528;&#x53CD;&#x5C04;&#x7684;&#x5730;&#x65B9;&#x4F18;&#x5316;&#x5B83;&#x4EEC;&#x3002;<a href="https://docs.unity3d.com/Manual/RefProbePerformance.html?_ga=2.238522434.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">Unity&#x624B;&#x518C;&#x7684;&#x8FD9;&#x4E2A;&#x9875;&#x9762;</a>&#x662F;&#x4E00;&#x4E2A;&#x975E;&#x5E38;&#x597D;&#x7684;&#x4F18;&#x5316;&#x53CD;&#x5C04;&#x63A2;&#x6D4B;&#x7684;&#x6307;&#x5357;&#x3002;</li>
+</ul>
+<h3 id="&#x5C06;&#x6E32;&#x67D3;&#x5BF9;&#x8C61;&#x5408;&#x5E76;&#x5230;&#x66F4;&#x5C11;&#x7684;&#x6279;&#x6B21;-batches-&#x91CC;"><a href="#&#x5C06;&#x6E32;&#x67D3;&#x5BF9;&#x8C61;&#x5408;&#x5E76;&#x5230;&#x66F4;&#x5C11;&#x7684;&#x6279;&#x6B21;-batches-&#x91CC;" class="headerlink" title="&#x5C06;&#x6E32;&#x67D3;&#x5BF9;&#x8C61;&#x5408;&#x5E76;&#x5230;&#x66F4;&#x5C11;&#x7684;&#x6279;&#x6B21;(batches)&#x91CC;"></a>&#x5C06;&#x6E32;&#x67D3;&#x5BF9;&#x8C61;&#x5408;&#x5E76;&#x5230;&#x66F4;&#x5C11;&#x7684;&#x6279;&#x6B21;(batches)&#x91CC;</h3><p>&#x5F53;&#x67D0;&#x4E9B;&#x6761;&#x4EF6;&#x6EE1;&#x8DB3;&#x65F6;&#xFF0C;&#x4E00;&#x4E2A;&#x6279;&#x6B21;&#x80FD;&#x591F;&#x5305;&#x542B;&#x591A;&#x4E2A;&#x5BF9;&#x8C61;&#x7684;&#x6570;&#x636E;&#x3002;&#x5BF9;&#x8C61;&#x53EF;&#x4EE5;&#x6279;&#x5904;&#x7406;&#x7684;&#x5FC5;&#x987B;&#x5177;&#x5907;&#x4E00;&#x4E0B;&#x6761;&#x4EF6;:</p>
+<ul class="ui list">
+<li>&#x5171;&#x4EAB;&#x540C;&#x4E00;&#x4E2A;&#x6750;&#x8D28;&#x7684;&#x540C;&#x4E00;&#x4E2A;&#x5B9E;&#x4F8B;</li>
+<li>&#x8BBE;&#x7F6E;&#x4E86;&#x540C;&#x4E00;&#x4E2A;material&#xFF08;&#x4F8B;&#x5982;, &#x8D34;&#x56FE;&#xFF0C;&#x7740;&#x8272;&#x5668;&#x548C;&#x7740;&#x8272;&#x5668;&#x7684;&#x53C2;&#x6570;&#xFF09;</li>
+</ul>
+<p>&#x7B26;&#x5408;&#x6279;&#x5904;&#x7406;&#x6761;&#x4EF6;&#x7684;&#x5BF9;&#x8C61;&#x80FD;&#x591F;&#x63D0;&#x9AD8;&#x6027;&#x80FD;&#x3002;&#x5C3D;&#x7BA1;&#x5982;&#x6B64;&#xFF0C;&#x6211;&#x4EEC;&#x4EFB;&#x7136;&#x9700;&#x8981;&#x548C;&#x6240;&#x6709;&#x4F18;&#x5316;&#x6280;&#x672F;&#x4E00;&#x6837;&#x975E;&#x5E38;&#x7EC6;&#x5FC3;&#x7684;&#x5206;&#x6790;&#x6279;&#x5904;&#x7406;&#xFF0C;&#x786E;&#x4FDD;&#x6279;&#x5904;&#x7406;&#x7684;&#x6D88;&#x8017;&#x4E0D;&#x4F1A;&#x8D85;&#x8FC7;&#x6027;&#x80FD;&#x4F18;&#x5316;&#x6240;&#x5F97;&#x3002;</p>
+<p>&#x8FD9;&#x91CC;&#x6709;&#x51E0;&#x79CD;&#x4E0D;&#x540C;&#x7684;&#x6280;&#x672F;&#x5BF9;&#x7B26;&#x5408;&#x6279;&#x5904;&#x7406;&#x6761;&#x4EF6;&#x7684;&#x5BF9;&#x8C61;&#x8FDB;&#x884C;&#x6279;&#x5904;&#x7406;&#xFF1A;</p>
+<ul class="ui list">
+<li><em>&#x9759;&#x6001;&#x5408;&#x6279;</em>&#x662F;&#x4E00;&#x4E2A;&#x5141;&#x8BB8;&#x5728;&#x9644;&#x8FD1;&#x7684;&#x7B26;&#x5408;&#x5408;&#x6279;&#x7684;&#x5BF9;&#x8C61;&#x5E76;&#x4E14;&#x4E0D;&#x4F1A;&#x79FB;&#x52A8;&#x7684;&#x8FDB;&#x884C;&#x5408;&#x6279;&#x7684;&#x6280;&#x672F;&#x3002;&#x9759;&#x6001;&#x5408;&#x6279;&#x975E;&#x5E38;&#x6709;&#x7528;&#x7684;&#x4E00;&#x4E2A;&#x4F8B;&#x5B50;&#x5C31;&#x662F;&#x5BF9;&#x4E8E;&#x4E00;&#x5806;&#x76F8;&#x4F3C;&#x7684;&#x5BF9;&#x8C61;&#x7684;&#x5904;&#x7406;&#x3002;&#x4F8B;&#x5982;&#x5375;&#x77F3;&#x3002;<a href="https://docs.unity3d.com/Manual/DrawCallBatching.html?_ga=2.189742441.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">&#x8FD9;&#x4E2A;Unity&#x624B;&#x518C;&#x7684;&#x9875;&#x9762;</a>&#x5305;&#x542B;&#x4E86;&#x5728;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x4E2D;&#x8BBE;&#x7F6E;&#x9759;&#x6001;&#x5408;&#x6279;&#x7684;&#x8BF4;&#x660E;&#x3002;&#x9759;&#x6001;&#x5408;&#x6279;&#x4F1A;&#x5BFC;&#x81F4;&#x66F4;&#x9AD8;&#x7684;&#x5185;&#x5B58;&#x5360;&#x7528;&#xFF0C;&#x6240;&#x4EE5;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x5728;&#x5206;&#x6790;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x7684;&#x65F6;&#x5019;&#x8BB0;&#x4F4F;&#x8FD9;&#x70B9;&#x3002;</li>
+<li><em>&#x52A8;&#x6001;&#x5408;&#x6279;</em>&#x662F;&#x53E6;&#x5916;&#x4E00;&#x79CD;&#x5141;&#x8BB8;&#x5141;&#x8BB8;Unity&#x6279;&#x5904;&#x7406;&#x7B26;&#x5408;&#x5408;&#x6279;&#x7684;&#x5BF9;&#x8C61;&#xFF0C;&#x4E0D;&#x7BA1;&#x8FD9;&#x4E9B;&#x5BF9;&#x8C61;&#x662F;&#x5426;&#x4F1A;&#x79FB;&#x52A8;&#x3002;&#x8FD9;&#x91CC;&#x6709;&#x4E00;&#x4E9B;&#x5BF9;&#x80FD;&#x591F;&#x4F7F;&#x7528;&#x6279;&#x5904;&#x7406;&#x7684;&#x5BF9;&#x8C61;&#x7684;&#x9650;&#x5236;&#x3002;<a href="https://docs.unity3d.com/Manual/DrawCallBatching.html?_ga=2.202363219.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">&#x8FD9;&#x4E2A;Unity&#x624B;&#x518C;&#x7684;&#x9875;&#x9762;</a>&#x5217;&#x51FA;&#x4E86;&#x8FD9;&#x4E9B;&#x9650;&#x5236;&#x3002;&#x52A8;&#x6001;&#x5408;&#x6279;&#x5BF9;CPU&#x4F7F;&#x7528;&#x4F1A;&#x6709;&#x5F71;&#x54CD;&#xFF0C;&#x5B83;&#x4F1A;&#x5F15;&#x8D77;&#x6BD4;&#x52A8;&#x6001;&#x5408;&#x6279;&#x8282;&#x7701;&#x7684;&#x90E8;&#x5206;&#x66F4;&#x591A;&#x7684;CPU&#x65F6;&#x95F4;&#x6D88;&#x8017;&#x3002;&#x5F53;&#x6211;&#x4EEC;&#x5C1D;&#x8BD5;&#x8FD9;&#x4E2A;&#x6280;&#x672F;&#x7684;&#x65F6;&#x5019;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x8BB0;&#x4F4F;&#x8FD9;&#x4E2A;&#x6D88;&#x8017;&#x540C;&#x4E8B;&#x975E;&#x5E38;&#x8C28;&#x614E;&#x7684;&#x4F7F;&#x7528;&#x8FD9;&#x4E2A;&#x6280;&#x672F;&#x3002;</li>
+<li>Unity&#x7684;UI&#x5143;&#x7D20;&#x5408;&#x6279;&#x4F1A;&#x66F4;&#x590D;&#x6742;&#x4E00;&#x70B9;&#xFF0C;&#x8FD9;&#x4F1A;&#x5F71;&#x54CD;&#x6211;&#x4EEC;UI&#x7684;&#x5E03;&#x5C40;&#x3002;<a href="https://www.youtube.com/watch?v=t_pdIFGh4Kg" target="_blank" rel="external">&#x8FD9;&#x4E2A;&#x6765;&#x81EA;Unite&#x66FC;&#x8C37;2015&#x7684;&#x89C6;&#x9891;</a>&#x5BF9;&#x8FD9;&#x4E2A;&#x4E3B;&#x9898;&#x5F88;&#x597D;&#x7684;&#x5168;&#x9762;&#x7684;&#x4ECB;&#x7ECD;&#xFF0C;<a href="https://unity3d.com/learn/tutorials/topics/best-practices/guide-optimizing-unity-ui?playlist=30089" target="_blank" rel="external">Unity UI&#x4F18;&#x5316;&#x7684;&#x6307;&#x5357;</a>&#x63D0;&#x4F9B;&#x4E86;&#x600E;&#x6837;&#x786E;&#x4FDD;UI&#x5408;&#x6279;&#x5DE5;&#x4F5C;&#x5982;&#x6211;&#x4EEC;&#x5E0C;&#x671B;&#x7684;&#x90A3;&#x6837;&#x5904;&#x7406;&#x7684;&#x66F4;&#x6DF1;&#x5165;&#x7684;&#x4FE1;&#x606F;&#x3002;</li>
+<li><em><a href="https://en.wikipedia.org/wiki/Geometry_instancing" target="_blank" rel="external">GPU instancing</a></em>&#x662F;&#x5141;&#x8BB8;&#x5927;&#x91CF;&#x76F8;&#x540C;&#x5BF9;&#x8C61;&#x53D8;&#x5F97;&#x975E;&#x5E38;&#x6709;&#x6548;&#x7684;&#x5408;&#x6279;&#x7684;&#x4E00;&#x4E2A;&#x6280;&#x672F;&#x3002;&#x8FD9;&#x4E2A;&#x6280;&#x672F;&#x7684;&#x4F7F;&#x7528;&#x6709;&#x4E00;&#x4E9B;&#x9650;&#x5236;&#x5E76;&#x4E14;&#x4E0D;&#x662F;&#x6240;&#x6709;&#x7684;&#x786C;&#x4EF6;&#x90FD;&#x652F;&#x6301;&#xFF0C;&#x4F46;&#x662F;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x91CC;&#x4E00;&#x6B21;&#x6709;&#x5F88;&#x591A;&#x76F8;&#x540C;&#x7684;&#x5BF9;&#x8C61;&#x663E;&#x793A;&#x5728;&#x5C4F;&#x5E55;&#x4E0A;&#x6211;&#x4EEC;&#x53EF;&#x80FD;&#x4F1A;&#x4ECE;&#x8FD9;&#x4E2A;&#x6280;&#x672F;&#x91CC;&#x9762;&#x5F97;&#x5230;&#x6536;&#x76CA;&#x3002;<a href="https://docs.unity3d.com/Manual/GPUInstancing.html?_ga=2.26031615.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">&#x8FD9;&#x4E2A;Unity&#x624B;&#x518C;&#x7684;&#x9875;&#x9762;</a>&#x5305;&#x542B;&#x4E86;Unity &#x4E2D;GPU instancing&#x7684;&#x4E00;&#x4E2A;&#x6307;&#x5357;&#xFF0C;&#x8FD9;&#x4E2A;&#x6307;&#x5357;&#x4ECB;&#x7ECD;&#x4E86;&#x8FD9;&#x4E2A;&#x6280;&#x672F;&#x600E;&#x6837;&#x4F7F;&#x7528;&#xFF0C;&#x54EA;&#x4E9B;&#x5E73;&#x53F0;&#x652F;&#x6301;&#x8FD9;&#x4E2A;&#x6280;&#x672F;&#xFF0C;&#x5728;&#x4EC0;&#x4E48;&#x6837;&#x7684;&#x73AF;&#x5883;&#x4E0B;&#x8FD9;&#x4E2A;&#x6280;&#x672F;&#x4F1A;&#x6709;&#x5229;&#x4E8E;&#x6211;&#x4EEC;&#x7684;&#x6709;&#x5229;&#x3002;</li>
+<li><em>&#x56FE;&#x96C6;</em>&#x662F;&#x4E00;&#x4E2A;&#x5728;&#x591A;&#x5F20;&#x8D34;&#x56FE;&#x5408;&#x5E76;&#x6210;&#x4E00;&#x5F20;&#x5927;&#x7684;&#x8D34;&#x56FE;&#x7684;&#x5730;&#x65B9;&#x4F7F;&#x7528;&#x7684;&#x6280;&#x672F;&#x3002;&#x5B83;&#x5E38;&#x88AB;&#x7528;&#x5728;2D&#x6E38;&#x620F;&#x548C;UI&#x7CFB;&#x7EDF;&#x4E2D;&#xFF0C;&#x540C;&#x6837;&#x4E5F;&#x53EF;&#x4EE5;&#x7528;&#x5728;3D&#x6E38;&#x620F;&#x4E2D;&#x3002;&#x5F53;&#x4E3A;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x521B;&#x4F5C;&#x4E00;&#x4E2A;&#x4F5C;&#x54C1;&#x7684;&#x65F6;&#x5019;&#x6211;&#x4EEC;&#x4F7F;&#x7528;&#x8FD9;&#x4E2A;&#x6280;&#x672F;&#xFF0C;&#x6211;&#x4EEC;&#x80FD;&#x591F;&#x786E;&#x4FDD;&#x5BF9;&#x8C61;&#x5171;&#x4EAB;&#x8FD9;&#x5F20;&#x8D34;&#x56FE;&#xFF0C;&#x56E0;&#x6B64;&#x8FD9;&#x4E9B;&#x5BF9;&#x8C61;&#x4E5F;&#x662F;&#x6EE1;&#x8DB3;&#x5408;&#x6279;&#x7684;&#x6761;&#x4EF6;&#x7684;&#x3002;Unity&#x5185;&#x7F6E;&#x4E86;&#x4E00;&#x4E2A;&#x9488;&#x5BF9;2D&#x6E38;&#x620F;&#x4E2D;&#x4F7F;&#x7528;&#x56FE;&#x96C6;&#x7684;&#x5DE5;&#x5177;&#xFF0C;&#x5B83;&#x53EB;&#x505A;<a href="https://docs.unity3d.com/Manual/SpritePacker.html?_ga=2.32953084.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">Sprite Packer</a>&#x3002;</li>
+<li>&#x65E0;&#x8BBA;&#x662F;&#x5728;&#x7F16;&#x8F91;&#x5668;&#x4E2D;&#x6216;&#x8005;&#x901A;&#x8FC7;&#x8FD0;&#x884C;&#x65F6;&#x7684;&#x4EE3;&#x7801;&#xFF0C;&#x6211;&#x4EEC;&#x90FD;&#x53EF;&#x4EE5;&#x624B;&#x52A8;&#x5408;&#x5E76;&#x5171;&#x4EAB;&#x540C;&#x4E00;&#x4E2A;&#x6750;&#x8D28;&#x548C;&#x8D34;&#x56FE;&#x7684;&#x7F51;&#x683C;(meshs)&#x3002;&#x5F53;&#x4F7F;&#x7528;&#x5408;&#x5E76;&#x7F51;&#x683C;&#x8FD9;&#x4E2A;&#x65B9;&#x6CD5;&#x65F6;&#xFF0C;&#x6211;&#x4EEC;&#x5FC5;&#x987B;&#x6CE8;&#x610F;&#x5230;&#x6BCF;&#x4E2A;&#x5C42;&#x7EA7;&#x7684;&#x5BF9;&#x8C61;&#x4EFB;&#x7136;&#x4F1A;&#x6267;&#x884C;&#x9634;&#x5F71;&#xFF0C;&#x5149;&#x7167;&#x548C;&#x88C1;&#x526A;&#x8FD9;&#x4E9B;&#x64CD;&#x4F5C;&#xFF1B;&#x8FD9;&#x610F;&#x5473;&#x7740;&#x5408;&#x5E76;&#x7F51;&#x683C;&#x6240;&#x5E26;&#x6765;&#x7684;&#x6027;&#x80FD;&#x63D0;&#x5347;&#x4F1A;&#x88AB;&#x4E0D;&#x518D;&#x80FD;&#x591F;&#x88C1;&#x526A;&#x90A3;&#x4E9B;&#x4E0D;&#x88AB;&#x6E32;&#x67D3;&#x7684;&#x5BF9;&#x8C61;&#x6240;&#x62B5;&#x6D88;&#x3002;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x5E0C;&#x671B;&#x7814;&#x7A76;&#x8FD9;&#x4E2A;&#x65B9;&#x6CD5;&#xFF0C;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x6D4B;&#x8BD5;<a href="https://docs.unity3d.com/ScriptReference/Mesh.CombineMeshes.html?_ga=2.190829673.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">Mesh.CombineMeshes</a>&#x51FD;&#x6570;&#x3002;<a href="https://docs.unity3d.com/Manual/HOWTO-InstallStandardAssets.html?_ga=2.36060898.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">Unity&#x7684;&#x6807;&#x51C6;&#x8D44;&#x6E90;&#x5305;</a>&#x91CC;&#x9762;&#x7684;CombineChildren&#x5C31;&#x662F;&#x4F7F;&#x7528;&#x8FD9;&#x4E2A;&#x6280;&#x672F;&#x7684;&#x4F8B;&#x5B50;&#x3002;</li>
+<li>&#x5F53;&#x6211;&#x4EEC;&#x5728;&#x811A;&#x672C;&#x91CC;&#x8BBF;&#x95EE;<a href="https://docs.unity3d.com/ScriptReference/Renderer-material.html?_ga=2.229039582.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">Renderer.material</a>API&#x65F6;&#x6211;&#x4EEC;&#x5FC5;&#x987B;&#x975E;&#x5E38;&#x5C0F;&#x5FC3;&#x3002;&#x8FD9;&#x4E2A;API&#x4F1A;&#x590D;&#x5236;&#x4E00;&#x4EFD;&#x8FD9;&#x4E2A;&#x6750;&#x8D28;&#x7136;&#x540E;&#x8FD4;&#x56DE;&#x590D;&#x5236;&#x7684;&#x8FD9;&#x4EFD;&#x6750;&#x8D28;&#x7684;&#x5F15;&#x7528;&#x3002;&#x5982;&#x679C;&#x8FD9;&#x4E2A;&#x6E32;&#x67D3;&#x5668;(renderer)&#x662F;&#x5408;&#x6279;&#x7684;&#x4E00;&#x90E8;&#x5206;&#x7684;&#x8BDD;&#xFF0C;&#x90A3;&#x4E48;&#x8FD9;&#x4E2A;&#x64CD;&#x4F5C;&#x4F1A;&#x4E2D;&#x65AD;&#x6279;&#x5904;&#x7406;&#x64CD;&#x4F5C;&#x3002;&#x56E0;&#x4E3A;&#x6E32;&#x67D3;&#x5668;&#x4E0D;&#x518D;&#x6709;&#x76F8;&#x540C;&#x7684;&#x6750;&#x8D28;&#x7684;&#x76F8;&#x540C;&#x5B9E;&#x4F8B;&#x5F15;&#x7528;&#x3002;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x5E0C;&#x671B;&#x5728;&#x811A;&#x672C;&#x91CC;&#x8BBF;&#x95EE;&#x5408;&#x6279;&#x7684;&#x5BF9;&#x8C61;&#x7684;&#x6750;&#x8D28;&#xFF0C;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x4F7F;&#x7528;<a href="https://docs.unity3d.com/ScriptReference/Renderer-sharedMaterial.html?_ga=2.27080191.335427907.1512800658-741569329.1509691291" target="_blank" rel="external">Renderer.shareMaterial</a>&#x8FD9;&#x4E2A;API&#x3002;</li>
+</ul>
+<h2 id="&#x88C1;&#x526A;&#xFF0C;&#x6392;&#x5E8F;&#x548C;&#x5408;&#x6279;"><a href="#&#x88C1;&#x526A;&#xFF0C;&#x6392;&#x5E8F;&#x548C;&#x5408;&#x6279;" class="headerlink" title="&#x88C1;&#x526A;&#xFF0C;&#x6392;&#x5E8F;&#x548C;&#x5408;&#x6279;"></a>&#x88C1;&#x526A;&#xFF0C;&#x6392;&#x5E8F;&#x548C;&#x5408;&#x6279;</h2><p>&#x88C1;&#x526A;&#xFF0C;&#x6536;&#x96C6;&#x5C06;&#x8981;&#x6E32;&#x67D3;&#x7684;&#x5BF9;&#x8C61;&#x7684;&#x6570;&#x636E;&#xFF0C;&#x5C06;&#x8FD9;&#x4E9B;&#x6570;&#x636E;&#x5206;&#x7C7B;&#x5230;&#x4E0D;&#x540C;&#x7C7B;&#x578B;&#x7684;&#x6279;&#x6B21;&#x4E2D;&#x4EE5;&#x53CA;&#x751F;&#x6210;GPU&#x547D;&#x4EE4;&#x8FD9;&#x4E9B;&#x90FD;&#x6709;&#x53EF;&#x80FD;&#x5BFC;&#x81F4;CPU&#x6027;&#x80FD;&#x53D7;&#x9650;&#x3002;&#x8FD9;&#x4E9B;&#x4EFB;&#x52A1;&#x4E0D;&#x7BA1;&#x662F;&#x5728;&#x4E3B;&#x7EBF;&#x7A0B;&#x6267;&#x884C;&#x8FD8;&#x662F;&#x5728;&#x72EC;&#x7ACB;&#x7684;&#x8F85;&#x52A9;(worker)&#x7EBF;&#x7A0B;&#x4E0A;&#x6267;&#x884C;&#xFF0C;&#x8FD9;&#x53D6;&#x51B3;&#x4E8E;&#x4F60;&#x7684;&#x6E38;&#x620F;&#x7684;&#x8BBE;&#x7F6E;&#x548C;&#x76EE;&#x6807;&#x786C;&#x4EF6;&#x3002;</p>
+<ul class="ui list">
+<li>&#x88C1;&#x526A;&#x4E0D;&#x592A;&#x4F1A;&#x662F;&#x4E00;&#x4E2A;&#x975E;&#x5E38;&#x8017;&#x65F6;&#x7684;&#x64CD;&#x4F5C;&#xFF0C;&#x4F46;&#x662F;&#x51CF;&#x5C11;&#x4E0D;&#x5FC5;&#x8981;&#x7684;&#x88C1;&#x526A;&#x53EF;&#x4EE5;&#x6709;&#x52A9;&#x4E8E;&#x6027;&#x80FD;&#x7684;&#x63D0;&#x9AD8;&#x3002;&#x6240;&#x6709;&#x6D3B;&#x52A8;&#x573A;&#x666F;&#x4E2D;&#x7684;&#x5BF9;&#x8C61;&#x5BF9;&#x6BCF;&#x4E2A;&#x76F8;&#x673A;&#x90FD;&#x6709;&#x4E00;&#x4EFD;&#x5F00;&#x9500;&#x3002;&#x5373;&#x4F7F;&#x8FD9;&#x4E9B;&#x5BF9;&#x8C61;&#x6240;&#x5728;&#x7684;&#x5C42;&#x6CA1;&#x6709;&#x88AB;&#x6E32;&#x67D3;&#x3002;&#x4E3A;&#x4E86;&#x51CF;&#x5C11;&#x8FD9;&#x4E9B;&#x5F00;&#x9500;&#xFF0C;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x5173;&#x95ED;(disable)&#x76F8;&#x673A;&#x548C;&#x6CA1;&#x6709;&#x7528;&#x7684;&#x6E32;&#x67D3;&#x5668;&#xFF0C;&#x4EE5;&#x53CA;&#x53EF;&#x4EE5;&#x505C;&#x7528;(deactivate)&#x6CA1;&#x6709;&#x7528;&#x7684;&#x6E32;&#x67D3;&#x5668;&#x3002;</li>
+<li>&#x5408;&#x6279;&#x80FD;&#x591F;&#x5F88;&#x5927;&#x7A0B;&#x5EA6;&#x4E0A;&#x63D0;&#x9AD8;&#x53D1;&#x9001;&#x5230;GPU&#x547D;&#x4EE4;&#x7684;&#x901F;&#x5EA6;&#xFF0C;&#x4F46;&#x662F;&#x6709;&#x7684;&#x65F6;&#x5019;&#x5408;&#x6279;&#x4F1A;&#x5728;&#x5176;&#x4ED6;&#x5730;&#x65B9;&#x589E;&#x52A0;&#x4E0D;&#x5FC5;&#x8981;&#x7684;&#x6D88;&#x8017;&#x3002;&#x5982;&#x679C;&#x5408;&#x6279;&#x64CD;&#x4F5C;&#x5BFC;&#x81F4;&#x4E86;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x7684;CPU&#x6027;&#x80FD;&#x6536;&#x5230;&#x9650;&#x5236;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x80FD;&#x5E0C;&#x671B;&#x9650;&#x5236;&#x5728;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x4E2D;&#x7684;&#x624B;&#x52A8;&#x6216;&#x8005;&#x81EA;&#x52A8;&#x5408;&#x6279;&#x64CD;&#x4F5C;&#x3002;</li>
+</ul>
+<h2 id="&#x8499;&#x76AE;&#x7F51;&#x683C;"><a href="#&#x8499;&#x76AE;&#x7F51;&#x683C;" class="headerlink" title="&#x8499;&#x76AE;&#x7F51;&#x683C;"></a>&#x8499;&#x76AE;&#x7F51;&#x683C;</h2><p>&#x5F53;&#x6211;&#x4EEC;&#x4F7F;&#x7528;&#x4E00;&#x4E2A;&#x53EB;&#x505A;&#x9AA8;&#x9ABC;&#x52A8;&#x753B;&#x7684;&#x6280;&#x672F;&#x4F7F;&#x4E00;&#x4E2A;&#x7F51;&#x683C;&#x8FDB;&#x884C;&#x53D8;&#x5F62;&#x65F6;&#x4F1A;&#x7528;&#x5230;<a href="https://docs.unity3d.com/Manual/class-SkinnedMeshRenderer.html?_ga=2.264690255.139682236.1512800414-1143412728.1512800414" target="_blank" rel="external">SkinnedMeshRenderers</a>&#x3002;&#x5B83;&#x5E38;&#x7528;&#x4E8E;&#x89D2;&#x8272;&#x52A8;&#x753B;&#x4E0A;&#x3002;&#x4E0E;&#x6E32;&#x67D3;&#x76F8;&#x5173;&#x7684;&#x6E32;&#x67D3;&#x8499;&#x76AE;&#x7F51;&#x683C;&#x4EFB;&#x52A1;&#x901A;&#x5E38;&#x5728;&#x4E3B;&#x7EBF;&#x7A0B;&#x6216;&#x8005;&#x72EC;&#x7ACB;&#x7684;&#x8F85;&#x52A9;&#x7EBF;&#x7A0B;&#x4E0A;&#x6267;&#x884C;&#xFF0C;&#x5177;&#x4F53;&#x53D6;&#x51B3;&#x4E8E;&#x4F60;&#x7684;&#x6E38;&#x620F;&#x8BBE;&#x7F6E;&#x548C;&#x76EE;&#x6807;&#x786C;&#x4EF6;&#x3002;</p>
+<p>&#x6E32;&#x67D3;&#x8499;&#x76AE;&#x7F51;&#x683C;&#x662F;&#x4E00;&#x4E2A;&#x8017;&#x65F6;&#x7684;&#x64CD;&#x4F5C;&#x3002;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x901A;&#x8FC7;Profiler window&#x770B;&#x5230;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x7531;&#x4E8E;&#x6E32;&#x67D3;&#x8499;&#x76AE;&#x7F51;&#x683C;&#x5BFC;&#x81F4;CPU&#x6027;&#x80FD;&#x53D7;&#x9650;&#xFF0C;&#x8FD9;&#x91CC;&#x6709;&#x51E0;&#x4E2A;&#x65B9;&#x6CD5;&#x53EF;&#x4EE5;&#x5C1D;&#x8BD5;&#x63D0;&#x9AD8;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x6027;&#x80FD;:</p>
+<ul class="ui list">
+<li>&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x8003;&#x8651;&#x662F;&#x5426;&#x9700;&#x8981;&#x4E3A;&#x6211;&#x4EEC;&#x5F53;&#x524D;&#x4F7F;&#x7528;&#x7684;&#x6BCF;&#x4E2A;&#x5BF9;&#x8C61;&#x90FD;&#x7528;&#x5230;SkinnedMeshRenderer&#x7EC4;&#x4EF6;&#x3002;&#x6709;&#x53EF;&#x80FD;&#x6211;&#x4EEC;&#x5BFC;&#x5165;&#x4E86;&#x4E00;&#x4E2A;&#x6A21;&#x578B;&#x6302;&#x8F7D;&#x4E86;SkinnedMeshRenderer&#x7EC4;&#x4EF6;&#x4F46;&#x662F;&#x6211;&#x4EEC;&#x5B9E;&#x9645;&#x4E0A;&#x6CA1;&#x6709;&#x7528;&#x5230;&#x5B83;&#x7684;&#x52A8;&#x753B;&#x3002;&#x4F8B;&#x5982;&#xFF0C;&#x5728;&#x8FD9;&#x79CD;&#x60C5;&#x51B5;&#x4E2D;&#x7528;MeshRenderer&#x66FF;&#x6362;SkinnedMeshRenderer&#x7EC4;&#x4EF6;&#x53EF;&#x4EE5;&#x7F13;&#x89E3;&#x6027;&#x80FD;&#x538B;&#x529B;&#x3002;&#x5F53;&#x5BFC;&#x5165;&#x4E00;&#x4E2A;&#x6A21;&#x578B;&#x5230;Unity&#x4E2D;&#xFF0C;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x6CA1;&#x6709;&#x5728;<a href="https://docs.unity3d.com/Manual/class-FBXImporter.html?_ga=2.230480988.139682236.1512800414-1143412728.1512800414" target="_blank" rel="external">&#x6A21;&#x578B;Import Settings</a>&#x4E2D;&#x8BBE;&#x7F6E;&#x52A8;&#x753B;,&#x8FD9;&#x4E2A;&#x6A21;&#x578B;&#x5C06;&#x4F1A;&#x7528;&#x4E00;&#x4E2A;MeshRenderer&#x66FF;&#x6362;&#x6389;SkinnedMeshRenderer&#x3002;</li>
+<li>&#x5982;&#x679C;&#x6211;&#x4EEC;&#x7684;&#x52A8;&#x753B;&#x53EA;&#x662F;&#x5728;&#x67D0;&#x4E9B;&#x6BB5;&#x65F6;&#x95F4;&#x64AD;&#x653E;(&#x4F8B;&#x5982;&#xFF0C;&#x53EA;&#x6709;&#x5F53;&#x542F;&#x52A8;&#x7684;&#x65F6;&#x5019;&#x6216;&#x8005;&#x662F;&#x53EA;&#x6709;&#x5728;&#x8DDD;&#x79BB;&#x6444;&#x50CF;&#x673A;&#x4E00;&#x5B9A;&#x8DDD;&#x79BB;&#x7684;&#x65F6;&#x5019;)&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x5728;&#x52A8;&#x753B;&#x4E0D;&#x64AD;&#x653E;&#x7684;&#x65F6;&#x5019;&#x628A;&#x7F51;&#x683C;&#x5207;&#x6362;&#x5230;&#x4E00;&#x4E2A;&#x5C11;&#x91CF;&#x7EC6;&#x8282;&#x7684;&#x7248;&#x672C;&#x6216;&#x8005;&#x662F;&#x7528;MeshRenderer&#x7EC4;&#x4EF6;&#x6765;&#x4EE3;&#x66FF;SkinnedMeshRenderer&#x7EC4;&#x4EF6;&#x3002;SkinnedMeshRenderer&#x7EC4;&#x4EF6;&#x6709;&#x4E00;&#x4E2A;<em><a href="https://docs.unity3d.com/ScriptReference/SkinnedMeshRenderer.BakeMesh.html?_ga=2.87775071.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">BakeMesh</a></em> &#x51FD;&#x6570;&#xFF0C;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x80FD;&#x591F;&#x521B;&#x5EFA;&#x4E00;&#x4E2A;SkinnedMeshRenderer&#x52A8;&#x753B;&#x72B6;&#x6001;&#x7684;mesh(&#x8BD1;:&#x76F8;&#x5F53;&#x4E8E;&#x662F;SkinnedMeshRendere&#x7684;&#x67D0;&#x4E00;&#x4E2A;&#x52A8;&#x4F5C;&#x7684;&#x4E00;&#x5E27;&#x753B;&#x9762;)&#xFF0C;&#x8FD9;&#x5BF9;&#x4E0D;&#x540C;&#x7684;&#x7F51;&#x683C;&#x6216;&#x8005;&#x6E32;&#x67D3;&#x5668;&#x4E4B;&#x95F4;&#x8FDB;&#x884C;&#x4EA4;&#x6362;&#x800C;&#x4E0D;&#x6539;&#x53D8;&#x5BF9;&#x8C61;&#x7684;&#x53EF;&#x89C1;&#x72B6;&#x6001;&#x975E;&#x5E38;&#x6709;&#x7528;(&#x8BD1;:&#x5982;&#x679C;&#x628A;Mesh&#x770B;&#x4F5C;&#x4E00;&#x4E2A;&#x56FE;&#x7247;&#xFF0C;&#x8FD9;&#x91CC;&#x7684;&#x4EA4;&#x6362;&#x76F8;&#x5F53;&#x4E8E;&#x64AD;&#x653E;&#x5E27;&#x52A8;&#x753B;&#x3002;&#x5E27;&#x52A8;&#x753B;&#x4E0D;&#x9700;&#x8981;&#x989D;&#x5916;&#x8BA1;&#x7B97;&#xFF0C;&#x53EA;&#x9700;&#x8981;&#x4E00;&#x5F20;&#x56FE;&#x7247;&#x63A5;&#x7740;&#x4E00;&#x5F20;&#x56FE;&#x7247;&#x7684;&#x64AD;&#x653E;&#x3002;&#x7C7B;&#x4F3C;&#x7684;&#x8FD9;&#x91CC;&#x662F;&#x5207;&#x6362;&#x4E0D;&#x540C;&#x7684;Mesh&#x770B;&#x8D77;&#x6765;&#x50CF;&#x662F;&#x6709;&#x52A8;&#x4F5C;&#x4E00;&#x6837;&#xFF0C;&#x7701;&#x53BB;&#x4E86;&#x8499;&#x76AE;&#x7684;&#x8BA1;&#x7B97;&#x6D88;&#x8017;)&#x3002;</li>
+<li><a href="https://docs.unity3d.com/Manual/ModelingOptimizedCharacters.html?_ga=2.21328508.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Unity&#x624B;&#x518C;&#x7684;&#x8FD9;&#x4E2A;&#x9875;&#x9762;</a>&#x5305;&#x542B;&#x4E86;&#x5BF9;&#x4E8E;&#x4F7F;&#x7528;&#x4E86;&#x8499;&#x76AE;&#x7F51;&#x683C;(skinned meshs)&#x7684;&#x52A8;&#x753B;&#x89D2;&#x8272;&#x7684;&#x4F18;&#x5316;&#x5EFA;&#x8BAE;&#xFF0C;<a href="https://docs.unity3d.com/Manual/class-SkinnedMeshRenderer.html?_ga=2.121215695.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">SkinnedMeshRenderer&#x7EC4;&#x4EF6;&#x5728;Unity&#x624B;&#x518C;&#x4E2D;&#x7684;&#x8FD9;&#x9875;</a>&#x5305;&#x542B;&#x4E00;&#x4E9B;&#x80FD;&#x591F;&#x63D0;&#x9AD8;&#x6027;&#x80FD;&#x7684;&#x8C03;&#x6574;&#x3002;&#x9664;&#x4E86;&#x8FD9;&#x4E9B;&#x7F51;&#x9875;&#x7684;&#x4ECB;&#x7ECD;&#xFF0C;&#x503C;&#x5F97;&#x6211;&#x4EEC;&#x8BB0;&#x4F4F;&#x7684;&#x662F;&#x8499;&#x76AE;&#x7F51;&#x683C;&#x4F1A;&#x589E;&#x52A0;&#x6BCF;&#x4E2A;&#x9876;&#x70B9;&#x7684;&#x6D88;&#x8017;&#xFF1B;&#x56E0;&#x6B64;&#x5728;&#x6211;&#x4EEC;&#x7684;&#x6A21;&#x578B;&#x4E2D;&#x4F7F;&#x7528;&#x66F4;&#x5C11;&#x7684;&#x9876;&#x70B9;&#x4F1A;&#x964D;&#x5C11;&#x5927;&#x91CF;&#x7684;&#x6A21;&#x578B;&#x6E32;&#x67D3;&#x7684;&#x5DE5;&#x4F5C;&#x91CF;&#x3002;</li>
+<li>&#x5728;&#x4E00;&#x4E9B;&#x5E73;&#x53F0;&#x4E0A;&#xFF0C;&#x8499;&#x76AE;&#x53EF;&#x4EE5;&#x7531;GPU&#x4E0A;&#x5904;&#x7406;&#x800C;&#x4E0D;&#x662F;CPU&#x4E0A;&#x5904;&#x7406;&#x3002;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x7684;GPU&#x7684;&#x663E;&#x5B58;&#x591F;&#x9AD8;&#x8FD8;&#x662F;&#x503C;&#x5F97;&#x6211;&#x4EEC;&#x53BB;&#x5C1D;&#x8BD5;&#x4E0B;&#x3002;&#x6211;&#x4EEC;&#x80FD;&#x591F;&#x5728;&#x5F53;&#x524D;&#x5E73;&#x53F0;&#x7684;<em>Player Settings</em>&#x4E2D;&#x7684;quality target&#x8BBE;&#x7F6E;GPU skinning&#x9009;&#x9879;&#x662F;&#x5426;&#x5F00;&#x542F;&#x3002;</li>
+</ul>
+<h2 id="&#x4E3B;&#x7EBF;&#x7A0B;&#x7684;&#x64CD;&#x4F5C;&#x4E0E;&#x6E32;&#x67D3;&#x65E0;&#x5173;"><a href="#&#x4E3B;&#x7EBF;&#x7A0B;&#x7684;&#x64CD;&#x4F5C;&#x4E0E;&#x6E32;&#x67D3;&#x65E0;&#x5173;" class="headerlink" title="&#x4E3B;&#x7EBF;&#x7A0B;&#x7684;&#x64CD;&#x4F5C;&#x4E0E;&#x6E32;&#x67D3;&#x65E0;&#x5173;"></a>&#x4E3B;&#x7EBF;&#x7A0B;&#x7684;&#x64CD;&#x4F5C;&#x4E0E;&#x6E32;&#x67D3;&#x65E0;&#x5173;</h2><p>&#x7406;&#x89E3;&#x5F88;&#x591A;&#x5728;&#x4E3B;&#x7EBF;&#x7A0B;&#x4E0A;&#x7684;CPU&#x7684;&#x4EFB;&#x52A1;&#x5176;&#x5B9E;&#x548C;&#x6E32;&#x67D3;&#x8FD9;&#x5757;&#x6CA1;&#x6709;&#x5173;&#x7CFB;&#x662F;&#x5F88;&#x91CD;&#x8981;&#x7684;&#x3002;&#x8FD9;&#x610F;&#x5473;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x662F;&#x4E3B;&#x7EBF;&#x7A0B;&#x5BFC;&#x81F4;CPU&#x6027;&#x80FD;&#x9996;&#x5148;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x51CF;&#x5C11;&#x4E0E;&#x6E32;&#x67D3;&#x4E0D;&#x76F8;&#x5173;&#x7684;&#x4EFB;&#x52A1;&#x6240;&#x6D88;&#x8017;&#x7684;CPU&#x65F6;&#x95F4;&#x6765;&#x63D0;&#x9AD8;&#x6027;&#x80FD;&#x3002;</p>
+<p>&#x6765;&#x770B;&#x4E00;&#x4E2A;&#x4F8B;&#x5B50;,&#x5728;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x7684;&#x67D0;&#x4E00;&#x4E9B;&#x5730;&#x65B9;&#x4E3B;&#x7EBF;&#x7A0B;&#x4E0A;&#x5904;&#x7406;&#x975E;&#x5E38;&#x8017;&#x65F6;&#x7684;&#x6E32;&#x67D3;&#x64CD;&#x4F5C;&#x548C;&#x975E;&#x5E38;&#x8017;&#x65F6;&#x7684;&#x7528;&#x6237;&#x811A;&#x672C;&#xFF0C;&#x5BFC;&#x81F4;&#x4E86;&#x6211;&#x4EEC;&#x6E38;&#x620F;CPU&#x6027;&#x80FD;&#x9996;&#x5148;&#x3002;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x5DF2;&#x7ECF;&#x5728;&#x4E0D;&#x635F;&#x5931;&#x753B;&#x9762;&#x6548;&#x679C;&#x7684;&#x524D;&#x63D0;&#x4E0B;&#x5C3D;&#x53EF;&#x80FD;&#x7684;&#x4F18;&#x5316;&#x4E86;&#x6E32;&#x67D3;&#x64CD;&#x4F5C;&#xFF0C;&#x90A3;&#x4E48;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x51CF;&#x5C11;&#x6211;&#x4EEC;&#x81EA;&#x5DF1;&#x811A;&#x672C;&#x7684;CPU&#x6D88;&#x8017;&#x6765;&#x63D0;&#x9AD8;&#x6027;&#x80FD;&#x3002;</p>
+<h1 id="GPU&#x6027;&#x80FD;&#x53D7;&#x9650;"><a href="#GPU&#x6027;&#x80FD;&#x53D7;&#x9650;" class="headerlink" title="GPU&#x6027;&#x80FD;&#x53D7;&#x9650;"></a>GPU&#x6027;&#x80FD;&#x53D7;&#x9650;</h1><p>&#x5982;&#x679C;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x662F;GPU&#x6027;&#x80FD;&#x53D7;&#x9650;&#xFF0C;&#x6211;&#x4EEC;&#x9996;&#x5148;&#x8981;&#x505A;&#x7684;&#x662F;&#x627E;&#x51FA;&#x5BFC;&#x81F4;GPU&#x6027;&#x80FD;&#x74F6;&#x9888;&#x7684;&#x539F;&#x56E0;&#x3002;GPU&#x6027;&#x80FD;&#x901A;&#x5E38;&#x662F;&#x7531;&#x4E8E;<a href="https://en.wikipedia.org/wiki/Fillrate" target="_blank" rel="external">&#x586B;&#x5145;&#x7387;</a>&#x7684;&#x9650;&#x5236;&#x3002;&#x5C24;&#x5176;&#x5728;&#x79FB;&#x52A8;&#x8BBE;&#x5907;&#x4E0A;&#xFF0C;&#x4F46;&#x662F;<a href="https://en.wikipedia.org/wiki/Memory_bandwidth" target="_blank" rel="external">&#x5185;&#x5B58;&#x5E26;&#x5BBD;</a>&#x548C;&#x5B9A;&#x70B9;&#x5904;&#x7406;&#x4E5F;&#x662F;&#x503C;&#x5F97;&#x5173;&#x6CE8;&#x7684;&#x70B9;&#x3002;&#x8BA9;&#x6211;&#x4EEC;&#x6765;&#x5BF9;&#x8FD9;&#x4E9B;&#x95EE;&#x9898;&#x6BCF;&#x4E2A;&#x90FD;&#x6D4B;&#x4E0B;&#x4E0B;&#xFF0C;&#x540C;&#x4E8B;&#x7814;&#x7A76;&#x4E0B;&#x95EE;&#x9898;&#x7684;&#x539F;&#x56E0;&#xFF0C;&#x600E;&#x6837;&#x53BB;&#x67E5;&#x8BC1;&#x548C;&#x4FEE;&#x590D;&#x8FD9;&#x4E9B;&#x95EE;&#x9898;&#x3002;</p>
+<h2 id="&#x586B;&#x5145;&#x7387;"><a href="#&#x586B;&#x5145;&#x7387;" class="headerlink" title="&#x586B;&#x5145;&#x7387;"></a>&#x586B;&#x5145;&#x7387;</h2><p>&#x586B;&#x5145;&#x7387;&#x662F;&#x6307;GPU&#x6BCF;&#x79D2;&#x53EF;&#x4EE5;&#x5728;&#x5C4F;&#x5E55;&#x4E0A;&#x6E32;&#x67D3;&#x7684;&#x50CF;&#x7D20;&#x6570;&#x91CF;&#x3002;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x56E0;&#x4E3A;&#x586B;&#x5145;&#x7387;&#x6536;&#x5230;&#x6027;&#x80FD;&#x7684;&#x9650;&#x5236;&#xFF0C;&#x8FD9;&#x610F;&#x5473;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x5C1D;&#x8BD5;&#x6BCF;&#x5E27;&#x53BB;&#x753B;&#x6BD4;GPU&#x80FD;&#x591F;&#x5904;&#x7406;&#x7684;&#x91CF;&#x66F4;&#x591A;&#x7684;&#x50CF;&#x7D20;&#x3002;</p>
+<p>&#x5982;&#x679C;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x4E2D;&#x7531;&#x4E8E;&#x586B;&#x5145;&#x7387;&#x5BFC;&#x81F4;GPU&#x6027;&#x80FD;&#x9996;&#x5148;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x7B80;&#x5355;&#x7684;&#x6D4B;&#x8BD5;&#x51FA;&#x6765;&#xFF1A;</p>
+<ul class="ui list">
+<li>&#x5206;&#x6790;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x8BB0;&#x5F55;GPU&#x65F6;&#x95F4;</li>
+<li>&#x5728;<strong>Player Settings</strong>&#x8BBE;&#x7F6E;&#x964D;&#x4F4E;&#x663E;&#x793A;&#x5206;&#x8FA8;&#x7387;&#x3002;</li>
+<li>&#x518D;&#x6B21;&#x5206;&#x6790;&#x6E38;&#x620F;&#xFF0C;&#x5982;&#x679C;&#x6E38;&#x620F;&#x6027;&#x80FD;&#x63D0;&#x9AD8;&#x4E86;&#xFF0C;&#x8FD9;&#x5C31;&#x5F88;&#x6709;&#x53EF;&#x80FD;&#x662F;&#x586B;&#x5145;&#x7387;&#x7684;&#x95EE;&#x9898;&#x3002;</li>
+</ul>
+<p>&#x5982;&#x679C;&#x662F;&#x586B;&#x5145;&#x7387;&#x5F15;&#x8D77;&#x7684;&#x6211;&#x4EEC;&#x7684;&#x95EE;&#x9898;&#xFF0C;&#x8FD9;&#x91CC;&#x6709;&#x51E0;&#x4E2A;&#x65B9;&#x6CD5;&#x5E2E;&#x52A9;&#x6211;&#x4EEC;&#x89E3;&#x51B3;&#x8FD9;&#x4E9B;&#x95EE;&#x9898;&#x3002;</p>
+<ul class="ui list">
+<li>&#x7247;&#x6BB5;&#x7740;&#x8272;&#x5668;&#x8FD9;&#x90E8;&#x5206;&#x4EE3;&#x7801;&#x7684;&#x529F;&#x80FD;&#x662F;&#x544A;&#x8BC9;GPU&#x600E;&#x6837;&#x53BB;&#x7ED8;&#x51FA;&#x5355;&#x4E2A;&#x50CF;&#x7D20;&#x3002;&#x6BCF;&#x4E2A;&#x6700;&#x7EC8;&#x4F1A;&#x7ED8;&#x5236;&#x7684;&#x50CF;&#x7D20;&#x90FD;&#x4F1A;&#x7ECF;&#x8FC7;&#x5728;GPU&#x4E2D;&#x6267;&#x884C;&#x7684;&#x8FD9;&#x90E8;&#x5206;&#x4EE3;&#x7801;&#x7684;&#x5904;&#x7406;&#x3002;&#x6240;&#x4EE5;&#x5982;&#x679C;&#x8FD9;&#x90E8;&#x5206;&#x7684;&#x4EE3;&#x7801;&#x6CA1;&#x6709;&#x6548;&#x7387;&#x7684;&#x8BDD;&#xFF0C;&#x90A3;&#x4E48;&#x7ED8;&#x5236;&#x7684;&#x50CF;&#x7D20;&#x4E00;&#x591A;&#x5F88;&#x5BB9;&#x6613;&#x5806;&#x79EF;&#x6210;&#x6027;&#x80FD;&#x95EE;&#x9898;&#x3002;&#x590D;&#x6742;&#x7684;&#x7247;&#x6BB5;&#x7740;&#x8272;&#x5668;&#x7ECF;&#x5E38;&#x9020;&#x6210;&#x586B;&#x5145;&#x7387;&#x95EE;&#x9898;&#x3002;<ul>
+<li>&#x5982;&#x679C;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x4F7F;&#x7528;&#x5185;&#x7F6E;&#x7740;&#x8272;&#x5668;&#x3002;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x4F7F;&#x7528;&#x6700;&#x7B80;&#x5355;&#x7684;&#x5C3D;&#x53EF;&#x80FD;&#x7684;&#x4F18;&#x5316;&#x4E86;&#x7684;&#x7740;&#x8272;&#x5668;&#x6765;&#x8FBE;&#x5230;&#x6211;&#x4EEC;&#x671F;&#x671B;&#x7684;&#x6548;&#x679C;&#x3002;&#x4E3E;&#x4E2A;&#x5217;&#x5B50;&#xFF0C;<a href="https://docs.unity3d.com/Manual/shader-Performance.html?_ga=2.20683263.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Unity&#x63D0;&#x4F9B;&#x7684;&#x9488;&#x5BF9;&#x79FB;&#x52A8;&#x8BBE;&#x5907;&#x7684;&#x7740;&#x8272;&#x5668;</a>&#x662F;&#x7ECF;&#x8FC7;&#x6DF1;&#x5EA6;&#x4F18;&#x5316;&#x8FC7;&#x7684;&#x3002;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x5C1D;&#x8BD5;&#x7740;&#x4F7F;&#x7528;&#x5B83;&#x4EEC;&#x770B;&#x770B;&#x8FD9;&#x4E9B;&#x7740;&#x8272;&#x5668;&#x662F;&#x5426;&#x5728;&#x6CA1;&#x6709;&#x635F;&#x5931;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x7684;&#x8868;&#x73B0;&#x6548;&#x679C;&#x7684;&#x524D;&#x63D0;&#x4E0B;&#x63D0;&#x9AD8;&#x4E86;&#x6027;&#x80FD;&#x3002;&#x8FD9;&#x4E9B;&#x7740;&#x8272;&#x5668;&#x662F;&#x9488;&#x5BF9;&#x79FB;&#x52A8;&#x8BBE;&#x5907;&#x4E0A;&#x4F7F;&#x7528;&#x800C;&#x8BBE;&#x8BA1;&#x7684;&#xFF0C;&#x4F46;&#x662F;&#x9002;&#x7528;&#x4E8E;&#x4EFB;&#x4F55;&#x9879;&#x76EE;&#x3002;&#x5982;&#x679C;&#x4F7F;&#x7528;&#x5728;&#x975E;&#x79FB;&#x52A8;&#x8BBE;&#x5907;&#x4E0A;&#x589E;&#x52A0;&#x4E86;&#x6027;&#x80FD;&#x5E76;&#x4E14;&#x8868;&#x73B0;&#x7684;&#x6548;&#x679C;&#x7B26;&#x5408;&#x9879;&#x76EE;&#x7684;&#x8981;&#x6C42;&#x81EA;&#x7136;&#x662F;&#x975E;&#x5E38;&#x597D;&#x7684;&#x3002;</li>
+<li>&#x5982;&#x679C;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x4E2D;&#x7684;&#x5BF9;&#x8C61;&#x4F7F;&#x7528;&#x4E86;Unity&#x7684;<a href="https://docs.unity3d.com/Manual/shader-StandardShader.html?_ga=2.125484877.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Standard Shader</a>&#xFF0C;&#x8981;&#x8BB0;&#x4F4F;Unity&#x662F;&#x57FA;&#x4E8E;&#x5F53;&#x524D;&#x7684;&#x6750;&#x8D28;&#x7684;&#x8BBE;&#x7F6E;&#x6765;&#x7F16;&#x8BD1;&#x8FD9;&#x4E9B;shader&#x7684;&#xFF0C;&#x53EA;&#x4F1A;&#x7F16;&#x8BD1;&#x5F53;&#x524D;&#x4F7F;&#x7528;&#x7684;&#x529F;&#x80FD;&#x3002;&#x8FD9;&#x610F;&#x5473;Unity&#x7F16;&#x8BD1;&#x65F6;&#x4F1A;&#x79FB;&#x9664;&#x4F8B;&#x5982;&#x5730;&#x56FE;&#x7EC6;&#x8282;&#x8FD9;&#x79CD;&#x529F;&#x80FD;&#xFF0C;&#x8FD9;&#x6837;&#x4F1A;&#x5927;&#x5927;&#x7684;&#x51CF;&#x5C11;&#x7247;&#x6BB5;&#x7740;&#x8272;&#x5668;&#x7684;&#x4EE3;&#x7801;&#x590D;&#x6742;&#x5EA6;&#x4ECE;&#x800C;&#x6709;&#x5229;&#x4E8E;&#x63D0;&#x5347;&#x6027;&#x80FD;&#x3002;&#x91CD;&#x7533;&#x4E0B;&#xFF0C;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x9879;&#x76EE;&#x4E2D;&#x51FA;&#x73B0;&#x4E86;&#x586B;&#x5145;&#x7387;&#x95EE;&#x9898;&#xFF0C;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x5C1D;&#x8BD5;&#x8FD9;&#x79CD;&#x8BBE;&#x7F6E;&#x770B;&#x770B;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x662F;&#x5426;&#x5728;&#x6CA1;&#x6709;&#x635F;&#x5931;&#x6548;&#x679C;&#x7684;&#x60C5;&#x51B5;&#x4E0B;&#x63D0;&#x9AD8;&#x4E86;&#x6027;&#x80FD;&#x3002;</li>
+<li>&#x5982;&#x679C;&#x6211;&#x4EEC;&#x9879;&#x76EE;&#x4F7F;&#x7528;&#x4E86;&#x5B9A;&#x5236;&#x7684;&#x7740;&#x8272;&#x5668;&#xFF0C;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x5C3D;&#x53EF;&#x80FD;&#x7684;&#x4F18;&#x5316;&#x5B83;&#x4EEC;&#x3002;&#x4F18;&#x5316;&#x7740;&#x8272;&#x5668;&#x662F;&#x4E00;&#x4E2A;&#x590D;&#x6742;&#x7684;&#x4E3B;&#x9898;&#xFF0C;&#x4F46;&#x662F;<a href="https://docs.unity3d.com/Manual/SL-ShaderPerformance.html?_ga=2.125139789.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Unity&#x624B;&#x518C;&#x7684;&#x8FD9;&#x4E2A;&#x9875;&#x9762;</a>&#x548C;<a href="https://docs.unity3d.com/Manual/MobileOptimisation.html?_ga=2.91340381.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Unity&#x624B;&#x518C;&#x7684;&#x8FD9;&#x4E2A;&#x9875;&#x9762;</a>&#x7684;<strong>&#x7740;&#x8272;&#x5668;&#x4F18;&#x5316;</strong>&#x90E8;&#x5206;&#x5305;&#x542B;&#x4E86;&#x4F18;&#x5316;&#x6211;&#x4EEC;&#x7740;&#x8272;&#x5668;&#x4EE3;&#x7801;&#x7684;&#x6709;&#x7528;&#x7684;&#x5207;&#x5165;&#x70B9;&#x3002;</li>
+</ul>
+</li>
+<li>&#x8FC7;&#x5EA6;&#x7ED8;&#x5236;(Overdraw)&#x662F;&#x6307;&#x5F53;&#x540C;&#x4E00;&#x4E2A;&#x50CF;&#x7D20;&#x88AB;&#x7ED8;&#x5236;&#x591A;&#x6B21;&#x3002;&#x8FD9;&#x53D1;&#x751F;&#x5728;&#x5BF9;&#x8C61;&#x7ED8;&#x5236;&#x5728;&#x5176;&#x4ED6;&#x5BF9;&#x8C61;&#x4E0A;&#x5C42;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x8FD9;&#x5F88;&#x5BB9;&#x6613;&#x9020;&#x6210;&#x586B;&#x5145;&#x7387;&#x7684;&#x95EE;&#x9898;&#x3002;&#x4E3A;&#x4E86;&#x7406;&#x89E3;&#x8FC7;&#x5EA6;&#x7ED8;&#x5236;&#xFF0C;&#x6211;&#x4EEC;&#x5FC5;&#x987B;&#x77E5;&#x9053;Unity&#x7ED8;&#x5236;&#x573A;&#x666F;&#x4E2D;&#x7684;&#x5BF9;&#x8C61;&#x7684;&#x987A;&#x5E8F;&#x3002;&#x5BF9;&#x8C61;&#x7684;&#x7740;&#x8272;&#x5668;&#x51B3;&#x5B9A;&#x4E86;<em>&#x7ED8;&#x5236;&#x987A;&#x5E8F;</em>&#xFF0C;&#x901A;&#x5E38;&#x6307;&#x660E;&#x5BF9;&#x8C61;&#x5728;&#x54EA;&#x4E2A;<a href="https://docs.unity3d.com/ScriptReference/Rendering.RenderQueue.html?_ga=2.20148991.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">&#x6E32;&#x67D3;&#x961F;&#x5217;</a>&#x4E2D;&#x3002;Unity&#x5229;&#x7528;&#x8FD9;&#x4E2A;&#x4FE1;&#x606F;&#x6309;&#x7167;&#x4E25;&#x683C;&#x7684;&#x987A;&#x5E8F;&#x7ED8;&#x5236;&#x5BF9;&#x8C61;&#xFF0C;&#x66F4;&#x8BE6;&#x7EC6;&#x7684;&#x4ECB;&#x7ECD;&#x5728;<a href="https://docs.unity3d.com/Manual/SL-SubShaderTags.html?_ga=2.16030577.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Unity&#x624B;&#x518C;&#x7684;&#x8FD9;&#x9875;</a>&#x3002;&#x6B64;&#x5916;&#xFF0C;&#x5728;&#x7ED8;&#x5236;&#x4E4B;&#x524D;&#x5728;&#x4E0D;&#x540C;&#x6E32;&#x67D3;&#x961F;&#x5217;&#x4E2D;&#x7684;&#x5BF9;&#x8C61;&#x4F1A;&#x8FDB;&#x884C;&#x6392;&#x5E8F;&#x3002;&#x4F8B;&#x5982;&#xFF0C;&#x96C6;&#x5408;&#x961F;&#x5217;&#x7684;&#x9879;Unity&#x4F1A;&#x6309;&#x7167;&#x4ECE;&#x524D;&#x5F80;&#x540E;&#x7684;&#x987A;&#x5E8F;&#x6392;&#x5E8F;&#x4F7F;&#x5F97;&#x6700;&#x5C0F;&#x5316;&#x8FC7;&#x5EA6;&#x7ED8;&#x5236;&#x7684;&#x60C5;&#x51B5;&#x3002;&#x4F46;&#x662F;&#x900F;&#x660E;&#x961F;&#x5217;&#x7684;&#x5BF9;&#x8C61;&#x4E3A;&#x4E86;&#x8FBE;&#x5230;&#x8981;&#x6C42;&#x7684;&#x6548;&#x679C;&#x6309;&#x7167;&#x4ECE;&#x540E;&#x5F80;&#x524D;&#x6392;&#x5E8F;&#x3002;&#x900F;&#x660E;&#x961F;&#x5217;&#x4E0A;&#x7684;&#x5BF9;&#x8C61;&#x4ECE;&#x540E;&#x5F80;&#x524D;&#x6392;&#x5E8F;&#x5B9E;&#x9645;&#x4E0A;&#x628A;&#x8FC7;&#x5EA6;&#x7ED8;&#x5236;&#x7684;&#x5F71;&#x54CD;&#x6700;&#x5927;&#x5316;&#x4E86;&#x3002;&#x8FC7;&#x5EA6;&#x7ED8;&#x5236;&#x662F;&#x4E00;&#x4E2A;&#x6BD4;&#x8F83;&#x590D;&#x6742;&#x7684;&#x4E3B;&#x9898;&#xFF0C;&#x6CA1;&#x6709;&#x4E00;&#x4E2A;&#x7EDF;&#x4E00;&#x7684;&#x65B9;&#x6CD5;&#x80FD;&#x591F;&#x89E3;&#x51B3;&#x6240;&#x6709;&#x7684;&#x8FC7;&#x5EA6;&#x7ED8;&#x5236;&#x7684;&#x95EE;&#x9898;&#xFF0C;&#x5173;&#x952E;&#x662F;&#x51CF;&#x5C11;&#x91CD;&#x53E0;&#x7684;&#x5BF9;&#x8C61;&#x7684;&#x6570;&#x91CF;&#x4F7F;&#x5F97;Unity&#x4E0D;&#x9700;&#x8981;&#x81EA;&#x52A8;&#x5BF9;&#x8FD9;&#x4E9B;&#x5BF9;&#x8C61;&#x6392;&#x5E8F;&#x3002;&#x6700;&#x597D;&#x7684;&#x5207;&#x5165;&#x70B9;&#x662F;&#x5728;Unity&#x573A;&#x666F;&#x89C6;&#x56FE;&#x4E2D;&#x6D4B;&#x8BD5;&#x8FD9;&#x4E2A;&#x95EE;&#x9898;&#xFF1B;&#x6211;&#x4EEC;&#x573A;&#x666F;&#x4E2D;&#x7684;<a href="https://docs.unity3d.com/Manual/ViewModes.html?_ga=2.21130748.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">&#x7ED8;&#x5236;&#x6A21;&#x5F0F;</a>&#x5141;&#x8BB8;&#x6211;&#x4EEC;&#x67E5;&#x770B;&#x8FC7;&#x5EA6;&#x7ED8;&#x5236;&#x7684;&#x60C5;&#x51B5;&#xFF0C;&#x5728;&#x8FD9;&#x4E2A;&#x6A21;&#x5F0F;&#x4E0B;&#xFF0C;&#x786E;&#x5B9A;&#x53EF;&#x4EE5;&#x51CF;&#x5C11;&#x8FC7;&#x5EA6;&#x7ED8;&#x5236;&#x7684;&#x5730;&#x65B9;&#x3002;&#x6700;&#x666E;&#x904D;&#x7684;&#x5BFC;&#x81F4;&#x8FC7;&#x5EA6;&#x7ED8;&#x5236;&#x7684;&#x662F;&#x900F;&#x660E;&#x5EA6;&#x6750;&#x8D28;&#xFF0C;&#x6CA1;&#x6709;&#x4F18;&#x5316;&#x7684;&#x7C92;&#x5B50;&#x7279;&#x6548;&#x548C;&#x91CD;&#x53E0;&#x7684;UI&#x5143;&#x7D20;&#xFF0C;&#x6240;&#x4EE5;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x5C1D;&#x8BD5;&#x4F18;&#x5316;&#x6216;&#x8005;&#x51CF;&#x5C11;&#x5B83;&#x4EEC;&#x3002;<a href="https://unity3d.com/cn/learn/tutorials/topics/best-practices/fill-rate-canvases-and-input?playlist=30089" target="_blank" rel="external">Unity&#x5B66;&#x4E60;&#x7F51;&#x7AD9;&#x7684;&#x8FD9;&#x7BC7;&#x6587;&#x7AE0;</a>&#x4E3B;&#x8981;&#x4ECB;&#x7ECD;&#x4E86;Unity UI&#xFF0C;&#x4F46;&#x662F;&#x4E5F;&#x5305;&#x542B;&#x4E86;&#x975E;&#x5E38;&#x597D;&#x7684;&#x8FC7;&#x5EA6;&#x7ED8;&#x5236;&#x7684;&#x6307;&#x5357;&#x3002;</li>
+<li>&#x4F7F;&#x7528;&#x56FE;&#x7247;&#x540E;&#x671F;&#x6548;&#x679C;(image effects)&#x4F1A;&#x6781;&#x5927;&#x7684;&#x9020;&#x6210;&#x586B;&#x5145;&#x7387;&#x95EE;&#x9898;&#xFF0C;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x4F7F;&#x7528;&#x4E86;&#x56FE;&#x7247;&#x540E;&#x671F;&#x6548;&#x679C;&#x5E76;&#x4E14;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x5728;&#x586B;&#x5145;&#x7387;&#x95EE;&#x9898;&#x4E0A;&#x6323;&#x624E;&#x7740;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x5C1D;&#x8BD5;&#x4E0D;&#x540C;&#x7684;&#x8BBE;&#x7F6E;&#x6216;&#x8005;&#x4F7F;&#x7528;&#x66F4;&#x52A0;&#x4F18;&#x5316;&#x7684;&#x56FE;&#x7247;&#x540E;&#x671F;&#x6548;&#x679C;&#x7684;&#x7248;&#x672C;(&#x4F8B;&#x5982;&#x9488;&#x5BF9;&#x4E8E;<a href="https://docs.unity3d.com/560/Documentation/Manual/PostProcessing-Bloom.html" target="_blank" rel="external">Bloom</a>&#x7684;&#x4F18;&#x5316;&#x7248;<a href="https://docs.unity3d.com/550/Documentation/Manual/script-BloomOptimized.html" target="_blank" rel="external">Bloom(&#x4F18;&#x5316;&#x7248;)</a>)&#x3002;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x5728;&#x540C;&#x4E00;&#x4E2A;&#x76F8;&#x673A;&#x4E2D;&#x4F7F;&#x7528;&#x4E86;&#x8D85;&#x8FC7;&#x4E00;&#x4E2A;&#x56FE;&#x7247;&#x540E;&#x671F;&#x6548;&#x679C;&#xFF0C;&#x8FD9;&#x4F1A;&#x5BFC;&#x81F4;&#x8FD9;&#x4E2A;&#x6548;&#x679C;&#x9700;&#x8981;&#x591A;&#x4E2A;&#x7740;&#x8272;&#x5668;&#x7684;SetPass calls&#x6765;&#x6E32;&#x67D3;&#x3002;&#x8FD9;&#x79CD;&#x60C5;&#x51B5;&#xFF0C;&#x6211;&#x4EEC;&#x6700;&#x597D;&#x662F;&#x628A;&#x6211;&#x4EEC;&#x56FE;&#x7247;&#x540E;&#x671F;&#x6548;&#x679C;&#x7684;&#x7740;&#x8272;&#x5668;&#x4EE3;&#x7801;&#x5408;&#x5E76;&#x5230;&#x4E00;&#x4E2A;pass&#x4E2D;&#xFF0C;&#x4F8B;&#x5982;&#x5728;<a href="https://github.com/Unity-Technologies/PostProcessing/wiki" target="_blank" rel="external">Unity&#x7684;&#x540E;&#x671F;&#x5904;&#x7406;&#x6808;</a>&#x3002;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x5DF2;&#x7ECF;&#x5DF2;&#x7ECF;&#x4F18;&#x5316;&#x4E86;&#x6211;&#x4EEC;&#x7684;&#x56FE;&#x7247;&#x540E;&#x671F;&#x6548;&#x679C;&#x4F46;&#x662F;&#x4EFB;&#x7136;&#x6709;&#x586B;&#x5145;&#x7387;&#x7684;&#x95EE;&#x9898;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x80FD;&#x9700;&#x8981;&#x8003;&#x8651;&#x5173;&#x95ED;&#x56FE;&#x7247;&#x540E;&#x671F;&#x6548;&#x679C;&#xFF0C;&#x5C24;&#x5176;&#x662F;&#x5728;&#x4F4E;&#x7AEF;&#x673A;&#x5668;&#x3002;</li>
+</ul>
+<h2 id="&#x5185;&#x5B58;&#x5E26;&#x5BBD;"><a href="#&#x5185;&#x5B58;&#x5E26;&#x5BBD;" class="headerlink" title="&#x5185;&#x5B58;&#x5E26;&#x5BBD;"></a>&#x5185;&#x5B58;&#x5E26;&#x5BBD;</h2><p>&#x5185;&#x5B58;&#x5BBD;&#x5E26;&#x662F;&#x6307;GPU&#x53EF;&#x4EE5;&#x8BFB;&#x5199;&#x4E13;&#x7528;&#x7684;&#x5185;&#x5B58;&#x7684;&#x901F;&#x7387;&#x3002;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x5185;&#x5B58;&#x5BBD;&#x5E26;&#x53D7;&#x9650;&#xFF0C;&#x901A;&#x5E38;&#x8868;&#x793A;&#x6211;&#x4EEC;&#x4F7F;&#x7528;&#x4E86;&#x5927;&#x591A;&#x7684;&#x7EB9;&#x7406;&#xFF0C;GPU&#x5DF2;&#x7ECF;&#x65E0;&#x6CD5;&#x5FEB;&#x901F;&#x7684;&#x5904;&#x7406;&#x4E86;&#x3002;</p>
+<p>&#x68C0;&#x67E5;&#x5185;&#x5B58;&#x5185;&#x5B58;&#x5BBD;&#x5E26;&#x662F;&#x5426;&#x6709;&#x95EE;&#x9898;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x8FD9;&#x6837;&#x505A;:</p>
+<ul class="ui list">
+<li>&#x5206;&#x6790;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#xFF0C;&#x8BB0;&#x4E0B;GPU&#x7684;&#x65F6;&#x95F4;&#x3002;</li>
+<li>&#x5728;<a href="https://docs.unity3d.com/Manual/class-QualitySettings.html?_ga=2.73760529.2076163812.1513481094-741569329.1509691291" target="_blank" rel="external">Quality Settings</a>&#x91CC;&#x9762;&#x964D;&#x4F4E;&#x5F53;&#x524D;&#x5E73;&#x53F0;&#x8D34;&#x56FE;&#x8D28;&#x91CF;(<strong>Texture Quality</strong>)&#x548C;&#x8FD0;&#x884C;&#x65F6;&#x753B;&#x8D28;</li>
+<li>&#x518D;&#x6B21;&#x5206;&#x6790;&#x6E38;&#x620F;&#x548C;&#x8BB0;&#x5F55;&#x4E0B;GPU&#x7684;&#x65F6;&#x95F4;&#x3002;&#x5982;&#x679C;&#x6027;&#x80FD;&#x5F97;&#x5230;&#x63D0;&#x9AD8;&#xFF0C;&#x8FD9;&#x4F3C;&#x4E4E;&#x5185;&#x5B58;&#x5E26;&#x5BBD;&#x662F;&#x6709;&#x95EE;&#x9898;&#x7684;&#x3002;</li>
+</ul>
+<p>&#x5982;&#x679C;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x4E2D;&#x5B58;&#x5728;&#x5185;&#x5B58;&#x5E26;&#x5BBD;&#x95EE;&#x9898;&#xFF0C;&#x6211;&#x4EEC;&#x9700;&#x8981;&#x51CF;&#x5C11;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x4E2D;&#x8D34;&#x56FE;&#x7684;&#x5185;&#x5B58;&#x4F7F;&#x7528;&#x91CF;&#x3002;&#x91CD;&#x7533;&#x4E00;&#x904D;&#xFF0C;&#x51CF;&#x5C11;&#x8D34;&#x56FE;&#x5185;&#x5B58;&#x4F7F;&#x7528;&#x91CF;&#x5BF9;&#x6BCF;&#x4E2A;&#x6E38;&#x620F;&#x7684;&#x4F18;&#x5316;&#x7684;&#x6700;&#x597D;&#x7684;&#x6548;&#x679C;&#x662F;&#x4E0D;&#x540C;&#x7684;&#xFF0C;&#x4F46;&#x662F;&#x8FD9;&#x91CC;&#x6709;&#x51E0;&#x4E2A;&#x65B9;&#x6CD5;&#x53EF;&#x4EE5;&#x4F18;&#x5316;&#x6211;&#x4EEC;&#x7684;&#x8D34;&#x56FE;&#x3002;</p>
+<ul class="ui list">
+<li>&#x8D34;&#x56FE;&#x538B;&#x7F29;&#x662F;&#x4E2A;&#x80FD;&#x591F;&#x5F88;&#x597D;&#x7684;&#x51CF;&#x5C11;&#x8D34;&#x56FE;&#x7684;&#x8FD0;&#x884C;&#x5185;&#x5B58;&#x548C;&#x7269;&#x7406;&#x5185;&#x5B58;&#x7684;&#x5927;&#x5C0F;&#x7684;&#x6280;&#x672F;&#x3002;&#x5982;&#x679C;&#x5185;&#x5B58;&#x5E26;&#x5BBD;&#x5728;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x4E2D;&#x662F;&#x4E00;&#x4E2A;&#x663E;&#x8457;&#x7684;&#x95EE;&#x9898;&#xFF0C;&#x4F7F;&#x7528;&#x8D34;&#x56FE;&#x538B;&#x7F29;&#x80FD;&#x591F;&#x6765;&#x51CF;&#x5C11;&#x5185;&#x5B58;&#x4E2D;&#x7EB9;&#x7406;&#x7684;&#x5927;&#x5C0F;&#x6709;&#x52A9;&#x4E8E;&#x63D0;&#x9AD8;&#x6027;&#x80FD;&#x3002;Unity&#x4E2D;&#x6709;&#x5F88;&#x591A;&#x4E0D;&#x540C;&#x7684;&#x8D34;&#x56FE;&#x7814;&#x6240;&#x683C;&#x5F0F;&#x548C;&#x53EF;&#x7528;&#x8BBE;&#x7F6E;&#x3002;&#x6BCF;&#x4E2A;&#x8D34;&#x56FE;&#x90FD;&#x6709;&#x72EC;&#x7ACB;&#x7684;&#x8BBE;&#x7F6E;&#x3002;&#x4E00;&#x822C;&#x800C;&#x8A00;&#xFF0C;&#x65E0;&#x8BBA;&#x5728;&#x4EC0;&#x4E48;&#x65F6;&#x5019;&#x5C3D;&#x53EF;&#x80FD;&#x7684;&#x4F7F;&#x7528;&#x538B;&#x7F29;&#x683C;&#x5F0F;&#x3002;&#x7136;&#x800C;&#xFF0C;&#x4E3A;&#x627E;&#x5230;&#x9002;&#x5408;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x7684;&#x6700;&#x597D;&#x7684;&#x8D34;&#x56FE;&#x8BBE;&#x7F6E;&#x7684;&#x6700;&#x4F73;&#x65B9;&#x5F0F;&#x662F;&#x53BB;&#x5C1D;&#x8BD5;&#x548C;&#x8BD5;&#x9519;&#x90A3;&#x4E9B;&#x8BBE;&#x7F6E;&#x3002;<a href="https://docs.unity3d.com/Manual/class-TextureImporter.html?_ga=2.206366741.720931824.1513485390-1143412728.1512800414" target="_blank" rel="external">Unity&#x624B;&#x518C;&#x7684;&#x8FD9;&#x9875;</a>&#x5305;&#x542B;&#x4E86;&#x5173;&#x4E8E;&#x4E0D;&#x540C;&#x683C;&#x5F0F;&#x548C;&#x8BBE;&#x7F6E;&#x7684;&#x975E;&#x5E38;&#x6709;&#x7528;&#x7684;&#x4FE1;&#x606F;&#x3002;</li>
+<li><em>Mipmaps</em>&#x662F;Unity&#x80FD;&#x591F;&#x5728;&#x5BF9;&#x8C61;&#x5728;&#x5904;&#x4E8E;&#x8FDC;&#x5904;&#x65F6;&#x4F7F;&#x7528;&#x7684;&#x4F4E;&#x5206;&#x8FA8;&#x7387;&#x7248;&#x672C;&#x3002;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x573A;&#x666F;&#x4E2D;&#x5305;&#x542B;&#x4E86;&#x8FDC;&#x79BB;&#x6444;&#x50CF;&#x673A;&#x7684;&#x5BF9;&#x8C61;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;mipmaps&#x6765;&#x7F13;&#x89E3;&#x5185;&#x5B58;&#x5E26;&#x5BBD;&#x95EE;&#x9898;&#x3002;&#x5728;&#x573A;&#x666F;&#x89C6;&#x56FE;&#x4E2D;&#x7684;<a href="https://docs.unity3d.com/Manual/ViewModes.html?_ga=2.240487557.720931824.1513485390-1143412728.1512800414" target="_blank" rel="external">Mipmaps&#x7ED8;&#x5236;&#x6A21;&#x5F0F;</a>&#x5141;&#x8BB8;&#x6211;&#x4EEC;&#x770B;&#x6211;&#x4EEC;&#x573A;&#x666F;&#x4E2D;&#x7684;&#x90A3;&#x4E9B;&#x5BF9;&#x8C61;&#x4F7F;&#x7528;mipmaps&#x662F;&#x6709;&#x5229;&#x7684;&#xFF0C;<a href="https://docs.unity3d.com/Manual/class-TextureImporter.html?_ga=2.46499873.720931824.1513485390-1143412728.1512800414" target="_blank" rel="external">Unity&#x624B;&#x518C;&#x7684;&#x8FD9;&#x4E00;&#x9875;</a>&#x5305;&#x542B;&#x4E86;&#x4E3A;&#x8D34;&#x56FE;&#x662F;&#x5426;&#x8BBE;&#x7F6E;mipmaps&#x7684;&#x66F4;&#x591A;&#x4FE1;&#x606F;&#x3002;</li>
+</ul>
+<h2 id="&#x9876;&#x70B9;&#x5904;&#x7406;"><a href="#&#x9876;&#x70B9;&#x5904;&#x7406;" class="headerlink" title="&#x9876;&#x70B9;&#x5904;&#x7406;"></a>&#x9876;&#x70B9;&#x5904;&#x7406;</h2><p>&#x9876;&#x70B9;&#x5904;&#x7406;&#x662F;&#x6307;GPU&#x4E00;&#x5B9A;&#x4F1A;&#x6E32;&#x67D3;&#x7684;mesh&#x4E2D;&#x7684;&#x6BCF;&#x4E2A;&#x9876;&#x70B9;&#x7684;&#x5DE5;&#x4F5C;&#x3002;&#x5F71;&#x54CD;&#x9876;&#x70B9;&#x5904;&#x7406;&#x7684;&#x6D88;&#x8017;&#x6709;&#x4E24;&#x4E2A;&#x65B9;&#x9762;:&#x6700;&#x7EC8;&#x4F1A;&#x6E32;&#x67D3;&#x7684;&#x9876;&#x70B9;&#x6570;&#x91CF;&#xFF0C;&#x9700;&#x8981;&#x5904;&#x7406;&#x7684;&#x6BCF;&#x4E2A;&#x9876;&#x70B9;&#x7684;&#x6570;&#x91CF;&#x3002;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x662F;GPU&#x6027;&#x80FD;&#x53D7;&#x9650;&#x540C;&#x65F6;&#x6211;&#x4EEC;&#x786E;&#x5B9A;&#x4E86;&#x4E0D;&#x662F;&#x586B;&#x5145;&#x7387;&#x548C;&#x5185;&#x5B58;&#x5E26;&#x5BBD;&#x53D7;&#x9650;&#x5BFC;&#x81F4;&#x7684;&#xFF0C;&#x90A3;&#x4E48;&#x4E45;&#x5F88;&#x6709;&#x53EF;&#x80FD;&#x662F;&#x9876;&#x70B9;&#x5904;&#x7406;&#x5F15;&#x8D77;&#x7684;&#x95EE;&#x9898;&#x3002;&#x5982;&#x679C;&#x662F;&#x8FD9;&#x4E2A;&#x539F;&#x56E0;&#x5BFC;&#x81F4;&#x7684;&#xFF0C;&#x5C1D;&#x8BD5;&#x51CF;&#x5C11;GPU&#x5FC5;&#x987B;&#x8FDB;&#x884C;&#x7684;&#x9876;&#x70B9;&#x5904;&#x7406;&#x7684;&#x91CF;&#x53EF;&#x80FD;&#x4F1A;&#x63D0;&#x9AD8;&#x63D0;&#x9AD8;&#x6027;&#x80FD;&#x3002;</p>
+<p>&#x8FD9;&#x91CC;&#x6709;&#x51E0;&#x4E2A;&#x65B9;&#x6CD5;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x8003;&#x8651;&#x5E2E;&#x52A9;&#x6211;&#x4EEC;&#x5728;&#x5904;&#x7406;&#x6BCF;&#x4E2A;&#x9876;&#x70B9;&#x65F6;&#x51CF;&#x5C11;&#x9876;&#x70B9;&#x6570;&#x91CF;&#x6216;&#x8005;&#x9876;&#x70B9;&#x5904;&#x7406;&#x7684;&#x6570;&#x91CF;&#x3002;</p>
+<ul class="ui list">
+<li>&#x9996;&#x5148;&#xFF0C;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x671F;&#x671B;&#x51CF;&#x5C11;&#x4EFB;&#x4F55;&#x4E0D;&#x5FC5;&#x8981;&#x7684;&#x590D;&#x6742;&#x7684;&#x7F51;&#x683C;&#x3002;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x4F7F;&#x7528;&#x7684;&#x7F51;&#x683C;&#x6709;&#x4E00;&#x4E9B;&#x5728;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x4E2D;&#x770B;&#x4E0D;&#x5230;&#x7684;&#x7EC6;&#x8282;&#xFF0C;&#x6216;&#x8005;&#x662F;&#x7531;&#x4E8E;&#x521B;&#x5EFA;&#x65F6;&#x7684;&#x9519;&#x8BEF;&#x5BFC;&#x81F4;&#x592A;&#x591A;&#x9876;&#x70B9;&#xFF0C;&#x8FD9;&#x4E9B;&#x4F1A;&#x6D6A;&#x8D39;&#x5F88;&#x591A;GPU&#x5904;&#x7406;&#x65F6;&#x95F4;&#x3002;&#x6700;&#x7B80;&#x5355;&#x7684;&#x51CF;&#x5C11;&#x9876;&#x70B9;&#x5904;&#x7406;&#x7684;&#x6D88;&#x8017;&#x7684;&#x65B9;&#x6CD5;&#x662F;&#x5728;&#x6211;&#x4EEC;3D&#x7F8E;&#x672F;&#x7A0B;&#x5E8F;(&#x8BD1;:&#x5982;,maya)&#x91CC;&#x4F7F;&#x7528;&#x6700;&#x5C11;&#x91CF;&#x7684;&#x9876;&#x70B9;&#x6570;&#x636E;&#x521B;&#x5EFA;&#x7F51;&#x683C;&#x3002;</li>
+<li>&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x5C1D;&#x8BD5;&#x4E00;&#x4E2A;&#x53EB;&#x505A;<em>&#x6CD5;&#x7EBF;&#x8D34;&#x56FE;(normal mapping)</em>&#x7684;&#x6280;&#x672F;&#xFF0C;&#x8FD9;&#x662F;&#x4F7F;&#x7528;&#x7EB9;&#x7406;&#x521B;&#x5EFA;&#x66F4;&#x590D;&#x6742;&#x7684;&#x51E0;&#x4F55;&#x7F51;&#x683C;&#x7684;&#x9519;&#x8BEF;&#x770B;&#x6CD5;&#x7684;&#x5730;&#x65B9;&#x3002;&#x5C3D;&#x7BA1;&#x8FD9;&#x4E2A;&#x6280;&#x672F;&#x4F1A;&#x6709;&#x4E00;&#x4E9B;GPU&#x5F00;&#x9500;&#xFF0C;&#x4F46;&#x662F;&#x5B83;&#x5728;&#x5F88;&#x591A;&#x60C5;&#x51B5;&#x4E0B;&#x4F1A;&#x5E26;&#x6765;&#x6027;&#x80FD;&#x4E0A;&#x7684;&#x63D0;&#x5347;&#x3002;<a href="https://docs.unity3d.com/Manual/StandardShaderMaterialParameterNormalMap.html?_ga=2.33120119.87762321.1513491116-66925982.1513491116" target="_blank" rel="external">Unity&#x624B;&#x518C;&#x7684;&#x8FD9;&#x9875;</a>&#x6709;&#x5B9E;&#x7528;&#x7684;&#x6CD5;&#x7EBF;&#x8D34;&#x56FE;&#x6307;&#x5357;&#xFF0C;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x6CD5;&#x7EBF;&#x8D34;&#x56FE;&#x6A21;&#x62DF;&#x6211;&#x4EEC;&#x7F51;&#x683C;&#x4E2D;&#x590D;&#x6742;&#x7684;&#x51E0;&#x4F55;&#x56FE;&#x5F62;&#x3002;</li>
+<li>&#x5982;&#x679C;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x4E2D;&#x7684;mesh&#x6CA1;&#x6709;&#x4F7F;&#x7528;&#x6CD5;&#x7EBF;&#x8D34;&#x56FE;&#xFF0C;&#x6211;&#x4EEC;&#x901A;&#x5E38;&#x53EF;&#x4EE5;&#x5728;&#x7F51;&#x683C;&#x7684;<a href="https://docs.unity3d.com/Manual/FBXImporter-Model.html?_ga=2.127309892.87762321.1513491116-66925982.1513491116" target="_blank" rel="external">&#x5BFC;&#x5165;&#x8BBE;&#x7F6E;</a>&#x4E2D;&#x5173;&#x95ED;&#x4F7F;&#x7528;&#x9876;&#x70B9;&#x5207;&#x7EBF;&#x3002;&#x8FD9;&#x56DE;&#x51CF;&#x5C11;&#x5927;&#x91CF;&#x7684;&#x53D1;&#x9001;&#x5230;GPU&#x7684;&#x9876;&#x70B9;&#x6570;&#x636E;&#x3002;</li>
+<li><a href="https://zh.wikipedia.org/wiki/&#x7EC6;&#x8282;&#x5C42;&#x6B21;" target="_blank" rel="external">&#x7EC6;&#x8282;&#x5C42;&#x6B21;(Level of detail)</a>,&#x4E5F;&#x53EB;&#x505A;LOD&#xFF0C;&#x662F;&#x4E00;&#x5BF9;&#x7F51;&#x683C;&#x8FDC;&#x79BB;&#x76F8;&#x673A;&#x65F6;&#x51CF;&#x5C11;&#x590D;&#x6742;&#x5EA6;&#x7684;&#x4F18;&#x5316;&#x6280;&#x672F;&#x3002;&#x8FD9;&#x4F1A;&#x51CF;&#x5C11;GPU&#x6E32;&#x67D3;&#x7684;&#x9876;&#x70B9;&#x7684;&#x6570;&#x91CF;&#xFF0C;&#x540C;&#x65F6;&#x4E0D;&#x5F71;&#x54CD;&#x6E38;&#x620F;&#x7684;&#x663E;&#x793A;&#x6548;&#x679C;&#x3002;<a href="https://docs.unity3d.com/Manual/class-LODGroup.html" target="_blank" rel="external">Unity&#x624B;&#x518C;&#x5173;&#x4E8E;LOD&#x7684;&#x9875;&#x9762;</a>&#x5305;&#x542B;&#x4E86;&#x66F4;&#x591A;&#x600E;&#x6837;&#x8BBE;&#x7F6E;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x7684;LOD&#x7684;&#x4FE1;&#x606F;&#x3002;</li>
+<li>&#x9876;&#x70B9;&#x7740;&#x8272;&#x5668;&#x662F;&#x4E00;&#x5757;&#x7528;&#x6765;&#x544A;&#x8BC9;GPU&#x600E;&#x6837;&#x53BB;&#x7ED8;&#x5236;&#x6BCF;&#x4E2A;&#x9876;&#x70B9;&#x7684;&#x7740;&#x8272;&#x5668;&#x4EE3;&#x7801;&#x3002;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x7531;&#x4E8E;&#x9876;&#x70B9;&#x5904;&#x7406;&#x53D7;&#x5230;&#x6027;&#x80FD;&#x9650;&#x5236;&#xFF0C;&#x51CF;&#x5C11;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x9876;&#x70B9;&#x7740;&#x8272;&#x5668;&#x7684;&#x590D;&#x6742;&#x5EA6;&#x53EF;&#x80FD;&#x6709;&#x5E2E;&#x52A9;&#x3002;<ul>
+<li>&#x5982;&#x679C;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x4F7F;&#x7528;&#x7684;&#x662F;Unity&#x5185;&#x7F6E;&#x7740;&#x8272;&#x5668;&#xFF0C;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x671F;&#x671B;&#x4F7F;&#x7528;&#x6700;&#x7B80;&#x5355;&#x7684;&#x5C3D;&#x53EF;&#x80FD;&#x6700;&#x4F18;&#x5316;&#x7684;&#x7740;&#x8272;&#x5668;&#x6765;&#x8FBE;&#x5230;&#x6211;&#x4EEC;&#x671F;&#x671B;&#x7684;&#x663E;&#x793A;&#x6548;&#x679C;&#x3002;&#x4E3E;&#x4E2A;&#x4F8B;&#x5B50;&#xFF0C;<a href="https://docs.unity3d.com/Manual/shader-Performance.html" target="_blank" rel="external">Unity&#x53D1;&#x5E03;&#x7684;&#x79FB;&#x52A8;&#x8BBE;&#x5907;&#x7684;&#x7740;&#x8272;&#x5668;</a>&#x662F;&#x9AD8;&#x5EA6;&#x4F18;&#x5316;&#x4E86;&#x7684;&#xFF1B;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x5C1D;&#x8BD5;&#x4F7F;&#x7528;&#x8FD9;&#x4E9B;&#x6750;&#x8D28;&#xFF0C;&#x770B;&#x770B;&#x662F;&#x5426;&#x80FD;&#x63D0;&#x9AD8;&#x6027;&#x80FD;&#x4F46;&#x4E0D;&#x5F71;&#x54CD;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x7684;&#x663E;&#x793A;&#x6548;&#x679C; &#x3002;</li>
+<li>&#x5982;&#x679C;&#x6211;&#x4EEC;&#x9879;&#x76EE;&#x4F7F;&#x7528;&#x4E86;&#x5B9A;&#x5236;&#x7684;&#x7740;&#x8272;&#x5668;&#xFF0C;&#x6211;&#x4EEC;&#x5E94;&#x8BE5;&#x5C3D;&#x53EF;&#x80FD;&#x7684;&#x4F18;&#x5316;&#x5B83;&#x4EEC;&#x3002;&#x4F18;&#x5316;&#x7740;&#x8272;&#x5668;&#x662F;&#x4E00;&#x4E2A;&#x590D;&#x6742;&#x7684;&#x4E3B;&#x9898;&#xFF0C;&#x4F46;&#x662F;<a href="https://docs.unity3d.com/Manual/SL-ShaderPerformance.html?_ga=2.125139789.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Unity&#x624B;&#x518C;&#x7684;&#x8FD9;&#x4E2A;&#x9875;&#x9762;</a>&#x548C;<a href="https://docs.unity3d.com/Manual/MobileOptimisation.html?_ga=2.91340381.671790835.1512974427-741569329.1509691291" target="_blank" rel="external">Unity&#x624B;&#x518C;&#x7684;&#x8FD9;&#x4E2A;&#x9875;&#x9762;</a>&#x7684;<strong>&#x7740;&#x8272;&#x5668;&#x4F18;&#x5316;</strong>&#x90E8;&#x5206;&#x5305;&#x542B;&#x4E86;&#x4F18;&#x5316;&#x6211;&#x4EEC;&#x7740;&#x8272;&#x5668;&#x4EE3;&#x7801;&#x7684;&#x6709;&#x7528;&#x7684;&#x5207;&#x5165;&#x70B9;&#x3002;</li>
+</ul>
+</li>
+</ul>
+<h1 id="&#x603B;&#x7ED3;"><a href="#&#x603B;&#x7ED3;" class="headerlink" title="&#x603B;&#x7ED3;"></a>&#x603B;&#x7ED3;</h1><p>&#x6211;&#x4EEC;&#x5B66;&#x4E60;&#x4E86;Unity&#x6E32;&#x67D3;&#x662F;&#x600E;&#x6837;&#x5DE5;&#x4F5C;&#x7684;&#xFF0C;&#x5F53;&#x6E32;&#x67D3;&#x7684;&#x65F6;&#x5019;&#x4F1A;&#x51FA;&#x73B0;&#x4EC0;&#x4E48;&#x7C7B;&#x578B;&#x7684;&#x95EE;&#x9898;&#xFF0C;&#x600E;&#x6837;&#x63D0;&#x9AD8;&#x6211;&#x4EEC;&#x6E38;&#x620F;&#x7684;&#x6027;&#x80FD;&#x3002;&#x4F7F;&#x7528;&#x8FD9;&#x90E8;&#x5206;&#x77E5;&#x8BC6;&#x5E76;&#x4E14;&#x4F7F;&#x7528;&#x6027;&#x80FD;&#x5206;&#x6790;&#x5DE5;&#x5177;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x4FEE;&#x590D;&#x6E32;&#x67D3;&#x76F8;&#x5173;&#x7684;&#x6027;&#x80FD;&#x95EE;&#x9898;&#xFF0C;&#x6784;&#x5EFA;&#x6211;&#x4EEC;&#x7684;&#x6E38;&#x620F;&#x4F7F;&#x5F97;&#x6E38;&#x620F;&#x7684;&#x6E32;&#x67D3;&#x7BA1;&#x7EBF;&#x66F4;&#x663E;&#x5E73;&#x6ED1;&#x548C;&#x9AD8;&#x7387;&#x3002;</p>
+
+                        
+                    </div>
+
+                    
+                    
+                    
+
+                    <div class="description post-description">
+    <span class="post-description-item">
+        <time datetime="2017-12-03T08:15:35.000Z" itemprop="datePublished">2017-12-03</time>
+
+    </span>
+    <span class="post-description-item">
         
 
-        
-      </div>
-    </footer>
+    <span>
+        <i class="tags icon"></i>
+    </span>
 
-    <div class="back-to-top">
-      <i class="fa fa-arrow-up"></i>
+    
+    <span class="ui tiny label">
+        <a href="/tags/graphics/">graphics</a>
+    </span>
+
+    
+
+    </span>
+</div>
+
+                </div>
+                
+                <div id="pagination" class="nav-web ui text container pagination">
+
+    <div class="ui stackable two column divided grid container">
+        <div class="row">
+            <div class="column nav-left">
+                
+
+                <a href="/2017/12/05/ienumerator_generics_boxing_question/" class="ui tiny button">
+
+                    <i class="angle left icon"></i>
+                    
+                    C# 泛型集合的Boxing问题
+                    
+
+                </a>
+
+                
+            </div>
+            <div class="column nav-right">
+                
+
+                <a href="/2017/11/18/optimizing_garbage_collection_in_unity_games/" class="ui tiny button">
+                    
+                    Unity游戏内存回收的优化(译)
+                    
+                    <i class="angle right icon"></i></a>
+                
+            </div>
+        </div>
     </div>
-  </div>
 
-  
+</div>
+                
+            </div>
 
-<script type="text/javascript">
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
-</script>
+            
+            <div class="three wide computer three wide tablet column">
 
+                <div class="ui sticky article-toc" id="article-toc">
+                    <!-- toc -->
+                    <ol class="ui ordered list"><li><a href="#介绍"><span>介绍</span></a></li><li><a href="#渲染的简介"><span>渲染的简介</span></a></li><li><a href="#渲染问题的类型"><span>渲染问题的类型</span></a></li><li><a href="#理解渲染的问题"><span>理解渲染的问题</span></a><ol><li><a href="#Profiler-window"><span>Profiler window</span></a></li><li><a href="#Frame-Debugger"><span>Frame Debugger</span></a></li><li><a href="#确定导致性能问题的原因"><span>确定导致性能问题的原因</span></a></li></ol></li><li><a href="#CPU性能受限"><span>CPU性能受限</span></a><ol><li><a href="#图形工作"><span>图形工作</span></a></li><li><a href="#找出导致性能问题的任务"><span>找出导致性能问题的任务</span></a></li><li><a href="#发送命令到GPU"><span>发送命令到GPU</span></a><ol><li><a href="#减少渲染对象的数量"><span>减少渲染对象的数量</span></a></li><li><a href="#减少每个最终会渲染的对象的渲染次数。"><span>减少每个最终会渲染的对象的渲染次数。</span></a></li><li><a href="#将渲染对象合并到更少的批次-batches-里"><span>将渲染对象合并到更少的批次(batches)里</span></a></li></ol></li><li><a href="#裁剪，排序和合批"><span>裁剪，排序和合批</span></a></li><li><a href="#蒙皮网格"><span>蒙皮网格</span></a></li><li><a href="#主线程的操作与渲染无关"><span>主线程的操作与渲染无关</span></a></li></ol></li><li><a href="#GPU性能受限"><span>GPU性能受限</span></a><ol><li><a href="#填充率"><span>填充率</span></a></li><li><a href="#内存带宽"><span>内存带宽</span></a></li><li><a href="#顶点处理"><span>顶点处理</span></a></li></ol></li><li><a href="#总结"><span>总结</span></a></li></ol>
+                </div>
 
+            </div>
+            
 
-
-
-
-
-
-
-  
-
-
-
-  
-  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-
-  
-  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-
-  
-  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-
-  
-  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+        </div>
+    </div>
+</div>
 
 
-  
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        </div>
+        <div class="ui vertical footer segment">
+    <div class="ui center aligned container">
+        <div class="ui inverted section divider"></div>
+        &copy; 2018 <a href="/">elangduan@126.com</a>,
+        Powered by <a href="https://github.com/henryhuang/hexo-theme-aloha" target="_blank">Aloha</a> and <a
+                href="http://hexo.io/" target="_blank">Hexo</a>.
+    </div>
+</div>
 
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
-
-
-
-  
-
-  
-    
-  
-
-  <script type="text/javascript">
-    var duoshuoQuery = {short_name:"elangduan"};
-    (function() {
-      var ds = document.createElement('script');
-      ds.type = 'text/javascript';ds.async = true;
-      ds.id = 'duoshuo-script';
-      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-      ds.charset = 'UTF-8';
-      (document.getElementsByTagName('head')[0]
-      || document.getElementsByTagName('body')[0]).appendChild(ds);
-    })();
-  </script>
-
-  
-    
-    
-    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
-    <script src="/js/src/hook-duoshuo.js"></script>
-  
+    </div>
 
 
 
 
+<!-- scripts list from theme config.yml -->
 
+<script src="//cdn.bootcss.com/jquery/3.1.0/jquery.min.js"></script>
 
+<script src="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.js"></script>
 
+<script src="//cdn.bootcss.com/algoliasearch/3.18.1/algoliasearch.min.js"></script>
 
-  
-  
+<script src="//cdn.bootcss.com/algoliasearch-helper-js/2.13.0/algoliasearch.helper.min.js"></script>
 
-  
+<script src="/js/semantic-ui-algolia.js"></script>
 
-  
+<script src="/js/aloha-events.js"></script>
 
-  
-
-  
 
 
 </body>

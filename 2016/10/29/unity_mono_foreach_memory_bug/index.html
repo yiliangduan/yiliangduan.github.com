@@ -1,90 +1,15 @@
-<!doctype html>
 
 
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head prefix="og: http://ogp.me/ns#">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <meta name="description" content="">
+    <title>C# foreach带来的内存问题 | elangduan</title>
 
-  
-
-
-<html class="theme-next mist use-motion" lang="zh-Hans">
-<head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-
-
-
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
-
-
-
-
-  
-  
-  
-  
-
-  
-    
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    
-    
-    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
-  
-
-
-
-
-
-
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
-
-<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
-
-
-  <meta name="keywords" content="csharp," />
-
-
-
-
-
-
-
-
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
-
-
-
-
-
-
-<meta name="description" content="简介在使用Unity工具开发游戏的时候经常会被建议不要使用foreach,究其原因说是会产生额外的heap内存,既然存在这种问题, 那我必须得自己搞清楚下。本文是自己查阅资料和试验的结果总结。 本文参考了Memory allocation when using foreach loops in C# 测试环境: Unity5.4.1f1, MonoV2.0.5 剖析首先来搞明白使用foreach和">
+    <!-- Open Graph -->
+    <meta name="description" content="简介在使用Unity工具开发游戏的时候经常会被建议不要使用foreach,究其原因说是会产生额外的heap内存,既然存在这种问题, 那我必须得自己搞清楚下。本文是自己查阅资料和试验的结果总结。 本文参考了Memory allocation when using foreach loops in C# 测试环境: Unity5.4.1f1, MonoV2.0.5 剖析首先来搞明白使用foreach和">
 <meta name="keywords" content="csharp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="C# foreach带来的内存问题">
@@ -97,561 +22,288 @@
 <meta name="twitter:title" content="C# foreach带来的内存问题">
 <meta name="twitter:description" content="简介在使用Unity工具开发游戏的时候经常会被建议不要使用foreach,究其原因说是会产生额外的heap内存,既然存在这种问题, 那我必须得自己搞清楚下。本文是自己查阅资料和试验的结果总结。 本文参考了Memory allocation when using foreach loops in C# 测试环境: Unity5.4.1f1, MonoV2.0.5 剖析首先来搞明白使用foreach和">
 
-
-
-<script type="text/javascript" id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Mist',
-    sidebar: {"position":"left","display":"hide"},
-    fancybox: true,
-    motion: true,
-    duoshuo: {
-      userId: '0',
-      author: 'elangduan'
-    },
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
+    <script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Person",
+  "email": "mailto:elangduan@126.com",
+  "image": "/uploads/avatar.png",
+  "name": "elangduan@126.com",
+  "url": "http://elangduan.github.com"
+}
+</script>
+    <script>
+    var algoliaEnabled = false;
+    
 </script>
 
+    
 
+    
+    
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+    
+    
+    
+        <!-- stylesheets list from config.yml -->
+        
+        <link rel="stylesheet" href="/css/aloha.css">
+        
+        <link rel="stylesheet" href="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.css">
+        
+        <link rel="stylesheet" href="//cdn.bootcss.com/magnific-popup.js/1.1.0/magnific-popup.min.css">
+        
+    
 
-  <link rel="canonical" href="http://elangduan.github.com/2016/10/29/unity_mono_foreach_memory_bug/"/>
-
-
-
-
-
-  <title> C# foreach带来的内存问题 | elangduan </title>
 </head>
+<body id="body" style="margin-bottom: 0;" class="pushable">
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+    <div class="ui top fixed menu">
+        <a class="item" id="menu-icon"><i class="sidebar icon"></i></a>
+    </div>
 
-  
+    <div id="menu-sidebar" class="ui left vertical sidebar menu">
 
-
-
-
-
-
-
-
-
-
-  
-  
-    
-  
-
-  <div class="container one-collumn sidebar-position-left page-post-detail ">
-    <div class="headband"></div>
-
-    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-meta ">
-  
-
-  <div class="custom-logo-site-title">
-    <a href="/"  class="brand" rel="start">
-      <span class="logo-line-before"><i></i></span>
-      <span class="site-title">elangduan</span>
-      <span class="logo-line-after"><i></i></span>
-    </a>
-  </div>
-  <p class="site-subtitle"></p>
-</div>
-
-<div class="site-nav-toggle">
-  <button>
-    <span class="btn-bar"></span>
-    <span class="btn-bar"></span>
-    <span class="btn-bar"></span>
-  </button>
-</div>
-
-<nav class="site-nav">
-  
-
-  
-    <ul id="menu" class="menu">
-      
-        
-        <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
-            
-            首页
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-archives">
-          <a href="/archives" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
-            
-            归档
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-reading">
-          <a href="/reading" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
-            
-            阅读
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-movie">
-          <a href="/movie" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-camera"></i> <br />
-            
-            电影
-          </a>
-        </li>
-      
-
-      
-    </ul>
-  
-
-  
-</nav>
-
-
-
- </div>
-    </header>
-
-    <main id="main" class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
-    
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2016/10/29/unity_mono_foreach_memory_bug/">
-
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="elangduan@126.com">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/uploads/avatar.png">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="elangduan">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="elangduan" src="">
-    </span>
-  </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                C# foreach带来的内存问题
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-10-29T21:16:35+08:00">
-              2016-10-29
-            </time>
-            
-          </span>
-
-          
-
-          
-
-          
-
-          
-          
-
-          
-          
-          
-
+    <div id="sidebar-top">
+        <div class="content">
+            <h3>elangduan</h3>
         </div>
-      </header>
+    </div>
+    <div class="ui container sidebar-card">
+    <div class="ui people shape content">
+        <div class="active side">
+            <div class="ui card">
+                <div class="image">
+                    <img class="ui medium bordered image" src="/images/avatar.jpg">
+                </div>
+                <div class="content">
+                    <a class="header">elangduan@126.com</a>
+                    
+                        <div class="meta">
+                            Game Developer
+                        </div>
+                    
+                </div>
+                <div class="extra content">
+                    <div class="ui list">
+                        
+                        <div class="item">
+                            <i class="marker icon" style="float: left"></i>
+                            <div class="content">Shanghai</div>
+                        </div>
+                        
+                        
+                        <div class="item">
+                            <i class="mail icon" style="float: left"></i>
+                            <div class="content">
+                                <a href="mailto:elangduan@126.com">elangduan@126.com</a>
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                </div>
+                <div class="extra content">
+                    <div class="ui list">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+    
     
 
+    
 
-    <div class="post-body" itemprop="articleBody">
+    
+    <a href="/index.html" class="item" >
+        <i class="home icon"></i>
+        HOME
+    </a>
 
-      
-      
+    
 
-      
-        <h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h4><p>在使用Unity工具开发游戏的时候经常会被建议不要使用foreach,究其原因说是会产生额外的heap内存,既然存在这种问题, 那我必须得自己搞清楚下。本文是自己查阅资料和试验的结果总结。</p>
-<p>本文参考了<a href="https://stackoverflow.com/a/26110503" target="_blank" rel="external">Memory allocation when using foreach loops in C#</a></p>
-<p><em>测试环境: Unity5.4.1f1, MonoV2.0.5</em></p>
-<h4 id="剖析"><a href="#剖析" class="headerlink" title="剖析"></a>剖析</h4><p>首先来搞明白使用foreach和for的区别,下面是一个简单的例子:</p>
-<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Sample1.0</span></span><br><span class="line">&#123;</span><br><span class="line">    List&lt;<span class="keyword">string</span>&gt; list = <span class="keyword">new</span> List&lt;<span class="keyword">string</span>&gt;()&#123;<span class="string">"hello"</span>, <span class="string">"world"</span>&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">foreach</span>(<span class="keyword">string</span> item <span class="keyword">in</span> list)</span><br><span class="line">    &#123;</span><br><span class="line">        UnityEngine.Debug.Log(item);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    
+</div>
+
+    <div class="pusher body-content">
+        <div id="content" class="ui main container">
+            <!--<div class="ui one column grid">-->
+                <!--<div class="column">-->
+                    <!--<div class="ui main container">-->
+                        <div id="post-unity_mono_foreach_memory_bug" class="ui main container article-type-post">
+
+    
+
+    <div class="ui divided grid">
+
+        <div class="two column row" id="article-content">
+
+            <div class="thirteen wide computer thirteen wide tablet sixteen wide mobile column">
+                
+
+<h1 class="ui header">
+    
+    C# foreach带来的内存问题
+</h1>
+
+
+
+                <div class="article-inner">
+
+                    <div class="article-entry" itemprop="articleBody">
+                        
+                        <h4 id="&#x7B80;&#x4ECB;"><a href="#&#x7B80;&#x4ECB;" class="headerlink" title="&#x7B80;&#x4ECB;"></a>&#x7B80;&#x4ECB;</h4><p>&#x5728;&#x4F7F;&#x7528;Unity&#x5DE5;&#x5177;&#x5F00;&#x53D1;&#x6E38;&#x620F;&#x7684;&#x65F6;&#x5019;&#x7ECF;&#x5E38;&#x4F1A;&#x88AB;&#x5EFA;&#x8BAE;&#x4E0D;&#x8981;&#x4F7F;&#x7528;foreach,&#x7A76;&#x5176;&#x539F;&#x56E0;&#x8BF4;&#x662F;&#x4F1A;&#x4EA7;&#x751F;&#x989D;&#x5916;&#x7684;heap&#x5185;&#x5B58;,&#x65E2;&#x7136;&#x5B58;&#x5728;&#x8FD9;&#x79CD;&#x95EE;&#x9898;, &#x90A3;&#x6211;&#x5FC5;&#x987B;&#x5F97;&#x81EA;&#x5DF1;&#x641E;&#x6E05;&#x695A;&#x4E0B;&#x3002;&#x672C;&#x6587;&#x662F;&#x81EA;&#x5DF1;&#x67E5;&#x9605;&#x8D44;&#x6599;&#x548C;&#x8BD5;&#x9A8C;&#x7684;&#x7ED3;&#x679C;&#x603B;&#x7ED3;&#x3002;</p>
+<p>&#x672C;&#x6587;&#x53C2;&#x8003;&#x4E86;<a href="https://stackoverflow.com/a/26110503" target="_blank" rel="external">Memory allocation when using foreach loops in C#</a></p>
+<p><em>&#x6D4B;&#x8BD5;&#x73AF;&#x5883;: Unity5.4.1f1, MonoV2.0.5</em></p>
+<h4 id="&#x5256;&#x6790;"><a href="#&#x5256;&#x6790;" class="headerlink" title="&#x5256;&#x6790;"></a>&#x5256;&#x6790;</h4><p>&#x9996;&#x5148;&#x6765;&#x641E;&#x660E;&#x767D;&#x4F7F;&#x7528;foreach&#x548C;for&#x7684;&#x533A;&#x522B;,&#x4E0B;&#x9762;&#x662F;&#x4E00;&#x4E2A;&#x7B80;&#x5355;&#x7684;&#x4F8B;&#x5B50;:</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Sample1.0</span></span><br><span class="line">{</span><br><span class="line">    List&lt;<span class="keyword">string</span>&gt; list = <span class="keyword">new</span> List&lt;<span class="keyword">string</span>&gt;(){<span class="string">&quot;hello&quot;</span>, <span class="string">&quot;world&quot;</span>};</span><br><span class="line"></span><br><span class="line">    <span class="keyword">foreach</span>(<span class="keyword">string</span> item <span class="keyword">in</span> list)</span><br><span class="line">    {</span><br><span class="line">        UnityEngine.Debug.Log(item);</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
 <a id="more"></a> 
-<p>编译之后查看对应的IL代码, 发现foreach编译之后通过获取List的内部类Enumerator来遍历List的数据,其中List<string>.Enumerator内部类的定义为:</string></p>
-<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">struct</span> Enumerator : IEnumerator&lt;T&gt;, IDisposable, IEnumerator&#123;&#125;</span><br></pre></td></tr></table></figure>
-<p>Enumerator为struct类型, 在c#中struct类型为<a href="https://msdn.microsoft.com/en-us/library/s1ax56ch.aspx" target="_blank" rel="external">Value Types</a>,根据c#对<a href="https://msdn.microsoft.com/en-us/library/4d43ts61(v=vs.90" target="_blank" rel="external">Value and Reference Types</a>.aspx)的描述,其中说到:</p>
+<p>&#x7F16;&#x8BD1;&#x4E4B;&#x540E;&#x67E5;&#x770B;&#x5BF9;&#x5E94;&#x7684;IL&#x4EE3;&#x7801;, &#x53D1;&#x73B0;foreach&#x7F16;&#x8BD1;&#x4E4B;&#x540E;&#x901A;&#x8FC7;&#x83B7;&#x53D6;List&#x7684;&#x5185;&#x90E8;&#x7C7B;Enumerator&#x6765;&#x904D;&#x5386;List&#x7684;&#x6570;&#x636E;,&#x5176;&#x4E2D;List<string>.Enumerator&#x5185;&#x90E8;&#x7C7B;&#x7684;&#x5B9A;&#x4E49;&#x4E3A;:</string></p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">struct</span> Enumerator : IEnumerator&lt;T&gt;, IDisposable, IEnumerator{}</span><br></pre></td></tr></table></figure>
+<p>Enumerator&#x4E3A;struct&#x7C7B;&#x578B;, &#x5728;c#&#x4E2D;struct&#x7C7B;&#x578B;&#x4E3A;<a href="https://msdn.microsoft.com/en-us/library/s1ax56ch.aspx" target="_blank" rel="external">Value Types</a>,&#x6839;&#x636E;c#&#x5BF9;<a href="https://msdn.microsoft.com/en-us/library/4d43ts61(v=vs.90" target="_blank" rel="external">Value and Reference Types</a>.aspx)&#x7684;&#x63CF;&#x8FF0;,&#x5176;&#x4E2D;&#x8BF4;&#x5230;:</p>
 <p>A value type stores its contents in memory allocated on the stack</p>
-<p>也就是说Enumerator的内存是分配在stack区域的, 再仔细看看Enumerator发现其实现了IDisposable接口,而IDisposable接口有什么特性呢? 从<a href="https://msdn.microsoft.com/en-us/library/system.idisposable(v=vs.110" target="_blank" rel="external">.Net Framework文档</a>.aspx)中我们可以看到:</p>
-<p>Implement IDisposable only if you are using unmanaged resources directly. If your app simply uses an object that implements IDisposable, don’t provide an IDisposable implementation. Instead, you should call the object’s IDisposable.Dispose implementation when you are finished using it. Depending on your programming language, you can do this in one of two ways:</p>
-<ul>
+<p>&#x4E5F;&#x5C31;&#x662F;&#x8BF4;Enumerator&#x7684;&#x5185;&#x5B58;&#x662F;&#x5206;&#x914D;&#x5728;stack&#x533A;&#x57DF;&#x7684;, &#x518D;&#x4ED4;&#x7EC6;&#x770B;&#x770B;Enumerator&#x53D1;&#x73B0;&#x5176;&#x5B9E;&#x73B0;&#x4E86;IDisposable&#x63A5;&#x53E3;,&#x800C;IDisposable&#x63A5;&#x53E3;&#x6709;&#x4EC0;&#x4E48;&#x7279;&#x6027;&#x5462;? &#x4ECE;<a href="https://msdn.microsoft.com/en-us/library/system.idisposable(v=vs.110" target="_blank" rel="external">.Net Framework&#x6587;&#x6863;</a>.aspx)&#x4E2D;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x770B;&#x5230;:</p>
+<p>Implement IDisposable only if you are using unmanaged resources directly. If your app simply uses an object that implements IDisposable, don&#x2019;t provide an IDisposable implementation. Instead, you should call the object&#x2019;s IDisposable.Dispose implementation when you are finished using it. Depending on your programming language, you can do this in one of two ways:</p>
+<ul class="ui list">
 <li>By using a language construct such as the using statement in C# and Visual Basic.</li>
 <li>By wrapping the call to the IDisposable.Dispose implementation in a try/catch block.</li>
 </ul>
-<p>也就是说继承了IDisposable接口之后得使用using来声明或者使用try/catch块来包裹我们代码。那我们根据这些特性可以通过对应的IL代码来还原成C#的代码:</p>
-<p><em>使用using</em><br><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span>(List&lt;<span class="keyword">string</span>&gt;.Enumerator enumerator = list.GetEnumerator())</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">while</span>(enumerator.MoveNext())</span><br><span class="line">    &#123;</span><br><span class="line">        UnityEngine.Debug.Log(enumerator.Current);</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></p>
-<p><em>使用try/catch包裹</em><br><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">List&lt;<span class="keyword">string</span>&gt;.Enumerator enumerator = list.GetEnumerator();</span><br><span class="line">    </span><br><span class="line"><span class="keyword">try</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">while</span> (enumerator.MoveNext())</span><br><span class="line">    &#123;</span><br><span class="line">        UnityEngine.Debug.Log(enumerator.Current);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">finally</span></span><br><span class="line">&#123;</span><br><span class="line">    ((IDisposable)enumerator).Dispose();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>从使用try/catch包裹这个代码中我们可以看出问题了，在finally块中编译器对enumerator进行的类型的强者转换,转换称了IDisposable接口类型的,我们知道在C#中接口类型属于reference type。reference type的内存是在heap上分配的, 分析到这里其实答案基本上已经知道了。另一方面其实在分析看IL代码就可以发现问题, 在IL中的的finally块是这样的:</p>
-<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">finally</span>  &#123; <span class="comment">// 0</span></span><br><span class="line">  IL_004d:  ldloc<span class="number">.2</span> </span><br><span class="line">  IL_004e:  box valuetype [mscorlib]System.Collections.Generic.List`<span class="number">1</span>/Enumerator&lt;<span class="keyword">string</span>&gt;</span><br><span class="line">  IL_0053:  callvirt instance void class [mscorlib]System.IDisposable::Dispose()</span><br><span class="line">  IL_0058:  endfinally </span><br><span class="line">&#125; <span class="comment">// end handler 0</span></span><br></pre></td></tr></table></figure>
-<p>其中第三行有一个很扎眼的关键子<em>box</em>。那么box是的作用是什么呢？从上面IL代码其实可以看出Boxing把Enumerator<string>这个valuetype转换成了IDisposable这个interface类型的对象。具体的过程参照<a href="https://msdn.microsoft.com/en-us/library/yz2be5wk.aspx" target="_blank" rel="external">Boxing官方的文档</a>有这样的描述:</string></p>
+<p>&#x4E5F;&#x5C31;&#x662F;&#x8BF4;&#x7EE7;&#x627F;&#x4E86;IDisposable&#x63A5;&#x53E3;&#x4E4B;&#x540E;&#x5F97;&#x4F7F;&#x7528;using&#x6765;&#x58F0;&#x660E;&#x6216;&#x8005;&#x4F7F;&#x7528;try/catch&#x5757;&#x6765;&#x5305;&#x88F9;&#x6211;&#x4EEC;&#x4EE3;&#x7801;&#x3002;&#x90A3;&#x6211;&#x4EEC;&#x6839;&#x636E;&#x8FD9;&#x4E9B;&#x7279;&#x6027;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x5BF9;&#x5E94;&#x7684;IL&#x4EE3;&#x7801;&#x6765;&#x8FD8;&#x539F;&#x6210;C#&#x7684;&#x4EE3;&#x7801;:</p>
+<p><em>&#x4F7F;&#x7528;using</em><br><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span>(List&lt;<span class="keyword">string</span>&gt;.Enumerator enumerator = list.GetEnumerator())</span><br><span class="line">{</span><br><span class="line">    <span class="keyword">while</span>(enumerator.MoveNext())</span><br><span class="line">    {</span><br><span class="line">        UnityEngine.Debug.Log(enumerator.Current);</span><br><span class="line">     }</span><br><span class="line"> }</span><br></pre></td></tr></table></figure></p>
+<p><em>&#x4F7F;&#x7528;try/catch&#x5305;&#x88F9;</em><br><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">List&lt;<span class="keyword">string</span>&gt;.Enumerator enumerator = list.GetEnumerator();</span><br><span class="line">    </span><br><span class="line"><span class="keyword">try</span></span><br><span class="line">{</span><br><span class="line">    <span class="keyword">while</span> (enumerator.MoveNext())</span><br><span class="line">    {</span><br><span class="line">        UnityEngine.Debug.Log(enumerator.Current);</span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line"><span class="keyword">finally</span></span><br><span class="line">{</span><br><span class="line">    ((IDisposable)enumerator).Dispose();</span><br><span class="line">}</span><br></pre></td></tr></table></figure></p>
+<p>&#x4ECE;&#x4F7F;&#x7528;try/catch&#x5305;&#x88F9;&#x8FD9;&#x4E2A;&#x4EE3;&#x7801;&#x4E2D;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x770B;&#x51FA;&#x95EE;&#x9898;&#x4E86;&#xFF0C;&#x5728;finally&#x5757;&#x4E2D;&#x7F16;&#x8BD1;&#x5668;&#x5BF9;enumerator&#x8FDB;&#x884C;&#x7684;&#x7C7B;&#x578B;&#x7684;&#x5F3A;&#x8005;&#x8F6C;&#x6362;,&#x8F6C;&#x6362;&#x79F0;&#x4E86;IDisposable&#x63A5;&#x53E3;&#x7C7B;&#x578B;&#x7684;,&#x6211;&#x4EEC;&#x77E5;&#x9053;&#x5728;C#&#x4E2D;&#x63A5;&#x53E3;&#x7C7B;&#x578B;&#x5C5E;&#x4E8E;reference type&#x3002;reference type&#x7684;&#x5185;&#x5B58;&#x662F;&#x5728;heap&#x4E0A;&#x5206;&#x914D;&#x7684;, &#x5206;&#x6790;&#x5230;&#x8FD9;&#x91CC;&#x5176;&#x5B9E;&#x7B54;&#x6848;&#x57FA;&#x672C;&#x4E0A;&#x5DF2;&#x7ECF;&#x77E5;&#x9053;&#x4E86;&#x3002;&#x53E6;&#x4E00;&#x65B9;&#x9762;&#x5176;&#x5B9E;&#x5728;&#x5206;&#x6790;&#x770B;IL&#x4EE3;&#x7801;&#x5C31;&#x53EF;&#x4EE5;&#x53D1;&#x73B0;&#x95EE;&#x9898;, &#x5728;IL&#x4E2D;&#x7684;&#x7684;finally&#x5757;&#x662F;&#x8FD9;&#x6837;&#x7684;:</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">finally</span>  { <span class="comment">// 0</span></span><br><span class="line">  IL_004d:  ldloc<span class="number">.2</span> </span><br><span class="line">  IL_004e:  box valuetype [mscorlib]System.Collections.Generic.List`<span class="number">1</span>/Enumerator&lt;<span class="keyword">string</span>&gt;</span><br><span class="line">  IL_0053:  callvirt instance void class [mscorlib]System.IDisposable::Dispose()</span><br><span class="line">  IL_0058:  endfinally </span><br><span class="line">} <span class="comment">// end handler 0</span></span><br></pre></td></tr></table></figure>
+<p>&#x5176;&#x4E2D;&#x7B2C;&#x4E09;&#x884C;&#x6709;&#x4E00;&#x4E2A;&#x5F88;&#x624E;&#x773C;&#x7684;&#x5173;&#x952E;&#x5B50;<em>box</em>&#x3002;&#x90A3;&#x4E48;box&#x662F;&#x7684;&#x4F5C;&#x7528;&#x662F;&#x4EC0;&#x4E48;&#x5462;&#xFF1F;&#x4ECE;&#x4E0A;&#x9762;IL&#x4EE3;&#x7801;&#x5176;&#x5B9E;&#x53EF;&#x4EE5;&#x770B;&#x51FA;Boxing&#x628A;Enumerator<string>&#x8FD9;&#x4E2A;valuetype&#x8F6C;&#x6362;&#x6210;&#x4E86;IDisposable&#x8FD9;&#x4E2A;interface&#x7C7B;&#x578B;&#x7684;&#x5BF9;&#x8C61;&#x3002;&#x5177;&#x4F53;&#x7684;&#x8FC7;&#x7A0B;&#x53C2;&#x7167;<a href="https://msdn.microsoft.com/en-us/library/yz2be5wk.aspx" target="_blank" rel="external">Boxing&#x5B98;&#x65B9;&#x7684;&#x6587;&#x6863;</a>&#x6709;&#x8FD9;&#x6837;&#x7684;&#x63CF;&#x8FF0;:</string></p>
 <blockquote>
 <p>Boxing is used to store value types in the garbage-collected heap. Boxing is an implicit conversion of a value type to the type object or to any interface type implemented by this value type. Boxing a value type allocates an object instance on the heap and copies the value into the new object.</p>
 </blockquote>
-<p>也就是说把一个value type对象转换成其实现的Reference type对象, 然而转换之后的这个对象的内存是分配在heap区域的。现在我们终于知道foreach会产生heap内存的原因了。</p>
-<p>总结:基于使用foreach会在heap上分配额外内存的问题。在Unity使用foreach就要变得谨慎了,尤其是Update这种每帧执行的函数里面还是尽量避免使用foreach,尽管它有良好的代码可读性和使用上的方便等特性。</p>
+<p>&#x4E5F;&#x5C31;&#x662F;&#x8BF4;&#x628A;&#x4E00;&#x4E2A;value type&#x5BF9;&#x8C61;&#x8F6C;&#x6362;&#x6210;&#x5176;&#x5B9E;&#x73B0;&#x7684;Reference type&#x5BF9;&#x8C61;, &#x7136;&#x800C;&#x8F6C;&#x6362;&#x4E4B;&#x540E;&#x7684;&#x8FD9;&#x4E2A;&#x5BF9;&#x8C61;&#x7684;&#x5185;&#x5B58;&#x662F;&#x5206;&#x914D;&#x5728;heap&#x533A;&#x57DF;&#x7684;&#x3002;&#x73B0;&#x5728;&#x6211;&#x4EEC;&#x7EC8;&#x4E8E;&#x77E5;&#x9053;foreach&#x4F1A;&#x4EA7;&#x751F;heap&#x5185;&#x5B58;&#x7684;&#x539F;&#x56E0;&#x4E86;&#x3002;</p>
+<p>&#x603B;&#x7ED3;:&#x57FA;&#x4E8E;&#x4F7F;&#x7528;foreach&#x4F1A;&#x5728;heap&#x4E0A;&#x5206;&#x914D;&#x989D;&#x5916;&#x5185;&#x5B58;&#x7684;&#x95EE;&#x9898;&#x3002;&#x5728;Unity&#x4F7F;&#x7528;foreach&#x5C31;&#x8981;&#x53D8;&#x5F97;&#x8C28;&#x614E;&#x4E86;,&#x5C24;&#x5176;&#x662F;Update&#x8FD9;&#x79CD;&#x6BCF;&#x5E27;&#x6267;&#x884C;&#x7684;&#x51FD;&#x6570;&#x91CC;&#x9762;&#x8FD8;&#x662F;&#x5C3D;&#x91CF;&#x907F;&#x514D;&#x4F7F;&#x7528;foreach,&#x5C3D;&#x7BA1;&#x5B83;&#x6709;&#x826F;&#x597D;&#x7684;&#x4EE3;&#x7801;&#x53EF;&#x8BFB;&#x6027;&#x548C;&#x4F7F;&#x7528;&#x4E0A;&#x7684;&#x65B9;&#x4FBF;&#x7B49;&#x7279;&#x6027;&#x3002;</p>
 <hr>
-<p>在<em>Unity5.5.3f1</em>上面测试了一下发现这个问题已经解决了, 看下在<em>5.5.3f1</em>上foreach反编译的finally的代码:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">finally</span><br><span class="line">&#123;</span><br><span class="line">	// 0x02B9: 12 03</span><br><span class="line">	IL_0049: ldloca.s 3</span><br><span class="line">	// 0x02BB: FE 16 02 00 00 1B</span><br><span class="line">	IL_004b: constrained. valuetype [mscorlib]System.Collections.Generic.List`1/Enumerator&lt;string&gt;</span><br><span class="line">	// 0x02C1: 6F 07 00 00 0A</span><br><span class="line">	IL_0051: callvirt instance void [mscorlib]System.IDisposable::Dispose()</span><br><span class="line">	// 0x02C6: DC</span><br><span class="line">	IL_0056: endfinally</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>对List的GetEnumerator已经没有进行box操作了。</p>
+<p>&#x5728;<em>Unity5.5.3f1</em>&#x4E0A;&#x9762;&#x6D4B;&#x8BD5;&#x4E86;&#x4E00;&#x4E0B;&#x53D1;&#x73B0;&#x8FD9;&#x4E2A;&#x95EE;&#x9898;&#x5DF2;&#x7ECF;&#x89E3;&#x51B3;&#x4E86;, &#x770B;&#x4E0B;&#x5728;<em>5.5.3f1</em>&#x4E0A;foreach&#x53CD;&#x7F16;&#x8BD1;&#x7684;finally&#x7684;&#x4EE3;&#x7801;:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">finally</span><br><span class="line">{</span><br><span class="line">	// 0x02B9: 12 03</span><br><span class="line">	IL_0049: ldloca.s 3</span><br><span class="line">	// 0x02BB: FE 16 02 00 00 1B</span><br><span class="line">	IL_004b: constrained. valuetype [mscorlib]System.Collections.Generic.List`1/Enumerator&lt;string&gt;</span><br><span class="line">	// 0x02C1: 6F 07 00 00 0A</span><br><span class="line">	IL_0051: callvirt instance void [mscorlib]System.IDisposable::Dispose()</span><br><span class="line">	// 0x02C6: DC</span><br><span class="line">	IL_0056: endfinally</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<p>&#x5BF9;List&#x7684;GetEnumerator&#x5DF2;&#x7ECF;&#x6CA1;&#x6709;&#x8FDB;&#x884C;box&#x64CD;&#x4F5C;&#x4E86;&#x3002;</p>
 
-      
-    </div>
+                        
+                    </div>
 
-    <div>
-      
+                    
+                    
+                    
+
+                    <div class="description post-description">
+    <span class="post-description-item">
+        <time datetime="2016-10-29T13:16:35.000Z" itemprop="datePublished">2016-10-29</time>
+
+    </span>
+    <span class="post-description-item">
         
 
-      
-    </div>
+    <span>
+        <i class="tags icon"></i>
+    </span>
 
-    <div>
-      
-        
+    
+    <span class="ui tiny label">
+        <a href="/tags/csharp/">csharp</a>
+    </span>
 
-      
-    </div>
+    
 
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/csharp/" rel="tag"># csharp</a>
-          
-        </div>
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2016/09/05/unity_in_app_purchase_note/" rel="next" title="Unity 苹果IAP和微信支付接入">
-                <i class="fa fa-chevron-left"></i> Unity 苹果IAP和微信支付接入
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/12/28/unity_download_api_experient/" rel="prev" title="Unity 文件下载分析">
-                Unity 文件下载分析 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
-      
-    </footer>
-  </article>
-
-
-
-    <div class="post-spread">
-      
-    </div>
-  </div>
-
-
-          </div>
-          
-
-
-          
-
-        </div>
-        
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <section class="site-overview sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image"
-               src="/uploads/avatar.png"
-               alt="elangduan@126.com" />
-          <p class="site-author-name" itemprop="name">elangduan@126.com</p>
-          <p class="site-description motion-element" itemprop="description"></p>
-        </div>
-        <nav class="site-state motion-element">
-          <div class="site-state-item site-state-posts">
-            <a href="/archives">
-              <span class="site-state-item-count">29</span>
-              <span class="site-state-item-name">日志</span>
-            </a>
-          </div>
-
-          
-
-          
-            <div class="site-state-item site-state-tags">
-              
-                <span class="site-state-item-count">6</span>
-                <span class="site-state-item-name">标签</span>
-              
-            </div>
-          
-
-        </nav>
-
-        
-
-        <div class="links-of-author motion-element">
-          
-        </div>
-
-        
-        
-
-        
-        
-
-        
-
-
-      </section>
-
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#剖析"><span class="nav-number">2.</span> <span class="nav-text">剖析</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
-      
-
-    </div>
-  </aside>
-
-
-        
-      </div>
-    </main>
-
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <div class="copyright" align="center">
-  
-  &copy; 
-  <span itemprop="copyrightYear">2018</span>
-
-  <span class="author" itemprop="copyrightHolder">elangduan@126.com | </span>
-
-  <span>
-    powered by <a class="theme-link" href="https://hexo.io">hexo</a>
-  </span>
-
-  <span>
-    & theme <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next"> NexT</a>
-  </span>
+    </span>
 </div>
 
-        
+                </div>
+                
+                <div id="pagination" class="nav-web ui text container pagination">
 
-        
-      </div>
-    </footer>
+    <div class="ui stackable two column divided grid container">
+        <div class="row">
+            <div class="column nav-left">
+                
 
-    <div class="back-to-top">
-      <i class="fa fa-arrow-up"></i>
+                <a href="/2016/12/28/unity_download_api_experient/" class="ui tiny button">
+
+                    <i class="angle left icon"></i>
+                    
+                    Unity 文件下载分析
+                    
+
+                </a>
+
+                
+            </div>
+            <div class="column nav-right">
+                
+
+                <a href="/2016/09/05/unity_in_app_purchase_note/" class="ui tiny button">
+                    
+                    Unity 苹果IAP和微信支付接入
+                    
+                    <i class="angle right icon"></i></a>
+                
+            </div>
+        </div>
     </div>
-  </div>
 
-  
+</div>
+                
+            </div>
 
-<script type="text/javascript">
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
-</script>
+            
+            <div class="three wide computer three wide tablet column">
 
+                <div class="ui sticky article-toc" id="article-toc">
+                    <!-- toc -->
+                    <ol class="ui ordered list"><li><a href="#简介"><span>简介</span></a></li><li><a href="#剖析"><span>剖析</span></a></li></ol>
+                </div>
 
+            </div>
+            
 
-
-
-
-
-
-
-  
-
-
-
-  
-  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-
-  
-  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-
-  
-  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-
-  
-  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+        </div>
+    </div>
+</div>
 
 
-  
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        </div>
+        <div class="ui vertical footer segment">
+    <div class="ui center aligned container">
+        <div class="ui inverted section divider"></div>
+        &copy; 2018 <a href="/">elangduan@126.com</a>,
+        Powered by <a href="https://github.com/henryhuang/hexo-theme-aloha" target="_blank">Aloha</a> and <a
+                href="http://hexo.io/" target="_blank">Hexo</a>.
+    </div>
+</div>
 
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
-
-
-
-  
-
-  
-    
-  
-
-  <script type="text/javascript">
-    var duoshuoQuery = {short_name:"elangduan"};
-    (function() {
-      var ds = document.createElement('script');
-      ds.type = 'text/javascript';ds.async = true;
-      ds.id = 'duoshuo-script';
-      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-      ds.charset = 'UTF-8';
-      (document.getElementsByTagName('head')[0]
-      || document.getElementsByTagName('body')[0]).appendChild(ds);
-    })();
-  </script>
-
-  
-    
-    
-    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
-    <script src="/js/src/hook-duoshuo.js"></script>
-  
+    </div>
 
 
 
 
+<!-- scripts list from theme config.yml -->
 
+<script src="//cdn.bootcss.com/jquery/3.1.0/jquery.min.js"></script>
 
+<script src="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.js"></script>
 
+<script src="//cdn.bootcss.com/algoliasearch/3.18.1/algoliasearch.min.js"></script>
 
-  
-  
+<script src="//cdn.bootcss.com/algoliasearch-helper-js/2.13.0/algoliasearch.helper.min.js"></script>
 
-  
+<script src="/js/semantic-ui-algolia.js"></script>
 
-  
+<script src="/js/aloha-events.js"></script>
 
-  
-
-  
 
 
 </body>
