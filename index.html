@@ -62,7 +62,9 @@
 
 
 
-    <title> elangduan - </title>
+    <title>
+  elangduan
+</title>
   </head>
 
   <body>
@@ -75,15 +77,6 @@
     <nav id="nav-top">
         
             <ul id="menu-top" class="nav-top-items">
-                
-                    <li class="menu-item">
-                        <a href="/archives">
-                            
-                            
-                                Archives
-                            
-                        </a>
-                    </li>
                 
                     <li class="menu-item">
                         <a href="/about">
@@ -102,1005 +95,528 @@
       </header>
       <div id="content">
         
-    <div id="primary" class="home">
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/12/09/ugui_graphics_rebuild_about_image_alpha_fade/">UGUI的Graphic Rebuild问题</a>
-        
-      </h1>
-
-      <time class="post-time">
-          Dec 09 2017
-      </time>
-    </header>
-
-
+  
+<div id="primary">
+  <section id="archive" class="archive">
 
     
-        <div class="post-excerpt">
-            
-            
-              
-            
 
-            
-              <p>今天在项目中发现了一个UI的性能消耗比较异常的问题。在Unity的Profiler里面我看到一项<em>Canvas.SendWillRenderCanvases</em>CPU消耗持续比较高，但是查看游戏的UI界面好像动态变化的UI并没有。在逐个关闭UI才定位到有一张图片一直在做渐变效果，所以才导致UI一直在重建。这里写个简单的例子模拟下，在场景中创建一张Image，然后挂载一个测试脚本，在这个脚本里面一直更新这个Image的alpha通道就可以看到这种现象。</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">TestGraphicRebuild</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> Image FadeImage;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">float</span> _mAlpha = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">Update</span> (<span class="params"></span>)</span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">	    _mAlpha += <span class="number">0.01</span>f;</span><br><span class="line">	    _mAlpha = _mAlpha &gt; <span class="number">1</span> ? <span class="number">0</span> : _mAlpha;</span><br><span class="line">	    </span><br><span class="line">        FadeImage.color = <span class="keyword">new</span> Color(</span><br><span class="line">                              FadeImage.color.r, </span><br><span class="line">                              FadeImage.color.g, </span><br><span class="line">                              FadeImage.color.b, </span><br><span class="line">                              _mAlpha);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+      
+
+      
+        
+        <div class="collection-title">
+          <h2 class="archive-year">2017</h2>
         </div>
-            
-          
+      
 
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Dec 9
+        </span>
+        <span class="archive-post-title">
+          <a href="/2017/12/09/ugui_graphics_rebuild_about_image_alpha_fade/" class="archive-post-link">
+            UGUI的Graphic Rebuild问题
+          </a>
+        </span>
+      </div>
     
-  </article>
 
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/12/05/ienumerator_generics_boxing_question/">C# 泛型集合的Boxing问题</a>
-        
-      </h1>
+      
+      
 
-      <time class="post-time">
-          Dec 05 2017
-      </time>
-    </header>
+      
 
-
-
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Dec 5
+        </span>
+        <span class="archive-post-title">
+          <a href="/2017/12/05/ienumerator_generics_boxing_question/" class="archive-post-link">
+            C# 泛型集合的Boxing问题
+          </a>
+        </span>
+      </div>
     
-        <div class="post-excerpt">
-            
-            
 
-            
-          
+      
+      
 
+      
+
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Dec 3
+        </span>
+        <span class="archive-post-title">
+          <a href="/2017/12/03/optimizing_graphics_rendering_in_unity_games/" class="archive-post-link">
+            Unity游戏的图形渲染优化(译)
+          </a>
+        </span>
+      </div>
     
-  </article>
 
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/12/03/optimizing_graphics_rendering_in_unity_games/">Unity游戏的图形渲染优化(译)</a>
-        
-      </h1>
+      
+      
 
-      <time class="post-time">
-          Dec 03 2017
-      </time>
-    </header>
+      
 
-
-
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Nov 18
+        </span>
+        <span class="archive-post-title">
+          <a href="/2017/11/18/optimizing_garbage_collection_in_unity_games/" class="archive-post-link">
+            Unity游戏内存回收的优化(译)
+          </a>
+        </span>
+      </div>
     
-        <div class="post-excerpt">
-            
-            
-              
-            
 
-            
-              <blockquote>
-<p>原文<a href="https://unity3d.com/cn/learn/tutorials/temas/performance-optimization/optimizing-graphics-rendering-unity-games?playlist=44069" target="_blank" rel="external">Optimizing graphics rendering in Unity games</a>。这里对这篇文章的粗略翻译，当作自己的笔记。</p>
-</blockquote>
-<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。</p>
-<p>在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非常依赖游戏运行的硬件和操作系统。通过调查，实验和细心的分析实验结果来解决性能问题是我们最重要的方式。</p>
-<p>这篇文章包含的信息主要是大部分常见的性能问题的修改建议和一些更深层次的阅读链接。我们的游戏中可能也存在这其中的一个问题或者一些问题或者都没有包含。但是这篇文章仍然将帮助我们理解我们自己的问题同时给予我们去搜索我们问题的知识和线索。</p>
-<h1 id="渲染的简介"><a href="#渲染的简介" class="headerlink" title="渲染的简介"></a>渲染的简介</h1><p>在我们开始介绍之前，让我们快速简单看下Unity渲染一帧时其内部发生了什么。理解事件流和正确的术语将会帮助我们 理解，调查和解决我们的性能问题。</p>
-<p><strong>注:</strong>在这篇文章中，我们将会使用”对象(object)”术语来表示一个我们游戏的渲染的对象。任何渲染组件的GameObject将会被统称为对象。</p>
-<p>在最基本的层面上，渲染可以描述为一下几步：</p>
-<ul>
-<li>CPU计算出必须渲染的对象和决定怎么去绘制。</li>
-<li>CPU发送指令到GPU。</li>
-<li>GPU根据CPU的指令来确定绘制的内容。</li>
-</ul>
-<p>现在让我们来更近一步看看究竟发生了什么。这篇文章后面将会详细的介绍上面的每一个步骤。但是现在让我们先来熟悉下文中使用的词语和理解CPU和GPU在渲染中扮演的不同角色。</p>
-<p>描述渲染的词语通常用<strong>渲染管线(rendering pipeline)</strong>，记住这是一个非常有用的情景。高效的渲染都是关于保持更高信息的传送能力。</p>
-<p>对于每一个渲染的帧，CPU会做如下的工作:</p>
-<ul>
-<li>CPU会检查场景中的每一个对象来决定这个对象是否需要被渲染。只有当这个对象满足特定的条件的时候才会被渲染；例如，它的包围盒的一些部分在<a href="https://docs.unity3d.com/Manual/UnderstandingFrustum.html?_ga=2.151286320.801370543.1512275945-1497166853.1503199345" target="_blank" rel="external">相机视锥体</a>内。一个对象如果将不会被渲染我们称之为这个对象被裁剪了(culled)。关于相机的视锥体和视锥体裁剪的更多信息可以看着<a href="https://docs.unity3d.com/Manual/UnderstandingFrustum.html?_ga=2.147021758.801370543.1512275945-1497166853.1503199345" target="_blank" rel="external">这篇文章</a>。</li>
-<li>CPU搜集每一个将会被渲染的对象的信息然后将这些数据分类放入叫做<strong>draw calls</strong>命令中。一个draw call包含了一个mesh和这个mesh怎样被渲染的数据；例如，这个mesh用哪一张贴图。基于这些情况，共享设置的图像会合并到一些相同的draw call中。合并不同对象的数据到同一个draw call中我们称之为<strong>batching</strong>。</li>
-<li>CPU为每次draw call创建一个叫batch的数据包。batchs有可能包含了draw calls之外的数据，但是这种情况不像常见的一个性能问题，因此我们不会在这篇文章里面来讨论。</li>
-</ul>
-<p>对于每个draw call包含的batchs，CPU现在必须要入如下的工作:</p>
-<ul>
-<li>CPU可以向GPU发送一个命令来改变一些被统称为渲染状态的变量。这个命令叫做<strong>SetPass call</strong>。SetPass call告诉GPU哪个设置被用来渲染下一个mesh。只有当上一个mesh渲染完成下一个mesh准备渲染的时候需要改变渲染状态的时候才需要发送SetPass call命令。</li>
-<li>CPU发送draw call命令到GPU。draw call会指示GPU使用上一次设置好的SetPass call去渲染制定的mesh。</li>
-<li>基于这些情况，batchs的数据被渲染可能需要不止一个<em>pass</em>。一个pass是一段着色器的代码，使用一个新的pass需要改变渲染状态。对于一个batchs中的每个pass，CPU必须发送一个新的SetPass call命令同时必须再次发送draw call命令。这个pass才会生效。</li>
-</ul>
-<p>同时，GPU会做如下的工作:</p>
-<ul>
-<li>GPU按照CPU发送的顺序来处理CPU发送的任务。</li>
-<li>如果当前的任务是SetPass call，GPU就更新渲染状态。</li>
-<li>如果当前的任务是draw call, GPU就渲染这个draw call的mesh。这个是分阶段进行的，每个阶段单独定义在着色器代码中。这部分渲染比较复杂我们不会详细的讨论，但是这部分对于我们去理解<strong>顶点着色器(vertex shader)</strong>这部分代码和<strong>片段着色器(fragment shader)</strong>这部分代码非常有用。顶点着色器是用来告诉GPU怎么去处理mesh的顶点数据的代码，片段着色器使用来怎样去处理每个单独像素代码。</li>
-<li>GPU重复处理从CPU发送过来的任务，直到所有的任务都处理完成。</li>
-</ul>
-<p>现在我们理解了当Unity渲染一帧时其内部发生了什么，接下来让我们思考下当渲染发生的时候会随之发生什么问题。</p>
+      
+      
+
+      
+
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Aug 30
+        </span>
+        <span class="archive-post-title">
+          <a href="/2017/08/30/unity_quaternion_interpolation_note/" class="archive-post-link">
+            Quaternion的插值分析及总结
+          </a>
+        </span>
+      </div>
+    
+
+      
+      
+
+      
+
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Aug 20
+        </span>
+        <span class="archive-post-title">
+          <a href="/2017/08/20/unity_shader_if_state_performance/" class="archive-post-link">
+            Unity中shader代码的条件分支的性能问题
+          </a>
+        </span>
+      </div>
+    
+
+      
+      
+
+      
+
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Jul 14
+        </span>
+        <span class="archive-post-title">
+          <a href="/2017/07/14/unity_sprite_format_summary/" class="archive-post-link">
+            Unity3D Sprite常用存储格式性能对比
+          </a>
+        </span>
+      </div>
+    
+
+      
+      
+
+      
+
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Jul 13
+        </span>
+        <span class="archive-post-title">
+          <a href="/2017/07/13/unity_ugui_panel_visible_manage/" class="archive-post-link">
+            Unity3D的UIPanel隐藏的处理方式
+          </a>
+        </span>
+      </div>
+    
+
+      
+      
+
+      
+
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Jul 8
+        </span>
+        <span class="archive-post-title">
+          <a href="/2017/07/08/unity_render_order_question/" class="archive-post-link">
+            Unity模型渲染层级顺序问题
+          </a>
+        </span>
+      </div>
+    
+
+      
+      
+
+      
+
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Jun 18
+        </span>
+        <span class="archive-post-title">
+          <a href="/2017/06/18/unity_auto_build_ipa/" class="archive-post-link">
+            Unity脚本自动构建IPA包
+          </a>
+        </span>
+      </div>
+    
+
+      
+      
+
+      
+
+      <div class="archive-post">
+        <span class="archive-post-time">
+          May 25
+        </span>
+        <span class="archive-post-title">
+          <a href="/2017/05/25/unity_coroutine_note/" class="archive-post-link">
+            Unity Coroutine的实现原理
+          </a>
+        </span>
+      </div>
+    
+
+      
+      
+
+      
+
+      <div class="archive-post">
+        <span class="archive-post-time">
+          May 10
+        </span>
+        <span class="archive-post-title">
+          <a href="/2017/05/10/openg_normal_mapping_transform_martix_derivation/" class="archive-post-link">
+            OpenGL中Normal的变换矩阵的推导
+          </a>
+        </span>
+      </div>
+    
+
+      
+      
+
+      
+
+      <div class="archive-post">
+        <span class="archive-post-time">
+          May 5
+        </span>
+        <span class="archive-post-title">
+          <a href="/2017/05/05/c_language_variable_init/" class="archive-post-link">
+            C语言的变量初始化问题
+          </a>
+        </span>
+      </div>
+    
+
+      
+      
+
+      
+
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Apr 24
+        </span>
+        <span class="archive-post-title">
+          <a href="/2017/04/24/unity_ar_region_caption_display_black_question/" class="archive-post-link">
+            Region_Capture截取的UV色彩变黑的问题
+          </a>
+        </span>
+      </div>
+    
+
+      
+      
+
+      
+
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Mar 8
+        </span>
+        <span class="archive-post-title">
+          <a href="/2017/03/08/monobehaviour_awake_start_function_call_detail/" class="archive-post-link">
+            MonoBehaviour的Awake,Start等函数的调用原理
+          </a>
+        </span>
+      </div>
+    
+
+      
+      
+
+      
+
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Mar 4
+        </span>
+        <span class="archive-post-title">
+          <a href="/2017/03/04/unity_model_position_transform_to_world_position/" class="archive-post-link">
+            Unity模型坐标转换到屏幕坐标
+          </a>
+        </span>
+      </div>
+    
+
+      
+      
+
+      
+
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Feb 25
+        </span>
+        <span class="archive-post-title">
+          <a href="/2017/02/25/unity_monobehavior_awake_function_call_time/" class="archive-post-link">
+            MonoBehaviour的Awake的调用时机
+          </a>
+        </span>
+      </div>
+    
+
+      
+      
+
+      
+
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Feb 11
+        </span>
+        <span class="archive-post-title">
+          <a href="/2017/02/11/json_auto_generate_cs_code/" class="archive-post-link">
+            Json自动生成C#代码的工具
+          </a>
+        </span>
+      </div>
+    
+
+      
+      
+
+      
+        
+        <div class="collection-title">
+          <h2 class="archive-year">2016</h2>
         </div>
-            
-          
+      
 
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Dec 28
+        </span>
+        <span class="archive-post-title">
+          <a href="/2016/12/28/unity_download_api_experient/" class="archive-post-link">
+            Unity 文件下载分析
+          </a>
+        </span>
+      </div>
     
-  </article>
 
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/11/18/optimizing_garbage_collection_in_unity_games/">Unity游戏内存回收的优化(译)</a>
-        
-      </h1>
+      
+      
 
-      <time class="post-time">
-          Nov 18 2017
-      </time>
-    </header>
+      
 
-
-
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Oct 29
+        </span>
+        <span class="archive-post-title">
+          <a href="/2016/10/29/unity_mono_foreach_memory_bug/" class="archive-post-link">
+            C# foreach带来的内存问题
+          </a>
+        </span>
+      </div>
     
-        <div class="post-excerpt">
-            
-            
-              
-            
 
-            
-              <blockquote>
-<p>原文<a href="https://unity3d.com/cn/learn/tutorials/topics/performance-optimization/optimizing-garbage-collection-unity-games" target="_blank" rel="external">Optimizing garbage collection in Unity games</a>。这里对这篇文章的粗略翻译，当作自己的笔记。</p>
-<p>Garbage Collector在这里被翻译成名词GC。对于Garbage Collection这里翻译成GC内存回收。</p>
-<p>内存垃圾: 代码中销毁了(disposed)但是GC还没有清理的内存。</p>
-</blockquote>
-<h1 id="Unity的托管内存的简单介绍"><a href="#Unity的托管内存的简单介绍" class="headerlink" title="Unity的托管内存的简单介绍"></a>Unity的托管内存的简单介绍</h1><p>为了理解GC（本文GC指代Garbage Collector）在内存分配和回收时是怎样工作的，我们必须首先了解Unity的引擎代码和我们自己编写的脚本是怎么利用内存来工作的。</p>
-<p>Unity引擎代码运行时管理内存的方式叫做手动管理内存(manual memory management)。也就是说引擎代码必须显示的声明内存是怎么使用的。手动管理内存没有用到GC，这部分内容本文不做介绍。</p>
-<p>当运行我们自己编写的脚本时Unity管理这部分内存的方式叫做自动内存管理(automatic memory management).这意味这我们自己编写的代码不需要很详细的去告诉Unity怎样去管理这部分内存。Unity都帮我们做好了。</p>
-<p>简而言之，Unity的自动管理内存工作方式如下：</p>
-<ul>
-<li>Unity有两个可以访问的内存池：栈(stack)和堆 (heap)(也被叫做托管堆。栈内存被用在短期存储一些小片段的数据，堆则用来存储一些长期并且比较大的片段数据)。</li>
-<li>当一个变量创建好了，Unity会在栈或者堆中申请一个内存块。</li>
-<li>只要这个创建的变量在作用范围之内(我们的代码一直可以访问到它)，为它分配的相应的那块内存就一直是保持可用状态。我们把这块内存成为已经被分配的(allocated)。我们把在栈中分配内存的变量叫做栈上的对象，把内存分配在堆上的变量成为堆上的对象。</li>
-<li>当这个变量已经脱离了它的作用区域，相应的这个变量所分配的内存也就不再需要了，这块内存随之就会把返回给分配时的那个内存池。我们称这块内存叫做已回收(deallocated)。栈上的内存一旦离开了作用区域就会立即被回收。如果是堆上的内存即便是它的引用已经超出了作用区域也不会被立即回收，它还会保持它的分配状态。</li>
-<li>GC会标记并且回收堆上没有被使用的内存。它会周期性的对堆上的内存进行清理。</li>
-</ul>
-<p>现在我们了解了内存使用的流程，让我们来更深入的来了解栈和堆上的内存的分配和释放。</p>
+      
+      
+
+      
+
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Sep 5
+        </span>
+        <span class="archive-post-title">
+          <a href="/2016/09/05/unity_in_app_purchase_note/" class="archive-post-link">
+            Unity 苹果IAP和微信支付接入
+          </a>
+        </span>
+      </div>
+    
+
+      
+      
+
+      
+
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Jul 16
+        </span>
+        <span class="archive-post-title">
+          <a href="/2016/07/16/unity_assetbundle_learning_and_summary/" class="archive-post-link">
+            Unity AssetBundle学习、分析及总结
+          </a>
+        </span>
+      </div>
+    
+
+      
+      
+
+      
+
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Jun 29
+        </span>
+        <span class="archive-post-title">
+          <a href="/2016/06/29/cs_object_refer_each_other/" class="archive-post-link">
+            C# 内存管理之对象循环引用问题
+          </a>
+        </span>
+      </div>
+    
+
+      
+      
+
+      
+
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Jun 18
+        </span>
+        <span class="archive-post-title">
+          <a href="/2016/06/18/unity_resource_memory_summary/" class="archive-post-link">
+            Unity中内存资源释放总结
+          </a>
+        </span>
+      </div>
+    
+
+      
+      
+
+      
+
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Jun 5
+        </span>
+        <span class="archive-post-title">
+          <a href="/2016/06/05/cs_multi_thread_note/" class="archive-post-link">
+            C#多线程下数据同步处理
+          </a>
+        </span>
+      </div>
+    
+
+      
+      
+
+      
+
+      <div class="archive-post">
+        <span class="archive-post-time">
+          May 9
+        </span>
+        <span class="archive-post-title">
+          <a href="/2016/05/09/unity_gamobject_learning_note/" class="archive-post-link">
+            Unity GameObject深度剖析
+          </a>
+        </span>
+      </div>
+    
+
+      
+      
+
+      
+
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Apr 27
+        </span>
+        <span class="archive-post-title">
+          <a href="/2016/04/27/cs_global_variable_init/" class="archive-post-link">
+            C#全局变量的初始化过程
+          </a>
+        </span>
+      </div>
+    
+
+      
+      
+
+      
+
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Apr 9
+        </span>
+        <span class="archive-post-title">
+          <a href="/2016/04/09/cs_const_static_vs_readonly_keyworld/" class="archive-post-link">
+            C# 的const, static 和 readonly 关键字的理解
+          </a>
+        </span>
+      </div>
+    
+
+      
+      
+
+      
+        
+        <div class="collection-title">
+          <h2 class="archive-year">2015</h2>
         </div>
-            
-          
+      
 
+      <div class="archive-post">
+        <span class="archive-post-time">
+          Jun 20
+        </span>
+        <span class="archive-post-title">
+          <a href="/2015/06/20/cpp_language_memory_format_structure/" class="archive-post-link">
+            C++虚函数的内存结构浅析
+          </a>
+        </span>
+      </div>
     
-  </article>
+  </section>
+ </div>
 
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/08/30/unity_quaternion_interpolation_note/">Quaternion的插值分析及总结</a>
-        
-      </h1>
-
-      <time class="post-time">
-          Aug 30 2017
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-
-            
-          
-
-    
-  </article>
-
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/08/20/unity_shader_if_state_performance/">Unity中shader代码的条件分支的性能问题</a>
-        
-      </h1>
-
-      <time class="post-time">
-          Aug 20 2017
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-
-            
-          
-
-    
-  </article>
-
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/07/14/unity_sprite_format_summary/">Unity3D Sprite常用存储格式性能对比</a>
-        
-      </h1>
-
-      <time class="post-time">
-          Jul 14 2017
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-
-            
-          
-
-    
-  </article>
-
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/07/13/unity_ugui_panel_visible_manage/">Unity3D的UIPanel隐藏的处理方式</a>
-        
-      </h1>
-
-      <time class="post-time">
-          Jul 13 2017
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-
-            
-          
-
-    
-  </article>
-
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/07/08/unity_render_order_question/">Unity模型渲染层级顺序问题</a>
-        
-      </h1>
-
-      <time class="post-time">
-          Jul 08 2017
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-
-            
-          
-
-    
-  </article>
-
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/06/18/unity_auto_build_ipa/">Unity脚本自动构建IPA包</a>
-        
-      </h1>
-
-      <time class="post-time">
-          Jun 18 2017
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-
-            
-          
-
-    
-  </article>
-
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/05/25/unity_coroutine_note/">Unity Coroutine的实现原理</a>
-        
-      </h1>
-
-      <time class="post-time">
-          May 25 2017
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-
-            
-          
-
-    
-  </article>
-
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/05/10/openg_normal_mapping_transform_martix_derivation/">OpenGL中Normal的变换矩阵的推导</a>
-        
-      </h1>
-
-      <time class="post-time">
-          May 10 2017
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-
-            
-          
-
-    
-  </article>
-
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/05/05/c_language_variable_init/">C语言的变量初始化问题</a>
-        
-      </h1>
-
-      <time class="post-time">
-          May 05 2017
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-
-            
-          
-
-    
-  </article>
-
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/04/24/unity_ar_region_caption_display_black_question/">Region_Capture截取的UV色彩变黑的问题</a>
-        
-      </h1>
-
-      <time class="post-time">
-          Apr 24 2017
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-
-            
-          
-
-    
-  </article>
-
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/03/08/monobehaviour_awake_start_function_call_detail/">MonoBehaviour的Awake,Start等函数的调用原理</a>
-        
-      </h1>
-
-      <time class="post-time">
-          Mar 08 2017
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-
-            
-          
-
-    
-  </article>
-
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/03/04/unity_model_position_transform_to_world_position/">Unity模型坐标转换到屏幕坐标</a>
-        
-      </h1>
-
-      <time class="post-time">
-          Mar 04 2017
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-
-            
-          
-
-    
-  </article>
-
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/02/25/unity_monobehavior_awake_function_call_time/">MonoBehaviour的Awake的调用时机</a>
-        
-      </h1>
-
-      <time class="post-time">
-          Feb 25 2017
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-              
-            
-
-            
-              <p>对MonoBehaviour的Awake之前有一个一直错误的理解:如果一个GameObject被添加到scene中，就算Active为false只要场景运行，此GameObejct的Awake函数就会调用。此理解是看了<a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Awake.html" target="_blank" rel="external">官方文档</a>自己得出的结论:</p>
-<blockquote>
-<p>Awake is called when the script instance is being loaded.</p>
-</blockquote>
-<p>昨天同事问到这个问题的时候才自己测试了一遍，才发现我的理解是错误的。测试发现Awake只有在Active为true的时候会被调用一次。此外在查找资料的时候发现了Unity论坛里面有人在讨论这个问题<a href="http://answers.unity3d.com/questions/942915/something-like-awake-that-runs-even-if-disabled.html" target="_blank" rel="external">Something like Awake that runs even if disabled?</a>。有答案说构造方法会在GameObject的Active为false的时候会被调用，测试了一下却是如此。</p>
-<p>继续浏览了Monobehaviour的文档，发现文档里面也着重写了这个问题:</p>
-<blockquote>
-<p>Note: The checkbox for disabling a MonoBehavior (on the editor) will only prevent Start(), Awake(), Update(), FixedUpdate(), and OnGUI() from executing. If none of these functions are present, the checkbox is not displayed.</p>
-</blockquote>
-        </div>
-            
-          
-
-    
-  </article>
-
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/02/11/json_auto_generate_cs_code/">Json自动生成C#代码的工具</a>
-        
-      </h1>
-
-      <time class="post-time">
-          Feb 11 2017
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-              
-            
-
-            
-              <h3 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h3><p>由于现在项目里面与服务器通信的数据使用的Json格式，在每次服务器添加协议的时候客户端都要根据服务器返回的数据对照写一遍解析的数据类和解析类，这样重复性的工作比较浪费时间，所以写了一个Json自动生成C#代码的工具，只要把服务器返回的Json数据用这个工具转换一下就可以自动生成对应的C#解析的代码。</p>
-        </div>
-            
-          
-
-    
-  </article>
-
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2016/12/28/unity_download_api_experient/">Unity 文件下载分析</a>
-        
-      </h1>
-
-      <time class="post-time">
-          Dec 28 2016
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-              
-            
-
-            
-              <p>在项目里面有时需要从服务器上下载比较大的文件，比如我们在做更新的时候需要下载AssetBundle文件。Unity3D中提供了WWW接口可以用来下载文件，但是使用之后发现这个接口在下载比较大的文件的时候非常占用内存资源。然后我用C#的Webclient接口来下载同样的文件，发现内存占用情况存在和WWW的完全不一样。本文来就来探讨一下使用WWW和Webclient两个接口下载文件造成内存占用的原因。</p>
-        </div>
-            
-          
-
-    
-  </article>
-
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2016/10/29/unity_mono_foreach_memory_bug/">C# foreach带来的内存问题</a>
-        
-      </h1>
-
-      <time class="post-time">
-          Oct 29 2016
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-              
-            
-
-            
-              <h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h4><p>在使用Unity工具开发游戏的时候经常会被建议不要使用foreach,究其原因说是会产生额外的heap内存,既然存在这种问题, 那我必须得自己搞清楚下。本文是自己查阅资料和试验的结果总结。</p>
-<p>本文参考了<a href="https://stackoverflow.com/a/26110503" target="_blank" rel="external">Memory allocation when using foreach loops in C#</a></p>
-<p><em>测试环境: Unity5.4.1f1, MonoV2.0.5</em></p>
-<h4 id="剖析"><a href="#剖析" class="headerlink" title="剖析"></a>剖析</h4><p>首先来搞明白使用foreach和for的区别,下面是一个简单的例子:</p>
-<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Sample1.0</span></span><br><span class="line">&#123;</span><br><span class="line">    List&lt;<span class="keyword">string</span>&gt; list = <span class="keyword">new</span> List&lt;<span class="keyword">string</span>&gt;()&#123;<span class="string">"hello"</span>, <span class="string">"world"</span>&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">foreach</span>(<span class="keyword">string</span> item <span class="keyword">in</span> list)</span><br><span class="line">    &#123;</span><br><span class="line">        UnityEngine.Debug.Log(item);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-        </div>
-            
-          
-
-    
-  </article>
-
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2016/09/05/unity_in_app_purchase_note/">Unity 苹果IAP和微信支付接入</a>
-        
-      </h1>
-
-      <time class="post-time">
-          Sep 05 2016
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-              
-            
-
-            
-              <h3 id="苹果IAP接入"><a href="#苹果IAP接入" class="headerlink" title="苹果IAP接入"></a>苹果IAP接入</h3><p>相比微信支付和支付宝支付要麻烦一些,麻烦的地方主要体现在对测试支付环境的要求以及苹果审核方面的要求上面。本文是自己在接入iOS的IAP模块的经验及总结，发出来分享下。建议需要接入的话还是浏览一遍<a href="https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/StoreKitGuide/Introduction.html" target="_blank" rel="external">苹果官方文档</a></p>
-<h4 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h4><ul>
-<li>测试支付的ipa必须使用[App-Store]证书</li>
-<li>越狱机器无法测试IAP</li>
-<li>用SandBox账号测试支付的时候,必须把在系统<strong>[设置]</strong>里面把<strong>[Itunes Store 与 App Store]</strong>登录的非SandBox账号注销掉,否则向苹果服务器请求不到订单信息</li>
-<li>Sandbox账号不要在正式支付环境登陆支付，登陆过的正式支付环境的SandBox账号会失效</li>
-<li>所有在itunes上配置的商品都必须可购买,不能有某些商品根据商户自己的服务器的数据在某个时期出现免费的情况</li>
-<li>商品列表不能按照某些特定条件进行排序(比如说下载量)</li>
-<li>非消耗型商品必须的有恢复商品功能</li>
-<li>非消耗类型的商品不要和商户自己的服务器关联</li>
-</ul>
-        </div>
-            
-          
-
-    
-  </article>
-
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2016/07/16/unity_assetbundle_learning_and_summary/">Unity AssetBundle学习、分析及总结</a>
-        
-      </h1>
-
-      <time class="post-time">
-          Jul 16 2016
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-              
-            
-
-            
-              <p>本文是学习<a href="https://unity3d.com/learn/tutorials/topics/best-practices" target="_blank" rel="external">Unity官方教程</a>、<a href="https://docs.unity3d.com/ScriptReference/" target="_blank" rel="external">Unity官方的API</a>和阅读Unity代码的总结</p>
-<h4 id="AssetBundle基本知识"><a href="#AssetBundle基本知识" class="headerlink" title="AssetBundle基本知识"></a>AssetBundle基本知识</h4><p><strong>1.</strong> AssetBundle由两部分组成:头部(header)数据部分(data segment)</p>
-<ul>
-<li><strong>头部</strong>保存了版本号、数据类型、<font color="#FF0000">文件信息</font>、是否压缩等这些描述信息。<ul>
-<li>文件信息记录了数据部分里面的所有单个资源的文件名以及在整个AssetBundle中文件offset和size,通过这个信息可以直接获取到AssetBundle中的某一个文件的数据。从Unity5.3版本开始这部分数据会单独生成一个AssetBundle同名的.manifest文件。</li>
-</ul>
-</li>
-<li><strong>数据块</strong>保存了在build AssetBundle时候标记的textures、prefabs、materials等这些资源文件</li>
-</ul>
-        </div>
-            
-          
-
-    
-  </article>
-
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2016/06/29/cs_object_refer_each_other/">C# 内存管理之对象循环引用问题</a>
-        
-      </h1>
-
-      <time class="post-time">
-          Jun 29 2016
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-
-            
-          
-
-    
-  </article>
-
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2016/06/18/unity_resource_memory_summary/">Unity中内存资源释放总结</a>
-        
-      </h1>
-
-      <time class="post-time">
-          Jun 18 2016
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-
-            
-          
-
-    
-  </article>
-
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2016/06/05/cs_multi_thread_note/">C#多线程下数据同步处理</a>
-        
-      </h1>
-
-      <time class="post-time">
-          Jun 05 2016
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-              
-            
-
-            
-              <p>本文是阅读<a href="https://book.douban.com/subject/26285940/" target="_blank" rel="external">CLR via C#</a>和 <a href="http://www.albahari.com/threading/part4.aspx#_Reader_Writer_Locks" target="_blank" rel="external">Theading in C#</a>做的个人总结</p>
-<h3 id="为什么要进行多线程的同步"><a href="#为什么要进行多线程的同步" class="headerlink" title="为什么要进行多线程的同步"></a>为什么要进行多线程的同步</h3><p>多个线程同时访问共享数据时有可能对数据造成损坏，线程同步的目的就是保证多线程访问共享数据时数据的安全性。在C#中能够对一个变量中的所有字节都一次性读取或写入，我们就认为这个变量类型具有原子性，CLR保证对以下类型变量的读写是原子性的: Boolean, Char, (S)Byte, (U)Int16, (U)Int32, (U)IntPtr,Single。</p>
-<p>不具备原子性的类型变量的读取或者写入操作会被分割，也就是说对x变量的读取或者写入操作需要多条指令完。对于变量x来说，赋值操作需要两个MOV指令来完成即:</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Int64 x = <span class="number">0x0123456789abcdef</span>;  <span class="comment">// Step1: 0x0123456700000000  Step2: 0x000000089abcdef</span></span><br></pre></td></tr></table></figure>
-<p>那么在多线程的情况下会出现另外一个读取该值的操作取出来的值是0x0123456700000000,所以<font color="#FF4040">我们要对非原子性的类型变量在多线程访问的情况下要进行同步操作(类似于自己构造变量的原子性)，以保证我们获取的数据的完整性</font>。</p>
-<h3 id="需要进行多线程同步的数据具体有哪些"><a href="#需要进行多线程同步的数据具体有哪些" class="headerlink" title="需要进行多线程同步的数据具体有哪些"></a>需要进行多线程同步的数据具体有哪些</h3><ul>
-<li>static 数据</li>
-<li>new 操作符分配的对象，并且这个对象传递给了其他线程</li>
-</ul>
-<p>这两类数据都是作为共享数据，可以让多个线程同时访问的。所以我们要对其进行同步操作。但是当多个线程同时对共享数据进行只读操作的时候是不需要进行任何数据同步的。</p>
-<h3 id="多线程同步的几种常用接口"><a href="#多线程同步的几种常用接口" class="headerlink" title="多线程同步的几种常用接口"></a>多线程同步的几种常用接口</h3><ul>
-<li><small><strong>Monitor (lock)</strong></small></li>
-</ul>
-<p>Monitor为static类，它的工作原理是操作对象的同步快索引。CLR在初始化的时候会在堆中分配一个同步块数组，这个数组的元素用来关联new构造器构造出来的对象的同步索引。一个对象在构造时它的同步块索引初始化为-1，表示不引用任何同步索引块。然后调用Monitor.Enter的时候，CLR在数组中找到一个空白的同步块来关联当前Monitor传入的对象，对象的同步块索引将会自增，对象处于锁定状态。当调用Monitor.Exit的时候如果没有其他线程等待这个对象，如果没有那么Exit将对象的同步块索引设置回-1，对象处于自由状态。</p>
-<ul>
-<li><small><strong>Mutex</strong></small></li>
-</ul>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> sealed <span class="class"><span class="keyword">class</span> <span class="title">Mutex</span> :</span> WaitHandler &#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">Mutex</span><span class="params">()</span></span>;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ReleaseMutex</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Mutex类强制线程标识，只能由获得它的线程可以释放互斥体。Mutex内部维护着一个递归计数，拥有互斥锁的线程可以递归调用相同互斥体（互斥对象）WaitOne而不会阻止线程执行。但是必须调用相同次数的ReleaseMutex来释放互斥体。</p>
-<ul>
-<li><small><strong>Semaphore</strong></small></li>
-</ul>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> sealed <span class="class"><span class="keyword">class</span> <span class="title">Semaphore</span> :</span> WaitHandler &#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Semaphore</span><span class="params">(Int32 initialCount, Int32 maximumCount)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Int32 <span class="title">Release</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Int32 <span class="title">Release</span><span class="params">(Int32 releaseCount)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>内部维护者一个Int32变量。信号量为0时在信号量上等待的线程会阻塞，信号量大于0时解除阻塞。在信号量上等待的线程解除阻塞时，内核自动从信号量的计数中减1。</p>
-<ul>
-<li><p><small><strong>ReaderWriterLockSlim</strong></small></p>
-<p>  在Monitor、Mutex和Semaphore方式来同步线程时就算某一时刻多个线程来同时读取数据也会造成只有一个线程工作其他线程等待的情况，这样就在成了资源的浪费。ReaderWriterLockSlim基于多个线程对共享数据同时读取不需要同步这个点来做的优化。它的工作方式如下:</p>
-<p>  (1) 一个线程向数据写入时，请求访问的其他所有线程都被阻塞</p>
-<p>  (2) 一个线程从数据读取时，请求读取的其他线程能够继续执行，但请求写入的线程仍然被阻塞</p>
-<p>  (3) 写入的线程结束后，要么解除一个写入线程的阻塞，要么解除所有的读取线程的阻塞。如果没有线程被阻塞则锁就进入自由状态</p>
-<p>  (4) 读取线程结束后，一个写入的线程被解除阻塞（如果有）。如果没有线程被阻塞则锁进入自由状态</p>
-</li>
-</ul>
-<h3 id="测试例子"><a href="#测试例子" class="headerlink" title="测试例子"></a>测试例子</h3>
-        </div>
-            
-          
-
-    
-  </article>
-
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2016/05/09/unity_gamobject_learning_note/">Unity GameObject深度剖析</a>
-        
-      </h1>
-
-      <time class="post-time">
-          May 09 2016
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-
-            
-          
-
-    
-  </article>
-
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2016/04/27/cs_global_variable_init/">C#全局变量的初始化过程</a>
-        
-      </h1>
-
-      <time class="post-time">
-          Apr 27 2016
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-
-            
-          
-
-    
-  </article>
-
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2016/04/09/cs_const_static_vs_readonly_keyworld/">C# 的const, static 和 readonly 关键字的理解</a>
-        
-      </h1>
-
-      <time class="post-time">
-          Apr 09 2016
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-
-            
-          
-
-    
-  </article>
-
-        
-            
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2015/06/20/cpp_language_memory_format_structure/">C++虚函数的内存结构浅析</a>
-        
-      </h1>
-
-      <time class="post-time">
-          Jun 20 2015
-      </time>
-    </header>
-
-
-
-    
-        <div class="post-excerpt">
-            
-            
-
-            
-          
-
-    
-  </article>
-
-        
-        
+  
   <nav class="pagination">
     
     
   </nav>
 
-    </div>
-    <div id="secondary">
-    
-
-    
-
-    
-    <section id="tags" class="widget-area widget_tags">
-        <h3 class="widget-title">Tags</h3>
-        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/csharp/">csharp</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cplusplus/">cplusplus</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/opengl/">opengl</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/unity/">unity</a><span class="tag-list-count">15</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/graphics/">graphics</a><span class="tag-list-count">1</span></li></ul>
-    </section>
-
-
-</div>
 
 
       </div>
@@ -1109,12 +625,12 @@
     
         &copy;
     
-        2014 -
+        2012 -
     
     2018
     <span class="footer-author">elangduan@126.com.</span>
     <span class="power-by">
-        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
+        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/henryhuang/hexo-theme-polarbearsimple">Polar Bear Simple</a>
     </span>
 </span>
 
@@ -1125,6 +641,21 @@
       </div>
     </div>
     
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"elangduan"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
 
 
     
