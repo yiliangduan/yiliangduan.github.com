@@ -23,7 +23,7 @@
 
 
 
-  <link rel="alternate" href="/default" title="elang">
+  <link rel="alternate" href="/default" title="elangduan">
 
 
 
@@ -40,7 +40,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="MonoBehaviour的Awake,Start等函数的调用原理">
 <meta property="og:url" content="http://elangduan.github.com/2017/03/08/monobehaviour_awake_start_function_call_detail/index.html">
-<meta property="og:site_name" content="elang">
+<meta property="og:site_name" content="elangduan">
 <meta property="og:description" content="在用Unity的时候一直有一个比较困惑问题，继承自MonoBehaviour脚本的Awake(),Start(),Update()等这些函数是怎样被调用的。今天阅读了下Unity的代码了解了其中的调用原理,然后自己写了一个sample来模拟Unity中的调用方式。 Unity的引擎是用C++实现的，自己实现的MonoBehaviour的脚本却是CS脚本。所以这里就涉及到C++调用CS函数的过程。U">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2017-05-16T01:53:18.000Z">
@@ -71,14 +71,14 @@
 
 
 
-    <title> MonoBehaviour的Awake,Start等函数的调用原理 - elang </title>
+    <title> MonoBehaviour的Awake,Start等函数的调用原理 - elangduan </title>
   </head>
 
   <body>
     <div id="page">
       <header id="masthead"><div class="site-header-inner">
     <h1 class="site-title">
-        <a href="/." class="logo">elang</a>
+        <a href="/." class="logo">elangduan</a>
     </h1>
 
     <nav id="nav-top">
@@ -116,7 +116,7 @@
                         <a href="/about">
                             
                             
-                                About
+                                about
                             
                         </a>
                     </li>
@@ -192,13 +192,13 @@
       <a class="prev" href="/2017/04/24/unity_ar_region_caption_display_black_question/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">Region_Capture截取的UV色彩变黑的问题</span>
-        <span class="prev-text nav-mobile">上一篇</span>
+        <span class="prev-text nav-mobile">Prev</span>
       </a>
     
     
       <a class="next" href="/2017/03/04/unity_model_position_transform_to_world_position/">
         <span class="next-text nav-default">Unity模型坐标转换到屏幕坐标</span>
-        <span class="prev-text nav-mobile">下一篇</span>
+        <span class="prev-text nav-mobile">Next</span>
         <i class="iconfont icon-right"></i>
       </a>
     
@@ -223,7 +223,7 @@
     2018
     <span class="footer-author">elangduan@126.com.</span>
     <span class="power-by">
-        由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/henryhuang/hexo-theme-polarbearsimple">Polar Bear Simple</a> 强力驱动
+        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/henryhuang/hexo-theme-polarbearsimple">Polar Bear Simple</a>
     </span>
 </span>
 
