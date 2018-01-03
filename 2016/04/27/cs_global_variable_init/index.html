@@ -1,288 +1,222 @@
-
-
 <!DOCTYPE html>
-<html lang="zh-Hans">
-<head prefix="og: http://ogp.me/ns#">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
-    <meta name="description" content="">
-    <title>C#全局变量的初始化过程 | elangduan</title>
+<html lang="">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
 
-    <!-- Open Graph -->
-    <meta name="description" content="&amp;#x524D;&amp;#x8A00;C#&amp;#x7C7B;&amp;#x578B;&amp;#x7684;&amp;#x6210;&amp;#x5458;&amp;#x53D8;&amp;#x91CF;&amp;#x5982;&amp;#x679C;&amp;#x6CA1;&amp;#x6709;&amp;#x5728;&amp;#x5B9A;&amp;#x4E49;&amp;#x7684;&amp;#x65F6;&amp;#x5019;&amp;#x8D4B;&amp;#x521D;&amp;#x503C;&amp;#x90FD;&amp;#x4F1A;&amp;#x88A">
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="C#全局变量的初始化过程"/>
+
+
+
+
+  <meta name="keywords" content="csharp," />
+
+
+
+
+
+  <link rel="alternate" href="/default" title="elangduan">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://elangduan.github.com/2016/04/27/cs_global_variable_init/"/>
+
+
+<meta name="description" content="前言C#类型的成员变量如果没有在定义的时候赋初值都会被默认初始化，初始化的具体指可以参考Default values(c#)，那么当我一定一个成员变量的时候直接赋值给值这个变量的话，编译器是怎样处理这个初值的呢？下面我们通过一个简单的例子来说明。 代码12345678910111213141516171819202122232425262728293031323334353637383940414">
 <meta name="keywords" content="csharp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="C#全局变量的初始化过程">
 <meta property="og:url" content="http://elangduan.github.com/2016/04/27/cs_global_variable_init/index.html">
 <meta property="og:site_name" content="elangduan">
-<meta property="og:description" content="&amp;#x524D;&amp;#x8A00;C#&amp;#x7C7B;&amp;#x578B;&amp;#x7684;&amp;#x6210;&amp;#x5458;&amp;#x53D8;&amp;#x91CF;&amp;#x5982;&amp;#x679C;&amp;#x6CA1;&amp;#x6709;&amp;#x5728;&amp;#x5B9A;&amp;#x4E49;&amp;#x7684;&amp;#x65F6;&amp;#x5019;&amp;#x8D4B;&amp;#x521D;&amp;#x503C;&amp;#x90FD;&amp;#x4F1A;&amp;#x88A">
+<meta property="og:description" content="前言C#类型的成员变量如果没有在定义的时候赋初值都会被默认初始化，初始化的具体指可以参考Default values(c#)，那么当我一定一个成员变量的时候直接赋值给值这个变量的话，编译器是怎样处理这个初值的呢？下面我们通过一个简单的例子来说明。 代码12345678910111213141516171819202122232425262728293031323334353637383940414">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2017-03-08T11:57:18.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="C#全局变量的初始化过程">
-<meta name="twitter:description" content="&amp;#x524D;&amp;#x8A00;C#&amp;#x7C7B;&amp;#x578B;&amp;#x7684;&amp;#x6210;&amp;#x5458;&amp;#x53D8;&amp;#x91CF;&amp;#x5982;&amp;#x679C;&amp;#x6CA1;&amp;#x6709;&amp;#x5728;&amp;#x5B9A;&amp;#x4E49;&amp;#x7684;&amp;#x65F6;&amp;#x5019;&amp;#x8D4B;&amp;#x521D;&amp;#x503C;&amp;#x90FD;&amp;#x4F1A;&amp;#x88A">
+<meta name="twitter:description" content="前言C#类型的成员变量如果没有在定义的时候赋初值都会被默认初始化，初始化的具体指可以参考Default values(c#)，那么当我一定一个成员变量的时候直接赋值给值这个变量的话，编译器是怎样处理这个初值的呢？下面我们通过一个简单的例子来说明。 代码12345678910111213141516171819202122232425262728293031323334353637383940414">
 
-    <script type="application/ld+json">
-{
-  "@context": "http://schema.org",
-  "@type": "Person",
-  "email": "mailto:elangduan@126.com",
-  "image": "/uploads/avatar.png",
-  "name": "elangduan@126.com",
-  "url": "http://elangduan.github.com"
-}
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
 </script>
-    <script>
-    var algoliaEnabled = false;
-    
-</script>
 
-    
 
-    
-    
-        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-    
-    
-    
-        <!-- stylesheets list from config.yml -->
+
+
+  
+
+
+
+    <title> C#全局变量的初始化过程 - elangduan </title>
+  </head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/." class="logo">elangduan</a>
+    </h1>
+
+    <nav id="nav-top">
         
-        <link rel="stylesheet" href="/css/aloha.css">
-        
-        <link rel="stylesheet" href="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.css">
-        
-        <link rel="stylesheet" href="//cdn.bootcss.com/magnific-popup.js/1.1.0/magnific-popup.min.css">
-        
-    
-
-</head>
-<body id="body" style="margin-bottom: 0;" class="pushable">
-
-    <div class="ui top fixed menu">
-        <a class="item" id="menu-icon"><i class="sidebar icon"></i></a>
-    </div>
-
-    <div id="menu-sidebar" class="ui left vertical sidebar menu">
-
-    <div id="sidebar-top">
-        <div class="content">
-            <h3>elangduan</h3>
-        </div>
-    </div>
-    <div class="ui container sidebar-card">
-    <div class="ui people shape content">
-        <div class="active side">
-            <div class="ui card">
-                <div class="image">
-                    <img class="ui medium bordered image" src="/images/avatar.jpg">
-                </div>
-                <div class="content">
-                    <a class="header">elangduan@126.com</a>
-                    
-                        <div class="meta">
-                            Game Developer
-                        </div>
-                    
-                </div>
-                <div class="extra content">
-                    <div class="ui list">
-                        
-                        <div class="item">
-                            <i class="marker icon" style="float: left"></i>
-                            <div class="content">Shanghai</div>
-                        </div>
-                        
-                        
-                        <div class="item">
-                            <i class="mail icon" style="float: left"></i>
-                            <div class="content">
-                                <a href="mailto:elangduan@126.com">elangduan@126.com</a>
-                            </div>
-                        </div>
-                        
-                    </div>
-
-                </div>
-                <div class="extra content">
-                    <div class="ui list">
-                        
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-</div>
-
-    
-    
-
-    
-
-    
-    <a href="/index.html" class="item" >
-        <i class="home icon"></i>
-        HOME
-    </a>
-
-    
-
-    
-</div>
-
-    <div class="pusher body-content">
-        <div id="content" class="ui main container">
-            <!--<div class="ui one column grid">-->
-                <!--<div class="column">-->
-                    <!--<div class="ui main container">-->
-                        <div id="post-cs_global_variable_init" class="ui main container article-type-post">
-
-    
-
-    <div class="ui divided grid">
-
-        <div class="two column row" id="article-content">
-
-            <div class="thirteen wide computer thirteen wide tablet sixteen wide mobile column">
+            <ul id="menu-top" class="nav-top-items">
                 
+                    <li class="menu-item">
+                        <a href="/archives">
+                            
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/about">
+                            
+                            
+                                About
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
 
-<h1 class="ui header">
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          C#全局变量的初始化过程
+        
+      </h1>
+
+      <time class="post-time">
+          Apr 27 2016
+      </time>
+    </header>
+
+
+
     
-    C#全局变量的初始化过程
-</h1>
+            <div class="post-content">
+            <h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>C#类型的成员变量如果没有在定义的时候赋初值都会被默认初始化，初始化的具体指可以参考<a href="https://msdn.microsoft.com/en-us/library/aa691171(v=vs.71).aspx" target="_blank" rel="external">Default values(c#)</a>，那么当我一定一个成员变量的时候直接赋值给值这个变量的话，编译器是怎样处理这个初值的呢？下面我们通过一个简单的例子来说明。</p>
+<h4 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">using System;</span><br><span class="line"></span><br><span class="line">public class TestMemberVariable</span><br><span class="line">&#123;</span><br><span class="line">    public Int32 Id;</span><br><span class="line">    public String Name;</span><br><span class="line">    public Int32 Id2 = 1001;</span><br><span class="line">    public String Name2 = &quot;Microsoft&quot;;</span><br><span class="line"></span><br><span class="line">    //ctor_1</span><br><span class="line">    public TestMemberVariable()</span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //ctor_2</span><br><span class="line">    public TestMemberVariable(Int32 Id, String Name)</span><br><span class="line">    &#123;</span><br><span class="line">        this.Id = Id;</span><br><span class="line">        this.Name = Name;</span><br><span class="line">    &#125;</span><br><span class="line">    //ctor_3</span><br><span class="line">    public TestMemberVariable(Int32 Id, String Name, Int32 Id2, String Name2) : this(Id, Name)</span><br><span class="line">    &#123;</span><br><span class="line">        this.Id2 = Id2;</span><br><span class="line">        this.Name2 = Name2;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    //ctor_4</span><br><span class="line">    public TestMemberVariable(Int32 Id, String Name, Int32 Id2, String Name2)</span><br><span class="line">    &#123;</span><br><span class="line">        this.Id2 = Id2;</span><br><span class="line">        this.Name2 = Name2;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public override string ToString()</span><br><span class="line">    &#123;</span><br><span class="line">        return String.Format(&quot;Id: &#123;0&#125;, Name: &#123;1&#125; - Id2: &#123;2&#125;, Name2: &#123;3&#125;&quot;, Id, Name, Id2, Name2);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void Main()</span><br><span class="line">    &#123;</span><br><span class="line">        Console.WriteLine(new TestMemberVariable().ToString());</span><br><span class="line"></span><br><span class="line">        Console.WriteLine(new TestMemberVariable(1, &quot;Apple&quot;).ToString());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 上面的代码运行起来输出的结果为:<br>Id: 0, Name:  - Id2: 1001, Name2: Microsoft<br>Id: 1, Name: Apple - Id2: 1001, Name2: Microsoft</p>
+<p>这里可以看到不管我是调用ctor_1还是调用ctor_2创建的对象，成员变量Id2和Name2都会有定义的初值。那么初值是在什么时候赋给变量的呢？下面我们用ildasm来反编译一下TestMemberVariable.exe，看能不能通过IL，ctor_1和ctor_2的IL代码如下:</p>
+<p><strong>ctor_1构造</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">.method public hidebysig specialname rtspecialname </span><br><span class="line">    instance void  .ctor() cil managed</span><br><span class="line">&#123;</span><br><span class="line">	// Code size       31 (0x1f)</span><br><span class="line">	.maxstack  8</span><br><span class="line">	IL_0000:  ldarg.0</span><br><span class="line">	IL_0001:  ldc.i4     0x3e9</span><br><span class="line">	IL_0006:  stfld      int32 TestMemberVariable::Id2 //这里把初值1001赋值给了Id2</span><br><span class="line">	IL_000b:  ldarg.0</span><br><span class="line">	IL_000c:  ldstr      &quot;Microsoft&quot;</span><br><span class="line">	IL_0011:  stfld      string TestMemberVariable::Name2 //这里把初值&quot;Microsoft&quot;赋值给了Name</span><br><span class="line">	IL_0016:  ldarg.0</span><br><span class="line">	IL_0017:  call       instance void [mscorlib]System.Object::.ctor() //这里是ctor_1构造</span><br><span class="line">	IL_001c:  nop</span><br><span class="line">	IL_001d:  nop</span><br><span class="line">	IL_001e:  ret</span><br><span class="line">&#125; // end of method TestMemberVariable::.ctor</span><br></pre></td></tr></table></figure></p>
+<p><strong>ctor_2构造</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">.method public hidebysig specialname rtspecialname </span><br><span class="line">        instance void  .ctor(int32 Id,</span><br><span class="line">                             string Name) cil managed</span><br><span class="line">&#123;</span><br><span class="line">  // Code size       45 (0x2d)</span><br><span class="line">  .maxstack  8</span><br><span class="line">  IL_0000:  ldarg.0</span><br><span class="line">  IL_0001:  ldc.i4     0x3e9</span><br><span class="line">  IL_0006:  stfld      int32 TestMemberVariable::Id2//这里把初值1001赋值给了Id2</span><br><span class="line">  IL_000b:  ldarg.0</span><br><span class="line">  IL_000c:  ldstr      &quot;Microsoft&quot;</span><br><span class="line">  IL_0011:  stfld      string TestMemberVariable::Name2//这里把初值&quot;Microsoft&quot;赋值给了Name</span><br><span class="line">  IL_0016:  ldarg.0</span><br><span class="line">  IL_0017:  call       instance void [mscorlib]System.Object::.ctor()//这里是ctor_2构造</span><br><span class="line">  IL_001c:  nop</span><br><span class="line">  IL_001d:  nop</span><br><span class="line">  IL_001e:  ldarg.0</span><br><span class="line">  IL_001f:  ldarg.1</span><br><span class="line">  IL_0020:  stfld      int32 TestMemberVariable::Id</span><br><span class="line">  IL_0025:  ldarg.0</span><br><span class="line">  IL_0026:  ldarg.2</span><br><span class="line">  IL_0027:  stfld      string TestMemberVariable::Name</span><br><span class="line">  IL_002c:  ret</span><br><span class="line">&#125; // end of method TestMemberVariable::.ctor</span><br></pre></td></tr></table></figure></p>
+<p>上面的ctor_1和ctor_2的IL代码我们可以看到，在CLR把c#编译成IL代码之后会在构造函数之前插入Id2和Name2的初始化代码，这样就保证了在构造函数里面或者创建对象之后都可以访问到赋值好的Id2和Name2变量。</p>
+<h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><p>看TestMemberVariable.exe反编译之后的IL代码我们可以看到，每个构造函数之前都会被CLR编译器插入已经赋值的成员变量的初始化的代码，那么怎样可以做到复用这一块代码呢？方法就是像ctor_3这样定义构造函数，通过this(Id, Name)可调用到自身的ctor_2构造函数，这样ctor_3在编译之后就不会生成初始化Id2和Name2的IL代码了。</p>
+<p><strong>ctor_3构造</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">.method public hidebysig specialname rtspecialname </span><br><span class="line">        instance void  .ctor(int32 Id,</span><br><span class="line">                             string Name,</span><br><span class="line">                             int32 Id2,</span><br><span class="line">                             string Name2) cil managed</span><br><span class="line">&#123;</span><br><span class="line">  // Code size       26 (0x1a)</span><br><span class="line">  .maxstack  8</span><br><span class="line">  IL_0000:  ldarg.0</span><br><span class="line">  IL_0001:  ldarg.1</span><br><span class="line">  IL_0002:  ldarg.2</span><br><span class="line">  IL_0003:  call       instance void TestMemberVariable::.ctor(int32,</span><br><span class="line">                                                               string)</span><br><span class="line">  IL_0008:  nop</span><br><span class="line">  IL_0009:  nop</span><br><span class="line">  IL_000a:  ldarg.0</span><br><span class="line">  IL_000b:  ldarg.3</span><br><span class="line">  IL_000c:  stfld      int32 TestMemberVariable::Id2</span><br><span class="line">  IL_0011:  ldarg.0</span><br><span class="line">  IL_0012:  ldarg.s    Name2</span><br><span class="line">  IL_0014:  stfld      string TestMemberVariable::Name2</span><br><span class="line">  IL_0019:  ret</span><br><span class="line">&#125; // end of method TestMemberVariable::.ctor</span><br></pre></td></tr></table></figure></p>
 
+            </div>
+          
 
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/tags/csharp/">csharp</a>
+		  
+		</div>
+		
 
-                <div class="article-inner">
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2016/05/09/unity_gamobject_learning_note/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">Unity GameObject深度剖析</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/2016/04/09/cs_const_static_vs_readonly_keyworld/">
+        <span class="next-text nav-default">C# 的const, static 和 readonly 关键字的理解</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
 
-                    <div class="article-entry" itemprop="articleBody">
-                        
-                        <h4 id="&#x524D;&#x8A00;"><a href="#&#x524D;&#x8A00;" class="headerlink" title="&#x524D;&#x8A00;"></a>&#x524D;&#x8A00;</h4><p>C#&#x7C7B;&#x578B;&#x7684;&#x6210;&#x5458;&#x53D8;&#x91CF;&#x5982;&#x679C;&#x6CA1;&#x6709;&#x5728;&#x5B9A;&#x4E49;&#x7684;&#x65F6;&#x5019;&#x8D4B;&#x521D;&#x503C;&#x90FD;&#x4F1A;&#x88AB;&#x9ED8;&#x8BA4;&#x521D;&#x59CB;&#x5316;&#xFF0C;&#x521D;&#x59CB;&#x5316;&#x7684;&#x5177;&#x4F53;&#x6307;&#x53EF;&#x4EE5;&#x53C2;&#x8003;<a href="https://msdn.microsoft.com/en-us/library/aa691171(v=vs.71).aspx" target="_blank" rel="external">Default values(c#)</a>&#xFF0C;&#x90A3;&#x4E48;&#x5F53;&#x6211;&#x4E00;&#x5B9A;&#x4E00;&#x4E2A;&#x6210;&#x5458;&#x53D8;&#x91CF;&#x7684;&#x65F6;&#x5019;&#x76F4;&#x63A5;&#x8D4B;&#x503C;&#x7ED9;&#x503C;&#x8FD9;&#x4E2A;&#x53D8;&#x91CF;&#x7684;&#x8BDD;&#xFF0C;&#x7F16;&#x8BD1;&#x5668;&#x662F;&#x600E;&#x6837;&#x5904;&#x7406;&#x8FD9;&#x4E2A;&#x521D;&#x503C;&#x7684;&#x5462;&#xFF1F;&#x4E0B;&#x9762;&#x6211;&#x4EEC;&#x901A;&#x8FC7;&#x4E00;&#x4E2A;&#x7B80;&#x5355;&#x7684;&#x4F8B;&#x5B50;&#x6765;&#x8BF4;&#x660E;&#x3002;</p>
-<h4 id="&#x4EE3;&#x7801;"><a href="#&#x4EE3;&#x7801;" class="headerlink" title="&#x4EE3;&#x7801;"></a>&#x4EE3;&#x7801;</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">using System;</span><br><span class="line"></span><br><span class="line">public class TestMemberVariable</span><br><span class="line">{</span><br><span class="line">    public Int32 Id;</span><br><span class="line">    public String Name;</span><br><span class="line">    public Int32 Id2 = 1001;</span><br><span class="line">    public String Name2 = &quot;Microsoft&quot;;</span><br><span class="line"></span><br><span class="line">    //ctor_1</span><br><span class="line">    public TestMemberVariable()</span><br><span class="line">    {</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    //ctor_2</span><br><span class="line">    public TestMemberVariable(Int32 Id, String Name)</span><br><span class="line">    {</span><br><span class="line">        this.Id = Id;</span><br><span class="line">        this.Name = Name;</span><br><span class="line">    }</span><br><span class="line">    //ctor_3</span><br><span class="line">    public TestMemberVariable(Int32 Id, String Name, Int32 Id2, String Name2) : this(Id, Name)</span><br><span class="line">    {</span><br><span class="line">        this.Id2 = Id2;</span><br><span class="line">        this.Name2 = Name2;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    //ctor_4</span><br><span class="line">    public TestMemberVariable(Int32 Id, String Name, Int32 Id2, String Name2)</span><br><span class="line">    {</span><br><span class="line">        this.Id2 = Id2;</span><br><span class="line">        this.Name2 = Name2;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    public override string ToString()</span><br><span class="line">    {</span><br><span class="line">        return String.Format(&quot;Id: {0}, Name: {1} - Id2: {2}, Name2: {3}&quot;, Id, Name, Id2, Name2);</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    public static void Main()</span><br><span class="line">    {</span><br><span class="line">        Console.WriteLine(new TestMemberVariable().ToString());</span><br><span class="line"></span><br><span class="line">        Console.WriteLine(new TestMemberVariable(1, &quot;Apple&quot;).ToString());</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
-<p> &#x4E0A;&#x9762;&#x7684;&#x4EE3;&#x7801;&#x8FD0;&#x884C;&#x8D77;&#x6765;&#x8F93;&#x51FA;&#x7684;&#x7ED3;&#x679C;&#x4E3A;:<br>Id: 0, Name:  - Id2: 1001, Name2: Microsoft<br>Id: 1, Name: Apple - Id2: 1001, Name2: Microsoft</p>
-<p>&#x8FD9;&#x91CC;&#x53EF;&#x4EE5;&#x770B;&#x5230;&#x4E0D;&#x7BA1;&#x6211;&#x662F;&#x8C03;&#x7528;ctor_1&#x8FD8;&#x662F;&#x8C03;&#x7528;ctor_2&#x521B;&#x5EFA;&#x7684;&#x5BF9;&#x8C61;&#xFF0C;&#x6210;&#x5458;&#x53D8;&#x91CF;Id2&#x548C;Name2&#x90FD;&#x4F1A;&#x6709;&#x5B9A;&#x4E49;&#x7684;&#x521D;&#x503C;&#x3002;&#x90A3;&#x4E48;&#x521D;&#x503C;&#x662F;&#x5728;&#x4EC0;&#x4E48;&#x65F6;&#x5019;&#x8D4B;&#x7ED9;&#x53D8;&#x91CF;&#x7684;&#x5462;&#xFF1F;&#x4E0B;&#x9762;&#x6211;&#x4EEC;&#x7528;ildasm&#x6765;&#x53CD;&#x7F16;&#x8BD1;&#x4E00;&#x4E0B;TestMemberVariable.exe&#xFF0C;&#x770B;&#x80FD;&#x4E0D;&#x80FD;&#x901A;&#x8FC7;IL&#xFF0C;ctor_1&#x548C;ctor_2&#x7684;IL&#x4EE3;&#x7801;&#x5982;&#x4E0B;:</p>
-<p><strong>ctor_1&#x6784;&#x9020;</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">.method public hidebysig specialname rtspecialname </span><br><span class="line">    instance void  .ctor() cil managed</span><br><span class="line">{</span><br><span class="line">	// Code size       31 (0x1f)</span><br><span class="line">	.maxstack  8</span><br><span class="line">	IL_0000:  ldarg.0</span><br><span class="line">	IL_0001:  ldc.i4     0x3e9</span><br><span class="line">	IL_0006:  stfld      int32 TestMemberVariable::Id2 //&#x8FD9;&#x91CC;&#x628A;&#x521D;&#x503C;1001&#x8D4B;&#x503C;&#x7ED9;&#x4E86;Id2</span><br><span class="line">	IL_000b:  ldarg.0</span><br><span class="line">	IL_000c:  ldstr      &quot;Microsoft&quot;</span><br><span class="line">	IL_0011:  stfld      string TestMemberVariable::Name2 //&#x8FD9;&#x91CC;&#x628A;&#x521D;&#x503C;&quot;Microsoft&quot;&#x8D4B;&#x503C;&#x7ED9;&#x4E86;Name</span><br><span class="line">	IL_0016:  ldarg.0</span><br><span class="line">	IL_0017:  call       instance void [mscorlib]System.Object::.ctor() //&#x8FD9;&#x91CC;&#x662F;ctor_1&#x6784;&#x9020;</span><br><span class="line">	IL_001c:  nop</span><br><span class="line">	IL_001d:  nop</span><br><span class="line">	IL_001e:  ret</span><br><span class="line">} // end of method TestMemberVariable::.ctor</span><br></pre></td></tr></table></figure></p>
-<p><strong>ctor_2&#x6784;&#x9020;</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">.method public hidebysig specialname rtspecialname </span><br><span class="line">        instance void  .ctor(int32 Id,</span><br><span class="line">                             string Name) cil managed</span><br><span class="line">{</span><br><span class="line">  // Code size       45 (0x2d)</span><br><span class="line">  .maxstack  8</span><br><span class="line">  IL_0000:  ldarg.0</span><br><span class="line">  IL_0001:  ldc.i4     0x3e9</span><br><span class="line">  IL_0006:  stfld      int32 TestMemberVariable::Id2//&#x8FD9;&#x91CC;&#x628A;&#x521D;&#x503C;1001&#x8D4B;&#x503C;&#x7ED9;&#x4E86;Id2</span><br><span class="line">  IL_000b:  ldarg.0</span><br><span class="line">  IL_000c:  ldstr      &quot;Microsoft&quot;</span><br><span class="line">  IL_0011:  stfld      string TestMemberVariable::Name2//&#x8FD9;&#x91CC;&#x628A;&#x521D;&#x503C;&quot;Microsoft&quot;&#x8D4B;&#x503C;&#x7ED9;&#x4E86;Name</span><br><span class="line">  IL_0016:  ldarg.0</span><br><span class="line">  IL_0017:  call       instance void [mscorlib]System.Object::.ctor()//&#x8FD9;&#x91CC;&#x662F;ctor_2&#x6784;&#x9020;</span><br><span class="line">  IL_001c:  nop</span><br><span class="line">  IL_001d:  nop</span><br><span class="line">  IL_001e:  ldarg.0</span><br><span class="line">  IL_001f:  ldarg.1</span><br><span class="line">  IL_0020:  stfld      int32 TestMemberVariable::Id</span><br><span class="line">  IL_0025:  ldarg.0</span><br><span class="line">  IL_0026:  ldarg.2</span><br><span class="line">  IL_0027:  stfld      string TestMemberVariable::Name</span><br><span class="line">  IL_002c:  ret</span><br><span class="line">} // end of method TestMemberVariable::.ctor</span><br></pre></td></tr></table></figure></p>
-<p>&#x4E0A;&#x9762;&#x7684;ctor_1&#x548C;ctor_2&#x7684;IL&#x4EE3;&#x7801;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x770B;&#x5230;&#xFF0C;&#x5728;CLR&#x628A;c#&#x7F16;&#x8BD1;&#x6210;IL&#x4EE3;&#x7801;&#x4E4B;&#x540E;&#x4F1A;&#x5728;&#x6784;&#x9020;&#x51FD;&#x6570;&#x4E4B;&#x524D;&#x63D2;&#x5165;Id2&#x548C;Name2&#x7684;&#x521D;&#x59CB;&#x5316;&#x4EE3;&#x7801;&#xFF0C;&#x8FD9;&#x6837;&#x5C31;&#x4FDD;&#x8BC1;&#x4E86;&#x5728;&#x6784;&#x9020;&#x51FD;&#x6570;&#x91CC;&#x9762;&#x6216;&#x8005;&#x521B;&#x5EFA;&#x5BF9;&#x8C61;&#x4E4B;&#x540E;&#x90FD;&#x53EF;&#x4EE5;&#x8BBF;&#x95EE;&#x5230;&#x8D4B;&#x503C;&#x597D;&#x7684;Id2&#x548C;Name2&#x53D8;&#x91CF;&#x3002;</p>
-<h4 id="&#x5176;&#x4ED6;"><a href="#&#x5176;&#x4ED6;" class="headerlink" title="&#x5176;&#x4ED6;"></a>&#x5176;&#x4ED6;</h4><p>&#x770B;TestMemberVariable.exe&#x53CD;&#x7F16;&#x8BD1;&#x4E4B;&#x540E;&#x7684;IL&#x4EE3;&#x7801;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x770B;&#x5230;&#xFF0C;&#x6BCF;&#x4E2A;&#x6784;&#x9020;&#x51FD;&#x6570;&#x4E4B;&#x524D;&#x90FD;&#x4F1A;&#x88AB;CLR&#x7F16;&#x8BD1;&#x5668;&#x63D2;&#x5165;&#x5DF2;&#x7ECF;&#x8D4B;&#x503C;&#x7684;&#x6210;&#x5458;&#x53D8;&#x91CF;&#x7684;&#x521D;&#x59CB;&#x5316;&#x7684;&#x4EE3;&#x7801;&#xFF0C;&#x90A3;&#x4E48;&#x600E;&#x6837;&#x53EF;&#x4EE5;&#x505A;&#x5230;&#x590D;&#x7528;&#x8FD9;&#x4E00;&#x5757;&#x4EE3;&#x7801;&#x5462;&#xFF1F;&#x65B9;&#x6CD5;&#x5C31;&#x662F;&#x50CF;ctor_3&#x8FD9;&#x6837;&#x5B9A;&#x4E49;&#x6784;&#x9020;&#x51FD;&#x6570;&#xFF0C;&#x901A;&#x8FC7;this(Id, Name)&#x53EF;&#x8C03;&#x7528;&#x5230;&#x81EA;&#x8EAB;&#x7684;ctor_2&#x6784;&#x9020;&#x51FD;&#x6570;&#xFF0C;&#x8FD9;&#x6837;ctor_3&#x5728;&#x7F16;&#x8BD1;&#x4E4B;&#x540E;&#x5C31;&#x4E0D;&#x4F1A;&#x751F;&#x6210;&#x521D;&#x59CB;&#x5316;Id2&#x548C;Name2&#x7684;IL&#x4EE3;&#x7801;&#x4E86;&#x3002;</p>
-<p><strong>ctor_3&#x6784;&#x9020;</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">.method public hidebysig specialname rtspecialname </span><br><span class="line">        instance void  .ctor(int32 Id,</span><br><span class="line">                             string Name,</span><br><span class="line">                             int32 Id2,</span><br><span class="line">                             string Name2) cil managed</span><br><span class="line">{</span><br><span class="line">  // Code size       26 (0x1a)</span><br><span class="line">  .maxstack  8</span><br><span class="line">  IL_0000:  ldarg.0</span><br><span class="line">  IL_0001:  ldarg.1</span><br><span class="line">  IL_0002:  ldarg.2</span><br><span class="line">  IL_0003:  call       instance void TestMemberVariable::.ctor(int32,</span><br><span class="line">                                                               string)</span><br><span class="line">  IL_0008:  nop</span><br><span class="line">  IL_0009:  nop</span><br><span class="line">  IL_000a:  ldarg.0</span><br><span class="line">  IL_000b:  ldarg.3</span><br><span class="line">  IL_000c:  stfld      int32 TestMemberVariable::Id2</span><br><span class="line">  IL_0011:  ldarg.0</span><br><span class="line">  IL_0012:  ldarg.s    Name2</span><br><span class="line">  IL_0014:  stfld      string TestMemberVariable::Name2</span><br><span class="line">  IL_0019:  ret</span><br><span class="line">} // end of method TestMemberVariable::.ctor</span><br></pre></td></tr></table></figure></p>
+        
 
-                        
-                    </div>
+      </footer>
+    
+  </article>
 
-                    
-                    
-                    
+    </div>
 
-                    <div class="description post-description">
-    <span class="post-description-item">
-        <time datetime="2016-04-27T10:35:35.000Z" itemprop="datePublished">2016-04-27</time>
+      </div>
 
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2014 -
+    
+    2018
+    <span class="footer-author">elangduan@126.com.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
     </span>
-    <span class="post-description-item">
-        
+</span>
 
-    <span>
-        <i class="tags icon"></i>
-    </span>
+      </footer>
 
-    
-    <span class="ui tiny label">
-        <a href="/tags/csharp/">csharp</a>
-    </span>
-
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
     
 
-    </span>
-</div>
 
-                </div>
-                
-                <div id="pagination" class="nav-web ui text container pagination">
-
-    <div class="ui stackable two column divided grid container">
-        <div class="row">
-            <div class="column nav-left">
-                
-
-                <a href="/2016/05/09/unity_gamobject_learning_note/" class="ui tiny button">
-
-                    <i class="angle left icon"></i>
-                    
-                    Unity GameObject深度剖析
-                    
-
-                </a>
-
-                
-            </div>
-            <div class="column nav-right">
-                
-
-                <a href="/2016/04/09/cs_const_static_vs_readonly_keyworld/" class="ui tiny button">
-                    
-                    C# 的const, static 和 readonly 关键字的理解
-                    
-                    <i class="angle right icon"></i></a>
-                
-            </div>
-        </div>
-    </div>
-
-</div>
-                
-            </div>
-
-            
-            <div class="three wide computer three wide tablet column">
-
-                <div class="ui sticky article-toc" id="article-toc">
-                    <!-- toc -->
-                    <ol class="ui ordered list"><li><a href="#前言"><span>前言</span></a></li><li><a href="#代码"><span>代码</span></a></li><li><a href="#其他"><span>其他</span></a></li></ol>
-                </div>
-
-            </div>
-            
-
-        </div>
-    </div>
-</div>
-
-
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-        </div>
-        <div class="ui vertical footer segment">
-    <div class="ui center aligned container">
-        <div class="ui inverted section divider"></div>
-        &copy; 2018 <a href="/">elangduan@126.com</a>,
-        Powered by <a href="https://github.com/henryhuang/hexo-theme-aloha" target="_blank">Aloha</a> and <a
-                href="http://hexo.io/" target="_blank">Hexo</a>.
-    </div>
-</div>
-
-    </div>
+    
 
 
 
 
-<!-- scripts list from theme config.yml -->
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
 
-<script src="//cdn.bootcss.com/jquery/3.1.0/jquery.min.js"></script>
+  
 
-<script src="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.js"></script>
+    <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=1.1"></script>
 
-<script src="//cdn.bootcss.com/algoliasearch/3.18.1/algoliasearch.min.js"></script>
-
-<script src="//cdn.bootcss.com/algoliasearch-helper-js/2.13.0/algoliasearch.helper.min.js"></script>
-
-<script src="/js/semantic-ui-algolia.js"></script>
-
-<script src="/js/aloha-events.js"></script>
-
-
-
-</body>
+  </body>
 </html>

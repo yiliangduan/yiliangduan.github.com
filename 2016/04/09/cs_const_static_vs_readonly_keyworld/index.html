@@ -1,309 +1,243 @@
-
-
 <!DOCTYPE html>
-<html lang="zh-Hans">
-<head prefix="og: http://ogp.me/ns#">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
-    <meta name="description" content="">
-    <title>C# 的const, static 和 readonly 关键字的理解 | elangduan</title>
+<html lang="">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
 
-    <!-- Open Graph -->
-    <meta name="description" content="&amp;#x57FA;&amp;#x672C;&amp;#x542B;&amp;#x4E49;&amp;#x5173;&amp;#x4E8E;c#&amp;#x7684;const, static, readyonly&amp;#x5173;&amp;#x952E;&amp;#x5B57;&amp;#x4FEE;&amp;#x9970;&amp;#x6210;&amp;#x5458;&amp;#x53D8;&amp;#x91CF;&amp;#x65F6;&amp;#x7684;&amp;#x533A;&amp;#x522B;,&amp;#x4E0B;&amp;#x97">
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="C# 的const, static 和 readonly 关键字的理解"/>
+
+
+
+
+  <meta name="keywords" content="csharp," />
+
+
+
+
+
+  <link rel="alternate" href="/default" title="elangduan">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://elangduan.github.com/2016/04/09/cs_const_static_vs_readonly_keyworld/"/>
+
+
+<meta name="description" content="基本含义关于c#的const, static, readyonly关键字修饰成员变量时的区别,下面通过一个简单的例子来说明: 1234567891011121314151617181920212223//SomeType.csusing System;public sealed class SomeType&amp;#123;    public Int32 Id = 1;    public const">
 <meta name="keywords" content="csharp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="C# 的const, static 和 readonly 关键字的理解">
 <meta property="og:url" content="http://elangduan.github.com/2016/04/09/cs_const_static_vs_readonly_keyworld/index.html">
 <meta property="og:site_name" content="elangduan">
-<meta property="og:description" content="&amp;#x57FA;&amp;#x672C;&amp;#x542B;&amp;#x4E49;&amp;#x5173;&amp;#x4E8E;c#&amp;#x7684;const, static, readyonly&amp;#x5173;&amp;#x952E;&amp;#x5B57;&amp;#x4FEE;&amp;#x9970;&amp;#x6210;&amp;#x5458;&amp;#x53D8;&amp;#x91CF;&amp;#x65F6;&amp;#x7684;&amp;#x533A;&amp;#x522B;,&amp;#x4E0B;&amp;#x97">
+<meta property="og:description" content="基本含义关于c#的const, static, readyonly关键字修饰成员变量时的区别,下面通过一个简单的例子来说明: 1234567891011121314151617181920212223//SomeType.csusing System;public sealed class SomeType&amp;#123;    public Int32 Id = 1;    public const">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2017-03-08T11:57:10.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="C# 的const, static 和 readonly 关键字的理解">
-<meta name="twitter:description" content="&amp;#x57FA;&amp;#x672C;&amp;#x542B;&amp;#x4E49;&amp;#x5173;&amp;#x4E8E;c#&amp;#x7684;const, static, readyonly&amp;#x5173;&amp;#x952E;&amp;#x5B57;&amp;#x4FEE;&amp;#x9970;&amp;#x6210;&amp;#x5458;&amp;#x53D8;&amp;#x91CF;&amp;#x65F6;&amp;#x7684;&amp;#x533A;&amp;#x522B;,&amp;#x4E0B;&amp;#x97">
+<meta name="twitter:description" content="基本含义关于c#的const, static, readyonly关键字修饰成员变量时的区别,下面通过一个简单的例子来说明: 1234567891011121314151617181920212223//SomeType.csusing System;public sealed class SomeType&amp;#123;    public Int32 Id = 1;    public const">
 
-    <script type="application/ld+json">
-{
-  "@context": "http://schema.org",
-  "@type": "Person",
-  "email": "mailto:elangduan@126.com",
-  "image": "/uploads/avatar.png",
-  "name": "elangduan@126.com",
-  "url": "http://elangduan.github.com"
-}
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
 </script>
-    <script>
-    var algoliaEnabled = false;
-    
-</script>
 
-    
 
-    
-    
-        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-    
-    
-    
-        <!-- stylesheets list from config.yml -->
+
+
+  
+
+
+
+    <title> C# 的const, static 和 readonly 关键字的理解 - elangduan </title>
+  </head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/." class="logo">elangduan</a>
+    </h1>
+
+    <nav id="nav-top">
         
-        <link rel="stylesheet" href="/css/aloha.css">
-        
-        <link rel="stylesheet" href="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.css">
-        
-        <link rel="stylesheet" href="//cdn.bootcss.com/magnific-popup.js/1.1.0/magnific-popup.min.css">
-        
-    
-
-</head>
-<body id="body" style="margin-bottom: 0;" class="pushable">
-
-    <div class="ui top fixed menu">
-        <a class="item" id="menu-icon"><i class="sidebar icon"></i></a>
-    </div>
-
-    <div id="menu-sidebar" class="ui left vertical sidebar menu">
-
-    <div id="sidebar-top">
-        <div class="content">
-            <h3>elangduan</h3>
-        </div>
-    </div>
-    <div class="ui container sidebar-card">
-    <div class="ui people shape content">
-        <div class="active side">
-            <div class="ui card">
-                <div class="image">
-                    <img class="ui medium bordered image" src="/images/avatar.jpg">
-                </div>
-                <div class="content">
-                    <a class="header">elangduan@126.com</a>
-                    
-                        <div class="meta">
-                            Game Developer
-                        </div>
-                    
-                </div>
-                <div class="extra content">
-                    <div class="ui list">
-                        
-                        <div class="item">
-                            <i class="marker icon" style="float: left"></i>
-                            <div class="content">Shanghai</div>
-                        </div>
-                        
-                        
-                        <div class="item">
-                            <i class="mail icon" style="float: left"></i>
-                            <div class="content">
-                                <a href="mailto:elangduan@126.com">elangduan@126.com</a>
-                            </div>
-                        </div>
-                        
-                    </div>
-
-                </div>
-                <div class="extra content">
-                    <div class="ui list">
-                        
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-</div>
-
-    
-    
-
-    
-
-    
-    <a href="/index.html" class="item" >
-        <i class="home icon"></i>
-        HOME
-    </a>
-
-    
-
-    
-</div>
-
-    <div class="pusher body-content">
-        <div id="content" class="ui main container">
-            <!--<div class="ui one column grid">-->
-                <!--<div class="column">-->
-                    <!--<div class="ui main container">-->
-                        <div id="post-cs_const_static_vs_readonly_keyworld" class="ui main container article-type-post">
-
-    
-
-    <div class="ui divided grid">
-
-        <div class="two column row" id="article-content">
-
-            <div class="thirteen wide computer thirteen wide tablet sixteen wide mobile column">
+            <ul id="menu-top" class="nav-top-items">
                 
+                    <li class="menu-item">
+                        <a href="/archives">
+                            
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/about">
+                            
+                            
+                                About
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
 
-<h1 class="ui header">
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          C# 的const, static 和 readonly 关键字的理解
+        
+      </h1>
+
+      <time class="post-time">
+          Apr 09 2016
+      </time>
+    </header>
+
+
+
     
-    C# 的const, static 和 readonly 关键字的理解
-</h1>
-
-
-
-                <div class="article-inner">
-
-                    <div class="article-entry" itemprop="articleBody">
-                        
-                        <h4 id="&#x57FA;&#x672C;&#x542B;&#x4E49;"><a href="#&#x57FA;&#x672C;&#x542B;&#x4E49;" class="headerlink" title="&#x57FA;&#x672C;&#x542B;&#x4E49;"></a>&#x57FA;&#x672C;&#x542B;&#x4E49;</h4><p>&#x5173;&#x4E8E;c#&#x7684;const, static, readyonly&#x5173;&#x952E;&#x5B57;&#x4FEE;&#x9970;&#x6210;&#x5458;&#x53D8;&#x91CF;&#x65F6;&#x7684;&#x533A;&#x522B;,&#x4E0B;&#x9762;&#x901A;&#x8FC7;&#x4E00;&#x4E2A;&#x7B80;&#x5355;&#x7684;&#x4F8B;&#x5B50;&#x6765;&#x8BF4;&#x660E;:</p>
-<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//SomeType.cs</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">sealed</span> <span class="keyword">class</span> <span class="title">SomeType</span></span><br><span class="line">{</span><br><span class="line">    <span class="keyword">public</span> Int32 Id = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">const</span> Int32 constId = <span class="number">100</span>; <span class="comment">//IL  .field public static literal int32 constId = int32(0x00000032)</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Int32 staticId = <span class="number">1000</span>; <span class="comment">//IL .field public static int32 staticId</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">readonly</span> Int32 readonlyId = <span class="number">2000</span>; <span class="comment">//IL .field public initonly int32 readonlyId</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">readonly</span> Int32[] readonlyArrayId = <span class="keyword">new</span> Int32[]{<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>};<span class="comment">//readonlyArrayId&#x672C;&#x8EAB;&#x4E0D;&#x80FD;&#x518D;&#x6B21;write, &#x4F46;&#x662F;&#x6307;&#x5411;&#x7684;&#x5BF9;&#x8C61;&#x53EF;&#x4EE5;&#x6539;&#x53D8;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">readonly</span> Int32 staticReadOnlyId = <span class="number">5000</span>; <span class="comment">//IL .field public static initonly int32 staticReadOnlyId</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SomeType</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>{</span><br><span class="line">        readonlyId = <span class="number">20001</span>;</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
-<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//TestSomeType.cs</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">TestConst</span> </span><br><span class="line">{</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params">String[] args</span>)</span></span><br><span class="line"><span class="function">    </span>{</span><br><span class="line">        SomeType someType = <span class="keyword">new</span> SomeType();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//test1</span></span><br><span class="line">        <span class="keyword">int</span> result = someType.Id + SomeType.constId + SomeType.staticId + someType.readonlyId + SomeType.staticReadOnlyId;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//test2</span></span><br><span class="line">        someType.readonlyArrayId[<span class="number">1</span>] = <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line">        Console.WriteLine(someType.readonlyArrayId[<span class="number">1</span>]);<span class="comment">//output 4</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//test3</span></span><br><span class="line">        Console.WriteLine(<span class="string">&quot;constId: &quot;</span> + SomeType.constId);<span class="comment">//</span></span><br><span class="line"></span><br><span class="line">        Console.WriteLine(<span class="string">&quot;staticId: &quot;</span> + SomeType.staticId);</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
-<p> &#x4E00;. &#x7ED3;&#x8BBA;</p>
-<ol class="ui list">
+            <div class="post-content">
+            <h4 id="基本含义"><a href="#基本含义" class="headerlink" title="基本含义"></a>基本含义</h4><p>关于c#的const, static, readyonly关键字修饰成员变量时的区别,下面通过一个简单的例子来说明:</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//SomeType.cs</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">sealed</span> <span class="keyword">class</span> <span class="title">SomeType</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> Int32 Id = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">const</span> Int32 constId = <span class="number">100</span>; <span class="comment">//IL  .field public static literal int32 constId = int32(0x00000032)</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Int32 staticId = <span class="number">1000</span>; <span class="comment">//IL .field public static int32 staticId</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">readonly</span> Int32 readonlyId = <span class="number">2000</span>; <span class="comment">//IL .field public initonly int32 readonlyId</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">readonly</span> Int32[] readonlyArrayId = <span class="keyword">new</span> Int32[]&#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;;<span class="comment">//readonlyArrayId本身不能再次write, 但是指向的对象可以改变</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">readonly</span> Int32 staticReadOnlyId = <span class="number">5000</span>; <span class="comment">//IL .field public static initonly int32 staticReadOnlyId</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SomeType</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        readonlyId = <span class="number">20001</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//TestSomeType.cs</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">TestConst</span> </span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params">String[] args</span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        SomeType someType = <span class="keyword">new</span> SomeType();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//test1</span></span><br><span class="line">        <span class="keyword">int</span> result = someType.Id + SomeType.constId + SomeType.staticId + someType.readonlyId + SomeType.staticReadOnlyId;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//test2</span></span><br><span class="line">        someType.readonlyArrayId[<span class="number">1</span>] = <span class="number">4</span>;</span><br><span class="line"></span><br><span class="line">        Console.WriteLine(someType.readonlyArrayId[<span class="number">1</span>]);<span class="comment">//output 4</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//test3</span></span><br><span class="line">        Console.WriteLine(<span class="string">"constId: "</span> + SomeType.constId);<span class="comment">//</span></span><br><span class="line"></span><br><span class="line">        Console.WriteLine(<span class="string">"staticId: "</span> + SomeType.staticId);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p> 一. 结论</p>
+<ol>
 <li>readonly</li>
 </ol>
-<p>&#x3000;&#x3000;(1) &#x4FEE;&#x9970;&#x6210;&#x5458;&#x53D8;&#x91CF;&#x7684;&#x65F6;&#x5019;,&#x8BE5;&#x53D8;&#x91CF;&#x53EA;&#x80FD;&#x901A;&#x8FC7;&#x53D8;&#x91CF;&#x5B9A;&#x4E49;&#x65F6;&#x6216;&#x8005;&#x65E9;&#x6784;&#x9020;&#x65B9;&#x6CD5;&#x91CC;&#x9762;&#x8D4B;&#x503C;&#x3002;</p>
-<p>&#x3000;&#x3000;(2) &#x4FEE;&#x9970;&#x7684;&#x6210;&#x5458;&#x53D8;&#x91CF;&#x662F;&#x5B9E;&#x4F8B;&#x5B57;&#x6BB5;&#xFF0C;&#x5185;&#x5B58;&#x662F;&#x5728;&#x6784;&#x9020;&#x51FD;&#x6570;&#x7C7B;&#x578B;&#x7684;&#x5B9E;&#x4F8B;&#x65F6;&#x5206;&#x914D;&#x7684;&#x3002;</p>
-<p>&#x3000;&#x3000;(3) &#x4FEE;&#x9970;&#x7684;&#x6210;&#x5458;&#x53D8;&#x91CF;&#x662F;&#x5F15;&#x7528;&#x7C7B;&#x578B;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x4E0D;&#x53EF;&#x6539;&#x53D8;&#x7684;&#x662F;&#x5F15;&#x7528;&#xFF0C;&#x5F15;&#x7528;&#x6307;&#x5411;&#x7684;&#x5BF9;&#x8C61;&#x662F;&#x53EF;&#x4EE5;&#x6539;&#x53D8;&#x7684;&#x3002;</p>
-<ol class="ui list">
+<p>　　(1) 修饰成员变量的时候,该变量只能通过变量定义时或者早构造方法里面赋值。</p>
+<p>　　(2) 修饰的成员变量是实例字段，内存是在构造函数类型的实例时分配的。</p>
+<p>　　(3) 修饰的成员变量是引用类型的时候，不可改变的是引用，引用指向的对象是可以改变的。</p>
+<ol>
 <li>static</li>
 </ol>
-<p>&#x3000;&#x3000;(1) &#x4FEE;&#x9970;&#x7684;&#x6210;&#x5458;&#x53D8;&#x91CF;&#x662F;&#x7C7B;&#x578B;&#x8D44;&#x6E90;&#xFF0C;&#x5185;&#x5B58;&#x662F;&#x5728;&#x7C7B;&#x578B;&#x5BF9;&#x8C61;&#x4E2D;&#x5206;&#x914D;&#x7684;&#xFF0C;&#x548C;&#x5177;&#x4F53;&#x7684;&#x5B9E;&#x4F8B;&#x65E0;&#x5173;&#x3002;</p>
-<ol class="ui list">
+<p>　　(1) 修饰的成员变量是类型资源，内存是在类型对象中分配的，和具体的实例无关。</p>
+<ol>
 <li>const</li>
 </ol>
-<p>&#x3000;&#x3000;(1) &#x7F16;&#x8BD1;&#x6210;IL&#x4EE3;&#x7801;&#x540E;&#x7531;static literal &#x4FEE;&#x9970;&#xFF0C;&#x7531;&#x6B64;&#x53EF;&#x89C1;const&#x4FEE;&#x9970;&#x7684;&#x53D8;&#x91CF;&#x6700;&#x7EC8;&#x8868;&#x793A;&#x6210;static&#x7C7B;&#x578B;&#x540C;&#x65F6;&#x88AB;literal&#x4FEE;&#x9970;( literal&#x4FEE;&#x9970;&#x7684;&#x53D8;&#x91CF;&#x5FC5;&#x987B;&#x5728;&#x53D8;&#x91CF;&#x58F0;&#x660E;&#x7684;&#x65F6;&#x5019;&#x8D4B;&#x503C;&#xFF0C;&#x7F16;&#x8BD1;&#x5668;&#x7F16;&#x8BD1;&#x6210;IL&#x4EE3;&#x7801;&#x65F6;&#x4F1A;&#x76F4;&#x63A5;&#x628A;&#x8FD9;&#x4E2A;&#x53D8;&#x91CF;&#x7684;&#x503C;&#x63D2;&#x5165;&#x5230;&#x5F15;&#x7528;&#x8FD9;&#x4E2A;&#x53D8;&#x91CF;&#x7684;&#x4F4D;&#x7F6E;&#x66FF;&#x4EE3;&#x4E4B;&#x524D;&#x7684;&#x53D8;&#x91CF;&#xFF0C;&#x4ECE;&#x800C;&#x7A0B;&#x5E8F;&#x5728;&#x8FD0;&#x884C;&#x65F6;&#x4E0D;&#x9700;&#x8981;&#x518D;&#x4E3A;&#x6B64;&#x53D8;&#x91CF;&#x5206;&#x914D;&#x5185;&#x5B58;)&#x3002;</p>
-<h4 id="const&#x4E0E;static&#x7684;&#x533A;&#x522B;"><a href="#const&#x4E0E;static&#x7684;&#x533A;&#x522B;" class="headerlink" title="const&#x4E0E;static&#x7684;&#x533A;&#x522B;"></a>const&#x4E0E;static&#x7684;&#x533A;&#x522B;</h4><ol class="ui list">
-<li>&#x7F16;&#x8BD1;SomeType.cs &#x548C; TestSomeType.cs</li>
+<p>　　(1) 编译成IL代码后由static literal 修饰，由此可见const修饰的变量最终表示成static类型同时被literal修饰( literal修饰的变量必须在变量声明的时候赋值，编译器编译成IL代码时会直接把这个变量的值插入到引用这个变量的位置替代之前的变量，从而程序在运行时不需要再为此变量分配内存)。</p>
+<h4 id="const与static的区别"><a href="#const与static的区别" class="headerlink" title="const与static的区别"></a>const与static的区别</h4><ol>
+<li>编译SomeType.cs 和 TestSomeType.cs</li>
 </ol>
-<p>//&#x751F;&#x6210;SomeType.netmodule<br>csc /t:module SomeType.cs</p>
-<p>//&#x751F;&#x6210;TestSomeType.exe<br>csc TestSomeType.cs /addmodule:SomeType.netmodule<br> &#x8FD0;&#x884C;TestSomeType.exe &#x53EF;&#x4EE5;&#x770B;&#x5230;test3&#x4E2D;&#x7684;&#x8F93;&#x51FA;&#x4E3A;:</p>
-<p>constId: 100<br>staticId: 1000<br>&#x73B0;&#x5728;&#x6539;&#x53D8;SomeType.cs&#x7C7B;&#x578B;&#x7684;constId&#x548C;staticId&#x7684;&#x503C;&#x5206;&#x522B;&#x4E3A;50, 500,&#x7136;&#x540E;&#x91CD;&#x65B0;&#x751F;&#x6210;SomeType.netmodule</p>
-<p>&#x63A5;&#x7740;&#x518D;&#x6B21;&#x8FD0;&#x884C;TestSomeType.exe&#x53EF;&#x4EE5;&#x770B;&#x5230;test3&#x4E2D;&#x8F93;&#x51FA;&#x4E3A;:</p>
-<p>constId: 100<br>staticId: 500<br>&#x7ED3;&#x679C;&#x53D1;&#x73B0;&#x53EA;&#x6709;staticId&#x7684;&#x503C;&#x5F15;&#x7528;&#x7684;&#x65B0;&#x503C;&#x3002;&#x518D;&#x6765;&#x770B;&#x770B;TestSomeType.cs&#x7C7B;&#x7684;Main&#x51FD;&#x6570;&#x7684;IL&#x4EE3;&#x7801;:</p>
-<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">.class <span class="keyword">public</span> auto ansi beforefieldinit TestConst</span><br><span class="line">    extends [mscorlib]System.Object</span><br><span class="line">{</span><br><span class="line">    <span class="comment">// Methods</span></span><br><span class="line">    .method <span class="keyword">public</span> hidebysig <span class="keyword">static</span> </span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">Main</span> (<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="keyword">string</span>[] args</span></span></span><br><span class="line"><span class="function"><span class="params">        </span>) cil managed </span></span><br><span class="line"><span class="function">    </span>{</span><br><span class="line">       ...</span><br><span class="line"></span><br><span class="line">        IL_0000: nop</span><br><span class="line">        IL_0001: newobj instance void SomeType::.ctor()</span><br><span class="line">        IL_0006: stloc<span class="number">.0</span></span><br><span class="line">        IL_0007: ldloc<span class="number">.0</span></span><br><span class="line">        IL_0008: ldfld int32 SomeType::Id</span><br><span class="line">        IL_000d: ldc.i4.s <span class="number">100</span> <span class="comment">//&#xFF08;1&#xFF09;</span></span><br><span class="line">        IL_000f: <span class="keyword">add</span></span><br><span class="line">        IL_0010: ldsfld int32 SomeType::staticId //&#xFF08;2&#xFF09;</span><br><span class="line">     	 </span><br><span class="line">     	 ...</span><br><span class="line">     	 </span><br><span class="line">        IL_003b: ldstr <span class="string">&quot;constId: &quot;</span></span><br><span class="line">        IL_0040: ldc.i4.s <span class="number">100</span> <span class="comment">//&#xFF08;3&#xFF09;</span></span><br><span class="line">        </span><br><span class="line">        ...</span><br><span class="line">        </span><br><span class="line">        IL_0052: ldstr <span class="string">&quot;staticId: &quot;</span></span><br><span class="line">        IL_0057: ldsfld int32 SomeType::staticId //&#xFF08;4&#xFF09;</span><br><span class="line">        IL_005c: box [mscorlib]System.Int32</span><br><span class="line">        IL_0061: call string [mscorlib]System.String::Concat(object, object)</span><br><span class="line">        IL_0066: call void [mscorlib]System.Console::WriteLine(string)</span><br><span class="line">        IL_006b: nop</span><br><span class="line">        IL_006c: ret</span><br><span class="line">    } <span class="comment">// end of method TestConst::Main</span></span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">} <span class="comment">// end of class TestConst</span></span><br></pre></td></tr></table></figure>
-<p>&#x53EF;&#x4EE5;&#x770B;&#x5230;&#x4E0A;&#x56FE;&#x7684;&#x56DB;&#x4E2A;&#x6807;&#x8BB0;&#x3002;&#x6807;&#x8BB0;&#xFF08;1&#xFF09;&#x548C;&#xFF08;3&#xFF09;&#x662F;constId&#x7F16;&#x8BD1;&#x6210;IL&#x4EE3;&#x7801;&#x7684;&#x8868;&#x793A;&#xFF0C;&#x6807;&#x8BB0;&#xFF08;2&#xFF09;&#x548C;&#xFF08;4&#xFF09;&#x662F;staticId&#x7F16;&#x8BD1;&#x6210;IL&#x4EE3;&#x7801;&#x7684;&#x8868;&#x793A;&#x3002;</p>
-<p>&#x5BF9;&#x4E8E;constId &#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x53D1;&#x73B0;constId&#x5176;&#x5B9E;&#x5DF2;&#x7ECF;&#x66FF;&#x6362;&#x6210;&#x5176;&#x5BF9;&#x5E94;&#x7684;&#x503C;&#x4E86;,&#x6240;&#x4EE5;&#x6539;&#x53D8;SomeType.cs&#x7684;constId&#x91CD;&#x65B0;&#x7F16;&#x8BD1;&#x5F71;&#x54CD;&#x4E0D;&#x5230;&#x5DF2;&#x7ECF;&#x7F16;&#x8BD1;&#x597D;&#x7684;TestSomeType&#x7A0B;&#x5E8F;&#x96C6;&#x3002;</p>
-<p>&#x5BF9;&#x4E8E;staticId&#x53D8;&#x91CF;&#x6807;&#x660E;&#x7684;&#x662F;&#x6240;&#x5728;&#x6A21;&#x5757;&#x7684;&#x4FE1;&#x606F;&#xFF0C;&#x5F53;&#x7A0B;&#x5E8F;&#x8FD0;&#x884C;&#x8D77;&#x6765;&#x65F6;CLR&#x4F1A;&#x52A0;&#x8F7D;&#x5176;&#x5BF9;&#x5E94;&#x7684;netmodule&#x6765;&#x83B7;&#x53D6;staticId&#x7684;&#x503C;&#x3002;&#x6240;&#x4EE5;&#x6539;&#x53D8;SomaeType.cs&#x7684;staticId&#x7684;&#x503C;&#x5E76;&#x91CD;&#x65B0;&#x7F16;&#x8BD1;&#xFF0C;&#x5728;TestSomeType&#x7A0B;&#x5E8F;&#x96C6;&#x4E2D;&#x5373;&#x53EF;&#x83B7;&#x53D6;&#x6700;&#x65B0;&#x7684;&#x503C;&#x3002;</p>
+<p>//生成SomeType.netmodule<br>csc /t:module SomeType.cs</p>
+<p>//生成TestSomeType.exe<br>csc TestSomeType.cs /addmodule:SomeType.netmodule<br> 运行TestSomeType.exe 可以看到test3中的输出为:</p>
+<p>constId: 100<br>staticId: 1000<br>现在改变SomeType.cs类型的constId和staticId的值分别为50, 500,然后重新生成SomeType.netmodule</p>
+<p>接着再次运行TestSomeType.exe可以看到test3中输出为:</p>
+<p>constId: 100<br>staticId: 500<br>结果发现只有staticId的值引用的新值。再来看看TestSomeType.cs类的Main函数的IL代码:</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">.class <span class="keyword">public</span> auto ansi beforefieldinit TestConst</span><br><span class="line">    extends [mscorlib]System.Object</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Methods</span></span><br><span class="line">    .method <span class="keyword">public</span> hidebysig <span class="keyword">static</span> </span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">Main</span> (<span class="params"></span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="keyword">string</span>[] args</span></span></span><br><span class="line"><span class="function"><span class="params">        </span>) cil managed </span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">       ...</span><br><span class="line"></span><br><span class="line">        IL_0000: nop</span><br><span class="line">        IL_0001: newobj instance void SomeType::.ctor()</span><br><span class="line">        IL_0006: stloc<span class="number">.0</span></span><br><span class="line">        IL_0007: ldloc<span class="number">.0</span></span><br><span class="line">        IL_0008: ldfld int32 SomeType::Id</span><br><span class="line">        IL_000d: ldc.i4.s <span class="number">100</span> <span class="comment">//（1）</span></span><br><span class="line">        IL_000f: <span class="keyword">add</span></span><br><span class="line">        IL_0010: ldsfld int32 SomeType::staticId //（2）</span><br><span class="line">     	 </span><br><span class="line">     	 ...</span><br><span class="line">     	 </span><br><span class="line">        IL_003b: ldstr <span class="string">"constId: "</span></span><br><span class="line">        IL_0040: ldc.i4.s <span class="number">100</span> <span class="comment">//（3）</span></span><br><span class="line">        </span><br><span class="line">        ...</span><br><span class="line">        </span><br><span class="line">        IL_0052: ldstr <span class="string">"staticId: "</span></span><br><span class="line">        IL_0057: ldsfld int32 SomeType::staticId //（4）</span><br><span class="line">        IL_005c: box [mscorlib]System.Int32</span><br><span class="line">        IL_0061: call string [mscorlib]System.String::Concat(object, object)</span><br><span class="line">        IL_0066: call void [mscorlib]System.Console::WriteLine(string)</span><br><span class="line">        IL_006b: nop</span><br><span class="line">        IL_006c: ret</span><br><span class="line">    &#125; <span class="comment">// end of method TestConst::Main</span></span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">&#125; <span class="comment">// end of class TestConst</span></span><br></pre></td></tr></table></figure>
+<p>可以看到上图的四个标记。标记（1）和（3）是constId编译成IL代码的表示，标记（2）和（4）是staticId编译成IL代码的表示。</p>
+<p>对于constId 我们可以发现constId其实已经替换成其对应的值了,所以改变SomeType.cs的constId重新编译影响不到已经编译好的TestSomeType程序集。</p>
+<p>对于staticId变量标明的是所在模块的信息，当程序运行起来时CLR会加载其对应的netmodule来获取staticId的值。所以改变SomaeType.cs的staticId的值并重新编译，在TestSomeType程序集中即可获取最新的值。</p>
 
-                        
-                    </div>
+            </div>
+          
 
-                    
-                    
-                    
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/tags/csharp/">csharp</a>
+		  
+		</div>
+		
 
-                    <div class="description post-description">
-    <span class="post-description-item">
-        <time datetime="2016-04-09T08:47:36.000Z" itemprop="datePublished">2016-04-09</time>
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2016/04/27/cs_global_variable_init/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">C#全局变量的初始化过程</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/2015/06/20/cpp_language_memory_format_structure/">
+        <span class="next-text nav-default">C++虚函数的内存结构浅析</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
 
-    </span>
-    <span class="post-description-item">
         
 
-    <span>
-        <i class="tags icon"></i>
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2014 -
+    
+    2018
+    <span class="footer-author">elangduan@126.com.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
     </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
 
     
-    <span class="ui tiny label">
-        <a href="/tags/csharp/">csharp</a>
-    </span>
-
-    
-
-    </span>
-</div>
-
-                </div>
-                
-                <div id="pagination" class="nav-web ui text container pagination">
-
-    <div class="ui stackable two column divided grid container">
-        <div class="row">
-            <div class="column nav-left">
-                
-
-                <a href="/2016/04/27/cs_global_variable_init/" class="ui tiny button">
-
-                    <i class="angle left icon"></i>
-                    
-                    C#全局变量的初始化过程
-                    
-
-                </a>
-
-                
-            </div>
-            <div class="column nav-right">
-                
-
-                <a href="/2015/06/20/cpp_language_memory_format_structure/" class="ui tiny button">
-                    
-                    C++虚函数的内存结构浅析
-                    
-                    <i class="angle right icon"></i></a>
-                
-            </div>
-        </div>
-    </div>
-
-</div>
-                
-            </div>
-
-            
-            <div class="three wide computer three wide tablet column">
-
-                <div class="ui sticky article-toc" id="article-toc">
-                    <!-- toc -->
-                    <ol class="ui ordered list"><li><a href="#基本含义"><span>基本含义</span></a></li><li><a href="#const与static的区别"><span>const与static的区别</span></a></li></ol>
-                </div>
-
-            </div>
-            
-
-        </div>
-    </div>
-</div>
-
-
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-        </div>
-        <div class="ui vertical footer segment">
-    <div class="ui center aligned container">
-        <div class="ui inverted section divider"></div>
-        &copy; 2018 <a href="/">elangduan@126.com</a>,
-        Powered by <a href="https://github.com/henryhuang/hexo-theme-aloha" target="_blank">Aloha</a> and <a
-                href="http://hexo.io/" target="_blank">Hexo</a>.
-    </div>
-</div>
-
-    </div>
 
 
 
 
-<!-- scripts list from theme config.yml -->
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
 
-<script src="//cdn.bootcss.com/jquery/3.1.0/jquery.min.js"></script>
+  
 
-<script src="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.js"></script>
+    <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=1.1"></script>
 
-<script src="//cdn.bootcss.com/algoliasearch/3.18.1/algoliasearch.min.js"></script>
-
-<script src="//cdn.bootcss.com/algoliasearch-helper-js/2.13.0/algoliasearch.helper.min.js"></script>
-
-<script src="/js/semantic-ui-algolia.js"></script>
-
-<script src="/js/aloha-events.js"></script>
-
-
-
-</body>
+  </body>
 </html>

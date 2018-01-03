@@ -1,15 +1,41 @@
-
-
 <!DOCTYPE html>
-<html lang="zh-Hans">
-<head prefix="og: http://ogp.me/ns#">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
-    <meta name="description" content="">
-    <title>MonoBehaviour的Awake的调用时机 | elangduan</title>
+<html lang="">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
 
-    <!-- Open Graph -->
-    <meta name="description" content="对MonoBehaviour的Awake之前有一个一直错误的理解:如果一个GameObject被添加到scene中，就算Active为false只要场景运行，此GameObejct的Awake函数就会调用。此理解是看了官方文档自己得出的结论:  Awake is called when the script instance is being loaded.  昨天同事问到这个问题的时候才自己测试">
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="MonoBehaviour的Awake的调用时机"/>
+
+
+
+
+  <meta name="keywords" content="unity," />
+
+
+
+
+
+  <link rel="alternate" href="/default" title="elangduan">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://elangduan.github.com/2017/02/25/unity_monobehavior_awake_function_call_time/"/>
+
+
+<meta name="description" content="对MonoBehaviour的Awake之前有一个一直错误的理解:如果一个GameObject被添加到scene中，就算Active为false只要场景运行，此GameObejct的Awake函数就会调用。此理解是看了官方文档自己得出的结论:  Awake is called when the script instance is being loaded.  昨天同事问到这个问题的时候才自己测试">
 <meta name="keywords" content="unity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MonoBehaviour的Awake的调用时机">
@@ -22,269 +48,177 @@
 <meta name="twitter:title" content="MonoBehaviour的Awake的调用时机">
 <meta name="twitter:description" content="对MonoBehaviour的Awake之前有一个一直错误的理解:如果一个GameObject被添加到scene中，就算Active为false只要场景运行，此GameObejct的Awake函数就会调用。此理解是看了官方文档自己得出的结论:  Awake is called when the script instance is being loaded.  昨天同事问到这个问题的时候才自己测试">
 
-    <script type="application/ld+json">
-{
-  "@context": "http://schema.org",
-  "@type": "Person",
-  "email": "mailto:elangduan@126.com",
-  "image": "/uploads/avatar.png",
-  "name": "elangduan@126.com",
-  "url": "http://elangduan.github.com"
-}
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
 </script>
-    <script>
-    var algoliaEnabled = false;
-    
-</script>
 
-    
 
-    
-    
-        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-    
-    
-    
-        <!-- stylesheets list from config.yml -->
+
+
+  
+
+
+
+    <title> MonoBehaviour的Awake的调用时机 - elangduan </title>
+  </head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/." class="logo">elangduan</a>
+    </h1>
+
+    <nav id="nav-top">
         
-        <link rel="stylesheet" href="/css/aloha.css">
-        
-        <link rel="stylesheet" href="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.css">
-        
-        <link rel="stylesheet" href="//cdn.bootcss.com/magnific-popup.js/1.1.0/magnific-popup.min.css">
-        
-    
-
-</head>
-<body id="body" style="margin-bottom: 0;" class="pushable">
-
-    <div class="ui top fixed menu">
-        <a class="item" id="menu-icon"><i class="sidebar icon"></i></a>
-    </div>
-
-    <div id="menu-sidebar" class="ui left vertical sidebar menu">
-
-    <div id="sidebar-top">
-        <div class="content">
-            <h3>elangduan</h3>
-        </div>
-    </div>
-    <div class="ui container sidebar-card">
-    <div class="ui people shape content">
-        <div class="active side">
-            <div class="ui card">
-                <div class="image">
-                    <img class="ui medium bordered image" src="/images/avatar.jpg">
-                </div>
-                <div class="content">
-                    <a class="header">elangduan@126.com</a>
-                    
-                        <div class="meta">
-                            Game Developer
-                        </div>
-                    
-                </div>
-                <div class="extra content">
-                    <div class="ui list">
-                        
-                        <div class="item">
-                            <i class="marker icon" style="float: left"></i>
-                            <div class="content">Shanghai</div>
-                        </div>
-                        
-                        
-                        <div class="item">
-                            <i class="mail icon" style="float: left"></i>
-                            <div class="content">
-                                <a href="mailto:elangduan@126.com">elangduan@126.com</a>
-                            </div>
-                        </div>
-                        
-                    </div>
-
-                </div>
-                <div class="extra content">
-                    <div class="ui list">
-                        
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-</div>
-
-    
-    
-
-    
-
-    
-    <a href="/index.html" class="item" >
-        <i class="home icon"></i>
-        HOME
-    </a>
-
-    
-
-    
-</div>
-
-    <div class="pusher body-content">
-        <div id="content" class="ui main container">
-            <!--<div class="ui one column grid">-->
-                <!--<div class="column">-->
-                    <!--<div class="ui main container">-->
-                        <div id="post-unity_monobehavior_awake_function_call_time" class="ui main container article-type-post">
-
-    
-
-    <div class="ui divided grid">
-
-        <div class="two column row" id="article-content">
-
-            <div class="thirteen wide computer thirteen wide tablet sixteen wide mobile column">
+            <ul id="menu-top" class="nav-top-items">
                 
+                    <li class="menu-item">
+                        <a href="/archives">
+                            
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/about">
+                            
+                            
+                                About
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
 
-<h1 class="ui header">
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          MonoBehaviour的Awake的调用时机
+        
+      </h1>
+
+      <time class="post-time">
+          Feb 25 2017
+      </time>
+    </header>
+
+
+
     
-    MonoBehaviour的Awake的调用时机
-</h1>
-
-
-
-                <div class="article-inner">
-
-                    <div class="article-entry" itemprop="articleBody">
-                        
-                        <p>&#x5BF9;MonoBehaviour&#x7684;Awake&#x4E4B;&#x524D;&#x6709;&#x4E00;&#x4E2A;&#x4E00;&#x76F4;&#x9519;&#x8BEF;&#x7684;&#x7406;&#x89E3;:&#x5982;&#x679C;&#x4E00;&#x4E2A;GameObject&#x88AB;&#x6DFB;&#x52A0;&#x5230;scene&#x4E2D;&#xFF0C;&#x5C31;&#x7B97;Active&#x4E3A;false&#x53EA;&#x8981;&#x573A;&#x666F;&#x8FD0;&#x884C;&#xFF0C;&#x6B64;GameObejct&#x7684;Awake&#x51FD;&#x6570;&#x5C31;&#x4F1A;&#x8C03;&#x7528;&#x3002;&#x6B64;&#x7406;&#x89E3;&#x662F;&#x770B;&#x4E86;<a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Awake.html" target="_blank" rel="external">&#x5B98;&#x65B9;&#x6587;&#x6863;</a>&#x81EA;&#x5DF1;&#x5F97;&#x51FA;&#x7684;&#x7ED3;&#x8BBA;:</p>
+            <div class="post-content">
+            <p>对MonoBehaviour的Awake之前有一个一直错误的理解:如果一个GameObject被添加到scene中，就算Active为false只要场景运行，此GameObejct的Awake函数就会调用。此理解是看了<a href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Awake.html" target="_blank" rel="external">官方文档</a>自己得出的结论:</p>
 <blockquote>
 <p>Awake is called when the script instance is being loaded.</p>
 </blockquote>
-<p>&#x6628;&#x5929;&#x540C;&#x4E8B;&#x95EE;&#x5230;&#x8FD9;&#x4E2A;&#x95EE;&#x9898;&#x7684;&#x65F6;&#x5019;&#x624D;&#x81EA;&#x5DF1;&#x6D4B;&#x8BD5;&#x4E86;&#x4E00;&#x904D;&#xFF0C;&#x624D;&#x53D1;&#x73B0;&#x6211;&#x7684;&#x7406;&#x89E3;&#x662F;&#x9519;&#x8BEF;&#x7684;&#x3002;&#x6D4B;&#x8BD5;&#x53D1;&#x73B0;Awake&#x53EA;&#x6709;&#x5728;Active&#x4E3A;true&#x7684;&#x65F6;&#x5019;&#x4F1A;&#x88AB;&#x8C03;&#x7528;&#x4E00;&#x6B21;&#x3002;&#x6B64;&#x5916;&#x5728;&#x67E5;&#x627E;&#x8D44;&#x6599;&#x7684;&#x65F6;&#x5019;&#x53D1;&#x73B0;&#x4E86;Unity&#x8BBA;&#x575B;&#x91CC;&#x9762;&#x6709;&#x4EBA;&#x5728;&#x8BA8;&#x8BBA;&#x8FD9;&#x4E2A;&#x95EE;&#x9898;<a href="http://answers.unity3d.com/questions/942915/something-like-awake-that-runs-even-if-disabled.html" target="_blank" rel="external">Something like Awake that runs even if disabled?</a>&#x3002;&#x6709;&#x7B54;&#x6848;&#x8BF4;&#x6784;&#x9020;&#x65B9;&#x6CD5;&#x4F1A;&#x5728;GameObject&#x7684;Active&#x4E3A;false&#x7684;&#x65F6;&#x5019;&#x4F1A;&#x88AB;&#x8C03;&#x7528;&#xFF0C;&#x6D4B;&#x8BD5;&#x4E86;&#x4E00;&#x4E0B;&#x5374;&#x662F;&#x5982;&#x6B64;&#x3002;</p>
-<p>&#x7EE7;&#x7EED;&#x6D4F;&#x89C8;&#x4E86;Monobehaviour&#x7684;&#x6587;&#x6863;&#xFF0C;&#x53D1;&#x73B0;&#x6587;&#x6863;&#x91CC;&#x9762;&#x4E5F;&#x7740;&#x91CD;&#x5199;&#x4E86;&#x8FD9;&#x4E2A;&#x95EE;&#x9898;:</p>
+<p>昨天同事问到这个问题的时候才自己测试了一遍，才发现我的理解是错误的。测试发现Awake只有在Active为true的时候会被调用一次。此外在查找资料的时候发现了Unity论坛里面有人在讨论这个问题<a href="http://answers.unity3d.com/questions/942915/something-like-awake-that-runs-even-if-disabled.html" target="_blank" rel="external">Something like Awake that runs even if disabled?</a>。有答案说构造方法会在GameObject的Active为false的时候会被调用，测试了一下却是如此。</p>
+<p>继续浏览了Monobehaviour的文档，发现文档里面也着重写了这个问题:</p>
 <blockquote>
 <p>Note: The checkbox for disabling a MonoBehavior (on the editor) will only prevent Start(), Awake(), Update(), FixedUpdate(), and OnGUI() from executing. If none of these functions are present, the checkbox is not displayed.</p>
 </blockquote>
 <a id="more"></a> 
-<p>&#x603B;&#x7ED3;: &#x770B;&#x6587;&#x6863;&#x8981;&#x4ED4;&#x7EC6;&#xFF0C;&#x7406;&#x8BBA;&#x7684;&#x77E5;&#x8BC6;&#x90FD;&#x8981;&#x81EA;&#x5DF1;&#x5B9E;&#x8DF5;&#x5E76;&#x9A8C;&#x8BC1;&#x4E00;&#x4E0B;&#x3002;</p>
+<p>总结: 看文档要仔细，理论的知识都要自己实践并验证一下。</p>
 
-                        
-                    </div>
+            </div>
+          
 
-                    
-                    
-                    
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/tags/unity/">unity</a>
+		  
+		</div>
+		
 
-                    <div class="description post-description">
-    <span class="post-description-item">
-        <time datetime="2017-02-25T05:56:36.000Z" itemprop="datePublished">2017-02-25</time>
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2017/03/04/unity_model_position_transform_to_world_position/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">Unity模型坐标转换到屏幕坐标</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/2017/02/11/json_auto_generate_cs_code/">
+        <span class="next-text nav-default">Json自动生成C#代码的工具</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
 
-    </span>
-    <span class="post-description-item">
         
 
-    <span>
-        <i class="tags icon"></i>
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2014 -
+    
+    2018
+    <span class="footer-author">elangduan@126.com.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
     </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
 
     
-    <span class="ui tiny label">
-        <a href="/tags/unity/">unity</a>
-    </span>
-
-    
-
-    </span>
-</div>
-
-                </div>
-                
-                <div id="pagination" class="nav-web ui text container pagination">
-
-    <div class="ui stackable two column divided grid container">
-        <div class="row">
-            <div class="column nav-left">
-                
-
-                <a href="/2017/03/04/unity_model_position_transform_to_world_position/" class="ui tiny button">
-
-                    <i class="angle left icon"></i>
-                    
-                    Unity模型坐标转换到屏幕坐标
-                    
-
-                </a>
-
-                
-            </div>
-            <div class="column nav-right">
-                
-
-                <a href="/2017/02/11/json_auto_generate_cs_code/" class="ui tiny button">
-                    
-                    Json自动生成C#代码的工具
-                    
-                    <i class="angle right icon"></i></a>
-                
-            </div>
-        </div>
-    </div>
-
-</div>
-                
-            </div>
-
-            
-            <div class="three wide computer three wide tablet column">
-
-                <div class="ui sticky article-toc" id="article-toc">
-                    <!-- toc -->
-                    
-                </div>
-
-            </div>
-            
-
-        </div>
-    </div>
-</div>
-
-
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-        </div>
-        <div class="ui vertical footer segment">
-    <div class="ui center aligned container">
-        <div class="ui inverted section divider"></div>
-        &copy; 2018 <a href="/">elangduan@126.com</a>,
-        Powered by <a href="https://github.com/henryhuang/hexo-theme-aloha" target="_blank">Aloha</a> and <a
-                href="http://hexo.io/" target="_blank">Hexo</a>.
-    </div>
-</div>
-
-    </div>
 
 
 
 
-<!-- scripts list from theme config.yml -->
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
 
-<script src="//cdn.bootcss.com/jquery/3.1.0/jquery.min.js"></script>
+  
 
-<script src="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.js"></script>
+    <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=1.1"></script>
 
-<script src="//cdn.bootcss.com/algoliasearch/3.18.1/algoliasearch.min.js"></script>
-
-<script src="//cdn.bootcss.com/algoliasearch-helper-js/2.13.0/algoliasearch.helper.min.js"></script>
-
-<script src="/js/semantic-ui-algolia.js"></script>
-
-<script src="/js/aloha-events.js"></script>
-
-
-
-</body>
+  </body>
 </html>

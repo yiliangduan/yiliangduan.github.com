@@ -1,325 +1,259 @@
-
-
 <!DOCTYPE html>
-<html lang="zh-Hans">
-<head prefix="og: http://ogp.me/ns#">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
-    <meta name="description" content="">
-    <title>Unity Coroutine的实现原理 | elangduan</title>
+<html lang="">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
 
-    <!-- Open Graph -->
-    <meta name="description" content="&amp;#x5728;Unity&amp;#x4E2D;&amp;#x6211;&amp;#x7ECF;&amp;#x5E38;&amp;#x7528;&amp;#x5230;Coroutine&amp;#x7684;&amp;#x529F;&amp;#x80FD;&amp;#xFF0C;&amp;#x4F46;&amp;#x662F;&amp;#x5BF9;&amp;#x4E8E;Coroutine&amp;#x4E00;&amp;#x76F4;&amp;#x6709;&amp;#x4E00;&amp;#x4E9B;&amp;#x7591;&amp;#x95EE;&amp;">
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="Unity Coroutine的实现原理"/>
+
+
+
+
+  <meta name="keywords" content="csharp," />
+
+
+
+
+
+  <link rel="alternate" href="/default" title="elangduan">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://elangduan.github.com/2017/05/25/unity_coroutine_note/"/>
+
+
+<meta name="description" content="在Unity中我经常用到Coroutine的功能，但是对于Coroutine一直有一些疑问没有得到答案，下面先上一个在项目里面经常使用Coroutine的场景的sample: 1234567891011121314151617181920//TestCoroutine.cspublic class TestCoroutine : MonoBehaviour &amp;#123;    private vo">
 <meta name="keywords" content="csharp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity Coroutine的实现原理">
 <meta property="og:url" content="http://elangduan.github.com/2017/05/25/unity_coroutine_note/index.html">
 <meta property="og:site_name" content="elangduan">
-<meta property="og:description" content="&amp;#x5728;Unity&amp;#x4E2D;&amp;#x6211;&amp;#x7ECF;&amp;#x5E38;&amp;#x7528;&amp;#x5230;Coroutine&amp;#x7684;&amp;#x529F;&amp;#x80FD;&amp;#xFF0C;&amp;#x4F46;&amp;#x662F;&amp;#x5BF9;&amp;#x4E8E;Coroutine&amp;#x4E00;&amp;#x76F4;&amp;#x6709;&amp;#x4E00;&amp;#x4E9B;&amp;#x7591;&amp;#x95EE;&amp;">
+<meta property="og:description" content="在Unity中我经常用到Coroutine的功能，但是对于Coroutine一直有一些疑问没有得到答案，下面先上一个在项目里面经常使用Coroutine的场景的sample: 1234567891011121314151617181920//TestCoroutine.cspublic class TestCoroutine : MonoBehaviour &amp;#123;    private vo">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2017-05-26T01:41:40.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity Coroutine的实现原理">
-<meta name="twitter:description" content="&amp;#x5728;Unity&amp;#x4E2D;&amp;#x6211;&amp;#x7ECF;&amp;#x5E38;&amp;#x7528;&amp;#x5230;Coroutine&amp;#x7684;&amp;#x529F;&amp;#x80FD;&amp;#xFF0C;&amp;#x4F46;&amp;#x662F;&amp;#x5BF9;&amp;#x4E8E;Coroutine&amp;#x4E00;&amp;#x76F4;&amp;#x6709;&amp;#x4E00;&amp;#x4E9B;&amp;#x7591;&amp;#x95EE;&amp;">
+<meta name="twitter:description" content="在Unity中我经常用到Coroutine的功能，但是对于Coroutine一直有一些疑问没有得到答案，下面先上一个在项目里面经常使用Coroutine的场景的sample: 1234567891011121314151617181920//TestCoroutine.cspublic class TestCoroutine : MonoBehaviour &amp;#123;    private vo">
 
-    <script type="application/ld+json">
-{
-  "@context": "http://schema.org",
-  "@type": "Person",
-  "email": "mailto:elangduan@126.com",
-  "image": "/uploads/avatar.png",
-  "name": "elangduan@126.com",
-  "url": "http://elangduan.github.com"
-}
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
 </script>
-    <script>
-    var algoliaEnabled = false;
-    
-</script>
 
-    
 
-    
-    
-        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-    
-    
-    
-        <!-- stylesheets list from config.yml -->
+
+
+  
+
+
+
+    <title> Unity Coroutine的实现原理 - elangduan </title>
+  </head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/." class="logo">elangduan</a>
+    </h1>
+
+    <nav id="nav-top">
         
-        <link rel="stylesheet" href="/css/aloha.css">
-        
-        <link rel="stylesheet" href="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.css">
-        
-        <link rel="stylesheet" href="//cdn.bootcss.com/magnific-popup.js/1.1.0/magnific-popup.min.css">
-        
-    
-
-</head>
-<body id="body" style="margin-bottom: 0;" class="pushable">
-
-    <div class="ui top fixed menu">
-        <a class="item" id="menu-icon"><i class="sidebar icon"></i></a>
-    </div>
-
-    <div id="menu-sidebar" class="ui left vertical sidebar menu">
-
-    <div id="sidebar-top">
-        <div class="content">
-            <h3>elangduan</h3>
-        </div>
-    </div>
-    <div class="ui container sidebar-card">
-    <div class="ui people shape content">
-        <div class="active side">
-            <div class="ui card">
-                <div class="image">
-                    <img class="ui medium bordered image" src="/images/avatar.jpg">
-                </div>
-                <div class="content">
-                    <a class="header">elangduan@126.com</a>
-                    
-                        <div class="meta">
-                            Game Developer
-                        </div>
-                    
-                </div>
-                <div class="extra content">
-                    <div class="ui list">
-                        
-                        <div class="item">
-                            <i class="marker icon" style="float: left"></i>
-                            <div class="content">Shanghai</div>
-                        </div>
-                        
-                        
-                        <div class="item">
-                            <i class="mail icon" style="float: left"></i>
-                            <div class="content">
-                                <a href="mailto:elangduan@126.com">elangduan@126.com</a>
-                            </div>
-                        </div>
-                        
-                    </div>
-
-                </div>
-                <div class="extra content">
-                    <div class="ui list">
-                        
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-</div>
-
-    
-    
-
-    
-
-    
-    <a href="/index.html" class="item" >
-        <i class="home icon"></i>
-        HOME
-    </a>
-
-    
-
-    
-</div>
-
-    <div class="pusher body-content">
-        <div id="content" class="ui main container">
-            <!--<div class="ui one column grid">-->
-                <!--<div class="column">-->
-                    <!--<div class="ui main container">-->
-                        <div id="post-unity_coroutine_note" class="ui main container article-type-post">
-
-    
-
-    <div class="ui divided grid">
-
-        <div class="two column row" id="article-content">
-
-            <div class="thirteen wide computer thirteen wide tablet sixteen wide mobile column">
+            <ul id="menu-top" class="nav-top-items">
                 
+                    <li class="menu-item">
+                        <a href="/archives">
+                            
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/about">
+                            
+                            
+                                About
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
 
-<h1 class="ui header">
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          Unity Coroutine的实现原理
+        
+      </h1>
+
+      <time class="post-time">
+          May 25 2017
+      </time>
+    </header>
+
+
+
     
-    Unity Coroutine的实现原理
-</h1>
-
-
-
-                <div class="article-inner">
-
-                    <div class="article-entry" itemprop="articleBody">
-                        
-                        <p>&#x5728;Unity&#x4E2D;&#x6211;&#x7ECF;&#x5E38;&#x7528;&#x5230;Coroutine&#x7684;&#x529F;&#x80FD;&#xFF0C;&#x4F46;&#x662F;&#x5BF9;&#x4E8E;Coroutine&#x4E00;&#x76F4;&#x6709;&#x4E00;&#x4E9B;&#x7591;&#x95EE;&#x6CA1;&#x6709;&#x5F97;&#x5230;&#x7B54;&#x6848;&#xFF0C;&#x4E0B;&#x9762;&#x5148;&#x4E0A;&#x4E00;&#x4E2A;&#x5728;&#x9879;&#x76EE;&#x91CC;&#x9762;&#x7ECF;&#x5E38;&#x4F7F;&#x7528;Coroutine&#x7684;&#x573A;&#x666F;&#x7684;sample:</p>
-<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//TestCoroutine.cs</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">TestCoroutine</span> : <span class="title">MonoBehaviour</span> {</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">Start</span> (<span class="params"></span>) </span></span><br><span class="line"><span class="function">    </span>{</span><br><span class="line">        StartCoroutine(Test()); </span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> IEnumerator <span class="title">Test</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>{</span><br><span class="line">        Debug.Log(gameObject.name);</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">yield</span> return new <span class="title">WaitForSeconds</span>(<span class="params"><span class="number">5</span></span>)</span>;</span><br><span class="line"></span><br><span class="line">        Debug.Log(transform.localPosition);</span><br><span class="line"></span><br><span class="line">        transform.localScale = Vector3.one;</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
-<ul class="ui list">
-<li><p>Test&#x4E2D;yield&#x8BED;&#x53E5;&#x8C03;&#x7528;&#x4E4B;&#x540E;&#x4E3A;&#x4EC0;&#x4E48;&#x53EF;&#x4EE5;&#x7ACB;&#x5373;&#x505C;&#x6B62;&#xFF0C;&#x7B49;&#x5230; <em>WaitForSeconds</em> &#x7684;&#x65F6;&#x5019;&#x63A5;&#x7740;&#x6267;&#x884C;&#xFF0C;&#x8FD9;&#x662F;&#x600E;&#x4E48;&#x505A;&#x5230;&#x7684;&#xFF1F;</p>
+            <div class="post-content">
+            <p>在Unity中我经常用到Coroutine的功能，但是对于Coroutine一直有一些疑问没有得到答案，下面先上一个在项目里面经常使用Coroutine的场景的sample:</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//TestCoroutine.cs</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">TestCoroutine</span> : <span class="title">MonoBehaviour</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">Start</span> (<span class="params"></span>) </span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        StartCoroutine(Test()); </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> IEnumerator <span class="title">Test</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        Debug.Log(gameObject.name);</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">yield</span> return new <span class="title">WaitForSeconds</span>(<span class="params"><span class="number">5</span></span>)</span>;</span><br><span class="line"></span><br><span class="line">        Debug.Log(transform.localPosition);</span><br><span class="line"></span><br><span class="line">        transform.localScale = Vector3.one;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>Test中yield语句调用之后为什么可以立即停止，等到 <em>WaitForSeconds</em> 的时候接着执行，这是怎么做到的？</p>
 </li>
-<li><p>Test&#x7684;&#x8FD4;&#x56DE;&#x503C;&#x662F;IEnumerator&#xFF0C;&#x4F46;&#x662F;&#x51FD;&#x6570;&#x5185;&#x90E8;&#x7684;return&#x7528;&#x4E86;yield&#x6765;&#x4FEE;&#x9970;&#xFF0C;yield&#x5230;&#x5E95;&#x505A;&#x4E86;&#x4EC0;&#x4E48;&#x5DE5;&#x4F5C;&#x3002;</p>
+<li><p>Test的返回值是IEnumerator，但是函数内部的return用了yield来修饰，yield到底做了什么工作。</p>
 </li>
 </ul>
-<p>&#x9488;&#x5BF9;&#x7B2C;&#x4E8C;&#x4E2A;&#x95EE;&#x9898;&#x6211;&#x627E;&#x5230;&#x4E86;&#x4E00;&#x4E2A;&#x6BD4;&#x8F83;&#x8BE6;&#x7EC6;&#x7684;<a href="https://stackoverflow.com/a/39496" target="_blank" rel="external">&#x89E3;&#x91CA;</a>, &#x91CC;&#x9762;&#x6709;&#x8FD9;&#x6837;&#x4E00;&#x6BB5;&#x8BDD;:</p>
+<p>针对第二个问题我找到了一个比较详细的<a href="https://stackoverflow.com/a/39496" target="_blank" rel="external">解释</a>, 里面有这样一段话:</p>
 <blockquote>
 <p>The yield keyword actually does quite a lot here. The function returns an object that implements the IEnumerable interface.</p>
 </blockquote>
-<p>&#x76F8;&#x5F53;&#x4E8E;yield&#x5173;&#x952E;&#x5B57;&#x4F1A;&#x81EA;&#x52A8;&#x751F;&#x6210;&#x4E00;&#x4E2A;&#x96C6;&#x6210;IEnumerable&#x7684;&#x5BF9;&#x8C61;,&#x90A3;&#x4E48;&#x8FD9;&#x4E2A;&#x5BF9;&#x8C61;&#x5230;&#x5E95;&#x662F;&#x4EC0;&#x4E48;&#x6837;&#x5B50;&#x5462;? &#x9996;&#x5148;&#x4F7F;&#x7528;ILSpy&#x5DE5;&#x5177;&#x67E5;&#x770B;&#x4E0B;&#x8FD9;&#x6BB5;&#x4EE3;&#x7801;&#x4EE3;&#x7801;&#x7684;C#&#x7248;&#x672C;:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[DebuggerHidden]</span><br><span class="line">private IEnumerator Test()</span><br><span class="line">{</span><br><span class="line">	TestCoroutine.&lt;Test&gt;c__Iterator0 &lt;Test&gt;c__Iterator = new TestCoroutine.&lt;Test&gt;c__Iterator0();</span><br><span class="line">	&lt;Test&gt;c__Iterator.$this = this;</span><br><span class="line">	return &lt;Test&gt;c__Iterator;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
-<p>&#x53EF;&#x4EE5;&#x770B;&#x5230;&#x901A;&#x8FC7;ILSpy&#x89E3;&#x6790;&#x4E4B;&#x540E;Test&#x65B9;&#x6CD5;&#x5DF2;&#x7ECF;&#x5B8C;&#x5168;&#x53D8;&#x4E86;&#xFF0C;&#x4F46;&#x662F;&#x4E5F;&#x9A8C;&#x8BC1;&#x4E86;&#x4E0A;&#x9762;&#x7684;&#x8BF4;&#x6CD5;&#x3002;yield&#x5173;&#x952E;&#x5B57;&#x4F1A;&#x81EA;&#x52A8;&#x8F6C;&#x6362;&#x6210;&#x4E00;&#x4E2A;IEnumerable&#x7684;&#x5BF9;&#x8C61;&#xFF0C;&#x8FD9;&#x91CC;&#x81EA;&#x52A8;&#x751F;&#x6210;&#x4E86;&#x4E00;&#x4E2A;&#x540D;&#x5B57;&#x4E3A;TestCoroutine.{Test}c_Iterator0 &#x7684;&#x7C7B;&#xFF0C;&#x5E76;&#x4E14;&#x521B;&#x5EFA;&#x4E86;&#x8FD9;&#x4E2A;&#x7C7B;&#x578B;&#x7684; {Test}c_Iterator &#x5BF9;&#x8C61;&#x3002;</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x4EE3;&#x7801;&#x91CC;&#x9762;&#x540D;&#x5B57;&#x662F;TestCoroutine.&lt;Test&gt;c_Iterator0,&#x4F46;&#x662F;&#x5F53;&#x524D;&#x4E3B;&#x9898;&lt;&gt;&#x7B26;&#x53F7;&#x663E;&#x793A;&#x4E0D;&#x6B63;&#x786E;&#xFF0C;&#x6240;&#x4EE5;&#x6539;&#x6210;{}&#x663E;&#x793A;&#x3002;&#x4E0B;&#x540C;</span><br></pre></td></tr></table></figure>
-<p>&#x90A3;&#x8FD9;&#x4E2A;&#x5BF9;&#x8C61;&#x5185;&#x90E8;&#x662F;&#x600E;&#x6837;&#x5B9E;&#x73B0;&#x7684;&#x5462;&#xFF1F;&#x73B0;&#x5728;&#x6211;&#x4EEC;&#x5F97;&#x770B;&#x4E0B;TestCoroutine.{Test}c_Iterator0&#x7684;&#x5B9E;&#x73B0;&#x4E86;(&#x8FD9;&#x91CC;&#x65B9;&#x6CD5;&#x81EA;&#x52A8;&#x52A0;&#x4E86;DebuggerHidden&#x5C5E;&#x6027;&#xFF0C;&#x6240;&#x4EE5;&#x53EA;&#x80FD;&#x770B;IL&#x7248;&#x672C;&#x7684;&#x4EE3;&#x7801;)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line">//TestCoroutine.IL</span><br><span class="line">//&#x6574;&#x4E2A;&#x7C7B;&#x7684;&#x4EE3;&#x7801;&#x6BD4;&#x8F83;&#x591A;&#xFF0C;&#x8FD9;&#x91CC;&#x53EA;&#x622A;&#x53D6;&#x6211;&#x4EEC;&#x9700;&#x8981;&#x7684;&#x4EE3;&#x7801;</span><br><span class="line"></span><br><span class="line">.class public auto ansi beforefieldinit Test.TestCoroutine</span><br><span class="line">	extends [UnityEngine]UnityEngine.MonoBehaviour</span><br><span class="line">{</span><br><span class="line">	// &#x5D4C;&#x5957;&#x7C7B;&#x578B;</span><br><span class="line">	.class nested private auto ansi sealed beforefieldinit &apos;&lt;Test&gt;c__Iterator0&apos;</span><br><span class="line">		extends [mscorlib]System.Object</span><br><span class="line">		implements [mscorlib]System.Collections.IEnumerator,</span><br><span class="line">		           [mscorlib]System.IDisposable,</span><br><span class="line">		           class [mscorlib]System.Collections.Generic.IEnumerator`1&lt;object&gt;</span><br><span class="line">	{</span><br><span class="line">		.custom instance void [mscorlib]System.Runtime.CompilerServices.CompilerGeneratedAttribute::.ctor() = (</span><br><span class="line">			01 00 00 00</span><br><span class="line">		)</span><br><span class="line">		// &#x6210;&#x5458;</span><br><span class="line">		.field assembly class Test.TestCoroutine $this</span><br><span class="line">		.field assembly object $current</span><br><span class="line">		.field assembly bool $disposing</span><br><span class="line">		.field assembly int32 $PC</span><br><span class="line"></span><br><span class="line">		.method public final hidebysig newslot virtual </span><br><span class="line">			instance bool MoveNext () cil managed </span><br><span class="line">		{</span><br><span class="line">			// &#x65B9;&#x6CD5;&#x8D77;&#x59CB; RVA &#x5730;&#x5740; 0x3c7a8</span><br><span class="line">			// &#x65B9;&#x6CD5;&#x8D77;&#x59CB;&#x5730;&#x5740;&#xFF08;&#x76F8;&#x5BF9;&#x4E8E;&#x6587;&#x4EF6;&#x7EDD;&#x5BF9;&#x503C;&#xFF1A;0x3aba8&#xFF09;</span><br><span class="line">			// &#x4EE3;&#x7801;&#x957F;&#x5EA6; 144 (0x90)</span><br><span class="line">			.maxstack 2</span><br><span class="line">			.locals init (</span><br><span class="line">				[0] uint32</span><br><span class="line">			)</span><br><span class="line"></span><br><span class="line">			// 0x3ABB4: 02</span><br><span class="line">			IL_0000: ldarg.0</span><br><span class="line">			// 0x3ABB5: 7B C9 07 00 04</span><br><span class="line">			IL_0001: ldfld int32 Test.TestCoroutine/&apos;&lt;Test&gt;c__Iterator0&apos;::$PC</span><br><span class="line">			// 0x3ABBA: 0A</span><br><span class="line">			IL_0006: stloc.0</span><br><span class="line">			// 0x3ABBB: 02</span><br><span class="line">			IL_0007: ldarg.0</span><br><span class="line">			// 0x3ABBC: 15</span><br><span class="line">			IL_0008: ldc.i4.m1</span><br><span class="line">			// 0x3ABBD: 7D C9 07 00 04</span><br><span class="line">			IL_0009: stfld int32 Test.TestCoroutine/&apos;&lt;Test&gt;c__Iterator0&apos;::$PC</span><br><span class="line">			// 0x3ABC2: 06</span><br><span class="line">			IL_000e: ldloc.0</span><br><span class="line">			// 0x3ABC3: 45 02 00 00 00 05 00 00 00 3A 00 00 00</span><br><span class="line">			IL_000f: switch (IL_0021, IL_0056) // &#x5206;&#x652F;&#xFF0C;&#x76F4;&#x63A5;&#x6267;&#x884C;IL_0021(&#x5BF9;&#x5E94;&#x6211;&#x4EEC;cs&#x4EE3;&#x7801;&#x7684;WaitForSeconds&#x4E4B;&#x524D;&#x7684;&#x4EE3;&#x7801;&#xFF0C;IL_0056&#x5BF9;&#x5E94;&#x6211;&#x4EEC;WaitForSeconds&#x4E4B;&#x540E;&#x7684;&#x4EE3;&#x7801;)</span><br><span class="line"></span><br><span class="line">			// 0x3ABD0: 38 6B 00 00 00</span><br><span class="line">			IL_001c: br IL_008c</span><br><span class="line"></span><br><span class="line">			// 0x3ABD5: 00</span><br><span class="line">			IL_0021: nop</span><br><span class="line">			// 0x3ABD6: 02</span><br><span class="line">			IL_0022: ldarg.0</span><br><span class="line">			// 0x3ABD7: 7B C6 07 00 04</span><br><span class="line">			IL_0023: ldfld class Test.TestCoroutine Test.TestCoroutine/&apos;&lt;Test&gt;c__Iterator0&apos;::$this</span><br><span class="line">		</span><br><span class="line">			//&#x8FD9;&#x91CC;&#x505A;&#x4E86; Debug.Log(gameObject.name);</span><br><span class="line">		</span><br><span class="line">			// 0x3ABEB: 02</span><br><span class="line">			IL_0037: ldarg.0</span><br><span class="line">			// 0x3ABEC: 73 1B 02 00 0A</span><br><span class="line">			IL_0038: newobj instance void [UnityEngine]UnityEngine.WaitForSeconds::.ctor(float32) //&#x521B;&#x5EFA;&#x4E00;&#x4E2A;WaitForSeconds&#x5BF9;&#x8C61;&#xFF0C;&#x5F15;&#x7528;&#x4F1A;&#x5B58;&#x653E;&#x5728;&#x6808;&#x9876;&#x3002;</span><br><span class="line">			// 0x3ABF1: 7D C7 07 00 04</span><br><span class="line">			IL_003d: stfld object Test.TestCoroutine/&apos;&lt;Test&gt;c__Iterator0&apos;::$current // &#x5C06;&#x6808;&#x9876;&#x7684;&#x5BF9;&#x8C61;(WaitForSeconds)&#x8D4B;&#x503C;&#x7ED9;current&#x53D8;&#x91CF;</span><br><span class="line">			// 0x3ABF6: 02</span><br><span class="line">			IL_0042: ldarg.0 //&#x8F7D;&#x5165;&#x7B2C;0&#x4E2A;&#x53C2;&#x6570;</span><br><span class="line">			// 0x3ABF7: 7B C8 07 00 04</span><br><span class="line">			IL_0043: ldfld bool Test.TestCoroutine/&apos;&lt;Test&gt;c__Iterator0&apos;::$disposing</span><br><span class="line">			// 0x3ABFC: 2D 07</span><br><span class="line">			IL_0048: brtrue.s IL_0051 //&#x5224;&#x65AD;&#x6210;&#x5458;&#x53D8;&#x91CF;disposing&#x662F;&#x5426;&#x4E3A;true&#xFF0C;&#x975E;&#x7A7A;&#x6216;&#x8005;&#x975E;0&#xFF0C;&#x5982;&#x679C;&#x662F;&#x5219;&#x8DF3;&#x8F6C;&#x5230;IL_0051&#x7684;&#x5730;&#x5740;</span><br><span class="line"></span><br><span class="line">			// 0x3ABFE: 02</span><br><span class="line">			IL_004a: ldarg.0</span><br><span class="line">			// 0x3ABFF: 17</span><br><span class="line">			IL_004b: ldc.i4.1 //&#x8F7D;&#x5165;&#x503C;1&#x5165;&#x6808;</span><br><span class="line">			// 0x3AC00: 7D C9 07 00 04</span><br><span class="line">			//&#x628A;&#x6808;&#x9876;&#x7684;&#x503C;(&#x73B0;&#x5728;&#x662F;1)&#x8D4B;&#x503C;&#x7ED9;&#x6210;&#x5458;&#x53D8;&#x91CF;PC&#xFF0C;&#x8FD9;&#x6837;&#x7684;&#x8BDD;&#x4E0B;&#x6B21;&#x8C03;&#x7528;MoveNext,&#x5728;IL_000f&#x5904;&#x7684;switch&#x7684;&#x5206;&#x652F;&#x5C31;&#x4F1A;&#x76F4;&#x63A5;&#x8D70;IL_0056&#x4E86;</span><br><span class="line">			IL_004c: stfld int32 Test.TestCoroutine/&apos;&lt;Test&gt;c__Iterator0&apos;::$PC </span><br><span class="line"></span><br><span class="line">			// 0x3AC05: 38 38 00 00 00</span><br><span class="line">			IL_0051: br IL_008e //IL_008e&#x5728;&#x5F53;&#x524D;(MoveNext)&#x51FD;&#x6570;&#x7ED3;&#x5C3E;</span><br><span class="line"></span><br><span class="line">			// 0x3AC0A: 02</span><br><span class="line">			IL_0056: ldarg.0</span><br><span class="line">			// 0x3AC0B: 7B C6 07 00 04</span><br><span class="line">			IL_0057: ldfld class Test.TestCoroutine Test.TestCoroutine/&apos;&lt;Test&gt;c__Iterator0&apos;::$this</span><br><span class="line">			// 0x3AC10: 28 4E 01 00 0A</span><br><span class="line">			</span><br><span class="line">			//&#x8FD9;&#x91CC;&#x505A;&#x4E86;Debug.Log(transform.localPosition);</span><br><span class="line"></span><br><span class="line">        	//       transform.localScale = Vector3.one;</span><br><span class="line">			</span><br><span class="line">			// 0x3AC39: 02</span><br><span class="line">			IL_0085: ldarg.0</span><br><span class="line">			// 0x3AC3A: 15</span><br><span class="line">			IL_0086: ldc.i4.m1</span><br><span class="line">			// 0x3AC3B: 7D C9 07 00 04</span><br><span class="line">			IL_0087: stfld int32 Test.TestCoroutine/&apos;&lt;Test&gt;c__Iterator0&apos;::$PC</span><br><span class="line"></span><br><span class="line">			// 0x3AC40: 16</span><br><span class="line">			IL_008c: ldc.i4.0</span><br><span class="line">			// 0x3AC41: 2A</span><br><span class="line">			IL_008d: ret</span><br><span class="line"></span><br><span class="line">			// 0x3AC42: 17</span><br><span class="line">			IL_008e: ldc.i4.1 </span><br><span class="line">			// 0x3AC43: 2A</span><br><span class="line">			IL_008f: ret</span><br><span class="line">		} // &#x65B9;&#x6CD5; &apos;&lt;Test&gt;c__Iterator0&apos;::MoveNext &#x7ED3;&#x675F;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
-<p>&#x8FD9;&#x91CC;&#x53EA;&#x622A;&#x53D6;&#x4E86;MoveNext&#x65B9;&#x6CD5;&#xFF0C;&#x56E0;&#x4E3A;&#x8FD9;&#x4E2A;&#x65B9;&#x6CD5;&#x91CC;&#x9762;&#x5305;&#x542B;&#x4E86;&#x6211;&#x4EEC;Sample&#x4E2D;&#x7684;Test&#x51FD;&#x6570;&#x7684;&#x6240;&#x6709;&#x903B;&#x8F91;&#x64CD;&#x4F5C;&#x3002;&#x8FD9;&#x6BB5;&#x4EE3;&#x7801;&#x6211;&#x52A0;&#x4E86;&#x6CE8;&#x91CA;&#xFF0C;&#x901A;&#x8FC7;&#x770B;&#x4EE3;&#x7801;&#x57FA;&#x672C;&#x4E0A;&#x5DF2;&#x7ECF;&#x89E3;&#x51B3;&#x4E86;&#x6211;&#x7684;&#x7B2C;&#x4E00;&#x4E2A;&#x7591;&#x60D1;&#x4E86;,&#x4E0B;&#x9762;&#x518D;&#x505A;&#x4E00;&#x4E0B;&#x5206;&#x6790;&#x3002;Sample&#x4E2D;&#x7684;&#x65B9;&#x6CD5;Test&#x5728;&#x7F16;&#x8BD1;&#x4E4B;&#x540E;&#x4F1A;&#x8F6C;&#x6362;&#x6210;&#x5927;&#x6982;&#x8FD9;&#x4E2A;&#x6837;&#x5B50;(&#x53EA;&#x662F;&#x6A21;&#x62DF;):</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">private sealed class &lt;Test&gt;c__Iterator0 : IEnumerator, System.IDisposable</span><br><span class="line">{</span><br><span class="line">	// &#x7528;&#x6765;&#x4FDD;&#x5B58; &#x521B;&#x5EFA;&#x7684;WaitForSeconds&#x5BF9;&#x8C61;&#x7684;&#xFF0C;&#x8C03;&#x7528;&#x8005;&#x4F1A;&#x6839;&#x636E;&#x8FD9;&#x4E2A;&#x5BF9;&#x8C61;&#x7684;&#x6761;&#x4EF6;&#x662F;&#x5426;&#x6EE1;&#x8DB3;&#x6765;&#x786E;&#x5B9A;&#x8C03;&#x7528;MoveNext</span><br><span class="line">	private object current;</span><br><span class="line">	</span><br><span class="line">	// &#x5224;&#x65AD;&#x5BBF;&#x4E3B;&#x5BF9;&#x8C61;&#x662F;&#x5426;&#x5DF2;&#x7ECF;&#x88AB;&#x9500;&#x6BC1;&#x4E86;,&#x8FD9;&#x91CC;&#x5C31;&#x662F;&#x90A3;&#x4E2A;&#x53D1;&#x8D77;StartCoroutine&#x7684;&#x90A3;&#x4E2A;MonoBehaviour&#x5BF9;&#x8C61; </span><br><span class="line">	private bool disposing; </span><br><span class="line">	</span><br><span class="line">	//&#x4FDD;&#x5B58;MoveNext&#x4E2D;&#x8C03;&#x7528;&#x7684;&#x5730;&#x5740;&#x7684;,&#x7528;&#x8FD9;&#x4E2A;&#x6765;&#x5224;&#x65AD;&#x662F;&#x6267;&#x884C;yield&#x4E4B;&#x524D;&#x7684;&#x4EE3;&#x7801;&#x8FD8;&#x662F;&#x4E4B;&#x540E;&#x7684;&#x4EE3;&#x7801;</span><br><span class="line">	private int PC; </span><br><span class="line">	</span><br><span class="line">	private bool MoveNext()</span><br><span class="line">	{</span><br><span class="line">		 switch(this.PC)</span><br><span class="line">		 {</span><br><span class="line">		 case IL_0021:</span><br><span class="line">			{</span><br><span class="line">				Debug.Log(gameObject.name);</span><br><span class="line"></span><br><span class="line">   		     	this.current = new WaitForSeconds();</span><br><span class="line">        	</span><br><span class="line">	        	PC = IL_0056;</span><br><span class="line">	        	</span><br><span class="line">	        	return true;</span><br><span class="line">			}</span><br><span class="line">   </span><br><span class="line">		 case IL_0056:</span><br><span class="line">			{</span><br><span class="line">				Debug.Log(transform.localPosition);</span><br><span class="line"></span><br><span class="line">				transform.localScale = Vector3.one;</span><br><span class="line">			}</span><br><span class="line">		 }</span><br><span class="line">		  </span><br><span class="line">        return false;</span><br><span class="line">	} </span><br><span class="line">	</span><br><span class="line">	object IEnumerator&lt;object&gt;.Current</span><br><span class="line">   {</span><br><span class="line">		get</span><br><span class="line">		{</span><br><span class="line">			return this.current;</span><br><span class="line">		}</span><br><span class="line">	}</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
-<p>&#x5230;&#x8FD9;&#x91CC;&#x5DF2;&#x7ECF;&#x77E5;&#x9053;&#x4E86;yield&#x5173;&#x952E;&#x5B57;&#x6240;&#x505A;&#x7684;&#x64CD;&#x4F5C;&#x4E86;&#xFF0C;&#x90A3;&#x4E48;&#x73B0;&#x5728;&#x6765;&#x770B;&#x770B;&#x8FD9;&#x4E2A;{Test}c_Iterator0&#x5BF9;&#x8C61;&#x662F;&#x600E;&#x6837;&#x88AB;&#x8C03;&#x7528;&#x7684;&#x3002;</p>
-<p>&#x9996;&#x5148;&#x6211;&#x4EEC;&#x770B;&#x5230;&#x6211;&#x4EEC;&#x7684;Sample&#x4E2D;&#x7684;&#x4EE3;&#x7801;:</p>
+<p>相当于yield关键字会自动生成一个集成IEnumerable的对象,那么这个对象到底是什么样子呢? 首先使用ILSpy工具查看下这段代码代码的C#版本:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[DebuggerHidden]</span><br><span class="line">private IEnumerator Test()</span><br><span class="line">&#123;</span><br><span class="line">	TestCoroutine.&lt;Test&gt;c__Iterator0 &lt;Test&gt;c__Iterator = new TestCoroutine.&lt;Test&gt;c__Iterator0();</span><br><span class="line">	&lt;Test&gt;c__Iterator.$this = this;</span><br><span class="line">	return &lt;Test&gt;c__Iterator;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到通过ILSpy解析之后Test方法已经完全变了，但是也验证了上面的说法。yield关键字会自动转换成一个IEnumerable的对象，这里自动生成了一个名字为TestCoroutine.{Test}c_Iterator0 的类，并且创建了这个类型的 {Test}c_Iterator 对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">代码里面名字是TestCoroutine.&lt;Test&gt;c_Iterator0,但是当前主题&lt;&gt;符号显示不正确，所以改成&#123;&#125;显示。下同</span><br></pre></td></tr></table></figure>
+<p>那这个对象内部是怎样实现的呢？现在我们得看下TestCoroutine.{Test}c_Iterator0的实现了(这里方法自动加了DebuggerHidden属性，所以只能看IL版本的代码)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line">//TestCoroutine.IL</span><br><span class="line">//整个类的代码比较多，这里只截取我们需要的代码</span><br><span class="line"></span><br><span class="line">.class public auto ansi beforefieldinit Test.TestCoroutine</span><br><span class="line">	extends [UnityEngine]UnityEngine.MonoBehaviour</span><br><span class="line">&#123;</span><br><span class="line">	// 嵌套类型</span><br><span class="line">	.class nested private auto ansi sealed beforefieldinit &apos;&lt;Test&gt;c__Iterator0&apos;</span><br><span class="line">		extends [mscorlib]System.Object</span><br><span class="line">		implements [mscorlib]System.Collections.IEnumerator,</span><br><span class="line">		           [mscorlib]System.IDisposable,</span><br><span class="line">		           class [mscorlib]System.Collections.Generic.IEnumerator`1&lt;object&gt;</span><br><span class="line">	&#123;</span><br><span class="line">		.custom instance void [mscorlib]System.Runtime.CompilerServices.CompilerGeneratedAttribute::.ctor() = (</span><br><span class="line">			01 00 00 00</span><br><span class="line">		)</span><br><span class="line">		// 成员</span><br><span class="line">		.field assembly class Test.TestCoroutine $this</span><br><span class="line">		.field assembly object $current</span><br><span class="line">		.field assembly bool $disposing</span><br><span class="line">		.field assembly int32 $PC</span><br><span class="line"></span><br><span class="line">		.method public final hidebysig newslot virtual </span><br><span class="line">			instance bool MoveNext () cil managed </span><br><span class="line">		&#123;</span><br><span class="line">			// 方法起始 RVA 地址 0x3c7a8</span><br><span class="line">			// 方法起始地址（相对于文件绝对值：0x3aba8）</span><br><span class="line">			// 代码长度 144 (0x90)</span><br><span class="line">			.maxstack 2</span><br><span class="line">			.locals init (</span><br><span class="line">				[0] uint32</span><br><span class="line">			)</span><br><span class="line"></span><br><span class="line">			// 0x3ABB4: 02</span><br><span class="line">			IL_0000: ldarg.0</span><br><span class="line">			// 0x3ABB5: 7B C9 07 00 04</span><br><span class="line">			IL_0001: ldfld int32 Test.TestCoroutine/&apos;&lt;Test&gt;c__Iterator0&apos;::$PC</span><br><span class="line">			// 0x3ABBA: 0A</span><br><span class="line">			IL_0006: stloc.0</span><br><span class="line">			// 0x3ABBB: 02</span><br><span class="line">			IL_0007: ldarg.0</span><br><span class="line">			// 0x3ABBC: 15</span><br><span class="line">			IL_0008: ldc.i4.m1</span><br><span class="line">			// 0x3ABBD: 7D C9 07 00 04</span><br><span class="line">			IL_0009: stfld int32 Test.TestCoroutine/&apos;&lt;Test&gt;c__Iterator0&apos;::$PC</span><br><span class="line">			// 0x3ABC2: 06</span><br><span class="line">			IL_000e: ldloc.0</span><br><span class="line">			// 0x3ABC3: 45 02 00 00 00 05 00 00 00 3A 00 00 00</span><br><span class="line">			IL_000f: switch (IL_0021, IL_0056) // 分支，直接执行IL_0021(对应我们cs代码的WaitForSeconds之前的代码，IL_0056对应我们WaitForSeconds之后的代码)</span><br><span class="line"></span><br><span class="line">			// 0x3ABD0: 38 6B 00 00 00</span><br><span class="line">			IL_001c: br IL_008c</span><br><span class="line"></span><br><span class="line">			// 0x3ABD5: 00</span><br><span class="line">			IL_0021: nop</span><br><span class="line">			// 0x3ABD6: 02</span><br><span class="line">			IL_0022: ldarg.0</span><br><span class="line">			// 0x3ABD7: 7B C6 07 00 04</span><br><span class="line">			IL_0023: ldfld class Test.TestCoroutine Test.TestCoroutine/&apos;&lt;Test&gt;c__Iterator0&apos;::$this</span><br><span class="line">		</span><br><span class="line">			//这里做了 Debug.Log(gameObject.name);</span><br><span class="line">		</span><br><span class="line">			// 0x3ABEB: 02</span><br><span class="line">			IL_0037: ldarg.0</span><br><span class="line">			// 0x3ABEC: 73 1B 02 00 0A</span><br><span class="line">			IL_0038: newobj instance void [UnityEngine]UnityEngine.WaitForSeconds::.ctor(float32) //创建一个WaitForSeconds对象，引用会存放在栈顶。</span><br><span class="line">			// 0x3ABF1: 7D C7 07 00 04</span><br><span class="line">			IL_003d: stfld object Test.TestCoroutine/&apos;&lt;Test&gt;c__Iterator0&apos;::$current // 将栈顶的对象(WaitForSeconds)赋值给current变量</span><br><span class="line">			// 0x3ABF6: 02</span><br><span class="line">			IL_0042: ldarg.0 //载入第0个参数</span><br><span class="line">			// 0x3ABF7: 7B C8 07 00 04</span><br><span class="line">			IL_0043: ldfld bool Test.TestCoroutine/&apos;&lt;Test&gt;c__Iterator0&apos;::$disposing</span><br><span class="line">			// 0x3ABFC: 2D 07</span><br><span class="line">			IL_0048: brtrue.s IL_0051 //判断成员变量disposing是否为true，非空或者非0，如果是则跳转到IL_0051的地址</span><br><span class="line"></span><br><span class="line">			// 0x3ABFE: 02</span><br><span class="line">			IL_004a: ldarg.0</span><br><span class="line">			// 0x3ABFF: 17</span><br><span class="line">			IL_004b: ldc.i4.1 //载入值1入栈</span><br><span class="line">			// 0x3AC00: 7D C9 07 00 04</span><br><span class="line">			//把栈顶的值(现在是1)赋值给成员变量PC，这样的话下次调用MoveNext,在IL_000f处的switch的分支就会直接走IL_0056了</span><br><span class="line">			IL_004c: stfld int32 Test.TestCoroutine/&apos;&lt;Test&gt;c__Iterator0&apos;::$PC </span><br><span class="line"></span><br><span class="line">			// 0x3AC05: 38 38 00 00 00</span><br><span class="line">			IL_0051: br IL_008e //IL_008e在当前(MoveNext)函数结尾</span><br><span class="line"></span><br><span class="line">			// 0x3AC0A: 02</span><br><span class="line">			IL_0056: ldarg.0</span><br><span class="line">			// 0x3AC0B: 7B C6 07 00 04</span><br><span class="line">			IL_0057: ldfld class Test.TestCoroutine Test.TestCoroutine/&apos;&lt;Test&gt;c__Iterator0&apos;::$this</span><br><span class="line">			// 0x3AC10: 28 4E 01 00 0A</span><br><span class="line">			</span><br><span class="line">			//这里做了Debug.Log(transform.localPosition);</span><br><span class="line"></span><br><span class="line">        	//       transform.localScale = Vector3.one;</span><br><span class="line">			</span><br><span class="line">			// 0x3AC39: 02</span><br><span class="line">			IL_0085: ldarg.0</span><br><span class="line">			// 0x3AC3A: 15</span><br><span class="line">			IL_0086: ldc.i4.m1</span><br><span class="line">			// 0x3AC3B: 7D C9 07 00 04</span><br><span class="line">			IL_0087: stfld int32 Test.TestCoroutine/&apos;&lt;Test&gt;c__Iterator0&apos;::$PC</span><br><span class="line"></span><br><span class="line">			// 0x3AC40: 16</span><br><span class="line">			IL_008c: ldc.i4.0</span><br><span class="line">			// 0x3AC41: 2A</span><br><span class="line">			IL_008d: ret</span><br><span class="line"></span><br><span class="line">			// 0x3AC42: 17</span><br><span class="line">			IL_008e: ldc.i4.1 </span><br><span class="line">			// 0x3AC43: 2A</span><br><span class="line">			IL_008f: ret</span><br><span class="line">		&#125; // 方法 &apos;&lt;Test&gt;c__Iterator0&apos;::MoveNext 结束</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里只截取了MoveNext方法，因为这个方法里面包含了我们Sample中的Test函数的所有逻辑操作。这段代码我加了注释，通过看代码基本上已经解决了我的第一个疑惑了,下面再做一下分析。Sample中的方法Test在编译之后会转换成大概这个样子(只是模拟):</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">private sealed class &lt;Test&gt;c__Iterator0 : IEnumerator, System.IDisposable</span><br><span class="line">&#123;</span><br><span class="line">	// 用来保存 创建的WaitForSeconds对象的，调用者会根据这个对象的条件是否满足来确定调用MoveNext</span><br><span class="line">	private object current;</span><br><span class="line">	</span><br><span class="line">	// 判断宿主对象是否已经被销毁了,这里就是那个发起StartCoroutine的那个MonoBehaviour对象 </span><br><span class="line">	private bool disposing; </span><br><span class="line">	</span><br><span class="line">	//保存MoveNext中调用的地址的,用这个来判断是执行yield之前的代码还是之后的代码</span><br><span class="line">	private int PC; </span><br><span class="line">	</span><br><span class="line">	private bool MoveNext()</span><br><span class="line">	&#123;</span><br><span class="line">		 switch(this.PC)</span><br><span class="line">		 &#123;</span><br><span class="line">		 case IL_0021:</span><br><span class="line">			&#123;</span><br><span class="line">				Debug.Log(gameObject.name);</span><br><span class="line"></span><br><span class="line">   		     	this.current = new WaitForSeconds();</span><br><span class="line">        	</span><br><span class="line">	        	PC = IL_0056;</span><br><span class="line">	        	</span><br><span class="line">	        	return true;</span><br><span class="line">			&#125;</span><br><span class="line">   </span><br><span class="line">		 case IL_0056:</span><br><span class="line">			&#123;</span><br><span class="line">				Debug.Log(transform.localPosition);</span><br><span class="line"></span><br><span class="line">				transform.localScale = Vector3.one;</span><br><span class="line">			&#125;</span><br><span class="line">		 &#125;</span><br><span class="line">		  </span><br><span class="line">        return false;</span><br><span class="line">	&#125; </span><br><span class="line">	</span><br><span class="line">	object IEnumerator&lt;object&gt;.Current</span><br><span class="line">   &#123;</span><br><span class="line">		get</span><br><span class="line">		&#123;</span><br><span class="line">			return this.current;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>到这里已经知道了yield关键字所做的操作了，那么现在来看看这个{Test}c_Iterator0对象是怎样被调用的。</p>
+<p>首先我们看到我们的Sample中的代码:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">StartCoroutine(Test());</span><br></pre></td></tr></table></figure>
-<p>&#x8FD9;&#x8BF4;&#x660E;&#x521B;&#x5EFA;&#x7684;{Test}c_Iterator0&#x5BF9;&#x8C61;&#x4F20;&#x5165;&#x7684;StartCoroutine&#x65B9;&#x6CD5;&#x4E2D;&#x4E86;&#xFF0C;&#x6D4F;&#x89C8;&#x4E86;StartCoroutine&#x7684;&#x5B9E;&#x73B0;&#xFF0C;&#x8FD9;&#x4E2A;&#x65B9;&#x6CD5;&#x76F4;&#x63A5;&#x7ED1;&#x5B9A;&#x7684;C++&#x5C42;MonoBehaviour&#x7684;StartCoroutine&#x65B9;&#x6CD5;&#xFF0C;&#x8FD9;&#x91CC;&#x7B80;&#x8FF0;&#x4E0B;&#x91CC;&#x9762;&#x7684;&#x5B9E;&#x73B0;(&#x4E0D;&#x8D34;Unity&#x4EE3;&#x7801;&#x4E86;):</p>
-<ul class="ui list">
-<li>&#x8C03;&#x7528;StartCoroutine&#x65B9;&#x6CD5;&#xFF0C;&#x8BE5;&#x65B9;&#x6CD5;&#x4F1A;&#x4EE5;&#x4F20;&#x5165;&#x7684;IEnumerator&#x53C2;&#x6570;(&#x8FD9;&#x91CC;&#x662F;{Test}c_Iterator0&#x5BF9;&#x8C61;)&#x521B;&#x5EFA;&#x4E00;&#x4E2A;C++&#x7684;Coroutine&#x5BF9;&#x8C61;</li>
-<li>&#x8FD9;&#x4E2A;&#x5BF9;&#x8C61;&#x4FDD;&#x5B58;&#x4F1A;&#x4FDD;&#x5B58;&#x53C2;&#x6570;IEnumerator&#x5BF9;&#x8C61;&#xFF0C;&#x5E76;&#x4E14;&#x4F1A;&#x5148;&#x83B7;&#x53D6;&#x51FA;IEnuerator&#x7684;MoveNext&#x548C;Current&#x65B9;&#x6CD5;&#x3002;&#x8FD9;&#x4E24;&#x4E2A;&#x65B9;&#x6CD5;&#x4E5F;&#x662F;IEunerator&#x6700;&#x5173;&#x952E;&#x7684;&#x65B9;&#x6CD5;</li>
-<li>&#x521B;&#x5EFA;&#x597D;&#x4E4B;&#x540E;&#x8FD9;&#x4E2A;Coroutine&#x5BF9;&#x8C61;&#x4F1A;&#x4FDD;&#x5B58;&#x5728;MonoBehaviour&#x4E00;&#x4E2A;&#x6210;&#x5458;&#x53D8;&#x91CF;List&#x4E2D;&#xFF0C;&#x8FD9;&#x6837;&#x4F7F;&#x5F97;MonoBehaviour&#x5177;&#x5907;StopCoroutine&#x529F;&#x80FD;&#xFF0C;StopCoroutine&#x80FD;&#x591F;&#x627E;&#x5230;&#x5BF9;&#x5E94;Coroutine&#x5E76;&#x505C;&#x6B62;</li>
-<li>Coroutine&#x5BF9;&#x8C61;&#x4F1A;&#x8C03;&#x7528;&#x6210;&#x5458;&#x65B9;&#x6CD5;run&#xFF0C;&#x542F;&#x52A8;&#x8FD9;&#x4E2A;Coroutine</li>
+<p>这说明创建的{Test}c_Iterator0对象传入的StartCoroutine方法中了，浏览了StartCoroutine的实现，这个方法直接绑定的C++层MonoBehaviour的StartCoroutine方法，这里简述下里面的实现(不贴Unity代码了):</p>
+<ul>
+<li>调用StartCoroutine方法，该方法会以传入的IEnumerator参数(这里是{Test}c_Iterator0对象)创建一个C++的Coroutine对象</li>
+<li>这个对象保存会保存参数IEnumerator对象，并且会先获取出IEnuerator的MoveNext和Current方法。这两个方法也是IEunerator最关键的方法</li>
+<li>创建好之后这个Coroutine对象会保存在MonoBehaviour一个成员变量List中，这样使得MonoBehaviour具备StopCoroutine功能，StopCoroutine能够找到对应Coroutine并停止</li>
+<li>Coroutine对象会调用成员方法run，启动这个Coroutine</li>
 </ul>
-<p>&#x8FD9;&#x4E2A;&#x6B65;&#x9AA4;&#x5927;&#x6982;&#x662F;&#x8FD9;&#x6837;&#x7684;(&#x4EE3;&#x7801;&#x53EA;&#x8868;&#x73B0;&#x5927;&#x6982;&#x903B;&#x8F91;&#xFF0C;&#x4E0D;&#x80FD;&#x6B63;&#x786E;&#x6267;&#x884C;):</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">// C#&#x5C42;IEnumerator&#x88AB;&#x4F20;&#x5165;C++&#x5C42;&#x7684;&#x65F6;&#x5019;&#x4F1A;&#x88AB;C++&#x7684;&#x7C7B;ScriptingObjectPtr&#x5C01;&#x88C5;&#x5E76;&#x7ED1;&#x5B9A;</span><br><span class="line">ScriptingObjectPtr MonoBehaviour::StartCoroutine(ScriptingObjectPtr userCoroutine)</span><br><span class="line">{</span><br><span class="line">	Coroutine* coroutine = new Coroutine ();</span><br><span class="line">	</span><br><span class="line">	//&#x83B7;&#x53D6;C#&#x5C42;&#x5BF9;&#x5E94;&#x7684;&#x65B9;&#x6CD5;&#xFF0C;&#x62FF;&#x5230;&#x65B9;&#x6CD5;&#x7684;&#x5730;&#x5740;&#x3002;&#x901A;&#x8FC7;Mono&#x5C31;&#x53EF;&#x4EE5;&#x76F4;&#x63A5;&#x8C03;&#x7528;&#x4E86;</span><br><span class="line">	ScriptingMethodPtr moveNext =  scripting_object_get_virtual_method(userCoroutine, MONO_COMMON.IEnumerator_MoveNext, GetScriptingMethodRegistry());</span><br><span class="line">	ScriptingMethodPtr current = scripting_object_get_virtual_method(userCoroutine, MONO_COMMON.IEnumerator_Current, GetScriptingMethodRegistry());</span><br><span class="line">	</span><br><span class="line">	...</span><br><span class="line">	coroutine-&gt;SetMoveNextMethod(moveNext);</span><br><span class="line">	coroutine-&gt;SetCurrentMethod(current);</span><br><span class="line">	</span><br><span class="line">	coroutine-&gt;m_Behaviour = this;</span><br><span class="line">	...</span><br><span class="line">	</span><br><span class="line">	m_ActiveCoroutines.push_back(coroutine); </span><br><span class="line">	</span><br><span class="line">	coroutine.Run();</span><br><span class="line">	</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
-<p>&#x90A3;&#x4E48;&#x73B0;&#x5728;&#x751F;&#x6210;&#x4E86;C++&#x5C42;&#x7684;Coroutine&#x5BF9;&#x8C61;&#x4E86;&#xFF0C;&#x518D;&#x5206;&#x6790;Coroutine&#x73B0;&#x5728;&#x4F5C;&#x4E3A;&#x6267;&#x884C;&#x8005;&#x5B83;&#x662F;&#x600E;&#x4E48;&#x5B9E;&#x73B0;&#x7684;&#x3002;Coroutine&#x91CC;&#x9762;&#x9488;&#x5BF9;yield&#x5BF9;&#x8C61;(Sample&#x91CC;&#x9762;&#x662F;WaitForSeconds)&#x7C7B;&#x578B;&#x505A;&#x4E86;&#x5904;&#x7406;:</p>
-<ul class="ui list">
+<p>这个步骤大概是这样的(代码只表现大概逻辑，不能正确执行):</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">// C#层IEnumerator被传入C++层的时候会被C++的类ScriptingObjectPtr封装并绑定</span><br><span class="line">ScriptingObjectPtr MonoBehaviour::StartCoroutine(ScriptingObjectPtr userCoroutine)</span><br><span class="line">&#123;</span><br><span class="line">	Coroutine* coroutine = new Coroutine ();</span><br><span class="line">	</span><br><span class="line">	//获取C#层对应的方法，拿到方法的地址。通过Mono就可以直接调用了</span><br><span class="line">	ScriptingMethodPtr moveNext =  scripting_object_get_virtual_method(userCoroutine, MONO_COMMON.IEnumerator_MoveNext, GetScriptingMethodRegistry());</span><br><span class="line">	ScriptingMethodPtr current = scripting_object_get_virtual_method(userCoroutine, MONO_COMMON.IEnumerator_Current, GetScriptingMethodRegistry());</span><br><span class="line">	</span><br><span class="line">	...</span><br><span class="line">	coroutine-&gt;SetMoveNextMethod(moveNext);</span><br><span class="line">	coroutine-&gt;SetCurrentMethod(current);</span><br><span class="line">	</span><br><span class="line">	coroutine-&gt;m_Behaviour = this;</span><br><span class="line">	...</span><br><span class="line">	</span><br><span class="line">	m_ActiveCoroutines.push_back(coroutine); </span><br><span class="line">	</span><br><span class="line">	coroutine.Run();</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>那么现在生成了C++层的Coroutine对象了，再分析Coroutine现在作为执行者它是怎么实现的。Coroutine里面针对yield对象(Sample里面是WaitForSeconds)类型做了处理:</p>
+<ul>
 <li>WaitForSeconds</li>
 <li>WaitForFixedUpdate</li>
 <li>WaitForEndOfFrame</li>
-<li>Coroutine (C#&#x5C42;)</li>
+<li>Coroutine (C#层)</li>
 <li>WWW</li>
 <li>AsyncOperation</li>
 </ul>
-<p>&#x8FD9;&#x4E9B;&#x7C7B;&#x578B;&#x5904;&#x7406;&#x7684;&#x65B9;&#x5F0F;&#x662F;&#x5B9A;&#x4E49;&#x4E86;&#x4E00;&#x4E2A;&#x7C7B;&#x4F3C;&#x5B9A;&#x65F6;&#x8C03;&#x7528;&#x7684;&#x7BA1;&#x7406;&#x7C7B;DelayedCallManager&#x3002;&#x6BD4;&#x5982;&#x6211;&#x7684;&#x6761;&#x4EF6;&#x662F;WaitForSceonds(5), &#x90A3;&#x4E48;Coroutine&#x91CC;&#x9762;&#x4F1A;&#x521B;&#x5EFA;&#x4E00;&#x4E2A;CallDelayed&#xFF0C;&#x628A;&#x65F6;&#x95F4;&#x8BBE;&#x7F6E;&#x9B4F;5&#x79D2;&#xFF0C;&#x7136;&#x540E;DelayedCallManager&#x7684;Update&#x91CC;&#x9762;&#x4F1A;&#x76F4;&#x63A5;&#x7B97;&#x65F6;&#x95F4;&#xFF0C;&#x5230;&#x65F6;&#x95F4;&#x4E86;&#x5C31;&#x4F1A;&#x56DE;&#x8C03;Coroutine&#x3002;WWW&#x7C7B;&#x578B;&#x6BD4;&#x8F83;&#x7279;&#x6B8A;&#x5B83;&#x672C;&#x8EAB;&#x505A;&#x4E86;&#x7C7B;&#x4F3C;&#x7684;&#x5904;&#x7406;&#xFF0C;&#x5B83;&#x63D0;&#x4F9B;&#x4E86;&#x4E00;&#x4E2A;&#x65B9;&#x6CD5;CallWhenDone&#xFF0C;&#x5F53;&#x5B83;&#x5B8C;&#x6210;&#x7684;&#x65F6;&#x5019;&#x76F4;&#x63A5;&#x56DE;&#x8C03;Coroutine&#x3002;</p>
-<p>&#x8FD9;&#x4E2A;&#x6B65;&#x9AA4;&#x5927;&#x6982;&#x662F;&#x8FD9;&#x6837;&#x7684;(&#x4EE3;&#x7801;&#x53EA;&#x8868;&#x73B0;&#x5927;&#x6982;&#x903B;&#x8F91;&#xFF0C;&#x4E0D;&#x80FD;&#x6B63;&#x786E;&#x6267;&#x884C;):</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">//Coroutine.cpp</span><br><span class="line"></span><br><span class="line">// Run&#x5176;&#x5B9E;&#x662F;&#x4E00;&#x4E2A;&#x9012;&#x5F52;&#x7684;&#x64CD;&#x4F5C;&#xFF0C;&#x5728;CallDelayed&#x4E4B;&#x540E;&#x56DE;&#x8C03;coroutineCallback&#x91CC;&#x9762;&#x4F1A;&#x6839;&#x636E;&#x6761;&#x4EF6;&#x518D;&#x6B21;&#x8FDB;&#x5165;Run&#xFF0C;</span><br><span class="line">// &#x76F4;&#x5230;MoveNext&#x8FD4;&#x56DE;false&#xFF0C;&#x6761;&#x4EF6;&#x7ED3;&#x675F;&#x4E86;&#x3002;</span><br><span class="line">void Coroutine::Run (...)</span><br><span class="line">{</span><br><span class="line">	//&#x6839;&#x636E;IEnumerator&#x7684;&#x7279;&#x6027;&#xFF0C;&#x9996;&#x5148;&#x5F97;&#x8C03;&#x7528;&#x4E0B;MoveNext&#xFF0C;&#x6240;&#x4EE5;&#x8FD9;&#x91CC;&#x8FDB;&#x5165;Run&#x4E4B;&#x540E;&#x9996;&#x5148;&#x4F1A;&#x8C03;&#x7528;&#x4E00;&#x6B21;MoveNext(), </span><br><span class="line">	//&#x5C31;&#x662F;&lt;Test&gt;c__Iterator0&#x7684;MoveNext&#x3002;&#x8FD9;&#x6837;&#x5C31;&#x7ED9;current&#x8D4B;&#x503C;&#x4E86;</span><br><span class="line">	ScriptingInvocation invocation(MoveNext);</span><br><span class="line">	...</span><br><span class="line"> 	ScriptingObjectPtr monoWait = invocation.Invoke(&amp;exception)</span><br><span class="line">	</span><br><span class="line">	//&#x8C03;&#x7528;Current</span><br><span class="line">	ScriptingInvocation invocation(Current);</span><br><span class="line">	...</span><br><span class="line"> 	ScriptingObjectPtr monoWait = invocation.Invoke(&amp;exception);</span><br><span class="line"> 	</span><br><span class="line"> 	</span><br><span class="line">	//&#x53EF;&#x4EE5;&#x5728;Sample&#x91CC;&#x9762;&#x770B;&#x5230;Current&#x51FD;&#x6570;&#x5728;&#x8C03;&#x7528;&#x8FC7;&#x7B2C;&#x4E00;&#x6B21;MoveNext&#x4E4B;&#x540E;&#x88AB;&#x8D4B;&#x503C;&#x4E3A;WaitForSeconds&#x5BF9;&#x8C61;&#xFF0C;</span><br><span class="line">	//&#x6240;&#x4EE5;&#x8FD9;&#x91CC;waitClass&#x5C31;&#x53EF;&#x4EE5;&#x83B7;&#x53D6;WaitForSeconds&#x5BF9;&#x8C61;&#x7684;&#x7B49;&#x5F85;&#x65F6;&#x95F4;&#x4E86;</span><br><span class="line">	ScriptingClassPtr waitClass = scripting_object_get_class (monoWait, GetScriptingTypeRegistry());</span><br><span class="line"></span><br><span class="line">	if (scripting_class_is_subclass_of (waitClass, classes.waitForSeconds))</span><br><span class="line">	{</span><br><span class="line">		float waitTime = 0;//&#x901A;&#x8FC7;waitClass&#x83B7;&#x53D6;WaitForSeconds&#x5BF9;&#x8C61;&#x7684;&#x7B49;&#x5F85;&#x65F6;&#x95F4;</span><br><span class="line">		MarshallManagedStructIntoNative(monoWait, &amp;waitTime);</span><br><span class="line">	</span><br><span class="line">		// &#x8FD9;&#x91CC;&#x6DFB;&#x52A0;&#x5230;DelayedCallManager&#x91CC;&#x9762;</span><br><span class="line">		// coroutineCallback&#x91CC;&#x9762;&#x5904;&#x7406;&#x4E86;&#x6211;&#x4EEC;&#x5728;&#x4E00;&#x4E2A;&#x65B9;&#x6CD5;&#x91CC;&#x9762;&#x591A;&#x6B21;yield return&#x7684;&#x64CD;&#x4F5C;&#xFF0C;</span><br><span class="line">		// &#x8FD9;&#x4E2A;&#x65B9;&#x6CD5;&#x91CC;&#x9762;&#x4F1A;&#x9012;&#x5F52;&#x8C03;&#x7528;Run&#x76F4;&#x5230;&#x6240;&#x6709;&#x7684;&#x64CD;&#x4F5C;&#x5904;&#x7406;&#x5B8C;&#x6210;</span><br><span class="line">		CallDelayed(coroutineCallback, monobehaviour, waitTime, , ,);</span><br><span class="line">		return;</span><br><span class="line">	}</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//DelayedCallManager.cpp</span><br><span class="line"></span><br><span class="line">void DelayedCallManager::Update()</span><br><span class="line">{</span><br><span class="line">	float time = GetCurTime();</span><br><span class="line">	int frame = GetTimeManager().GetFrameCount();</span><br><span class="line">	</span><br><span class="line">	Container::iterator iterator = m_CallObjects.begin (); //m_CallObjects&#x4FDD;&#x5B58;&#x4E86;&#x6240;&#x6709;&#x6CE8;&#x518C;&#x7684;Coroutine&#x5BF9;&#x8C61;</span><br><span class="line">	</span><br><span class="line">	// iterator-&gt;time &#x5728;&#x6CE8;&#x518C;&#x7684;&#x65F6;&#x5019;&#x8D4B;&#x503C;&#x662F;: &#x5F53;&#x524D;&#x65F6;&#x95F4; + &#x7B49;&#x5F85;&#x7684;&#x65F6;&#x95F4;(new WaitForSeconds(5),&#x90A3;&#x4E48;&#x5C31;&#x662F;5&#x79D2;)</span><br><span class="line">	// iterator-&gt;time &lt;= time &#x8FD9;&#x4E2A;&#x6761;&#x4EF6;&#x5224;&#x65AD;&#x4E86;iterator&#x7684;&#x5B9A;&#x65F6;&#x65F6;&#x95F4;&#x662F;&#x5426;&#x6EE1;&#x8DB3;&#x4E86;</span><br><span class="line">	// &#x6BD4;&#x5982;&#x4E0A;&#x9762;&#x6211;&#x4EEC;&#x52A0;&#x5165;&#x5B9A;&#x4E49;new WaitForSeconds(5)&#xFF0C;</span><br><span class="line">	// &#x6EE1;&#x8DB3;&#x7684;&#x6761;&#x4EF6;&#x65F6;&#x5C31;&#x5F53;&#x5F53;&#x524D;&#x65F6;&#x95F4;time&#x8981;&#x5927;&#x4E8E;iterator&#x6EE1;&#x8DB3;&#x7684;&#x65F6;&#x95F4;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x5219;&#x8FDB;&#x5165;&#x8FD9;&#x4E2A;while&#x5FAA;&#x73AF;&#x5185;</span><br><span class="line">	while (iterator !=  m_CallObjects.end () &amp;&amp; iterator-&gt;time &lt;= time) </span><br><span class="line">	{</span><br><span class="line">		//&#x5224;&#x65AD;&#x5E27;&#x662F;&#x5426;&#x6EE1;&#x8DB3;,&#x52A0;&#x5165;&#x7528;&#x5230;&#x4E86;new WaitForFixedUpdate()&#x4E4B;&#x7C7B;&#x7684;</span><br><span class="line">		if (cb.timeStamp != m_TimeStamp &amp;&amp; cb.frame &lt;= frame) 		{</span><br><span class="line">			//&#x8C03;&#x7528;CoroutineCallback&#x4E86;</span><br><span class="line">		}	</span><br><span class="line">	}</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
-<p>&#x5176;&#x4ED6;&#x7684;&#x7684;&#x7C7B;&#x578B;&#x4F1A;&#x76F4;&#x63A5;&#x5728;&#x4E0B;&#x4E00;&#x5E27;&#x8C03;&#x7528;,&#x6BD4;&#x5982;yield return 0</p>
-<p>&#x6574;&#x4E2A;&#x8FC7;&#x7A0B;&#x7C97;&#x7565;&#x7684;&#x770B;&#x5927;&#x6982;&#x5C31;&#x662F;&#x8FD9;&#x4E2A;&#x6837;&#x5B50;&#x3002;&#x4E0A;&#x9762;&#x7684;&#x5206;&#x6790;&#x6CA1;&#x6709;&#x6DF1;&#x5165;&#x5230;&#x6BCF;&#x4E2A;&#x6761;&#x4EF6;&#x5224;&#x65AD;&#x4E4B;&#x7C7B;&#x7684;&#xFF0C;&#x4F46;&#x662F;&#x5DF2;&#x7ECF;&#x591F;&#x4E86;&#x89E3;Coroutine&#x7684;&#x5168;&#x8C8C;&#x4E86;&#x3002;&#x6709;&#x9519;&#x8BEF;&#x7684;&#x5730;&#x65B9;&#x6B22;&#x8FCE;&#x6307;&#x51FA;&#x6765;&#xFF0C;&#x975E;&#x5E38;&#x611F;&#x8C22;&#x3002;</p>
+<p>这些类型处理的方式是定义了一个类似定时调用的管理类DelayedCallManager。比如我的条件是WaitForSceonds(5), 那么Coroutine里面会创建一个CallDelayed，把时间设置魏5秒，然后DelayedCallManager的Update里面会直接算时间，到时间了就会回调Coroutine。WWW类型比较特殊它本身做了类似的处理，它提供了一个方法CallWhenDone，当它完成的时候直接回调Coroutine。</p>
+<p>这个步骤大概是这样的(代码只表现大概逻辑，不能正确执行):</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">//Coroutine.cpp</span><br><span class="line"></span><br><span class="line">// Run其实是一个递归的操作，在CallDelayed之后回调coroutineCallback里面会根据条件再次进入Run，</span><br><span class="line">// 直到MoveNext返回false，条件结束了。</span><br><span class="line">void Coroutine::Run (...)</span><br><span class="line">&#123;</span><br><span class="line">	//根据IEnumerator的特性，首先得调用下MoveNext，所以这里进入Run之后首先会调用一次MoveNext(), </span><br><span class="line">	//就是&lt;Test&gt;c__Iterator0的MoveNext。这样就给current赋值了</span><br><span class="line">	ScriptingInvocation invocation(MoveNext);</span><br><span class="line">	...</span><br><span class="line"> 	ScriptingObjectPtr monoWait = invocation.Invoke(&amp;exception)</span><br><span class="line">	</span><br><span class="line">	//调用Current</span><br><span class="line">	ScriptingInvocation invocation(Current);</span><br><span class="line">	...</span><br><span class="line"> 	ScriptingObjectPtr monoWait = invocation.Invoke(&amp;exception);</span><br><span class="line"> 	</span><br><span class="line"> 	</span><br><span class="line">	//可以在Sample里面看到Current函数在调用过第一次MoveNext之后被赋值为WaitForSeconds对象，</span><br><span class="line">	//所以这里waitClass就可以获取WaitForSeconds对象的等待时间了</span><br><span class="line">	ScriptingClassPtr waitClass = scripting_object_get_class (monoWait, GetScriptingTypeRegistry());</span><br><span class="line"></span><br><span class="line">	if (scripting_class_is_subclass_of (waitClass, classes.waitForSeconds))</span><br><span class="line">	&#123;</span><br><span class="line">		float waitTime = 0;//通过waitClass获取WaitForSeconds对象的等待时间</span><br><span class="line">		MarshallManagedStructIntoNative(monoWait, &amp;waitTime);</span><br><span class="line">	</span><br><span class="line">		// 这里添加到DelayedCallManager里面</span><br><span class="line">		// coroutineCallback里面处理了我们在一个方法里面多次yield return的操作，</span><br><span class="line">		// 这个方法里面会递归调用Run直到所有的操作处理完成</span><br><span class="line">		CallDelayed(coroutineCallback, monobehaviour, waitTime, , ,);</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//DelayedCallManager.cpp</span><br><span class="line"></span><br><span class="line">void DelayedCallManager::Update()</span><br><span class="line">&#123;</span><br><span class="line">	float time = GetCurTime();</span><br><span class="line">	int frame = GetTimeManager().GetFrameCount();</span><br><span class="line">	</span><br><span class="line">	Container::iterator iterator = m_CallObjects.begin (); //m_CallObjects保存了所有注册的Coroutine对象</span><br><span class="line">	</span><br><span class="line">	// iterator-&gt;time 在注册的时候赋值是: 当前时间 + 等待的时间(new WaitForSeconds(5),那么就是5秒)</span><br><span class="line">	// iterator-&gt;time &lt;= time 这个条件判断了iterator的定时时间是否满足了</span><br><span class="line">	// 比如上面我们加入定义new WaitForSeconds(5)，</span><br><span class="line">	// 满足的条件时就当当前时间time要大于iterator满足的时间的时候，则进入这个while循环内</span><br><span class="line">	while (iterator !=  m_CallObjects.end () &amp;&amp; iterator-&gt;time &lt;= time) </span><br><span class="line">	&#123;</span><br><span class="line">		//判断帧是否满足,加入用到了new WaitForFixedUpdate()之类的</span><br><span class="line">		if (cb.timeStamp != m_TimeStamp &amp;&amp; cb.frame &lt;= frame) 		&#123;</span><br><span class="line">			//调用CoroutineCallback了</span><br><span class="line">		&#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其他的的类型会直接在下一帧调用,比如yield return 0</p>
+<p>整个过程粗略的看大概就是这个样子。上面的分析没有深入到每个条件判断之类的，但是已经够了解Coroutine的全貌了。有错误的地方欢迎指出来，非常感谢。</p>
 
-                        
-                    </div>
+            </div>
+          
 
-                    
-                    
-                    
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/tags/csharp/">csharp</a>
+		  
+		</div>
+		
 
-                    <div class="description post-description">
-    <span class="post-description-item">
-        <time datetime="2017-05-25T08:47:36.000Z" itemprop="datePublished">2017-05-25</time>
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2017/06/18/unity_auto_build_ipa/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">Unity脚本自动构建IPA包</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/2017/05/10/openg_normal_mapping_transform_martix_derivation/">
+        <span class="next-text nav-default">OpenGL中Normal的变换矩阵的推导</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
 
-    </span>
-    <span class="post-description-item">
         
 
-    <span>
-        <i class="tags icon"></i>
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2014 -
+    
+    2018
+    <span class="footer-author">elangduan@126.com.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
     </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
 
     
-    <span class="ui tiny label">
-        <a href="/tags/csharp/">csharp</a>
-    </span>
-
-    
-
-    </span>
-</div>
-
-                </div>
-                
-                <div id="pagination" class="nav-web ui text container pagination">
-
-    <div class="ui stackable two column divided grid container">
-        <div class="row">
-            <div class="column nav-left">
-                
-
-                <a href="/2017/06/18/unity_auto_build_ipa/" class="ui tiny button">
-
-                    <i class="angle left icon"></i>
-                    
-                    Unity脚本自动构建IPA包
-                    
-
-                </a>
-
-                
-            </div>
-            <div class="column nav-right">
-                
-
-                <a href="/2017/05/10/openg_normal_mapping_transform_martix_derivation/" class="ui tiny button">
-                    
-                    OpenGL中Normal的变换矩阵的推导
-                    
-                    <i class="angle right icon"></i></a>
-                
-            </div>
-        </div>
-    </div>
-
-</div>
-                
-            </div>
-
-            
-            <div class="three wide computer three wide tablet column">
-
-                <div class="ui sticky article-toc" id="article-toc">
-                    <!-- toc -->
-                    
-                </div>
-
-            </div>
-            
-
-        </div>
-    </div>
-</div>
-
-
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-        </div>
-        <div class="ui vertical footer segment">
-    <div class="ui center aligned container">
-        <div class="ui inverted section divider"></div>
-        &copy; 2018 <a href="/">elangduan@126.com</a>,
-        Powered by <a href="https://github.com/henryhuang/hexo-theme-aloha" target="_blank">Aloha</a> and <a
-                href="http://hexo.io/" target="_blank">Hexo</a>.
-    </div>
-</div>
-
-    </div>
 
 
 
 
-<!-- scripts list from theme config.yml -->
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
 
-<script src="//cdn.bootcss.com/jquery/3.1.0/jquery.min.js"></script>
+  
 
-<script src="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.js"></script>
+    <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=1.1"></script>
 
-<script src="//cdn.bootcss.com/algoliasearch/3.18.1/algoliasearch.min.js"></script>
-
-<script src="//cdn.bootcss.com/algoliasearch-helper-js/2.13.0/algoliasearch.helper.min.js"></script>
-
-<script src="/js/semantic-ui-algolia.js"></script>
-
-<script src="/js/aloha-events.js"></script>
-
-
-
-</body>
+  </body>
 </html>

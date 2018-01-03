@@ -1,15 +1,41 @@
-
-
 <!DOCTYPE html>
-<html lang="zh-Hans">
-<head prefix="og: http://ogp.me/ns#">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
-    <meta name="description" content="">
-    <title>Json自动生成C#代码的工具 | elangduan</title>
+<html lang="">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
 
-    <!-- Open Graph -->
-    <meta name="description" content="需求由于现在项目里面与服务器通信的数据使用的Json格式，在每次服务器添加协议的时候客户端都要根据服务器返回的数据对照写一遍解析的数据类和解析类，这样重复性的工作比较浪费时间，所以写了一个Json自动生成C#代码的工具，只要把服务器返回的Json数据用这个工具转换一下就可以自动生成对应的C#解析的代码。">
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="Json自动生成C#代码的工具"/>
+
+
+
+
+  <meta name="keywords" content="csharp," />
+
+
+
+
+
+  <link rel="alternate" href="/default" title="elangduan">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://elangduan.github.com/2017/02/11/json_auto_generate_cs_code/"/>
+
+
+<meta name="description" content="需求由于现在项目里面与服务器通信的数据使用的Json格式，在每次服务器添加协议的时候客户端都要根据服务器返回的数据对照写一遍解析的数据类和解析类，这样重复性的工作比较浪费时间，所以写了一个Json自动生成C#代码的工具，只要把服务器返回的Json数据用这个工具转换一下就可以自动生成对应的C#解析的代码。">
 <meta name="keywords" content="csharp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Json自动生成C#代码的工具">
@@ -22,271 +48,179 @@
 <meta name="twitter:title" content="Json自动生成C#代码的工具">
 <meta name="twitter:description" content="需求由于现在项目里面与服务器通信的数据使用的Json格式，在每次服务器添加协议的时候客户端都要根据服务器返回的数据对照写一遍解析的数据类和解析类，这样重复性的工作比较浪费时间，所以写了一个Json自动生成C#代码的工具，只要把服务器返回的Json数据用这个工具转换一下就可以自动生成对应的C#解析的代码。">
 
-    <script type="application/ld+json">
-{
-  "@context": "http://schema.org",
-  "@type": "Person",
-  "email": "mailto:elangduan@126.com",
-  "image": "/uploads/avatar.png",
-  "name": "elangduan@126.com",
-  "url": "http://elangduan.github.com"
-}
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
 </script>
-    <script>
-    var algoliaEnabled = false;
-    
-</script>
 
-    
 
-    
-    
-        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-    
-    
-    
-        <!-- stylesheets list from config.yml -->
+
+
+  
+
+
+
+    <title> Json自动生成C#代码的工具 - elangduan </title>
+  </head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/." class="logo">elangduan</a>
+    </h1>
+
+    <nav id="nav-top">
         
-        <link rel="stylesheet" href="/css/aloha.css">
-        
-        <link rel="stylesheet" href="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.css">
-        
-        <link rel="stylesheet" href="//cdn.bootcss.com/magnific-popup.js/1.1.0/magnific-popup.min.css">
-        
-    
-
-</head>
-<body id="body" style="margin-bottom: 0;" class="pushable">
-
-    <div class="ui top fixed menu">
-        <a class="item" id="menu-icon"><i class="sidebar icon"></i></a>
-    </div>
-
-    <div id="menu-sidebar" class="ui left vertical sidebar menu">
-
-    <div id="sidebar-top">
-        <div class="content">
-            <h3>elangduan</h3>
-        </div>
-    </div>
-    <div class="ui container sidebar-card">
-    <div class="ui people shape content">
-        <div class="active side">
-            <div class="ui card">
-                <div class="image">
-                    <img class="ui medium bordered image" src="/images/avatar.jpg">
-                </div>
-                <div class="content">
-                    <a class="header">elangduan@126.com</a>
-                    
-                        <div class="meta">
-                            Game Developer
-                        </div>
-                    
-                </div>
-                <div class="extra content">
-                    <div class="ui list">
-                        
-                        <div class="item">
-                            <i class="marker icon" style="float: left"></i>
-                            <div class="content">Shanghai</div>
-                        </div>
-                        
-                        
-                        <div class="item">
-                            <i class="mail icon" style="float: left"></i>
-                            <div class="content">
-                                <a href="mailto:elangduan@126.com">elangduan@126.com</a>
-                            </div>
-                        </div>
-                        
-                    </div>
-
-                </div>
-                <div class="extra content">
-                    <div class="ui list">
-                        
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-</div>
-
-    
-    
-
-    
-
-    
-    <a href="/index.html" class="item" >
-        <i class="home icon"></i>
-        HOME
-    </a>
-
-    
-
-    
-</div>
-
-    <div class="pusher body-content">
-        <div id="content" class="ui main container">
-            <!--<div class="ui one column grid">-->
-                <!--<div class="column">-->
-                    <!--<div class="ui main container">-->
-                        <div id="post-json_auto_generate_cs_code" class="ui main container article-type-post">
-
-    
-
-    <div class="ui divided grid">
-
-        <div class="two column row" id="article-content">
-
-            <div class="thirteen wide computer thirteen wide tablet sixteen wide mobile column">
+            <ul id="menu-top" class="nav-top-items">
                 
+                    <li class="menu-item">
+                        <a href="/archives">
+                            
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/about">
+                            
+                            
+                                About
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
 
-<h1 class="ui header">
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          Json自动生成C#代码的工具
+        
+      </h1>
+
+      <time class="post-time">
+          Feb 11 2017
+      </time>
+    </header>
+
+
+
     
-    Json自动生成C#代码的工具
-</h1>
-
-
-
-                <div class="article-inner">
-
-                    <div class="article-entry" itemprop="articleBody">
-                        
-                        <h3 id="&#x9700;&#x6C42;"><a href="#&#x9700;&#x6C42;" class="headerlink" title="&#x9700;&#x6C42;"></a>&#x9700;&#x6C42;</h3><p>&#x7531;&#x4E8E;&#x73B0;&#x5728;&#x9879;&#x76EE;&#x91CC;&#x9762;&#x4E0E;&#x670D;&#x52A1;&#x5668;&#x901A;&#x4FE1;&#x7684;&#x6570;&#x636E;&#x4F7F;&#x7528;&#x7684;Json&#x683C;&#x5F0F;&#xFF0C;&#x5728;&#x6BCF;&#x6B21;&#x670D;&#x52A1;&#x5668;&#x6DFB;&#x52A0;&#x534F;&#x8BAE;&#x7684;&#x65F6;&#x5019;&#x5BA2;&#x6237;&#x7AEF;&#x90FD;&#x8981;&#x6839;&#x636E;&#x670D;&#x52A1;&#x5668;&#x8FD4;&#x56DE;&#x7684;&#x6570;&#x636E;&#x5BF9;&#x7167;&#x5199;&#x4E00;&#x904D;&#x89E3;&#x6790;&#x7684;&#x6570;&#x636E;&#x7C7B;&#x548C;&#x89E3;&#x6790;&#x7C7B;&#xFF0C;&#x8FD9;&#x6837;&#x91CD;&#x590D;&#x6027;&#x7684;&#x5DE5;&#x4F5C;&#x6BD4;&#x8F83;&#x6D6A;&#x8D39;&#x65F6;&#x95F4;&#xFF0C;&#x6240;&#x4EE5;&#x5199;&#x4E86;&#x4E00;&#x4E2A;Json&#x81EA;&#x52A8;&#x751F;&#x6210;C#&#x4EE3;&#x7801;&#x7684;&#x5DE5;&#x5177;&#xFF0C;&#x53EA;&#x8981;&#x628A;&#x670D;&#x52A1;&#x5668;&#x8FD4;&#x56DE;&#x7684;Json&#x6570;&#x636E;&#x7528;&#x8FD9;&#x4E2A;&#x5DE5;&#x5177;&#x8F6C;&#x6362;&#x4E00;&#x4E0B;&#x5C31;&#x53EF;&#x4EE5;&#x81EA;&#x52A8;&#x751F;&#x6210;&#x5BF9;&#x5E94;&#x7684;C#&#x89E3;&#x6790;&#x7684;&#x4EE3;&#x7801;&#x3002;</p>
+            <div class="post-content">
+            <h3 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h3><p>由于现在项目里面与服务器通信的数据使用的Json格式，在每次服务器添加协议的时候客户端都要根据服务器返回的数据对照写一遍解析的数据类和解析类，这样重复性的工作比较浪费时间，所以写了一个Json自动生成C#代码的工具，只要把服务器返回的Json数据用这个工具转换一下就可以自动生成对应的C#解析的代码。</p>
 <a id="more"></a> 
-<h3 id="&#x4F8B;&#x5B50;"><a href="#&#x4F8B;&#x5B50;" class="headerlink" title="&#x4F8B;&#x5B50;"></a>&#x4F8B;&#x5B50;</h3><p>&#x6BD4;&#x5982;&#x670D;&#x52A1;&#x5668;&#x6DFB;&#x52A0;&#x4E86;&#x4E00;&#x6761;&#x6570;&#x636E;&#x534F;&#x8BAE;&#xFF0C;&#x5185;&#x5BB9;&#x662F;&#x8FD9;&#x6837;&#x7684;:</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">{</span><br><span class="line">    <span class="attr">&quot;http_code&quot;</span>: <span class="number">200</span>,</span><br><span class="line">    <span class="attr">&quot;data&quot;</span>: {</span><br><span class="line">        <span class="attr">&quot;code_id&quot;</span>: <span class="number">164872</span>,</span><br><span class="line">        <span class="attr">&quot;book_id&quot;</span>: <span class="number">1</span>,</span><br><span class="line">        <span class="attr">&quot;free_goods&quot;</span>: [</span><br><span class="line">            {</span><br><span class="line">                <span class="attr">&quot;price&quot;</span>: <span class="number">10.1</span>,</span><br><span class="line">                <span class="attr">&quot;order_id&quot;</span>: <span class="string">&quot;12333333&quot;</span>,</span><br><span class="line">            }</span><br><span class="line">        ]</span><br><span class="line">    },</span><br><span class="line">    <span class="attr">&quot;elapsed&quot;</span>: <span class="number">26</span></span><br><span class="line">}</span><br></pre></td></tr></table></figure>
-<p>&#x7ECF;&#x8FC7;&#x8F6C;&#x6362;&#x5DE5;&#x5177;&#x81EA;&#x52A8;&#x751F;&#x6210;:</p>
-<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> LitJson;</span><br><span class="line"></span><br><span class="line">[<span class="meta">System.Serializable</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Free_goods</span> {</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">double</span>  price{<span class="keyword">get</span>; <span class="keyword">set</span>;}</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">string</span>  order_id{<span class="keyword">get</span>; <span class="keyword">set</span>;}</span><br><span class="line"></span><br><span class="line">} </span><br><span class="line"></span><br><span class="line">[<span class="meta">System.Serializable</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Data</span> {</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">int</span> code_id {<span class="keyword">get</span>; <span class="keyword">set</span>;}</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">int</span> book_id {<span class="keyword">get</span>; <span class="keyword">set</span>;}</span><br><span class="line">	<span class="keyword">public</span> Free_goods[] free_goods{<span class="keyword">get</span>; <span class="keyword">set</span>;}</span><br><span class="line"></span><br><span class="line">} </span><br><span class="line"></span><br><span class="line">[<span class="meta">System.Serializable</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">GoodsInfo</span> {</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">int</span> http_code {<span class="keyword">get</span>; <span class="keyword">set</span>;}</span><br><span class="line">	<span class="keyword">public</span> Data data{<span class="keyword">get</span>; <span class="keyword">set</span>;}</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">int</span> elapsed {<span class="keyword">get</span>; <span class="keyword">set</span>;}</span><br><span class="line"></span><br><span class="line">} </span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">GoodsInfoParser</span> {</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> GoodsInfo Data {<span class="keyword">get</span>; <span class="keyword">private</span> <span class="keyword">set</span>;}</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">GoodsInfoParser</span>(<span class="params"><span class="keyword">string</span> jsonStr</span>) </span>{</span><br><span class="line"> 		Parse(jsonStr);  </span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">Parse</span>(<span class="params"><span class="keyword">string</span> jsonStr</span>) </span>{</span><br><span class="line">		Data = JsonMapper.ToObject&lt;GoodsInfo&gt;(jsonStr);  </span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line"> }</span><br></pre></td></tr></table></figure>
-<p>&#x90A3;&#x4E48;&#x6211;&#x4EEC;&#x5728;&#x4F7F;&#x7528;&#x7684;&#x65F6;&#x5019;&#x53EA;&#x9700;&#x8981;&#x4F7F;&#x7528;GoodsInfoParser&#x7C7B;&#x5373;&#x53EF;&#x5F97;&#x5230;&#x6211;&#x4EEC;&#x9700;&#x8981;&#x7684;&#x6570;&#x636E;:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">//jsonData&#x5C31;&#x662F;&#x4E0A;&#x9762;&#x4F8B;&#x5B50;&#x4E2D;&#x7684;json&#x6570;&#x636E;</span><br><span class="line">GoodsInfoParser goodsInfo = new GoodsInfoParser(jsonData);</span><br><span class="line"></span><br><span class="line">//&#x8FD9;&#x91CC;&#x8BBF;&#x95EE;price&#x53D8;&#x91CF;</span><br><span class="line">Console.WriteLine(goodsInfo.Data.data.free_goods[0].price);</span><br></pre></td></tr></table></figure>
-<p>&#x8FD9;&#x6837;&#x4E0D;&#x7528;&#x6BCF;&#x6B21;&#x624B;&#x52A8;&#x53BB;&#x5199;Free_goods&#xFF0C;Data, GoodsInfo&#x8FD9;&#x4E9B;&#x7C7B;&#x4E86;&#xFF0C;&#x81EA;&#x52A8;&#x751F;&#x6210;&#x4E5F;&#x51CF;&#x5C11;&#x4E86;&#x51FA;&#x9519;&#x7684;&#x51E0;&#x7387;&#x3002;</p>
-<h3 id="&#x5DE5;&#x5177;&#x4EE3;&#x7801;"><a href="#&#x5DE5;&#x5177;&#x4EE3;&#x7801;" class="headerlink" title="&#x5DE5;&#x5177;&#x4EE3;&#x7801;"></a>&#x5DE5;&#x5177;&#x4EE3;&#x7801;</h3><blockquote>
-<p>&#x89E3;&#x6790;&#x7684;&#x5E93;&#x4F7F;&#x7528;&#x7684;LitJson</p>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><p>比如服务器添加了一条数据协议，内容是这样的:</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"http_code"</span>: <span class="number">200</span>,</span><br><span class="line">    <span class="attr">"data"</span>: &#123;</span><br><span class="line">        <span class="attr">"code_id"</span>: <span class="number">164872</span>,</span><br><span class="line">        <span class="attr">"book_id"</span>: <span class="number">1</span>,</span><br><span class="line">        <span class="attr">"free_goods"</span>: [</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">"price"</span>: <span class="number">10.1</span>,</span><br><span class="line">                <span class="attr">"order_id"</span>: <span class="string">"12333333"</span>,</span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"elapsed"</span>: <span class="number">26</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>经过转换工具自动生成:</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> LitJson;</span><br><span class="line"></span><br><span class="line">[<span class="meta">System.Serializable</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Free_goods</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">double</span>  price&#123;<span class="keyword">get</span>; <span class="keyword">set</span>;&#125;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">string</span>  order_id&#123;<span class="keyword">get</span>; <span class="keyword">set</span>;&#125;</span><br><span class="line"></span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line">[<span class="meta">System.Serializable</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Data</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">int</span> code_id &#123;<span class="keyword">get</span>; <span class="keyword">set</span>;&#125;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">int</span> book_id &#123;<span class="keyword">get</span>; <span class="keyword">set</span>;&#125;</span><br><span class="line">	<span class="keyword">public</span> Free_goods[] free_goods&#123;<span class="keyword">get</span>; <span class="keyword">set</span>;&#125;</span><br><span class="line"></span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line">[<span class="meta">System.Serializable</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">GoodsInfo</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">int</span> http_code &#123;<span class="keyword">get</span>; <span class="keyword">set</span>;&#125;</span><br><span class="line">	<span class="keyword">public</span> Data data&#123;<span class="keyword">get</span>; <span class="keyword">set</span>;&#125;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">int</span> elapsed &#123;<span class="keyword">get</span>; <span class="keyword">set</span>;&#125;</span><br><span class="line"></span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">GoodsInfoParser</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> GoodsInfo Data &#123;<span class="keyword">get</span>; <span class="keyword">private</span> <span class="keyword">set</span>;&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">GoodsInfoParser</span>(<span class="params"><span class="keyword">string</span> jsonStr</span>) </span>&#123;</span><br><span class="line"> 		Parse(jsonStr);  </span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">Parse</span>(<span class="params"><span class="keyword">string</span> jsonStr</span>) </span>&#123;</span><br><span class="line">		Data = JsonMapper.ToObject&lt;GoodsInfo&gt;(jsonStr);  </span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>那么我们在使用的时候只需要使用GoodsInfoParser类即可得到我们需要的数据:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">//jsonData就是上面例子中的json数据</span><br><span class="line">GoodsInfoParser goodsInfo = new GoodsInfoParser(jsonData);</span><br><span class="line"></span><br><span class="line">//这里访问price变量</span><br><span class="line">Console.WriteLine(goodsInfo.Data.data.free_goods[0].price);</span><br></pre></td></tr></table></figure>
+<p>这样不用每次手动去写Free_goods，Data, GoodsInfo这些类了，自动生成也减少了出错的几率。</p>
+<h3 id="工具代码"><a href="#工具代码" class="headerlink" title="工具代码"></a>工具代码</h3><blockquote>
+<p>解析的库使用的LitJson</p>
 </blockquote>
-<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Create by elang</span></span><br><span class="line"><span class="comment"> * 2017-02-11</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> LitJson;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">Json2CSharp</span></span><br><span class="line">{</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">class</span> <span class="title">GenClassFromJson</span></span><br><span class="line">	{</span><br><span class="line">		<span class="keyword">private</span> <span class="keyword">string</span> outputFilePath;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">private</span> <span class="keyword">const</span> <span class="keyword">string</span> propertyTypeDesc = <span class="string">&quot;{get; set;}\n&quot;</span>;</span><br><span class="line"></span><br><span class="line">		<span class="function"><span class="keyword">public</span> <span class="title">GenClassFromJson</span>(<span class="params"><span class="keyword">string</span> jsonStr, <span class="keyword">string</span> className</span>)</span></span><br><span class="line"><span class="function">		</span>{</span><br><span class="line">			outputFilePath = <span class="string">&quot;../../&quot;</span> + className + <span class="string">&quot;.cs&quot;</span>;</span><br><span class="line"></span><br><span class="line">			<span class="keyword">if</span> (File.Exists(outputFilePath))</span><br><span class="line">			{</span><br><span class="line">				File.Delete(outputFilePath);</span><br><span class="line">			}</span><br><span class="line"></span><br><span class="line">			AppendNameSpace(<span class="string">&quot;using LitJson;\n\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">			ParseJson(jsonStr, className);</span><br><span class="line"></span><br><span class="line">			AppendParseJsonClass(className);</span><br><span class="line">		}</span><br><span class="line"></span><br><span class="line">		<span class="function"><span class="keyword">private</span> <span class="keyword">string</span> <span class="title">GetValueType</span>(<span class="params">JsonReader reader</span>)</span></span><br><span class="line"><span class="function">		</span>{</span><br><span class="line">			<span class="keyword">return</span> reader.Value != <span class="literal">null</span> ? reader.Value.GetType().ToString() : <span class="string">&quot;&quot;</span>;</span><br><span class="line">		}</span><br><span class="line"></span><br><span class="line">		<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ParseJson</span>(<span class="params"><span class="keyword">string</span> jsonStr, <span class="keyword">string</span> rootName</span>)</span></span><br><span class="line"><span class="function">		</span>{</span><br><span class="line">			JsonReader reader = <span class="keyword">new</span> JsonReader(jsonStr);</span><br><span class="line"></span><br><span class="line">			ParseJsonNode(reader, rootName);</span><br><span class="line">		}</span><br><span class="line"></span><br><span class="line">		<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ParseJsonNode</span>(<span class="params">JsonReader reader, <span class="keyword">string</span> rootName</span>)</span></span><br><span class="line"><span class="function">		</span>{</span><br><span class="line">			<span class="keyword">string</span> classDesc = <span class="keyword">string</span>.Empty;</span><br><span class="line">			<span class="keyword">string</span> prePropertyValue = <span class="keyword">string</span>.Empty;</span><br><span class="line"></span><br><span class="line">			<span class="keyword">do</span></span><br><span class="line">			{</span><br><span class="line">				<span class="comment">//Console.WriteLine(&quot;{0,14} {1,10} {2,16}&quot;, reader.Token, reader.Value, GetValueType(reader));</span></span><br><span class="line"></span><br><span class="line">				<span class="keyword">if</span> (reader.Token == JsonToken.ObjectStart)</span><br><span class="line">				{</span><br><span class="line">					<span class="keyword">if</span> (<span class="keyword">string</span>.IsNullOrEmpty(classDesc))</span><br><span class="line">					{</span><br><span class="line">						classDesc = <span class="string">&quot;\n[System.Serializable]\npublic class &quot;</span> + rootName + <span class="string">&quot; {\n\n&quot;</span>;</span><br><span class="line">					}</span><br><span class="line">					<span class="keyword">else</span></span><br><span class="line">					{</span><br><span class="line">						<span class="keyword">string</span> objName = ToHumpFormat(prePropertyValue);</span><br><span class="line"></span><br><span class="line">						classDesc += <span class="string">&quot;\tpublic &quot;</span> + objName + <span class="string">&quot; &quot;</span> + prePropertyValue + propertyTypeDesc;</span><br><span class="line"></span><br><span class="line">						ParseJsonNode(reader, objName);</span><br><span class="line">					}</span><br><span class="line">				}</span><br><span class="line">				<span class="keyword">else</span> <span class="keyword">if</span> (reader.Token == JsonToken.ObjectEnd)</span><br><span class="line">				{</span><br><span class="line">					classDesc += <span class="string">&quot;\n} \n&quot;</span>;</span><br><span class="line"></span><br><span class="line">					AppendToLocalFile(classDesc);</span><br><span class="line"></span><br><span class="line">					<span class="keyword">return</span>;</span><br><span class="line">				}</span><br><span class="line">				<span class="keyword">else</span> <span class="keyword">if</span> (reader.Token == JsonToken.PropertyName)</span><br><span class="line">				{</span><br><span class="line">					prePropertyValue = reader.Value.ToString();</span><br><span class="line">				}</span><br><span class="line">				<span class="keyword">else</span> <span class="keyword">if</span> (reader.Token == JsonToken.ArrayStart)</span><br><span class="line">				{</span><br><span class="line">					reader.Read();</span><br><span class="line"></span><br><span class="line">					<span class="keyword">if</span> (reader.Token == JsonToken.ObjectStart)</span><br><span class="line">					{</span><br><span class="line">						<span class="keyword">string</span> objName = ToHumpFormat(prePropertyValue);</span><br><span class="line">						classDesc += <span class="string">&quot;\tpublic &quot;</span> + objName + <span class="string">&quot;[] &quot;</span> + prePropertyValue + propertyTypeDesc;</span><br><span class="line"></span><br><span class="line">						ParseJsonNode(reader, objName);</span><br><span class="line">					}</span><br><span class="line">				}</span><br><span class="line">				<span class="keyword">else</span> <span class="keyword">if</span> (reader.Token == JsonToken.ArrayEnd)</span><br><span class="line">				{</span><br><span class="line">					<span class="comment">//nothing to do</span></span><br><span class="line">				}</span><br><span class="line">				<span class="keyword">else</span> <span class="keyword">if</span> (reader.Token == JsonToken.Int)</span><br><span class="line">				{</span><br><span class="line">					classDesc += <span class="string">&quot;\tpublic int &quot;</span> + prePropertyValue + <span class="string">&quot; {get; set;}\n&quot;</span>;</span><br><span class="line">				}</span><br><span class="line">				<span class="keyword">else</span> <span class="keyword">if</span> (reader.Token == JsonToken.Long || </span><br><span class="line">				         reader.Token == JsonToken.Boolean || </span><br><span class="line">				         reader.Token == JsonToken.Double || </span><br><span class="line">				         reader.Token == JsonToken.String</span><br><span class="line">				        )</span><br><span class="line">				{</span><br><span class="line">					<span class="keyword">string</span> type = GetValueType(reader);</span><br><span class="line"></span><br><span class="line">					<span class="keyword">string</span>[] typeParts = type.Split(<span class="string">&apos;.&apos;</span>);</span><br><span class="line"></span><br><span class="line">					classDesc += <span class="string">&quot;\tpublic &quot;</span> + typeParts[typeParts.Length - <span class="number">1</span>].ToLower() + <span class="string">&quot;  &quot;</span> + prePropertyValue + propertyTypeDesc;</span><br><span class="line">				}</span><br><span class="line"></span><br><span class="line">			} <span class="keyword">while</span> (reader.Read());</span><br><span class="line"></span><br><span class="line">			Console.WriteLine(<span class="string">&quot;Json to csharp complete!&quot;</span>);</span><br><span class="line">		}</span><br><span class="line"></span><br><span class="line">		<span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">AppendParseJsonClass</span>(<span class="params"><span class="keyword">string</span> className</span>)</span></span><br><span class="line"><span class="function">		</span>{</span><br><span class="line">			<span class="keyword">string</span> parseClassDesc = <span class="string">&quot;\n\npublic class &quot;</span> + className + <span class="string">&quot;Parser {\n\n&quot;</span>;</span><br><span class="line"></span><br><span class="line">			parseClassDesc += <span class="string">&quot;\tpublic &quot;</span> + className + <span class="string">&quot; Data {get; private set;}\n\n&quot;</span>;</span><br><span class="line"></span><br><span class="line">			parseClassDesc += <span class="string">&quot;\tpublic &quot;</span> + className + <span class="string">&quot;Parser(string jsonStr) {\n \t\tParse(jsonStr);  \n\t}\n\n&quot;</span>;</span><br><span class="line"></span><br><span class="line">			parseClassDesc += <span class="string">&quot;\tprivate void Parse(string jsonStr) {\n\t\tData = JsonMapper.ToObject&lt;&quot;</span> + className + <span class="string">&quot;&gt;(jsonStr);  \n\t}\n&quot;</span>;</span><br><span class="line"></span><br><span class="line">			parseClassDesc += <span class="string">&quot;\n }&quot;</span>;</span><br><span class="line"></span><br><span class="line">			AppendToLocalFile(parseClassDesc);</span><br><span class="line">		}</span><br><span class="line"></span><br><span class="line">		<span class="function"><span class="keyword">void</span> <span class="title">AppendNameSpace</span>(<span class="params"><span class="keyword">string</span> namespaceStr</span>)</span></span><br><span class="line"><span class="function">		</span>{</span><br><span class="line">			AppendToLocalFile(namespaceStr);</span><br><span class="line"></span><br><span class="line">			<span class="comment">//TODO</span></span><br><span class="line">		}</span><br><span class="line"></span><br><span class="line">		<span class="function"><span class="keyword">private</span> <span class="keyword">string</span> <span class="title">ToHumpFormat</span>(<span class="params"><span class="keyword">string</span> <span class="keyword">value</span></span>)</span></span><br><span class="line"><span class="function">		</span>{</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">value</span>.Substring(<span class="number">0</span>, <span class="number">1</span>).ToUpper() + <span class="keyword">value</span>.Substring(<span class="number">1</span>, <span class="keyword">value</span>.Length - <span class="number">1</span>);</span><br><span class="line">		}</span><br><span class="line"></span><br><span class="line">		<span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">AppendToLocalFile</span>(<span class="params"><span class="keyword">string</span> classDesc</span>)</span></span><br><span class="line"><span class="function">		</span>{</span><br><span class="line">			File.AppendAllText(outputFilePath, classDesc);</span><br><span class="line">		}</span><br><span class="line">	}</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Create by elang</span></span><br><span class="line"><span class="comment"> * 2017-02-11</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.IO;</span><br><span class="line"><span class="keyword">using</span> LitJson;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">Json2CSharp</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">class</span> <span class="title">GenClassFromJson</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">private</span> <span class="keyword">string</span> outputFilePath;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">private</span> <span class="keyword">const</span> <span class="keyword">string</span> propertyTypeDesc = <span class="string">"&#123;get; set;&#125;\n"</span>;</span><br><span class="line"></span><br><span class="line">		<span class="function"><span class="keyword">public</span> <span class="title">GenClassFromJson</span>(<span class="params"><span class="keyword">string</span> jsonStr, <span class="keyword">string</span> className</span>)</span></span><br><span class="line"><span class="function">		</span>&#123;</span><br><span class="line">			outputFilePath = <span class="string">"../../"</span> + className + <span class="string">".cs"</span>;</span><br><span class="line"></span><br><span class="line">			<span class="keyword">if</span> (File.Exists(outputFilePath))</span><br><span class="line">			&#123;</span><br><span class="line">				File.Delete(outputFilePath);</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			AppendNameSpace(<span class="string">"using LitJson;\n\n"</span>);</span><br><span class="line"></span><br><span class="line">			ParseJson(jsonStr, className);</span><br><span class="line"></span><br><span class="line">			AppendParseJsonClass(className);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="function"><span class="keyword">private</span> <span class="keyword">string</span> <span class="title">GetValueType</span>(<span class="params">JsonReader reader</span>)</span></span><br><span class="line"><span class="function">		</span>&#123;</span><br><span class="line">			<span class="keyword">return</span> reader.Value != <span class="literal">null</span> ? reader.Value.GetType().ToString() : <span class="string">""</span>;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ParseJson</span>(<span class="params"><span class="keyword">string</span> jsonStr, <span class="keyword">string</span> rootName</span>)</span></span><br><span class="line"><span class="function">		</span>&#123;</span><br><span class="line">			JsonReader reader = <span class="keyword">new</span> JsonReader(jsonStr);</span><br><span class="line"></span><br><span class="line">			ParseJsonNode(reader, rootName);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ParseJsonNode</span>(<span class="params">JsonReader reader, <span class="keyword">string</span> rootName</span>)</span></span><br><span class="line"><span class="function">		</span>&#123;</span><br><span class="line">			<span class="keyword">string</span> classDesc = <span class="keyword">string</span>.Empty;</span><br><span class="line">			<span class="keyword">string</span> prePropertyValue = <span class="keyword">string</span>.Empty;</span><br><span class="line"></span><br><span class="line">			<span class="keyword">do</span></span><br><span class="line">			&#123;</span><br><span class="line">				<span class="comment">//Console.WriteLine("&#123;0,14&#125; &#123;1,10&#125; &#123;2,16&#125;", reader.Token, reader.Value, GetValueType(reader));</span></span><br><span class="line"></span><br><span class="line">				<span class="keyword">if</span> (reader.Token == JsonToken.ObjectStart)</span><br><span class="line">				&#123;</span><br><span class="line">					<span class="keyword">if</span> (<span class="keyword">string</span>.IsNullOrEmpty(classDesc))</span><br><span class="line">					&#123;</span><br><span class="line">						classDesc = <span class="string">"\n[System.Serializable]\npublic class "</span> + rootName + <span class="string">" &#123;\n\n"</span>;</span><br><span class="line">					&#125;</span><br><span class="line">					<span class="keyword">else</span></span><br><span class="line">					&#123;</span><br><span class="line">						<span class="keyword">string</span> objName = ToHumpFormat(prePropertyValue);</span><br><span class="line"></span><br><span class="line">						classDesc += <span class="string">"\tpublic "</span> + objName + <span class="string">" "</span> + prePropertyValue + propertyTypeDesc;</span><br><span class="line"></span><br><span class="line">						ParseJsonNode(reader, objName);</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">else</span> <span class="keyword">if</span> (reader.Token == JsonToken.ObjectEnd)</span><br><span class="line">				&#123;</span><br><span class="line">					classDesc += <span class="string">"\n&#125; \n"</span>;</span><br><span class="line"></span><br><span class="line">					AppendToLocalFile(classDesc);</span><br><span class="line"></span><br><span class="line">					<span class="keyword">return</span>;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">else</span> <span class="keyword">if</span> (reader.Token == JsonToken.PropertyName)</span><br><span class="line">				&#123;</span><br><span class="line">					prePropertyValue = reader.Value.ToString();</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">else</span> <span class="keyword">if</span> (reader.Token == JsonToken.ArrayStart)</span><br><span class="line">				&#123;</span><br><span class="line">					reader.Read();</span><br><span class="line"></span><br><span class="line">					<span class="keyword">if</span> (reader.Token == JsonToken.ObjectStart)</span><br><span class="line">					&#123;</span><br><span class="line">						<span class="keyword">string</span> objName = ToHumpFormat(prePropertyValue);</span><br><span class="line">						classDesc += <span class="string">"\tpublic "</span> + objName + <span class="string">"[] "</span> + prePropertyValue + propertyTypeDesc;</span><br><span class="line"></span><br><span class="line">						ParseJsonNode(reader, objName);</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">else</span> <span class="keyword">if</span> (reader.Token == JsonToken.ArrayEnd)</span><br><span class="line">				&#123;</span><br><span class="line">					<span class="comment">//nothing to do</span></span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">else</span> <span class="keyword">if</span> (reader.Token == JsonToken.Int)</span><br><span class="line">				&#123;</span><br><span class="line">					classDesc += <span class="string">"\tpublic int "</span> + prePropertyValue + <span class="string">" &#123;get; set;&#125;\n"</span>;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">else</span> <span class="keyword">if</span> (reader.Token == JsonToken.Long || </span><br><span class="line">				         reader.Token == JsonToken.Boolean || </span><br><span class="line">				         reader.Token == JsonToken.Double || </span><br><span class="line">				         reader.Token == JsonToken.String</span><br><span class="line">				        )</span><br><span class="line">				&#123;</span><br><span class="line">					<span class="keyword">string</span> type = GetValueType(reader);</span><br><span class="line"></span><br><span class="line">					<span class="keyword">string</span>[] typeParts = type.Split(<span class="string">'.'</span>);</span><br><span class="line"></span><br><span class="line">					classDesc += <span class="string">"\tpublic "</span> + typeParts[typeParts.Length - <span class="number">1</span>].ToLower() + <span class="string">"  "</span> + prePropertyValue + propertyTypeDesc;</span><br><span class="line">				&#125;</span><br><span class="line"></span><br><span class="line">			&#125; <span class="keyword">while</span> (reader.Read());</span><br><span class="line"></span><br><span class="line">			Console.WriteLine(<span class="string">"Json to csharp complete!"</span>);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">AppendParseJsonClass</span>(<span class="params"><span class="keyword">string</span> className</span>)</span></span><br><span class="line"><span class="function">		</span>&#123;</span><br><span class="line">			<span class="keyword">string</span> parseClassDesc = <span class="string">"\n\npublic class "</span> + className + <span class="string">"Parser &#123;\n\n"</span>;</span><br><span class="line"></span><br><span class="line">			parseClassDesc += <span class="string">"\tpublic "</span> + className + <span class="string">" Data &#123;get; private set;&#125;\n\n"</span>;</span><br><span class="line"></span><br><span class="line">			parseClassDesc += <span class="string">"\tpublic "</span> + className + <span class="string">"Parser(string jsonStr) &#123;\n \t\tParse(jsonStr);  \n\t&#125;\n\n"</span>;</span><br><span class="line"></span><br><span class="line">			parseClassDesc += <span class="string">"\tprivate void Parse(string jsonStr) &#123;\n\t\tData = JsonMapper.ToObject&lt;"</span> + className + <span class="string">"&gt;(jsonStr);  \n\t&#125;\n"</span>;</span><br><span class="line"></span><br><span class="line">			parseClassDesc += <span class="string">"\n &#125;"</span>;</span><br><span class="line"></span><br><span class="line">			AppendToLocalFile(parseClassDesc);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="function"><span class="keyword">void</span> <span class="title">AppendNameSpace</span>(<span class="params"><span class="keyword">string</span> namespaceStr</span>)</span></span><br><span class="line"><span class="function">		</span>&#123;</span><br><span class="line">			AppendToLocalFile(namespaceStr);</span><br><span class="line"></span><br><span class="line">			<span class="comment">//TODO</span></span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="function"><span class="keyword">private</span> <span class="keyword">string</span> <span class="title">ToHumpFormat</span>(<span class="params"><span class="keyword">string</span> <span class="keyword">value</span></span>)</span></span><br><span class="line"><span class="function">		</span>&#123;</span><br><span class="line">			<span class="keyword">return</span> <span class="keyword">value</span>.Substring(<span class="number">0</span>, <span class="number">1</span>).ToUpper() + <span class="keyword">value</span>.Substring(<span class="number">1</span>, <span class="keyword">value</span>.Length - <span class="number">1</span>);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">AppendToLocalFile</span>(<span class="params"><span class="keyword">string</span> classDesc</span>)</span></span><br><span class="line"><span class="function">		</span>&#123;</span><br><span class="line">			File.AppendAllText(outputFilePath, classDesc);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-                        
-                    </div>
+            </div>
+          
 
-                    
-                    
-                    
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/tags/csharp/">csharp</a>
+		  
+		</div>
+		
 
-                    <div class="description post-description">
-    <span class="post-description-item">
-        <time datetime="2017-02-11T09:03:34.000Z" itemprop="datePublished">2017-02-11</time>
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2017/02/25/unity_monobehavior_awake_function_call_time/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">MonoBehaviour的Awake的调用时机</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/2016/12/28/unity_download_api_experient/">
+        <span class="next-text nav-default">Unity 文件下载分析</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
 
-    </span>
-    <span class="post-description-item">
         
 
-    <span>
-        <i class="tags icon"></i>
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2014 -
+    
+    2018
+    <span class="footer-author">elangduan@126.com.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
     </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
 
     
-    <span class="ui tiny label">
-        <a href="/tags/csharp/">csharp</a>
-    </span>
-
-    
-
-    </span>
-</div>
-
-                </div>
-                
-                <div id="pagination" class="nav-web ui text container pagination">
-
-    <div class="ui stackable two column divided grid container">
-        <div class="row">
-            <div class="column nav-left">
-                
-
-                <a href="/2017/02/25/unity_monobehavior_awake_function_call_time/" class="ui tiny button">
-
-                    <i class="angle left icon"></i>
-                    
-                    MonoBehaviour的Awake的调用时机
-                    
-
-                </a>
-
-                
-            </div>
-            <div class="column nav-right">
-                
-
-                <a href="/2016/12/28/unity_download_api_experient/" class="ui tiny button">
-                    
-                    Unity 文件下载分析
-                    
-                    <i class="angle right icon"></i></a>
-                
-            </div>
-        </div>
-    </div>
-
-</div>
-                
-            </div>
-
-            
-            <div class="three wide computer three wide tablet column">
-
-                <div class="ui sticky article-toc" id="article-toc">
-                    <!-- toc -->
-                    <ol class="ui ordered list"><li><a href="#需求"><span>需求</span></a></li><li><a href="#例子"><span>例子</span></a></li><li><a href="#工具代码"><span>工具代码</span></a></li></ol>
-                </div>
-
-            </div>
-            
-
-        </div>
-    </div>
-</div>
-
-
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-        </div>
-        <div class="ui vertical footer segment">
-    <div class="ui center aligned container">
-        <div class="ui inverted section divider"></div>
-        &copy; 2018 <a href="/">elangduan@126.com</a>,
-        Powered by <a href="https://github.com/henryhuang/hexo-theme-aloha" target="_blank">Aloha</a> and <a
-                href="http://hexo.io/" target="_blank">Hexo</a>.
-    </div>
-</div>
-
-    </div>
 
 
 
 
-<!-- scripts list from theme config.yml -->
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
 
-<script src="//cdn.bootcss.com/jquery/3.1.0/jquery.min.js"></script>
+  
 
-<script src="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.js"></script>
+    <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=1.1"></script>
 
-<script src="//cdn.bootcss.com/algoliasearch/3.18.1/algoliasearch.min.js"></script>
-
-<script src="//cdn.bootcss.com/algoliasearch-helper-js/2.13.0/algoliasearch.helper.min.js"></script>
-
-<script src="/js/semantic-ui-algolia.js"></script>
-
-<script src="/js/aloha-events.js"></script>
-
-
-
-</body>
+  </body>
 </html>

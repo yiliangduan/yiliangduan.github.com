@@ -1,292 +1,226 @@
-
-
 <!DOCTYPE html>
-<html lang="zh-Hans">
-<head prefix="og: http://ogp.me/ns#">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
-    <meta name="description" content="">
-    <title>C# 内存管理之对象循环引用问题 | elangduan</title>
+<html lang="">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
 
-    <!-- Open Graph -->
-    <meta name="description" content="C#&amp;#x7684;&amp;#x5185;&amp;#x5B58;&amp;#x7BA1;&amp;#x7406;&amp;#x7528;&amp;#x5230;&amp;#x4E86;&amp;#x5F15;&amp;#x7528;&amp;#x8BA1;&amp;#x6570;&amp;#xFF0C; &amp;#x4F46;&amp;#x662F;&amp;#x548C;&amp;#x4EE5;&amp;#x5F80;&amp;#x6211;&amp;#x4EEC;&amp;#x8BA4;&amp;#x8BC6;&amp;#x7684;Java&amp;#x3001;O">
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="C# 内存管理之对象循环引用问题"/>
+
+
+
+
+  <meta name="keywords" content="csharp," />
+
+
+
+
+
+  <link rel="alternate" href="/default" title="elangduan">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://elangduan.github.com/2016/06/29/cs_object_refer_each_other/"/>
+
+
+<meta name="description" content="C#的内存管理用到了引用计数， 但是和以往我们认识的Java、Objective-c的内存管理有非常大的不同之处。不同之处在于C#的引用计数只有在GC Root对象引用的对象身上才生效，也就是说如果一个对象被GC Root对象引用了，那么在这个GC Root对象没有销毁之前这个对象是不会被销毁的。反之，如果一个对象没有被GC Root对象引用，即便这个对象被再多非GC Root对象引用，也会再下一">
 <meta name="keywords" content="csharp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="C# 内存管理之对象循环引用问题">
 <meta property="og:url" content="http://elangduan.github.com/2016/06/29/cs_object_refer_each_other/index.html">
 <meta property="og:site_name" content="elangduan">
-<meta property="og:description" content="C#&amp;#x7684;&amp;#x5185;&amp;#x5B58;&amp;#x7BA1;&amp;#x7406;&amp;#x7528;&amp;#x5230;&amp;#x4E86;&amp;#x5F15;&amp;#x7528;&amp;#x8BA1;&amp;#x6570;&amp;#xFF0C; &amp;#x4F46;&amp;#x662F;&amp;#x548C;&amp;#x4EE5;&amp;#x5F80;&amp;#x6211;&amp;#x4EEC;&amp;#x8BA4;&amp;#x8BC6;&amp;#x7684;Java&amp;#x3001;O">
+<meta property="og:description" content="C#的内存管理用到了引用计数， 但是和以往我们认识的Java、Objective-c的内存管理有非常大的不同之处。不同之处在于C#的引用计数只有在GC Root对象引用的对象身上才生效，也就是说如果一个对象被GC Root对象引用了，那么在这个GC Root对象没有销毁之前这个对象是不会被销毁的。反之，如果一个对象没有被GC Root对象引用，即便这个对象被再多非GC Root对象引用，也会再下一">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://elangduan.github.com/images/cs_object_reference_each_other/1.png">
 <meta property="og:updated_time" content="2018-01-02T03:12:05.821Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="C# 内存管理之对象循环引用问题">
-<meta name="twitter:description" content="C#&amp;#x7684;&amp;#x5185;&amp;#x5B58;&amp;#x7BA1;&amp;#x7406;&amp;#x7528;&amp;#x5230;&amp;#x4E86;&amp;#x5F15;&amp;#x7528;&amp;#x8BA1;&amp;#x6570;&amp;#xFF0C; &amp;#x4F46;&amp;#x662F;&amp;#x548C;&amp;#x4EE5;&amp;#x5F80;&amp;#x6211;&amp;#x4EEC;&amp;#x8BA4;&amp;#x8BC6;&amp;#x7684;Java&amp;#x3001;O">
+<meta name="twitter:description" content="C#的内存管理用到了引用计数， 但是和以往我们认识的Java、Objective-c的内存管理有非常大的不同之处。不同之处在于C#的引用计数只有在GC Root对象引用的对象身上才生效，也就是说如果一个对象被GC Root对象引用了，那么在这个GC Root对象没有销毁之前这个对象是不会被销毁的。反之，如果一个对象没有被GC Root对象引用，即便这个对象被再多非GC Root对象引用，也会再下一">
 <meta name="twitter:image" content="http://elangduan.github.com/images/cs_object_reference_each_other/1.png">
 
-    <script type="application/ld+json">
-{
-  "@context": "http://schema.org",
-  "@type": "Person",
-  "email": "mailto:elangduan@126.com",
-  "image": "/uploads/avatar.png",
-  "name": "elangduan@126.com",
-  "url": "http://elangduan.github.com"
-}
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
 </script>
-    <script>
-    var algoliaEnabled = false;
-    
-</script>
 
-    
 
-    
-    
-        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-    
-    
-    
-        <!-- stylesheets list from config.yml -->
+
+
+  
+
+
+
+    <title> C# 内存管理之对象循环引用问题 - elangduan </title>
+  </head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/." class="logo">elangduan</a>
+    </h1>
+
+    <nav id="nav-top">
         
-        <link rel="stylesheet" href="/css/aloha.css">
-        
-        <link rel="stylesheet" href="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.css">
-        
-        <link rel="stylesheet" href="//cdn.bootcss.com/magnific-popup.js/1.1.0/magnific-popup.min.css">
-        
-    
-
-</head>
-<body id="body" style="margin-bottom: 0;" class="pushable">
-
-    <div class="ui top fixed menu">
-        <a class="item" id="menu-icon"><i class="sidebar icon"></i></a>
-    </div>
-
-    <div id="menu-sidebar" class="ui left vertical sidebar menu">
-
-    <div id="sidebar-top">
-        <div class="content">
-            <h3>elangduan</h3>
-        </div>
-    </div>
-    <div class="ui container sidebar-card">
-    <div class="ui people shape content">
-        <div class="active side">
-            <div class="ui card">
-                <div class="image">
-                    <img class="ui medium bordered image" src="/images/avatar.jpg">
-                </div>
-                <div class="content">
-                    <a class="header">elangduan@126.com</a>
-                    
-                        <div class="meta">
-                            Game Developer
-                        </div>
-                    
-                </div>
-                <div class="extra content">
-                    <div class="ui list">
-                        
-                        <div class="item">
-                            <i class="marker icon" style="float: left"></i>
-                            <div class="content">Shanghai</div>
-                        </div>
-                        
-                        
-                        <div class="item">
-                            <i class="mail icon" style="float: left"></i>
-                            <div class="content">
-                                <a href="mailto:elangduan@126.com">elangduan@126.com</a>
-                            </div>
-                        </div>
-                        
-                    </div>
-
-                </div>
-                <div class="extra content">
-                    <div class="ui list">
-                        
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-</div>
-
-    
-    
-
-    
-
-    
-    <a href="/index.html" class="item" >
-        <i class="home icon"></i>
-        HOME
-    </a>
-
-    
-
-    
-</div>
-
-    <div class="pusher body-content">
-        <div id="content" class="ui main container">
-            <!--<div class="ui one column grid">-->
-                <!--<div class="column">-->
-                    <!--<div class="ui main container">-->
-                        <div id="post-cs_object_refer_each_other" class="ui main container article-type-post">
-
-    
-
-    <div class="ui divided grid">
-
-        <div class="two column row" id="article-content">
-
-            <div class="thirteen wide computer thirteen wide tablet sixteen wide mobile column">
+            <ul id="menu-top" class="nav-top-items">
                 
+                    <li class="menu-item">
+                        <a href="/archives">
+                            
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/about">
+                            
+                            
+                                About
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
 
-<h1 class="ui header">
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          C# 内存管理之对象循环引用问题
+        
+      </h1>
+
+      <time class="post-time">
+          Jun 29 2016
+      </time>
+    </header>
+
+
+
     
-    C# 内存管理之对象循环引用问题
-</h1>
-
-
-
-                <div class="article-inner">
-
-                    <div class="article-entry" itemprop="articleBody">
-                        
-                        <p><strong>C#&#x7684;&#x5185;&#x5B58;&#x7BA1;&#x7406;</strong>&#x7528;&#x5230;&#x4E86;&#x5F15;&#x7528;&#x8BA1;&#x6570;&#xFF0C; &#x4F46;&#x662F;&#x548C;&#x4EE5;&#x5F80;&#x6211;&#x4EEC;&#x8BA4;&#x8BC6;&#x7684;Java&#x3001;Objective-c&#x7684;&#x5185;&#x5B58;&#x7BA1;&#x7406;&#x6709;&#x975E;&#x5E38;&#x5927;&#x7684;&#x4E0D;&#x540C;&#x4E4B;&#x5904;&#x3002;&#x4E0D;&#x540C;&#x4E4B;&#x5904;&#x5728;&#x4E8E;C#&#x7684;&#x5F15;&#x7528;&#x8BA1;&#x6570;&#x53EA;&#x6709;&#x5728;GC Root&#x5BF9;&#x8C61;&#x5F15;&#x7528;&#x7684;&#x5BF9;&#x8C61;&#x8EAB;&#x4E0A;&#x624D;&#x751F;&#x6548;&#xFF0C;&#x4E5F;&#x5C31;&#x662F;&#x8BF4;&#x5982;&#x679C;&#x4E00;&#x4E2A;&#x5BF9;&#x8C61;&#x88AB;GC Root&#x5BF9;&#x8C61;&#x5F15;&#x7528;&#x4E86;&#xFF0C;&#x90A3;&#x4E48;&#x5728;&#x8FD9;&#x4E2A;GC Root&#x5BF9;&#x8C61;&#x6CA1;&#x6709;&#x9500;&#x6BC1;&#x4E4B;&#x524D;&#x8FD9;&#x4E2A;&#x5BF9;&#x8C61;&#x662F;&#x4E0D;&#x4F1A;&#x88AB;&#x9500;&#x6BC1;&#x7684;&#x3002;&#x53CD;&#x4E4B;&#xFF0C;&#x5982;&#x679C;&#x4E00;&#x4E2A;&#x5BF9;&#x8C61;&#x6CA1;&#x6709;&#x88AB;GC Root&#x5BF9;&#x8C61;&#x5F15;&#x7528;&#xFF0C;&#x5373;&#x4FBF;&#x8FD9;&#x4E2A;&#x5BF9;&#x8C61;&#x88AB;&#x518D;&#x591A;&#x975E;GC Root&#x5BF9;&#x8C61;&#x5F15;&#x7528;&#xFF0C;&#x4E5F;&#x4F1A;&#x518D;&#x4E0B;&#x4E00;&#x6B21;&#x5185;&#x5B58;&#x56DE;&#x6536;&#x7684;&#x65F6;&#x5019;&#x88AB;&#x9500;&#x6BC1;&#x3002;</p>
+            <div class="post-content">
+            <p><strong>C#的内存管理</strong>用到了引用计数， 但是和以往我们认识的Java、Objective-c的内存管理有非常大的不同之处。不同之处在于C#的引用计数只有在GC Root对象引用的对象身上才生效，也就是说如果一个对象被GC Root对象引用了，那么在这个GC Root对象没有销毁之前这个对象是不会被销毁的。反之，如果一个对象没有被GC Root对象引用，即便这个对象被再多非GC Root对象引用，也会再下一次内存回收的时候被销毁。</p>
 <p>GC Roots:</p>
-<ul class="ui list">
-<li>&#x6B63;&#x5728;&#x8FD0;&#x884C;&#x7684;&#x5C40;&#x90E8;&#x53D8;&#x91CF;</li>
-<li>&#x9759;&#x6001;&#x53D8;&#x91CF;</li>
-<li>&#x91CD;&#x5199;&#x4E86;object&#x7684;finalizer&#x65B9;&#x6CD5;&#x7684;&#x53D8;&#x91CF;</li>
-<li>&#x6B63;&#x5728;&#x8C03;&#x7528;&#x7684;&#x51FD;&#x6570;&#x4F20;&#x9012;&#x7684;&#x53C2;&#x6570;</li>
+<ul>
+<li>正在运行的局部变量</li>
+<li>静态变量</li>
+<li>重写了object的finalizer方法的变量</li>
+<li>正在调用的函数传递的参数</li>
 </ul>
-<p>&#x4E0B;&#x56FE;&#x6F14;&#x793A;&#x4E86;&#x51E0;&#x79CD;&#x5BF9;&#x8C61;&#x5F15;&#x7528;&#x7684;&#x60C5;&#x51B5;:</p>
-<p><a class="magnific-img" href="/images/cs_object_reference_each_other/1.png"><img src="/images/cs_object_reference_each_other/1.png" alt="" class="ui centered image"></a></p>
-<p>&#x6839;&#x636E;&#x6211;&#x4EEC;&#x524D;&#x9762;&#x7684;&#x63CF;&#x8FF0;&#xFF0C;&#x6211;&#x4EEC;&#x5F88;&#x5BB9;&#x6613;&#x5224;&#x65AD;object A&#x548C;object B&#x5728;RootA &#x88AB;&#x91CA;&#x653E;&#x4E4B;&#x540E;&#x968F;&#x4E4B;&#x4F1A;&#x88AB;&#x91CA;&#x653E;&#xFF0C;object C&#x548C;object D &#x867D;&#x7136;&#x5FAA;&#x73AF;&#x5F15;&#x7528;&#xFF0C;&#x4F46;&#x662F;&#x6CA1;&#x6709;&#x88AB;Root&#x5F15;&#x7528;&#xFF0C;&#x6240;&#x4EE5;&#x5728;&#x4E0B;&#x4E00;&#x6B21;&#x5185;&#x5B58;&#x56DE;&#x6536;&#x7684;&#x65F6;&#x5019;&#x5C31;&#x4F1A;&#x88AB;&#x91CA;&#x653E;,RootB&#x548C;RootC&#x9020;&#x6210;&#x4E86;&#x5FAA;&#x73AF;&#x5F15;&#x7528;&#x6240;&#x4EE5;&#x91CA;&#x653E;&#x4E0D;&#x4E86;&#x3002;</p>
+<p>下图演示了几种对象引用的情况:</p>
+<p><img src="/images/cs_object_reference_each_other/1.png" alt=""></p>
+<p>根据我们前面的描述，我们很容易判断object A和object B在RootA 被释放之后随之会被释放，object C和object D 虽然循环引用，但是没有被Root引用，所以在下一次内存回收的时候就会被释放,RootB和RootC造成了循环引用所以释放不了。</p>
 
-                        
-                    </div>
+            </div>
+          
 
-                    
-                    
-                    
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/tags/csharp/">csharp</a>
+		  
+		</div>
+		
 
-                    <div class="description post-description">
-    <span class="post-description-item">
-        <time datetime="2016-06-29T13:06:34.000Z" itemprop="datePublished">2016-06-29</time>
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2016/07/16/unity_assetbundle_learning_and_summary/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">Unity AssetBundle学习、分析及总结</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/2016/06/18/unity_resource_memory_summary/">
+        <span class="next-text nav-default">Unity中内存资源释放总结</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
 
-    </span>
-    <span class="post-description-item">
         
 
-    <span>
-        <i class="tags icon"></i>
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2014 -
+    
+    2018
+    <span class="footer-author">elangduan@126.com.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
     </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
 
     
-    <span class="ui tiny label">
-        <a href="/tags/csharp/">csharp</a>
-    </span>
-
-    
-
-    </span>
-</div>
-
-                </div>
-                
-                <div id="pagination" class="nav-web ui text container pagination">
-
-    <div class="ui stackable two column divided grid container">
-        <div class="row">
-            <div class="column nav-left">
-                
-
-                <a href="/2016/07/16/unity_assetbundle_learning_and_summary/" class="ui tiny button">
-
-                    <i class="angle left icon"></i>
-                    
-                    Unity AssetBundle学习、分析及总结
-                    
-
-                </a>
-
-                
-            </div>
-            <div class="column nav-right">
-                
-
-                <a href="/2016/06/18/unity_resource_memory_summary/" class="ui tiny button">
-                    
-                    Unity中内存资源释放总结
-                    
-                    <i class="angle right icon"></i></a>
-                
-            </div>
-        </div>
-    </div>
-
-</div>
-                
-            </div>
-
-            
-            <div class="three wide computer three wide tablet column">
-
-                <div class="ui sticky article-toc" id="article-toc">
-                    <!-- toc -->
-                    
-                </div>
-
-            </div>
-            
-
-        </div>
-    </div>
-</div>
-
-
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-        </div>
-        <div class="ui vertical footer segment">
-    <div class="ui center aligned container">
-        <div class="ui inverted section divider"></div>
-        &copy; 2018 <a href="/">elangduan@126.com</a>,
-        Powered by <a href="https://github.com/henryhuang/hexo-theme-aloha" target="_blank">Aloha</a> and <a
-                href="http://hexo.io/" target="_blank">Hexo</a>.
-    </div>
-</div>
-
-    </div>
 
 
 
 
-<!-- scripts list from theme config.yml -->
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
 
-<script src="//cdn.bootcss.com/jquery/3.1.0/jquery.min.js"></script>
+  
 
-<script src="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.js"></script>
+    <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=1.1"></script>
 
-<script src="//cdn.bootcss.com/algoliasearch/3.18.1/algoliasearch.min.js"></script>
-
-<script src="//cdn.bootcss.com/algoliasearch-helper-js/2.13.0/algoliasearch.helper.min.js"></script>
-
-<script src="/js/semantic-ui-algolia.js"></script>
-
-<script src="/js/aloha-events.js"></script>
-
-
-
-</body>
+  </body>
 </html>

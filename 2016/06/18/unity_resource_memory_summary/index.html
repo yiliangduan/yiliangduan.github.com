@@ -1,290 +1,224 @@
-
-
 <!DOCTYPE html>
-<html lang="zh-Hans">
-<head prefix="og: http://ogp.me/ns#">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
-    <meta name="description" content="">
-    <title>Unity中内存资源释放总结 | elangduan</title>
+<html lang="">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
 
-    <!-- Open Graph -->
-    <meta name="description" content="Unity&amp;#x5185;&amp;#x5B58;&amp;#x91CA;&amp;#x653E; &amp;#x95EE;&amp;#x9898;&amp;#x4E3B;&amp;#x8981;&amp;#x8003;&amp;#x8651;&amp;#x4E00;&amp;#x4E0B;&amp;#x51E0;&amp;#x4E2A;&amp;#x65B9;&amp;#x9762;:  (1)  Resources &amp;#x52A0;&amp;#x8F7D;&amp;#x7684;&amp;#x8D44;&amp;#x6E90;&amp;#x9700;">
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="Unity中内存资源释放总结"/>
+
+
+
+
+  <meta name="keywords" content="unity," />
+
+
+
+
+
+  <link rel="alternate" href="/default" title="elangduan">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://elangduan.github.com/2016/06/18/unity_resource_memory_summary/"/>
+
+
+<meta name="description" content="Unity内存释放 问题主要考虑一下几个方面:  (1)  Resources 加载的资源需要释放的时候调用 Resources.UnloadUnusedAssets();   (2) WWW 加载的任何资源必须调用WWW的Dispose接口   (3) 创建的RenderTexture必须调用Release接口   (4) 必须用Xcode联机调试确定C++层有没有内存泄漏   (5) Asse">
 <meta name="keywords" content="unity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity中内存资源释放总结">
 <meta property="og:url" content="http://elangduan.github.com/2016/06/18/unity_resource_memory_summary/index.html">
 <meta property="og:site_name" content="elangduan">
-<meta property="og:description" content="Unity&amp;#x5185;&amp;#x5B58;&amp;#x91CA;&amp;#x653E; &amp;#x95EE;&amp;#x9898;&amp;#x4E3B;&amp;#x8981;&amp;#x8003;&amp;#x8651;&amp;#x4E00;&amp;#x4E0B;&amp;#x51E0;&amp;#x4E2A;&amp;#x65B9;&amp;#x9762;:  (1)  Resources &amp;#x52A0;&amp;#x8F7D;&amp;#x7684;&amp;#x8D44;&amp;#x6E90;&amp;#x9700;">
+<meta property="og:description" content="Unity内存释放 问题主要考虑一下几个方面:  (1)  Resources 加载的资源需要释放的时候调用 Resources.UnloadUnusedAssets();   (2) WWW 加载的任何资源必须调用WWW的Dispose接口   (3) 创建的RenderTexture必须调用Release接口   (4) 必须用Xcode联机调试确定C++层有没有内存泄漏   (5) Asse">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2017-05-29T05:00:56.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity中内存资源释放总结">
-<meta name="twitter:description" content="Unity&amp;#x5185;&amp;#x5B58;&amp;#x91CA;&amp;#x653E; &amp;#x95EE;&amp;#x9898;&amp;#x4E3B;&amp;#x8981;&amp;#x8003;&amp;#x8651;&amp;#x4E00;&amp;#x4E0B;&amp;#x51E0;&amp;#x4E2A;&amp;#x65B9;&amp;#x9762;:  (1)  Resources &amp;#x52A0;&amp;#x8F7D;&amp;#x7684;&amp;#x8D44;&amp;#x6E90;&amp;#x9700;">
+<meta name="twitter:description" content="Unity内存释放 问题主要考虑一下几个方面:  (1)  Resources 加载的资源需要释放的时候调用 Resources.UnloadUnusedAssets();   (2) WWW 加载的任何资源必须调用WWW的Dispose接口   (3) 创建的RenderTexture必须调用Release接口   (4) 必须用Xcode联机调试确定C++层有没有内存泄漏   (5) Asse">
 
-    <script type="application/ld+json">
-{
-  "@context": "http://schema.org",
-  "@type": "Person",
-  "email": "mailto:elangduan@126.com",
-  "image": "/uploads/avatar.png",
-  "name": "elangduan@126.com",
-  "url": "http://elangduan.github.com"
-}
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
 </script>
-    <script>
-    var algoliaEnabled = false;
-    
-</script>
 
-    
 
-    
-    
-        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-    
-    
-    
-        <!-- stylesheets list from config.yml -->
+
+
+  
+
+
+
+    <title> Unity中内存资源释放总结 - elangduan </title>
+  </head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/." class="logo">elangduan</a>
+    </h1>
+
+    <nav id="nav-top">
         
-        <link rel="stylesheet" href="/css/aloha.css">
-        
-        <link rel="stylesheet" href="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.css">
-        
-        <link rel="stylesheet" href="//cdn.bootcss.com/magnific-popup.js/1.1.0/magnific-popup.min.css">
-        
-    
-
-</head>
-<body id="body" style="margin-bottom: 0;" class="pushable">
-
-    <div class="ui top fixed menu">
-        <a class="item" id="menu-icon"><i class="sidebar icon"></i></a>
-    </div>
-
-    <div id="menu-sidebar" class="ui left vertical sidebar menu">
-
-    <div id="sidebar-top">
-        <div class="content">
-            <h3>elangduan</h3>
-        </div>
-    </div>
-    <div class="ui container sidebar-card">
-    <div class="ui people shape content">
-        <div class="active side">
-            <div class="ui card">
-                <div class="image">
-                    <img class="ui medium bordered image" src="/images/avatar.jpg">
-                </div>
-                <div class="content">
-                    <a class="header">elangduan@126.com</a>
-                    
-                        <div class="meta">
-                            Game Developer
-                        </div>
-                    
-                </div>
-                <div class="extra content">
-                    <div class="ui list">
-                        
-                        <div class="item">
-                            <i class="marker icon" style="float: left"></i>
-                            <div class="content">Shanghai</div>
-                        </div>
-                        
-                        
-                        <div class="item">
-                            <i class="mail icon" style="float: left"></i>
-                            <div class="content">
-                                <a href="mailto:elangduan@126.com">elangduan@126.com</a>
-                            </div>
-                        </div>
-                        
-                    </div>
-
-                </div>
-                <div class="extra content">
-                    <div class="ui list">
-                        
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-</div>
-
-    
-    
-
-    
-
-    
-    <a href="/index.html" class="item" >
-        <i class="home icon"></i>
-        HOME
-    </a>
-
-    
-
-    
-</div>
-
-    <div class="pusher body-content">
-        <div id="content" class="ui main container">
-            <!--<div class="ui one column grid">-->
-                <!--<div class="column">-->
-                    <!--<div class="ui main container">-->
-                        <div id="post-unity_resource_memory_summary" class="ui main container article-type-post">
-
-    
-
-    <div class="ui divided grid">
-
-        <div class="two column row" id="article-content">
-
-            <div class="thirteen wide computer thirteen wide tablet sixteen wide mobile column">
+            <ul id="menu-top" class="nav-top-items">
                 
+                    <li class="menu-item">
+                        <a href="/archives">
+                            
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/about">
+                            
+                            
+                                About
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
 
-<h1 class="ui header">
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          Unity中内存资源释放总结
+        
+      </h1>
+
+      <time class="post-time">
+          Jun 18 2016
+      </time>
+    </header>
+
+
+
     
-    Unity中内存资源释放总结
-</h1>
-
-
-
-                <div class="article-inner">
-
-                    <div class="article-entry" itemprop="articleBody">
-                        
-                        <p><strong>Unity&#x5185;&#x5B58;&#x91CA;&#x653E;</strong> &#x95EE;&#x9898;&#x4E3B;&#x8981;&#x8003;&#x8651;&#x4E00;&#x4E0B;&#x51E0;&#x4E2A;&#x65B9;&#x9762;:<br>  (1)  Resources &#x52A0;&#x8F7D;&#x7684;&#x8D44;&#x6E90;&#x9700;&#x8981;&#x91CA;&#x653E;&#x7684;&#x65F6;&#x5019;&#x8C03;&#x7528; Resources.UnloadUnusedAssets();</p>
-<p>  (2) WWW &#x52A0;&#x8F7D;&#x7684;&#x4EFB;&#x4F55;&#x8D44;&#x6E90;<font color="#FF0000">&#x5FC5;&#x987B;</font>&#x8C03;&#x7528;WWW&#x7684;Dispose&#x63A5;&#x53E3;</p>
-<p>  (3) &#x521B;&#x5EFA;&#x7684;RenderTexture<font color="#FF0000">&#x5FC5;&#x987B;</font>&#x8C03;&#x7528;Release&#x63A5;&#x53E3;</p>
-<p>  (4) &#x5FC5;&#x987B;&#x7528;Xcode&#x8054;&#x673A;&#x8C03;&#x8BD5;&#x786E;&#x5B9A;C++&#x5C42;&#x6709;&#x6CA1;&#x6709;&#x5185;&#x5B58;&#x6CC4;&#x6F0F;</p>
-<p>  (5) AssetBundle&#x8D44;&#x6E90;&#x5728;Unity Profile&#x4E2D;&#x7684;Scene Memory&#x4E0D;&#x4F1A;&#x663E;&#x793A;&#xFF0C;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;Xcode&#x8054;&#x673A;&#x8C03;&#x8BD5;&#x786E;&#x5B9A;&#x6709;&#x6CA1;&#x6709;&#x91CA;&#x653E;&#x5B8C;&#x5168;</p>
-<p>  (6) &#x52A0;&#x8F7D;&#x8D44;&#x6E90;&#x548C;&#x5378;&#x8F7D;&#x8D44;&#x6E90;&#x7684;&#x5F02;&#x6B65;&#x5904;&#x7406;,&#x907F;&#x514D;&#x540C;&#x4E00;&#x5E27;&#x5185;&#x52A0;&#x8F7D;&#x8FC7;&#x591A;&#x8D44;&#x6E90;&#x5BFC;&#x81F4;&#x5185;&#x5B58;&#x77AC;&#x95F4;&#x589E;&#x5927;&#x4ECE;&#x800C;&#x5BFC;&#x81F4;Crash(&#x4F4E;&#x914D;&#x673A;&#x5668;&#x4E0A;&#x8868;&#x73B0;&#x66F4;&#x660E;&#x663E;)</p>
-<p>&#x4E00;&#x822C;&#x901A;&#x8FC7;WWW&#x52A0;&#x8F7D;&#x4E00;&#x5F20;Texture&#x6765;&#x901A;&#x8FC7;Image&#x663E;&#x793A;&#x7684;&#x8BDD;&#xFF0C;&#x4E00;&#x79CD;&#x7684;&#x65B9;&#x6CD5;&#x662F;&#x4F7F;&#x7528;Texture&#x901A;&#x8FC7;Sprite.Create&#x6765;&#x521B;&#x5EFA;&#x4E00;&#x4E2A;Sprite&#x5BF9;&#x8C61;&#x8D4B;&#x503C;&#x7ED9;Image.overrideSprite&#x5B8C;&#x6210;&#x663E;&#x793A;&#x3002;&#x4F46;&#x662F;&#x9700;&#x8981;&#x6CE8;&#x610F;&#x4E00;&#x4E2A;&#x95EE;&#x9898;&#xFF0C;Sprite.Create&#x521B;&#x5EFA;&#x5BF9;&#x8C61;&#x5BF9;&#x62F7;&#x8D1D;Texture&#x4E2D;&#x6570;&#x636E;&#xFF0C;&#x5E76;&#x751F;&#x6210;&#x4E00;&#x4E2A;&#x65B0;&#x7684;Sprite&#x5BF9;&#x8C61;&#xFF0C;&#x8FD9;&#x6837;&#x4F1A;&#x9020;&#x6210;&#x8017;&#x8D39;&#x5C06;&#x8FD1;2&#x500D;Texture&#x5927;&#x5C0F;&#x7684;&#x5185;&#x5B58;&#xFF0C;&#x800C;&#x4E14;&#x8FD9;&#x4E2A;&#x5185;&#x5B58;&#x5360;&#x7528;&#x4E0D;&#x4F1A;&#x968F;&#x7740;Image&#x7684;&#x9500;&#x6BC1;&#x800C;&#x9A6C;&#x4E0A;&#x9500;&#x6BC1;&#xFF0C;&#x77E5;&#x9053;&#x4F60;&#x8C03;&#x7528;Resources.UnloadUnusedResources()&#x63A5;&#x53E3;&#x624D;&#x4F1A;&#x9500;&#x6BC1;&#x3002;&#x5982;&#x679C;&#x5728;&#x4E00;&#x4E2A;&#x573A;&#x666F;&#x4E2D;&#x6709;&#x5927;&#x91CF;&#x7684;&#x56FE;&#x7247;&#x9700;&#x8981;&#x52A8;&#x6001;&#x52A0;&#x8F7D;&#x7684;&#x8BDD;&#xFF0C;&#x90A3;&#x4E48;&#x5FC5;&#x987B;&#x6CE8;&#x610F;&#x5185;&#x5B58;&#x95EE;&#x9898;&#x4E86;&#x3002;&#x6240;&#x4EE5;&#x5EFA;&#x8BAE;&#x4E0D;&#x8981;&#x4F7F;&#x7528;&#x663E;&#x793A;Image&#x7684;&#x65B9;&#x5F0F;&#xFF0C;&#x6709;&#x4E00;&#x79CD;&#x65B9;&#x5F0F;&#x662F;&#x663E;&#x793A;RawImage&#xFF0C;&#x6309;&#x7167;&#x5B98;&#x65B9;&#x6587;&#x6863;&#x7684;&#x63CF;&#x8FF0;:</p>
+            <div class="post-content">
+            <p><strong>Unity内存释放</strong> 问题主要考虑一下几个方面:<br>  (1)  Resources 加载的资源需要释放的时候调用 Resources.UnloadUnusedAssets();</p>
+<p>  (2) WWW 加载的任何资源<font color="#FF0000">必须</font>调用WWW的Dispose接口</p>
+<p>  (3) 创建的RenderTexture<font color="#FF0000">必须</font>调用Release接口</p>
+<p>  (4) 必须用Xcode联机调试确定C++层有没有内存泄漏</p>
+<p>  (5) AssetBundle资源在Unity Profile中的Scene Memory不会显示，可以通过Xcode联机调试确定有没有释放完全</p>
+<p>  (6) 加载资源和卸载资源的异步处理,避免同一帧内加载过多资源导致内存瞬间增大从而导致Crash(低配机器上表现更明显)</p>
+<p>一般通过WWW加载一张Texture来通过Image显示的话，一种的方法是使用Texture通过Sprite.Create来创建一个Sprite对象赋值给Image.overrideSprite完成显示。但是需要注意一个问题，Sprite.Create创建对象对拷贝Texture中数据，并生成一个新的Sprite对象，这样会造成耗费将近2倍Texture大小的内存，而且这个内存占用不会随着Image的销毁而马上销毁，知道你调用Resources.UnloadUnusedResources()接口才会销毁。如果在一个场景中有大量的图片需要动态加载的话，那么必须注意内存问题了。所以建议不要使用显示Image的方式，有一种方式是显示RawImage，按照官方文档的描述:</p>
 <blockquote>
 <p>The Raw Image control displays a non-interactive image to the user. This can be used for decoration, icons, etc, and the image can also be changed from a script to reflect changes in other controls.</p>
 </blockquote>
-<p>RawImage&#x662F;&#x4E00;&#x4E2A;&#x6CA1;&#x6709;&#x548C;&#x7528;&#x6237;&#x4EA4;&#x4E92;&#x7684;Image&#xFF0C;&#x6240;&#x4EE5;&#x5982;&#x679C;&#x6211;&#x4EEC;&#x4E0D;&#x9700;&#x8981;&#x6BD4;&#x5982;&#x4E8B;&#x4EF6;&#x8FD9;&#x79CD;&#x4EA4;&#x4E92;&#x7684;&#x64CD;&#x4F5C;&#x7684;&#x8BDD;&#xFF0C;&#x8FD8;&#x662F;&#x5EFA;&#x8BAE;&#x7528;RawImage&#x6765;&#x663E;&#x793A;Texture&#x3002;RawImage&#x7684;&#x65B9;&#x5F0F;&#x4F1A;&#x9AD8;&#x6548;&#x5F88;&#x591A;&#xFF0C;&#x5982;&#x679C;&#x4ECE;AssetBundle&#x91CC;&#x9762;&#x52A0;&#x8F7D;&#x4E86;&#x4E00;&#x5F20;Texture&#xFF0C;&#x4E0D;&#x7BA1;&#x662F;&#x8D4B;&#x503C;&#x7ED9;&#x591A;&#x5C11;&#x4E2A;RawImage&#xFF0C;Texture&#x662F;&#x516C;&#x7528;&#x7684;&#xFF0C;&#x53EA;&#x4F1A;&#x6709;&#x4E00;&#x5206;&#x5185;&#x5B58;&#x3002;</p>
+<p>RawImage是一个没有和用户交互的Image，所以如果我们不需要比如事件这种交互的操作的话，还是建议用RawImage来显示Texture。RawImage的方式会高效很多，如果从AssetBundle里面加载了一张Texture，不管是赋值给多少个RawImage，Texture是公用的，只会有一分内存。</p>
 
-                        
-                    </div>
+            </div>
+          
 
-                    
-                    
-                    
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/tags/unity/">unity</a>
+		  
+		</div>
+		
 
-                    <div class="description post-description">
-    <span class="post-description-item">
-        <time datetime="2016-06-18T04:03:10.000Z" itemprop="datePublished">2016-06-18</time>
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2016/06/29/cs_object_refer_each_other/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">C# 内存管理之对象循环引用问题</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/2016/06/05/cs_multi_thread_note/">
+        <span class="next-text nav-default">C#多线程下数据同步处理</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
 
-    </span>
-    <span class="post-description-item">
         
 
-    <span>
-        <i class="tags icon"></i>
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2014 -
+    
+    2018
+    <span class="footer-author">elangduan@126.com.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
     </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
 
     
-    <span class="ui tiny label">
-        <a href="/tags/unity/">unity</a>
-    </span>
-
-    
-
-    </span>
-</div>
-
-                </div>
-                
-                <div id="pagination" class="nav-web ui text container pagination">
-
-    <div class="ui stackable two column divided grid container">
-        <div class="row">
-            <div class="column nav-left">
-                
-
-                <a href="/2016/06/29/cs_object_refer_each_other/" class="ui tiny button">
-
-                    <i class="angle left icon"></i>
-                    
-                    C# 内存管理之对象循环引用问题
-                    
-
-                </a>
-
-                
-            </div>
-            <div class="column nav-right">
-                
-
-                <a href="/2016/06/05/cs_multi_thread_note/" class="ui tiny button">
-                    
-                    C#多线程下数据同步处理
-                    
-                    <i class="angle right icon"></i></a>
-                
-            </div>
-        </div>
-    </div>
-
-</div>
-                
-            </div>
-
-            
-            <div class="three wide computer three wide tablet column">
-
-                <div class="ui sticky article-toc" id="article-toc">
-                    <!-- toc -->
-                    
-                </div>
-
-            </div>
-            
-
-        </div>
-    </div>
-</div>
-
-
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-        </div>
-        <div class="ui vertical footer segment">
-    <div class="ui center aligned container">
-        <div class="ui inverted section divider"></div>
-        &copy; 2018 <a href="/">elangduan@126.com</a>,
-        Powered by <a href="https://github.com/henryhuang/hexo-theme-aloha" target="_blank">Aloha</a> and <a
-                href="http://hexo.io/" target="_blank">Hexo</a>.
-    </div>
-</div>
-
-    </div>
 
 
 
 
-<!-- scripts list from theme config.yml -->
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
 
-<script src="//cdn.bootcss.com/jquery/3.1.0/jquery.min.js"></script>
+  
 
-<script src="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.js"></script>
+    <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=1.1"></script>
 
-<script src="//cdn.bootcss.com/algoliasearch/3.18.1/algoliasearch.min.js"></script>
-
-<script src="//cdn.bootcss.com/algoliasearch-helper-js/2.13.0/algoliasearch.helper.min.js"></script>
-
-<script src="/js/semantic-ui-algolia.js"></script>
-
-<script src="/js/aloha-events.js"></script>
-
-
-
-</body>
+  </body>
 </html>

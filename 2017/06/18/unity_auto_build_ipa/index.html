@@ -1,21 +1,47 @@
-
-
 <!DOCTYPE html>
-<html lang="zh-Hans">
-<head prefix="og: http://ogp.me/ns#">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
-    <meta name="description" content="">
-    <title>Unity脚本自动构建IPA包 | elangduan</title>
+<html lang="">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
 
-    <!-- Open Graph -->
-    <meta name="description" content="Unity&amp;#x9879;&amp;#x76EE;&amp;#x5728;iOS&amp;#x5E73;&amp;#x53F0;&amp;#x6253;&amp;#x5305;&amp;#x662F;&amp;#x4E00;&amp;#x4EF6;&amp;#x6BD4;&amp;#x8F83;&amp;#x8D39;&amp;#x65F6;&amp;#x95F4;&amp;#x7684;&amp;#x4E8B;&amp;#x60C5;&amp;#xFF0C;&amp;#x6240;&amp;#x4EE5;&amp;#x5199;&amp;#x4E86;&amp;#x811A;">
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="Unity脚本自动构建IPA包"/>
+
+
+
+
+  <meta name="keywords" content="unity," />
+
+
+
+
+
+  <link rel="alternate" href="/default" title="elangduan">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://elangduan.github.com/2017/06/18/unity_auto_build_ipa/"/>
+
+
+<meta name="description" content="Unity项目在iOS平台打包是一件比较费时间的事情，所以写了脚本来实现自动话打包生成ipa文件，避免每次去到处xcode工程然后配置证书之类的设置。  测试环境 Unity5.5.1f3, macOS 10.12.4, Xcode 8.3.2  工具使用介绍打包的配置用到了很重要的XUPorter插件，打包的代码UnityIPABuilder。下面简单讲解一下里面的具体实现 Xcode打包主要有">
 <meta name="keywords" content="unity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity脚本自动构建IPA包">
 <meta property="og:url" content="http://elangduan.github.com/2017/06/18/unity_auto_build_ipa/index.html">
 <meta property="og:site_name" content="elangduan">
-<meta property="og:description" content="Unity&amp;#x9879;&amp;#x76EE;&amp;#x5728;iOS&amp;#x5E73;&amp;#x53F0;&amp;#x6253;&amp;#x5305;&amp;#x662F;&amp;#x4E00;&amp;#x4EF6;&amp;#x6BD4;&amp;#x8F83;&amp;#x8D39;&amp;#x65F6;&amp;#x95F4;&amp;#x7684;&amp;#x4E8B;&amp;#x60C5;&amp;#xFF0C;&amp;#x6240;&amp;#x4EE5;&amp;#x5199;&amp;#x4E86;&amp;#x811A;">
+<meta property="og:description" content="Unity项目在iOS平台打包是一件比较费时间的事情，所以写了脚本来实现自动话打包生成ipa文件，避免每次去到处xcode工程然后配置证书之类的设置。  测试环境 Unity5.5.1f3, macOS 10.12.4, Xcode 8.3.2  工具使用介绍打包的配置用到了很重要的XUPorter插件，打包的代码UnityIPABuilder。下面简单讲解一下里面的具体实现 Xcode打包主要有">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_ipa_builder/ipa_builder_window.jpeg">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_ipa_builder/provisining_profile_get_method.png">
@@ -23,298 +49,206 @@
 <meta property="og:updated_time" content="2017-06-20T01:35:02.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity脚本自动构建IPA包">
-<meta name="twitter:description" content="Unity&amp;#x9879;&amp;#x76EE;&amp;#x5728;iOS&amp;#x5E73;&amp;#x53F0;&amp;#x6253;&amp;#x5305;&amp;#x662F;&amp;#x4E00;&amp;#x4EF6;&amp;#x6BD4;&amp;#x8F83;&amp;#x8D39;&amp;#x65F6;&amp;#x95F4;&amp;#x7684;&amp;#x4E8B;&amp;#x60C5;&amp;#xFF0C;&amp;#x6240;&amp;#x4EE5;&amp;#x5199;&amp;#x4E86;&amp;#x811A;">
+<meta name="twitter:description" content="Unity项目在iOS平台打包是一件比较费时间的事情，所以写了脚本来实现自动话打包生成ipa文件，避免每次去到处xcode工程然后配置证书之类的设置。  测试环境 Unity5.5.1f3, macOS 10.12.4, Xcode 8.3.2  工具使用介绍打包的配置用到了很重要的XUPorter插件，打包的代码UnityIPABuilder。下面简单讲解一下里面的具体实现 Xcode打包主要有">
 <meta name="twitter:image" content="http://elangduan.github.com/images/unity_ipa_builder/ipa_builder_window.jpeg">
 
-    <script type="application/ld+json">
-{
-  "@context": "http://schema.org",
-  "@type": "Person",
-  "email": "mailto:elangduan@126.com",
-  "image": "/uploads/avatar.png",
-  "name": "elangduan@126.com",
-  "url": "http://elangduan.github.com"
-}
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
 </script>
-    <script>
-    var algoliaEnabled = false;
-    
-</script>
 
-    
 
-    
-    
-        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-    
-    
-    
-        <!-- stylesheets list from config.yml -->
+
+
+  
+
+
+
+    <title> Unity脚本自动构建IPA包 - elangduan </title>
+  </head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/." class="logo">elangduan</a>
+    </h1>
+
+    <nav id="nav-top">
         
-        <link rel="stylesheet" href="/css/aloha.css">
-        
-        <link rel="stylesheet" href="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.css">
-        
-        <link rel="stylesheet" href="//cdn.bootcss.com/magnific-popup.js/1.1.0/magnific-popup.min.css">
-        
-    
-
-</head>
-<body id="body" style="margin-bottom: 0;" class="pushable">
-
-    <div class="ui top fixed menu">
-        <a class="item" id="menu-icon"><i class="sidebar icon"></i></a>
-    </div>
-
-    <div id="menu-sidebar" class="ui left vertical sidebar menu">
-
-    <div id="sidebar-top">
-        <div class="content">
-            <h3>elangduan</h3>
-        </div>
-    </div>
-    <div class="ui container sidebar-card">
-    <div class="ui people shape content">
-        <div class="active side">
-            <div class="ui card">
-                <div class="image">
-                    <img class="ui medium bordered image" src="/images/avatar.jpg">
-                </div>
-                <div class="content">
-                    <a class="header">elangduan@126.com</a>
-                    
-                        <div class="meta">
-                            Game Developer
-                        </div>
-                    
-                </div>
-                <div class="extra content">
-                    <div class="ui list">
-                        
-                        <div class="item">
-                            <i class="marker icon" style="float: left"></i>
-                            <div class="content">Shanghai</div>
-                        </div>
-                        
-                        
-                        <div class="item">
-                            <i class="mail icon" style="float: left"></i>
-                            <div class="content">
-                                <a href="mailto:elangduan@126.com">elangduan@126.com</a>
-                            </div>
-                        </div>
-                        
-                    </div>
-
-                </div>
-                <div class="extra content">
-                    <div class="ui list">
-                        
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-</div>
-
-    
-    
-
-    
-
-    
-    <a href="/index.html" class="item" >
-        <i class="home icon"></i>
-        HOME
-    </a>
-
-    
-
-    
-</div>
-
-    <div class="pusher body-content">
-        <div id="content" class="ui main container">
-            <!--<div class="ui one column grid">-->
-                <!--<div class="column">-->
-                    <!--<div class="ui main container">-->
-                        <div id="post-unity_auto_build_ipa" class="ui main container article-type-post">
-
-    
-
-    <div class="ui divided grid">
-
-        <div class="two column row" id="article-content">
-
-            <div class="thirteen wide computer thirteen wide tablet sixteen wide mobile column">
+            <ul id="menu-top" class="nav-top-items">
                 
+                    <li class="menu-item">
+                        <a href="/archives">
+                            
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/about">
+                            
+                            
+                                About
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
 
-<h1 class="ui header">
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          Unity脚本自动构建IPA包
+        
+      </h1>
+
+      <time class="post-time">
+          Jun 18 2017
+      </time>
+    </header>
+
+
+
     
-    Unity脚本自动构建IPA包
-</h1>
-
-
-
-                <div class="article-inner">
-
-                    <div class="article-entry" itemprop="articleBody">
-                        
-                        <p>Unity&#x9879;&#x76EE;&#x5728;iOS&#x5E73;&#x53F0;&#x6253;&#x5305;&#x662F;&#x4E00;&#x4EF6;&#x6BD4;&#x8F83;&#x8D39;&#x65F6;&#x95F4;&#x7684;&#x4E8B;&#x60C5;&#xFF0C;&#x6240;&#x4EE5;&#x5199;&#x4E86;&#x811A;&#x672C;&#x6765;&#x5B9E;&#x73B0;&#x81EA;&#x52A8;&#x8BDD;&#x6253;&#x5305;&#x751F;&#x6210;ipa&#x6587;&#x4EF6;&#xFF0C;&#x907F;&#x514D;&#x6BCF;&#x6B21;&#x53BB;&#x5230;&#x5904;xcode&#x5DE5;&#x7A0B;&#x7136;&#x540E;&#x914D;&#x7F6E;&#x8BC1;&#x4E66;&#x4E4B;&#x7C7B;&#x7684;&#x8BBE;&#x7F6E;&#x3002;</p>
+            <div class="post-content">
+            <p>Unity项目在iOS平台打包是一件比较费时间的事情，所以写了脚本来实现自动话打包生成ipa文件，避免每次去到处xcode工程然后配置证书之类的设置。</p>
 <blockquote>
-<p>&#x6D4B;&#x8BD5;&#x73AF;&#x5883; Unity5.5.1f3, macOS 10.12.4, Xcode 8.3.2</p>
+<p>测试环境 Unity5.5.1f3, macOS 10.12.4, Xcode 8.3.2</p>
 </blockquote>
-<h4 id="&#x5DE5;&#x5177;&#x4F7F;&#x7528;&#x4ECB;&#x7ECD;"><a href="#&#x5DE5;&#x5177;&#x4F7F;&#x7528;&#x4ECB;&#x7ECD;" class="headerlink" title="&#x5DE5;&#x5177;&#x4F7F;&#x7528;&#x4ECB;&#x7ECD;"></a>&#x5DE5;&#x5177;&#x4F7F;&#x7528;&#x4ECB;&#x7ECD;</h4><p>&#x6253;&#x5305;&#x7684;&#x914D;&#x7F6E;&#x7528;&#x5230;&#x4E86;&#x5F88;&#x91CD;&#x8981;&#x7684;<a href="https://github.com/onevcat/XUPorter" target="_blank" rel="external">XUPorter</a>&#x63D2;&#x4EF6;&#xFF0C;&#x6253;&#x5305;&#x7684;&#x4EE3;&#x7801;<a href="https://github.com/elangduan/UnityIPABuilder" target="_blank" rel="external">UnityIPABuilder</a>&#x3002;&#x4E0B;&#x9762;&#x7B80;&#x5355;&#x8BB2;&#x89E3;&#x4E00;&#x4E0B;&#x91CC;&#x9762;&#x7684;&#x5177;&#x4F53;&#x5B9E;&#x73B0;</p>
-<p>Xcode&#x6253;&#x5305;&#x4E3B;&#x8981;&#x6709;&#x4E24;&#x4E2A;&#x6B65;&#x9AA4;&#xFF0C;&#x7B2C;&#x4E00;&#x6B65;&#x662F;&#x5BFC;&#x51FA;Xcode&#x5DE5;&#x7A0B;&#xFF0C;&#x7B2C;&#x4E8C;&#x6B65;&#x662F;&#x6784;&#x5EFA;Xcode&#x5DE5;&#x7A0B;&#x5E76;&#x4E14;&#x5BFC;&#x51FA;ipa&#x5305;&#x3002;&#x8FD9;&#x91CC;&#x4E24;&#x79CD;&#x65B9;&#x5F0F;&#x542F;&#x52A8;&#x6253;&#x5305;&#x6B65;&#x9AA4;&#x3002;</p>
-<p><em>&#x7B2C;&#x4E00;&#x79CD;</em>&#x5728;Editor&#x6A21;&#x5F0F;&#x4E0B;&#x6253;&#x5305;&#x3002;&#x5236;&#x4F5C;&#x4E86;&#x4E00;&#x4E2A;Editor&#x754C;&#x9762;&#x5982;&#x4E0B;:</p>
-<p><a class="magnific-img" href="/images/unity_ipa_builder/ipa_builder_window.jpeg"><img src="/images/unity_ipa_builder/ipa_builder_window.jpeg" alt="" class="ui centered image"></a></p>
-<p>&#x91CC;&#x9762;&#x7684;Export&#x6309;&#x94AE;&#x7684;&#x529F;&#x80FD;&#x662F;&#x76F4;&#x63A5;&#x5BFC;&#x51FA;&#x4E00;&#x4E2A;&#x914D;&#x7F6E;&#x53F7;&#x53C2;&#x6570;&#x7684;Xcode&#x5DE5;&#x7A0B;&#xFF0C;Build&#x6309;&#x94AE;&#x7684;&#x529F;&#x80FD;&#x662F;&#x9996;&#x5148;&#x4F1A;&#x8FDB;&#x884C;Export&#x64CD;&#x4F5C;&#xFF0C;&#x7136;&#x540E;&#x5BF9;Export&#x51FA;&#x7684;&#x5DE5;&#x7A0B;&#x8FDB;&#x884C;Build&#x76F4;&#x63A5;&#x751F;&#x6210;IPA&#x5305;&#x3002;&#x6574;&#x4E2A;&#x754C;&#x9762;&#x6BD4;&#x8F83;&#x7B80;&#x5355;&#xFF0C;&#x5982;&#x679C;&#x4E0D;&#x6EE1;&#x8DB3;&#x81EA;&#x5DF1;&#x7684;&#x9700;&#x6C42;&#x7684;&#x8BDD;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x5728;<a href="https://github.com/elangduan/UnityIPABuilder/blob/master/Assets/Editor/ProjectBuilder/BuilderWindow.cs" target="_blank" rel="external">BuildWindow</a>&#x91CC;&#x9762;&#x6DFB;&#x52A0;&#x3002;</p>
-<p><em>&#x7B2C;&#x4E8C;&#x79CD;</em>&#x4E0D;&#x542F;&#x52A8;Editor&#xFF0C;&#x76F4;&#x63A5;&#x7528;&#x811A;&#x672C;&#x6253;&#x5305;&#x3002;&#x8FD9;&#x79CD;&#x6A21;&#x5F0F;&#x4E0B;&#x6211;&#x4EEC;&#x76F4;&#x63A5;&#x542F;&#x52A8;&#x9879;&#x76EE;&#x6253;&#x5305;&#x811A;&#x672C;<a href="https://github.com/elangduan/UnityIPABuilder/blob/master/Builder/Script/cmd_start_unity_ipa_builder.sh" target="_blank" rel="external">cmd_start_unity_ipa_builder</a>&#x52A0;&#x4E0A;&#x5BF9;&#x5E94;&#x7684;&#x53C2;&#x6570;&#x5373;&#x53EF;&#x3002;&#x4F8B;&#x5982;sample&#x5DE5;&#x7A0B;&#x7684;&#x6253;&#x5305;&#x76F4;&#x63A5;&#x8FD0;&#x884C;&#x4E00;&#x4E0B;&#x547D;&#x4EE4;(&#x5148;&#x914D;&#x7F6E;&#x597D;<em>xcode_basic.cfg</em>)&#x5373;&#x53EF;&#x5F97;&#x5230;&#x6700;&#x7EC8;&#x7684;ipa&#x6587;&#x4EF6;:</p>
+<h4 id="工具使用介绍"><a href="#工具使用介绍" class="headerlink" title="工具使用介绍"></a>工具使用介绍</h4><p>打包的配置用到了很重要的<a href="https://github.com/onevcat/XUPorter" target="_blank" rel="external">XUPorter</a>插件，打包的代码<a href="https://github.com/elangduan/UnityIPABuilder" target="_blank" rel="external">UnityIPABuilder</a>。下面简单讲解一下里面的具体实现</p>
+<p>Xcode打包主要有两个步骤，第一步是导出Xcode工程，第二步是构建Xcode工程并且导出ipa包。这里两种方式启动打包步骤。</p>
+<p><em>第一种</em>在Editor模式下打包。制作了一个Editor界面如下:</p>
+<p><img src="/images/unity_ipa_builder/ipa_builder_window.jpeg" alt=""></p>
+<p>里面的Export按钮的功能是直接导出一个配置号参数的Xcode工程，Build按钮的功能是首先会进行Export操作，然后对Export出的工程进行Build直接生成IPA包。整个界面比较简单，如果不满足自己的需求的话可以通过在<a href="https://github.com/elangduan/UnityIPABuilder/blob/master/Assets/Editor/ProjectBuilder/BuilderWindow.cs" target="_blank" rel="external">BuildWindow</a>里面添加。</p>
+<p><em>第二种</em>不启动Editor，直接用脚本打包。这种模式下我们直接启动项目打包脚本<a href="https://github.com/elangduan/UnityIPABuilder/blob/master/Builder/Script/cmd_start_unity_ipa_builder.sh" target="_blank" rel="external">cmd_start_unity_ipa_builder</a>加上对应的参数即可。例如sample工程的打包直接运行一下命令(先配置好<em>xcode_basic.cfg</em>)即可得到最终的ipa文件:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./cmd_start_unity_ipa_builder.sh -v 1.0.0 -b 100 -c QA</span><br></pre></td></tr></table></figure>
-<p>&#x8FD9;&#x4E2A;&#x811A;&#x672C;&#x4F1A;&#x9759;&#x9ED8;&#x542F;&#x52A8;Unity&#x6765;&#x6267;&#x884C;<em>ProjectBuilder</em>&#x7684;&#x6253;&#x5305;&#x65B9;&#x6CD5;&#x3002;&#x5E76;&#x4E14;&#x4F1A;&#x628A;&#x6253;&#x5305;&#x7684;&#x65E5;&#x5FD7;&#x5B58;&#x653E;&#x5728;{$ProjectPath}/iOSBuild/build/log&#x76EE;&#x5F55;&#x4E0B;&#x3002;</p>
-<h4 id="&#x5BFC;&#x51FA;Xcode&#x5DE5;&#x7A0B;&#x90E8;&#x5206;"><a href="#&#x5BFC;&#x51FA;Xcode&#x5DE5;&#x7A0B;&#x90E8;&#x5206;" class="headerlink" title="&#x5BFC;&#x51FA;Xcode&#x5DE5;&#x7A0B;&#x90E8;&#x5206;"></a>&#x5BFC;&#x51FA;Xcode&#x5DE5;&#x7A0B;&#x90E8;&#x5206;</h4><p>&#x8FD9;&#x4E00;&#x6B65;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;Unity&#x7684;&#x5185;&#x7F6E;API&#x5B8C;&#x6210;&#x3002;&#x5728;&#x8FD9;&#x4E00;&#x6B65;&#x4E2D;&#x6211;&#x4EEC;&#x8FD8;&#x9700;&#x8981;&#x505A;&#x7684;&#x662F;&#x8BBE;&#x7F6E;&#x597D;&#x5BFC;&#x51FA;&#x7684;Xcode&#x7684;&#x5DE5;&#x7A0B;&#x7684;&#x5404;&#x79CD;&#x914D;&#x7F6E;(&#x8BC1;&#x4E66;&#xFF0C;&#x7248;&#x672C;&#x53F7;&#xFF0C;Framework&#x7B49;)&#x3002;&#x5BFC;&#x51FA;Xcode&#x5DE5;&#x7A0B;&#x76F4;&#x63A5;&#x53EA;&#x7528;Unity&#x7684;API</p>
+<p>这个脚本会静默启动Unity来执行<em>ProjectBuilder</em>的打包方法。并且会把打包的日志存放在{$ProjectPath}/iOSBuild/build/log目录下。</p>
+<h4 id="导出Xcode工程部分"><a href="#导出Xcode工程部分" class="headerlink" title="导出Xcode工程部分"></a>导出Xcode工程部分</h4><p>这一步可以通过Unity的内置API完成。在这一步中我们还需要做的是设置好导出的Xcode的工程的各种配置(证书，版本号，Framework等)。导出Xcode工程直接只用Unity的API</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BuildPipeline.BuildPlayer(buildPlayerOptions);</span><br></pre></td></tr></table></figure>
-<p>&#x8FD9;&#x4E2A;API&#x53EF;&#x4EE5;&#x901A;&#x8FC7;BuildOptions&#x914D;&#x7F6E;&#x5728;Editor&#x4E2D;&#x7684;<em>Player Setttings</em>&#x91CC;&#x9762;&#x7684;&#x5404;&#x79CD;&#x914D;&#x7F6E;&#x3002;&#x6211;&#x7684;&#x5DE5;&#x5177;&#x91CC;&#x9762;&#x53EA;&#x6DFB;&#x52A0;&#x4E86;ScriptingImpletion&#x3001;Architecture&#x3001;&#x6E20;&#x9053;&#x3001;Version&#x548C;Build&#x4E94;&#x4E2A;&#x53C2;&#x6570;&#x3002;&#x8FD9;&#x662F;&#x6839;&#x636E;&#x6211;&#x81EA;&#x5DF1;&#x7684;&#x9700;&#x6C42;&#x6765;&#x6DFB;&#x52A0;&#x7684;&#xFF0C;&#x5176;&#x4ED6;&#x7684;&#x8BBE;&#x7F6E;&#x5728;<em>Palyer Setting</em>&#x8BBE;&#x7F6E;&#x597D;&#x4E86;&#x57FA;&#x672C;&#x4E0A;&#x5C31;&#x4E0D;&#x9700;&#x8981;&#x52A8;&#x6001;&#x6539;&#x53D8;&#x4E86;&#xFF0C;&#x8FD9;&#x51E0;&#x4E2A;&#x53C2;&#x6570;&#x662F;&#x6BCF;&#x6B21;&#x6253;&#x5305;&#x6539;&#x52A8;&#x6BD4;&#x8F83;&#x9891;&#x7E41;&#x7684;&#x9009;&#x9879;&#x3002;</p>
-<p>&#x5148;&#x770B;&#x4E0B;&#x6211;&#x4EEC;&#x7684;&#x6574;&#x4F53;&#x6784;&#x5EFA;&#x6B65;&#x9AA4;:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public static void BuildForiOS(ProjectBuildData data)</span><br><span class="line">{</span><br><span class="line">		//&#x5BFC;&#x51FA;Xcode&#x5DE5;&#x7A0B;</span><br><span class="line">    ExportForiOS(data);</span><br><span class="line"></span><br><span class="line">	   //&#x6784;&#x5EFA;Xcode&#x5DE5;&#x7A0B;</span><br><span class="line">    BuildiOSPorject();</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line">public static void ExportForiOS(ProjectBuildData data)</span><br><span class="line">{</span><br><span class="line">    //&#x6839;&#x636E;data&#x6570;&#x636E;&#x6765;&#x5BFC;&#x51FA;&#x5BF9;&#x5E94;&#x7684;Xcode&#x5DE5;&#x7A0B;</span><br><span class="line"> ....</span><br><span class="line"></span><br><span class="line">  //&#x914D;&#x7F6E;Xcode&#x5DE5;&#x7A0B;</span><br><span class="line">    XCodePostProcess.OnPostProcessBuild(BuildTarget.iOS, BuildPaths.ProjectPath, data.Channel, data);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
-<p>&#x5BFC;&#x51FA;Xcode&#x5DE5;&#x7A0B;&#x4E4B;&#x540E;&#x6211;&#x4EEC;&#x8981;&#x505A;&#x7684;&#x5C31;&#x662F;&#x914D;&#x7F6E;Xcode&#x5DE5;&#x7A0B;&#x3002;&#x8FD9;&#x91CC;&#x6211;&#x7528;&#x7684;&#x662F;XUPorter&#x63D2;&#x4EF6;&#x6765;&#x8FDB;&#x884C;&#x4FEE;&#x6539;&#x7684;&#xFF0C;&#x8FD9;&#x4E2A;&#x63D2;&#x4EF6;&#x53EF;&#x4EE5;&#x5F88;&#x65B9;&#x4FBF;&#x7684;&#x5E2E;&#x52A9;&#x6211;&#x4EEC;&#x81EA;&#x52A8;&#x628A;&#x4F9D;&#x8D56;&#x7684;Framework&#x3001;&#x9759;&#x6001;&#x5E93;&#x3001;&#x6587;&#x4EF6;&#x7B49;&#x6DFB;&#x52A0;&#x5230;Xcode&#x5DE5;&#x7A0B;&#xFF0C;&#x8FD9;&#x6837;&#x53EF;&#x4EE5;&#x89E3;&#x51B3;&#x6211;&#x4EEC;&#x5728;&#x4F7F;&#x7528;&#x7B2C;&#x4E09;&#x65B9;&#x63D2;&#x4EF6;&#x7684;&#x65F6;&#x5019;&#x4F9D;&#x8D56;&#x7684;&#x5E93;&#x6BCF;&#x6B21;&#x6253;&#x5305;&#x9700;&#x8981;&#x624B;&#x52A8;&#x6DFB;&#x52A0;&#x7684;&#x95EE;&#x9898;(5.5.1f1&#x7248;&#x672C;&#x652F;&#x6301;&#x6DFB;&#x52A0;iOS&#x7CFB;&#x7EDF;&#x81EA;&#x5E26;&#x7684;Framwork&#xFF0C;&#x4F46;&#x662F;&#x4E0D;&#x652F;&#x6301;&#x6DFB;&#x52A0;&#x7B2C;&#x4E09;&#x65B9;&#x7684;&#x5E93;&#xFF0C;&#x6BD4;&#x5982;libsqlite3.dylib&#x6587;&#x4EF6;)&#x3002;&#x53E6;&#x5916;&#x4E3A;&#x4E86;&#x914D;&#x7F6E;&#x4E3A;&#x4E86;&#x914D;&#x7F6E;&#x8BC1;&#x4E66;&#x548C;Info.plist&#x6587;&#x4EF6;&#xFF0C;&#x7A0D;&#x5FAE;&#x6539;&#x52A8;&#x4E86;&#x4E00;&#x4E0B;&#x91CC;&#x9762;&#x7684;&#x4EE3;&#x7801;&#x3002;</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">public static void OnPostProcessBuild(BuildTarget target, string xcodeProjectPath, PackageChannel channel, ProjectBuildData data)</span><br><span class="line">{</span><br><span class="line">	if (target != BuildTarget.iOS) {</span><br><span class="line">		Debug.LogWarning(&quot;Target is not iPhone. XCodePostProcess will not run&quot;);</span><br><span class="line">		return;</span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line">	//&#x8FD9;&#x91CC;&#x6765;&#x52A8;&#x6001;XUPorter&#x7684;&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x6765;&#x81EA;&#x52A8;&#x6DFB;&#x52A0;Framework&#x7B49;&#x4E00;&#x4E9B;XCode&#x7684;&#x914D;&#x7F6E;</span><br><span class="line">	XCProject project = new XCProject(xcodeProjectPath + &quot;Unity-iPhone.xcodeproj&quot;);</span><br><span class="line"></span><br><span class="line">	string[] files = Directory.GetFiles( Application.dataPath, &quot;*.projmods&quot;, SearchOption.AllDirectories );</span><br><span class="line">	foreach( string file in files ) {</span><br><span class="line">		project.ApplyMod( file );</span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line">	//&#x8BFB;&#x53D6;&#x6211;&#x4EEC;&#x81EA;&#x5DF1;&#x7684;&#x914D;&#x7F6E;&#x6587;&#x4EF6;</span><br><span class="line">	ProjectBasicConfig config = new ProjectBasicConfigLoader().GetConfig(channel);</span><br><span class="line"></span><br><span class="line">	//&#x8FD9;&#x91CC;&#x914D;&#x7F6E;&#x8BC1;&#x4E66;</span><br><span class="line">	OverWriteBuildSetting(config, project);</span><br><span class="line"></span><br><span class="line">   //&#x8FD9;&#x91CC;&#x914D;&#x7F6E;Info.plist&#x6587;&#x4EF6;&#xFF0C;&#x6BD4;&#x5982;&#x52A0;&#x6743;&#x9650;&#x63CF;&#x8FF0;&#xFF0C;&#x4FEE;&#x6539;&#x7248;&#x672C;&#x53F7;&#x4E4B;&#x7C7B;&#x7684;</span><br><span class="line">	OverWriteInfoPlist(config, xcodeProjectPath, data);</span><br><span class="line"></span><br><span class="line">	project.overwriteBuildSetting (&quot;ENABLE_BITCODE&quot;,&quot;NO&quot;);</span><br><span class="line">	</span><br><span class="line">	//&#x4FDD;&#x5B58;&#x4FEE;&#x6539;</span><br><span class="line">	project.Save();</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
-<p>OnPosProcessBuild&#x51FD;&#x6570;&#x5728;XUPorter&#x63D2;&#x4EF6;&#x91CC;&#x9762;<a href="https://github.com/elangduan/UnityIPABuilder/blob/master/Assets/Editor/ProjectBuilder/XCodePostProcess.cs" target="_blank" rel="external">XCodePostProcess</a>&#x6587;&#x4EF6;&#x91CC;&#x9762;&#x7684;&#x4E00;&#x4E2A;&#x51FD;&#x6570;,&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x672C;&#x6765;&#x662F;&#x52A0;&#x4E86;<em>[PostProcessBuild(999)]</em>&#x5C5E;&#x6027;&#xFF0C;&#x52A0;&#x4E86;&#x8FD9;&#x4E2A;&#x5C5E;&#x6027;&#x7684;&#x51FD;&#x6570;&#x662F;Unity&#x5728;BuildPlayer&#x8C03;&#x7528;&#x4E4B;&#x540E;&#x4F1A;&#x4E3B;&#x52A8;&#x8C03;&#x7528;&#x7684;&#x51FD;&#x6570;&#x3002;&#x4F46;&#x662F;&#x8FD9;&#x91CC;&#x6211;&#x4EEC;&#x53BB;&#x6389;&#x8FD9;&#x4E2A;&#x5C5E;&#x6027;&#xFF0C;&#x6211;&#x4EEC;&#x4E0D;&#x9700;&#x8981;Unity&#x6765;&#x4E3B;&#x52A8;&#x8C03;&#x7528;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x3002;&#x56E0;&#x4E3A;&#x6211;&#x4EEC;&#x7684;&#x6784;&#x5EFA;&#x7684;&#x6B65;&#x9AA4;&#x662F;: BuildPlayer&#x5BFC;&#x51FA;Xcode&#x5DE5;&#x7A0B;&#xFF0C;XUPorter&#x914D;&#x7F6E;XCode&#x5DE5;&#x7A0B;&#xFF0C;shell&#x811A;&#x672C;&#x6784;&#x5EFA;XCode&#x5DE5;&#x7A0B;&#x3002;XCodePostProcess&#x5C5E;&#x4E8E;&#x7B2C;&#x4E8C;&#x6B65;XUPorter&#x914D;&#x7F6E;XCode&#x5DE5;&#x7A0B;&#x8FD9;&#x4E00;&#x6B65;&#xFF0C;&#x5982;&#x679C;&#x8BA9;Unity&#x6765;&#x4E3B;&#x52A8;&#x8C03;&#x7528;XCodePostProcess&#x7684;&#x8BDD;&#x5728;&#x4E0D;&#x4FEE;&#x6539;XUPorter&#x7684;&#x60C5;&#x51B5;&#x4E0B;&#x6211;&#x4EEC;&#x65E0;&#x6CD5;&#x5F97;&#x77E5;XUPorter&#x6267;&#x884C;&#x5B8C;&#x6BD5;&#x7684;&#x65F6;&#x95F4;&#x3002;&#x6240;&#x4EE5;&#x6211;&#x4EEC;&#x81EA;&#x5DF1;&#x5728;&#x8C03;&#x7528;&#x5B8C;BuildPlayer&#x4E4B;&#x540E;&#x63A5;&#x7740;&#x8C03;&#x7528;XCodePostProcess&#x7136;&#x540E;&#x518D;&#x8C03;&#x7528;shell&#x6784;&#x5EFA;&#xFF0C;&#x8FD9;&#x6837;&#x987A;&#x5E8F;&#x6765;&#x6267;&#x884C;&#x3002;</p>
-<p>&#x5BF9;&#x4E8E;&#x914D;&#x7F6E;XUPorter&#x7684;&#x53C2;&#x6570;&#xFF0C;&#x5927;&#x5BB6;&#x53EF;&#x4EE5;&#x53C2;&#x8003;&#x5DE5;&#x7A0B;&#x7684;XUPorter&#x63D2;&#x4EF6;&#x4E0B;&#x9762;&#x7684;Bugly.projmods&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x3002;&#x8BE6;&#x7EC6;&#x7684;&#x89E3;&#x91CA;&#x53EF;&#x4EE5;&#x53C2;&#x8003;&#x4F5C;&#x8005;&#x7684;<a href="https://onevcat.com/2012/12/xuporter/" target="_blank" rel="external">&#x539F;&#x6587;&#x4ECB;&#x7ECD;</a>&#x3002;&#x81F3;&#x4E8E;ProjectBasicConfig&#x914D;&#x7F6E;&#xFF0C;&#x8FD9;&#x4E2A;&#x76F4;&#x63A5;&#x5171;&#x7528;&#x7684;shell&#x811A;&#x672C;&#x4F7F;&#x7528;&#x7684;&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#xFF0C;&#x6784;&#x5EFA;&#x90E8;&#x5206;&#x8BE6;&#x89E3;&#x4E0B;&#x3002;</p>
-<p>&#x81F3;&#x6B64;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x5F97;&#x5230;&#x4E00;&#x4E2A;&#x914D;&#x7F6E;&#x53F7;&#x6240;&#x6709;&#x53C2;&#x6570;&#x7684;Xcode&#x5DE5;&#x7A0B;&#x3002;</p>
-<h4 id="&#x6784;&#x5EFA;Xcode&#x5DE5;&#x7A0B;&#x90E8;&#x5206;"><a href="#&#x6784;&#x5EFA;Xcode&#x5DE5;&#x7A0B;&#x90E8;&#x5206;" class="headerlink" title="&#x6784;&#x5EFA;Xcode&#x5DE5;&#x7A0B;&#x90E8;&#x5206;"></a>&#x6784;&#x5EFA;Xcode&#x5DE5;&#x7A0B;&#x90E8;&#x5206;</h4><p>&#x6784;&#x5EFA;Xcode&#x90E8;&#x5206;&#x6211;&#x8BBE;&#x8BA1;&#x7684;&#x662F;&#x4E0D;&#x4F9D;&#x8D56;Export&#x90E8;&#x5206;&#xFF0C;&#x4E5F;&#x5C31;&#x662F;&#x8BF4;&#x6211;&#x4EEC;&#x4E0D;&#x9700;&#x8981;&#x5728;Export&#x90E8;&#x5206;&#x914D;&#x7F6E;&#x597D;&#x8BC1;&#x4E66;&#x6216;&#x8005;&#x7248;&#x672C;&#x53F7;&#x7B49;&#x8FD9;&#x4E9B;&#x53C2;&#x6570;(<a href="https://github.com/elangduan/UnityIPABuilder/blob/master/BuildScript/xcode_basic.cfg" target="_blank" rel="external">xcode_basic.cfg</a>&#x6587;&#x4EF6;&#x5305;&#x542B;&#x7684;&#x53C2;&#x6570;)&#xFF0C;&#x5BF9;&#x4E8E;&#x4EFB;&#x4F55;Xcode&#x5DE5;&#x7A0B;&#x6211;&#x4EEC;&#x90FD;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x8FD9;&#x4E2A;&#x811A;&#x672C;&#x8FDB;&#x884C;Build&#x751F;&#x6210;IPA&#x5305;&#x3002;&#x6784;&#x5EFA;&#x811A;&#x672C;&#x53EA;&#x6709;<a href="https://github.com/elangduan/UnityIPABuilder/blob/master/Builder/Script/auto_build_xcode_project.sh" target="_blank" rel="external">auto_build_xcode_project</a>&#x4E00;&#x4E2A;&#x6587;&#x4EF6;&#xFF0C;&#x4F7F;&#x7528;&#x65B9;&#x6CD5;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x6267;&#x884C;&#x547D;&#x4EE4;&#x67E5;&#x9605;:</p>
+<p>这个API可以通过BuildOptions配置在Editor中的<em>Player Setttings</em>里面的各种配置。我的工具里面只添加了ScriptingImpletion、Architecture、渠道、Version和Build五个参数。这是根据我自己的需求来添加的，其他的设置在<em>Palyer Setting</em>设置好了基本上就不需要动态改变了，这几个参数是每次打包改动比较频繁的选项。</p>
+<p>先看下我们的整体构建步骤:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public static void BuildForiOS(ProjectBuildData data)</span><br><span class="line">&#123;</span><br><span class="line">		//导出Xcode工程</span><br><span class="line">    ExportForiOS(data);</span><br><span class="line"></span><br><span class="line">	   //构建Xcode工程</span><br><span class="line">    BuildiOSPorject();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void ExportForiOS(ProjectBuildData data)</span><br><span class="line">&#123;</span><br><span class="line">    //根据data数据来导出对应的Xcode工程</span><br><span class="line"> ....</span><br><span class="line"></span><br><span class="line">  //配置Xcode工程</span><br><span class="line">    XCodePostProcess.OnPostProcessBuild(BuildTarget.iOS, BuildPaths.ProjectPath, data.Channel, data);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>导出Xcode工程之后我们要做的就是配置Xcode工程。这里我用的是XUPorter插件来进行修改的，这个插件可以很方便的帮助我们自动把依赖的Framework、静态库、文件等添加到Xcode工程，这样可以解决我们在使用第三方插件的时候依赖的库每次打包需要手动添加的问题(5.5.1f1版本支持添加iOS系统自带的Framwork，但是不支持添加第三方的库，比如libsqlite3.dylib文件)。另外为了配置为了配置证书和Info.plist文件，稍微改动了一下里面的代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">public static void OnPostProcessBuild(BuildTarget target, string xcodeProjectPath, PackageChannel channel, ProjectBuildData data)</span><br><span class="line">&#123;</span><br><span class="line">	if (target != BuildTarget.iOS) &#123;</span><br><span class="line">		Debug.LogWarning(&quot;Target is not iPhone. XCodePostProcess will not run&quot;);</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	//这里来动态XUPorter的配置文件来自动添加Framework等一些XCode的配置</span><br><span class="line">	XCProject project = new XCProject(xcodeProjectPath + &quot;Unity-iPhone.xcodeproj&quot;);</span><br><span class="line"></span><br><span class="line">	string[] files = Directory.GetFiles( Application.dataPath, &quot;*.projmods&quot;, SearchOption.AllDirectories );</span><br><span class="line">	foreach( string file in files ) &#123;</span><br><span class="line">		project.ApplyMod( file );</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	//读取我们自己的配置文件</span><br><span class="line">	ProjectBasicConfig config = new ProjectBasicConfigLoader().GetConfig(channel);</span><br><span class="line"></span><br><span class="line">	//这里配置证书</span><br><span class="line">	OverWriteBuildSetting(config, project);</span><br><span class="line"></span><br><span class="line">   //这里配置Info.plist文件，比如加权限描述，修改版本号之类的</span><br><span class="line">	OverWriteInfoPlist(config, xcodeProjectPath, data);</span><br><span class="line"></span><br><span class="line">	project.overwriteBuildSetting (&quot;ENABLE_BITCODE&quot;,&quot;NO&quot;);</span><br><span class="line">	</span><br><span class="line">	//保存修改</span><br><span class="line">	project.Save();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>OnPosProcessBuild函数在XUPorter插件里面<a href="https://github.com/elangduan/UnityIPABuilder/blob/master/Assets/Editor/ProjectBuilder/XCodePostProcess.cs" target="_blank" rel="external">XCodePostProcess</a>文件里面的一个函数,这个函数本来是加了<em>[PostProcessBuild(999)]</em>属性，加了这个属性的函数是Unity在BuildPlayer调用之后会主动调用的函数。但是这里我们去掉这个属性，我们不需要Unity来主动调用这个函数。因为我们的构建的步骤是: BuildPlayer导出Xcode工程，XUPorter配置XCode工程，shell脚本构建XCode工程。XCodePostProcess属于第二步XUPorter配置XCode工程这一步，如果让Unity来主动调用XCodePostProcess的话在不修改XUPorter的情况下我们无法得知XUPorter执行完毕的时间。所以我们自己在调用完BuildPlayer之后接着调用XCodePostProcess然后再调用shell构建，这样顺序来执行。</p>
+<p>对于配置XUPorter的参数，大家可以参考工程的XUPorter插件下面的Bugly.projmods配置文件。详细的解释可以参考作者的<a href="https://onevcat.com/2012/12/xuporter/" target="_blank" rel="external">原文介绍</a>。至于ProjectBasicConfig配置，这个直接共用的shell脚本使用的配置文件，构建部分详解下。</p>
+<p>至此我们可以得到一个配置号所有参数的Xcode工程。</p>
+<h4 id="构建Xcode工程部分"><a href="#构建Xcode工程部分" class="headerlink" title="构建Xcode工程部分"></a>构建Xcode工程部分</h4><p>构建Xcode部分我设计的是不依赖Export部分，也就是说我们不需要在Export部分配置好证书或者版本号等这些参数(<a href="https://github.com/elangduan/UnityIPABuilder/blob/master/BuildScript/xcode_basic.cfg" target="_blank" rel="external">xcode_basic.cfg</a>文件包含的参数)，对于任何Xcode工程我们都可以通过这个脚本进行Build生成IPA包。构建脚本只有<a href="https://github.com/elangduan/UnityIPABuilder/blob/master/Builder/Script/auto_build_xcode_project.sh" target="_blank" rel="external">auto_build_xcode_project</a>一个文件，使用方法我们可以通过执行命令查阅:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sh auto_build_xcode_project.sh --help</span><br></pre></td></tr></table></figure>
-<p>&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x5148;&#x5BF9;shell&#x811A;&#x672C;&#x6DFB;&#x52A0;&#x53EF;&#x6267;&#x884C;&#x6743;&#x9650;&#xFF0C;&#x4E4B;&#x540E;&#x8FD0;&#x884C;&#x4EE5;&#x6765;&#x5C31;&#x4E0D;&#x9700;&#x8981;sh&#x547D;&#x4EE4;&#x4E86;</p>
+<p>我们可以先对shell脚本添加可执行权限，之后运行以来就不需要sh命令了</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">chmod +x auto_build_xcode_project.sh</span><br><span class="line"></span><br><span class="line">./auto_build_xcode_project.sh --help</span><br></pre></td></tr></table></figure>
-<p>&#x5F53;&#x7136;&#xFF0C;&#x6211;&#x4EEC;&#x5728;&#x4F7F;&#x7528;&#x8FD9;&#x4E2A;&#x811A;&#x672C;&#x4E4B;&#x524D;&#x8BF7;&#x5148;&#x914D;&#x7F6E;&#x8FD9;&#x4E2A;&#x811A;&#x672C;&#x5BF9;&#x5E94;&#x7684;&#x914D;&#x7F6E;&#x6587;&#x4EF6;<a href="https://github.com/elangduan/UnityIPABuilder/blob/master/Builder/Script/xcode_basic.cfg" target="_blank" rel="external">xcode_basic.cfg</a>&#xFF0C;&#x8FD9;&#x4E2A;&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x91CC;&#x9762;&#x5305;&#x542B;&#x7684;&#x53C2;&#x6570;&#x662F;&#x6211;&#x4EEC;&#x5728;&#x4F7F;&#x7528;&#x8FD9;&#x4E2A;&#x811A;&#x672C;&#x81EA;&#x52A8;&#x6253;&#x5305;&#x53EF;&#x4EE5;&#x52A8;&#x6001;&#x6539;&#x53D8;&#x7684;&#x6240;&#x6709;&#x53C2;&#x6570;&#x3002;&#x5982;&#x679C;&#x8FD8;&#x9700;&#x8981;&#x4FEE;&#x6539;&#x989D;&#x5916;&#x7684;&#x53C2;&#x6570;&#xFF0C;&#x90A3;&#x5C31;&#x9700;&#x8981;&#x81EA;&#x5DF1;&#x53E6;&#x5916;&#x6DFB;&#x52A0;&#x4E86;&#x3002;&#x6574;&#x4E2A;&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x6211;&#x5206;&#x4E86;&#x4E09;&#x4E2A;&#x6E20;&#x9053;&#xFF0C;&#x5206;&#x522B;&#x662F;Debug&#xFF0C;QA&#x548C;Release&#x3002;&#x6BCF;&#x4E2A;&#x6E20;&#x9053;&#x7684;&#x914D;&#x7F6E;&#x7684;&#x53C2;&#x6570;&#x662F;&#x4E00;&#x6837;&#x7684;:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">channel=Debug</span><br><span class="line"></span><br><span class="line">#&#x8BC1;&#x4E66;</span><br><span class="line">code_signing_identity=xxx</span><br><span class="line"></span><br><span class="line">#&#x65E7;&#x7248;&#x63CF;&#x8FF0;&#x6587;&#x4EF6;</span><br><span class="line">provisioning_profile=xxx</span><br><span class="line"></span><br><span class="line">#&#x65B0;&#x7248;&#x672C;&#x63CF;&#x8FF0;&#x6587;&#x4EF6;</span><br><span class="line">provisioning_profile_specifier=xxx</span><br><span class="line"></span><br><span class="line">#&#x8D26;&#x53F7;&#x7684;TeamID</span><br><span class="line">team_id=xxx</span><br><span class="line"></span><br><span class="line">#&#x5305;ID</span><br><span class="line">bundle_identity=xxx</span><br><span class="line"></span><br><span class="line">#&#x5305;&#x5B89;&#x88C5;&#x4E4B;&#x540E;&#x7684;&#x663E;&#x793A;&#x540D;&#x5B57;</span><br><span class="line">display_name=xxx</span><br></pre></td></tr></table></figure>
-<p>&#x6253;&#x5305;&#x811A;&#x672C;&#x4F1A;&#x81EA;&#x52A8;&#x8BFB;&#x53D6;&#x76F8;&#x5E94;&#x7684;&#x6E20;&#x9053;&#x7684;&#x914D;&#x7F6E;&#xFF0C;&#x8FD9;&#x4E2A;&#x914D;&#x7F6E;&#x7684;&#x53C2;&#x6570;&#x662F;&#x6709;&#x5E8F;&#x7684;&#xFF0C;&#x4E0D;&#x8981;&#x6539;&#x53D8;&#x4ED6;&#x4EEC;&#x4E4B;&#x95F4;&#x7684;&#x987A;&#x5E8F;&#x3002;&#x8FD9;&#x91CC;&#x548C;&#x5927;&#x5BB6;&#x8BF4;&#x4E0B;&#x600E;&#x4E48;&#x83B7;&#x53D6;&#x5F97;&#x5230;&#x63CF;&#x8FF0;&#x6587;&#x4EF6;&#x548C;&#x8BC1;&#x4E66;&#x7684;&#x6307;&#x3002;</p>
-<p>&#x63CF;&#x8FF0;&#x6587;&#x4EF6;&#x5728;Xcode&#x91CC;&#x9762;&#x7684;<em>Build Settings</em>&#x91CC;&#x9762;Signing&#x91CC;&#x9762;&#x5148;&#x9009;&#x62E9;&#x5BF9;&#x5E94;&#x7684;&#x63CF;&#x8FF0;&#x6587;&#x4EF6;&#xFF0C;&#x7136;&#x540E;&#x5728;&#x9009;&#x9879;&#x4E2D;&#x9009;&#x62E9;<em>other</em>&#x5C31;&#x4F1A;&#x9009;&#x62E9;&#x6211;&#x4EEC;&#x63CF;&#x8FF0;&#x6587;&#x4EF6;&#x7684;&#x503C;:</p>
-<p><a class="magnific-img" href="/images/unity_ipa_builder/provisining_profile_get_method.png"><img src="/images/unity_ipa_builder/provisining_profile_get_method.png" alt="" class="ui centered image"></a></p>
-<p>&#x8BC1;&#x4E66;&#x76F4;&#x63A5;&#x5728;&#x7CFB;&#x7EDF;&#x5E94;&#x7528;<em>&#x94A5;&#x5319;&#x4E32;&#x8BBF;&#x95EE;&#x91CC;&#x9762;&#x67E5;&#x770B;</em>,&#x53CC;&#x51FB;&#x70B9;&#x5F00;&#x4E00;&#x4E2A;&#x94A5;&#x5319;&#x4E32;&#x53EF;&#x4EE5;&#x770B;&#x5F97;&#x5230;:</p>
-<p><a class="magnific-img" href="/images/unity_ipa_builder/code_signing_identity_get_method.jpeg"><img src="/images/unity_ipa_builder/code_signing_identity_get_method.jpeg" alt="" class="ui centered image"></a></p>
-<p>&#x76F4;&#x63A5;&#x590D;&#x5236;&#x91CC;&#x9762;&#x7684;<em>&#x5E38;&#x7528;&#x540D;&#x79F0;</em>&#x5BF9;&#x5E94;&#x7684;&#x503C;&#x5373;&#x53EF;&#x3002;</p>
-<p>&#x5176;&#x5B9E;Xcode&#x7684;&#x81EA;&#x52A8;&#x6784;&#x5EFA;&#x6BD4;&#x8F83;&#x7B80;&#x5355;&#xFF0C;&#x4E3B;&#x8981;&#x662F;&#x901A;&#x8FC7;XcodeBuild&#x6765;&#x6784;&#x5EFA;&#xFF0C;&#x6784;&#x5EFA;&#x597D;&#x4E86;&#x4E4B;&#x540E;&#x4F1A;&#x751F;&#x6210;&#x4E00;&#x4E2A;app&#x5305;&#xFF0C;&#x7136;&#x540E;&#x518D;&#x901A;&#x8FC7;xcrun&#x547D;&#x4EE4;&#x628A;&#x8FD9;&#x4E2A;app&#x5305;&#x538B;&#x7F29;\&#x8F6C;&#x6362;&#x6210;ipa&#x5305;&#x5373;&#x53EF;&#x3002;</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"></span><br><span class="line">//&#x6784;&#x5EFA;xcode&#xFF0C;&#x751F;&#x6210;app&#x5305;</span><br><span class="line">xcodebuild  -project $xcode_project_filepath \</span><br><span class="line">            -configuration $build_mode \</span><br><span class="line">            -target $project_target \</span><br><span class="line">            PROVISIONING_PROFILE=&quot;$provisioning_profile&quot; \</span><br><span class="line">            CODE_SIGN_IDENTITY=&quot;$code_signing_identity&quot; \</span><br><span class="line">            PRODUCT_BUNDLE_IDENTIFIER=$bundle_identity \</span><br><span class="line">            PRODUCT_NAME=$product_name \</span><br><span class="line">            DISPLAY_NAME=$display_name</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">&#x8F6C;&#x6362;app&#x6210;ipa&#x6587;&#x4EF6;</span><br><span class="line">xcrun -sdk iphoneos PackageApplication -v $app_package_path -o $package_unique_path</span><br></pre></td></tr></table></figure>
-<p>&#x81F3;&#x6B64;&#x6211;&#x4EEC;&#x5C31;&#x5F97;&#x5230;&#x4E86;ipa&#x5305;&#x4E86;&#x3002;&#x5982;&#x679C;&#x9700;&#x8981;&#x81EA;&#x52A8;&#x4E0A;&#x4F20;&#x5230;&#x53D1;&#x5E03;&#x5E73;&#x53F0;(&#x6BD4;&#x5982;fir.im)&#xFF0C;&#x53EF;&#x4EE5;&#x76F4;&#x63A5;&#x5728;&#x751F;&#x6210;ipa&#x5305;&#x4E4B;&#x540E;&#x8C03;&#x7528;&#x53D1;&#x5E03;&#x5E73;&#x53F0;&#x63D0;&#x4F9B;&#x7684;&#x4E0A;&#x4F20;&#x547D;&#x4EE4;&#x76F4;&#x63A5;&#x4E0A;&#x4F20;&#x5373;&#x53EF;&#xFF0C;&#x8FD9;&#x6837;&#x6574;&#x4E2A;&#x8FC7;&#x7A0B;&#x5C31;&#x5B8C;&#x5168;&#x81EA;&#x52A8;&#x5316;&#x4E86;&#x3002;</p>
+<p>当然，我们在使用这个脚本之前请先配置这个脚本对应的配置文件<a href="https://github.com/elangduan/UnityIPABuilder/blob/master/Builder/Script/xcode_basic.cfg" target="_blank" rel="external">xcode_basic.cfg</a>，这个配置文件里面包含的参数是我们在使用这个脚本自动打包可以动态改变的所有参数。如果还需要修改额外的参数，那就需要自己另外添加了。整个配置文件我分了三个渠道，分别是Debug，QA和Release。每个渠道的配置的参数是一样的:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">channel=Debug</span><br><span class="line"></span><br><span class="line">#证书</span><br><span class="line">code_signing_identity=xxx</span><br><span class="line"></span><br><span class="line">#旧版描述文件</span><br><span class="line">provisioning_profile=xxx</span><br><span class="line"></span><br><span class="line">#新版本描述文件</span><br><span class="line">provisioning_profile_specifier=xxx</span><br><span class="line"></span><br><span class="line">#账号的TeamID</span><br><span class="line">team_id=xxx</span><br><span class="line"></span><br><span class="line">#包ID</span><br><span class="line">bundle_identity=xxx</span><br><span class="line"></span><br><span class="line">#包安装之后的显示名字</span><br><span class="line">display_name=xxx</span><br></pre></td></tr></table></figure>
+<p>打包脚本会自动读取相应的渠道的配置，这个配置的参数是有序的，不要改变他们之间的顺序。这里和大家说下怎么获取得到描述文件和证书的指。</p>
+<p>描述文件在Xcode里面的<em>Build Settings</em>里面Signing里面先选择对应的描述文件，然后在选项中选择<em>other</em>就会选择我们描述文件的值:</p>
+<p><img src="/images/unity_ipa_builder/provisining_profile_get_method.png" alt=""></p>
+<p>证书直接在系统应用<em>钥匙串访问里面查看</em>,双击点开一个钥匙串可以看得到:</p>
+<p><img src="/images/unity_ipa_builder/code_signing_identity_get_method.jpeg" alt=""></p>
+<p>直接复制里面的<em>常用名称</em>对应的值即可。</p>
+<p>其实Xcode的自动构建比较简单，主要是通过XcodeBuild来构建，构建好了之后会生成一个app包，然后再通过xcrun命令把这个app包压缩\转换成ipa包即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"></span><br><span class="line">//构建xcode，生成app包</span><br><span class="line">xcodebuild  -project $xcode_project_filepath \</span><br><span class="line">            -configuration $build_mode \</span><br><span class="line">            -target $project_target \</span><br><span class="line">            PROVISIONING_PROFILE=&quot;$provisioning_profile&quot; \</span><br><span class="line">            CODE_SIGN_IDENTITY=&quot;$code_signing_identity&quot; \</span><br><span class="line">            PRODUCT_BUNDLE_IDENTIFIER=$bundle_identity \</span><br><span class="line">            PRODUCT_NAME=$product_name \</span><br><span class="line">            DISPLAY_NAME=$display_name</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">转换app成ipa文件</span><br><span class="line">xcrun -sdk iphoneos PackageApplication -v $app_package_path -o $package_unique_path</span><br></pre></td></tr></table></figure>
+<p>至此我们就得到了ipa包了。如果需要自动上传到发布平台(比如fir.im)，可以直接在生成ipa包之后调用发布平台提供的上传命令直接上传即可，这样整个过程就完全自动化了。</p>
 
-                        
-                    </div>
+            </div>
+          
 
-                    
-                    
-                    
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/tags/unity/">unity</a>
+		  
+		</div>
+		
 
-                    <div class="description post-description">
-    <span class="post-description-item">
-        <time datetime="2017-06-18T15:30:00.000Z" itemprop="datePublished">2017-06-18</time>
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2017/07/08/unity_render_order_question/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">Unity模型渲染层级顺序问题</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/2017/05/25/unity_coroutine_note/">
+        <span class="next-text nav-default">Unity Coroutine的实现原理</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
 
-    </span>
-    <span class="post-description-item">
         
 
-    <span>
-        <i class="tags icon"></i>
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2014 -
+    
+    2018
+    <span class="footer-author">elangduan@126.com.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
     </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
 
     
-    <span class="ui tiny label">
-        <a href="/tags/unity/">unity</a>
-    </span>
-
-    
-
-    </span>
-</div>
-
-                </div>
-                
-                <div id="pagination" class="nav-web ui text container pagination">
-
-    <div class="ui stackable two column divided grid container">
-        <div class="row">
-            <div class="column nav-left">
-                
-
-                <a href="/2017/07/08/unity_render_order_question/" class="ui tiny button">
-
-                    <i class="angle left icon"></i>
-                    
-                    Unity模型渲染层级顺序问题
-                    
-
-                </a>
-
-                
-            </div>
-            <div class="column nav-right">
-                
-
-                <a href="/2017/05/25/unity_coroutine_note/" class="ui tiny button">
-                    
-                    Unity Coroutine的实现原理
-                    
-                    <i class="angle right icon"></i></a>
-                
-            </div>
-        </div>
-    </div>
-
-</div>
-                
-            </div>
-
-            
-            <div class="three wide computer three wide tablet column">
-
-                <div class="ui sticky article-toc" id="article-toc">
-                    <!-- toc -->
-                    <ol class="ui ordered list"><li><a href="#工具使用介绍"><span>工具使用介绍</span></a></li><li><a href="#导出Xcode工程部分"><span>导出Xcode工程部分</span></a></li><li><a href="#构建Xcode工程部分"><span>构建Xcode工程部分</span></a></li></ol>
-                </div>
-
-            </div>
-            
-
-        </div>
-    </div>
-</div>
-
-
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-        </div>
-        <div class="ui vertical footer segment">
-    <div class="ui center aligned container">
-        <div class="ui inverted section divider"></div>
-        &copy; 2018 <a href="/">elangduan@126.com</a>,
-        Powered by <a href="https://github.com/henryhuang/hexo-theme-aloha" target="_blank">Aloha</a> and <a
-                href="http://hexo.io/" target="_blank">Hexo</a>.
-    </div>
-</div>
-
-    </div>
 
 
 
 
-<!-- scripts list from theme config.yml -->
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
 
-<script src="//cdn.bootcss.com/jquery/3.1.0/jquery.min.js"></script>
+  
 
-<script src="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.js"></script>
+    <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=1.1"></script>
 
-<script src="//cdn.bootcss.com/algoliasearch/3.18.1/algoliasearch.min.js"></script>
-
-<script src="//cdn.bootcss.com/algoliasearch-helper-js/2.13.0/algoliasearch.helper.min.js"></script>
-
-<script src="/js/semantic-ui-algolia.js"></script>
-
-<script src="/js/aloha-events.js"></script>
-
-
-
-</body>
+  </body>
 </html>

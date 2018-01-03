@@ -1,292 +1,226 @@
-
-
 <!DOCTYPE html>
-<html lang="zh-Hans">
-<head prefix="og: http://ogp.me/ns#">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
-    <meta name="description" content="">
-    <title>Unity模型坐标转换到屏幕坐标 | elangduan</title>
+<html lang="">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
 
-    <!-- Open Graph -->
-    <meta name="description" content="&amp;#x9879;&amp;#x76EE;&amp;#x4E2D;&amp;#x9047;&amp;#x5230;&amp;#x4E00;&amp;#x4E2A;&amp;#x9700;&amp;#x6C42;&amp;#xFF0C;&amp;#x9700;&amp;#x8981;&amp;#x6DFB;&amp;#x52A0;&amp;#x4E00;&amp;#x4E2A;&amp;#x5F15;&amp;#x5BFC;&amp;#xFF0C;&amp;#x5F15;&amp;#x5BFC;&amp;#x7528;&amp;#x6237;&amp;#x4ECE;UI&amp;#x5C4">
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="Unity模型坐标转换到屏幕坐标"/>
+
+
+
+
+  <meta name="keywords" content="unity," />
+
+
+
+
+
+  <link rel="alternate" href="/default" title="elangduan">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://elangduan.github.com/2017/03/04/unity_model_position_transform_to_world_position/"/>
+
+
+<meta name="description" content="项目中遇到一个需求，需要添加一个引导，引导用户从UI层拖拽一个物品到三维的一个模型上面，引导只需在UI层表现即可。这里需要把模型的坐标转换到屏幕的坐标，这里记录一下。 首先要清楚转换的步骤:  模型坐标 -&amp;gt; 世界坐标 -&amp;gt; 屏幕坐标 -&amp;gt; Canvas坐标  需要注意的地方:  模型坐标到世界坐标这一步不需要我们自己转换，因为Transform的position属性就是模型的世">
 <meta name="keywords" content="unity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity模型坐标转换到屏幕坐标">
 <meta property="og:url" content="http://elangduan.github.com/2017/03/04/unity_model_position_transform_to_world_position/index.html">
 <meta property="og:site_name" content="elangduan">
-<meta property="og:description" content="&amp;#x9879;&amp;#x76EE;&amp;#x4E2D;&amp;#x9047;&amp;#x5230;&amp;#x4E00;&amp;#x4E2A;&amp;#x9700;&amp;#x6C42;&amp;#xFF0C;&amp;#x9700;&amp;#x8981;&amp;#x6DFB;&amp;#x52A0;&amp;#x4E00;&amp;#x4E2A;&amp;#x5F15;&amp;#x5BFC;&amp;#xFF0C;&amp;#x5F15;&amp;#x5BFC;&amp;#x7528;&amp;#x6237;&amp;#x4ECE;UI&amp;#x5C4">
+<meta property="og:description" content="项目中遇到一个需求，需要添加一个引导，引导用户从UI层拖拽一个物品到三维的一个模型上面，引导只需在UI层表现即可。这里需要把模型的坐标转换到屏幕的坐标，这里记录一下。 首先要清楚转换的步骤:  模型坐标 -&amp;gt; 世界坐标 -&amp;gt; 屏幕坐标 -&amp;gt; Canvas坐标  需要注意的地方:  模型坐标到世界坐标这一步不需要我们自己转换，因为Transform的position属性就是模型的世">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2017-03-08T05:21:38.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity模型坐标转换到屏幕坐标">
-<meta name="twitter:description" content="&amp;#x9879;&amp;#x76EE;&amp;#x4E2D;&amp;#x9047;&amp;#x5230;&amp;#x4E00;&amp;#x4E2A;&amp;#x9700;&amp;#x6C42;&amp;#xFF0C;&amp;#x9700;&amp;#x8981;&amp;#x6DFB;&amp;#x52A0;&amp;#x4E00;&amp;#x4E2A;&amp;#x5F15;&amp;#x5BFC;&amp;#xFF0C;&amp;#x5F15;&amp;#x5BFC;&amp;#x7528;&amp;#x6237;&amp;#x4ECE;UI&amp;#x5C4">
+<meta name="twitter:description" content="项目中遇到一个需求，需要添加一个引导，引导用户从UI层拖拽一个物品到三维的一个模型上面，引导只需在UI层表现即可。这里需要把模型的坐标转换到屏幕的坐标，这里记录一下。 首先要清楚转换的步骤:  模型坐标 -&amp;gt; 世界坐标 -&amp;gt; 屏幕坐标 -&amp;gt; Canvas坐标  需要注意的地方:  模型坐标到世界坐标这一步不需要我们自己转换，因为Transform的position属性就是模型的世">
 
-    <script type="application/ld+json">
-{
-  "@context": "http://schema.org",
-  "@type": "Person",
-  "email": "mailto:elangduan@126.com",
-  "image": "/uploads/avatar.png",
-  "name": "elangduan@126.com",
-  "url": "http://elangduan.github.com"
-}
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
 </script>
-    <script>
-    var algoliaEnabled = false;
-    
-</script>
 
-    
 
-    
-    
-        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-    
-    
-    
-        <!-- stylesheets list from config.yml -->
+
+
+  
+
+
+
+    <title> Unity模型坐标转换到屏幕坐标 - elangduan </title>
+  </head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/." class="logo">elangduan</a>
+    </h1>
+
+    <nav id="nav-top">
         
-        <link rel="stylesheet" href="/css/aloha.css">
-        
-        <link rel="stylesheet" href="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.css">
-        
-        <link rel="stylesheet" href="//cdn.bootcss.com/magnific-popup.js/1.1.0/magnific-popup.min.css">
-        
-    
-
-</head>
-<body id="body" style="margin-bottom: 0;" class="pushable">
-
-    <div class="ui top fixed menu">
-        <a class="item" id="menu-icon"><i class="sidebar icon"></i></a>
-    </div>
-
-    <div id="menu-sidebar" class="ui left vertical sidebar menu">
-
-    <div id="sidebar-top">
-        <div class="content">
-            <h3>elangduan</h3>
-        </div>
-    </div>
-    <div class="ui container sidebar-card">
-    <div class="ui people shape content">
-        <div class="active side">
-            <div class="ui card">
-                <div class="image">
-                    <img class="ui medium bordered image" src="/images/avatar.jpg">
-                </div>
-                <div class="content">
-                    <a class="header">elangduan@126.com</a>
-                    
-                        <div class="meta">
-                            Game Developer
-                        </div>
-                    
-                </div>
-                <div class="extra content">
-                    <div class="ui list">
-                        
-                        <div class="item">
-                            <i class="marker icon" style="float: left"></i>
-                            <div class="content">Shanghai</div>
-                        </div>
-                        
-                        
-                        <div class="item">
-                            <i class="mail icon" style="float: left"></i>
-                            <div class="content">
-                                <a href="mailto:elangduan@126.com">elangduan@126.com</a>
-                            </div>
-                        </div>
-                        
-                    </div>
-
-                </div>
-                <div class="extra content">
-                    <div class="ui list">
-                        
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-</div>
-
-    
-    
-
-    
-
-    
-    <a href="/index.html" class="item" >
-        <i class="home icon"></i>
-        HOME
-    </a>
-
-    
-
-    
-</div>
-
-    <div class="pusher body-content">
-        <div id="content" class="ui main container">
-            <!--<div class="ui one column grid">-->
-                <!--<div class="column">-->
-                    <!--<div class="ui main container">-->
-                        <div id="post-unity_model_position_transform_to_world_position" class="ui main container article-type-post">
-
-    
-
-    <div class="ui divided grid">
-
-        <div class="two column row" id="article-content">
-
-            <div class="thirteen wide computer thirteen wide tablet sixteen wide mobile column">
+            <ul id="menu-top" class="nav-top-items">
                 
+                    <li class="menu-item">
+                        <a href="/archives">
+                            
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/about">
+                            
+                            
+                                About
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
 
-<h1 class="ui header">
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          Unity模型坐标转换到屏幕坐标
+        
+      </h1>
+
+      <time class="post-time">
+          Mar 04 2017
+      </time>
+    </header>
+
+
+
     
-    Unity模型坐标转换到屏幕坐标
-</h1>
-
-
-
-                <div class="article-inner">
-
-                    <div class="article-entry" itemprop="articleBody">
-                        
-                        <p>&#x9879;&#x76EE;&#x4E2D;&#x9047;&#x5230;&#x4E00;&#x4E2A;&#x9700;&#x6C42;&#xFF0C;&#x9700;&#x8981;&#x6DFB;&#x52A0;&#x4E00;&#x4E2A;&#x5F15;&#x5BFC;&#xFF0C;&#x5F15;&#x5BFC;&#x7528;&#x6237;&#x4ECE;UI&#x5C42;&#x62D6;&#x62FD;&#x4E00;&#x4E2A;&#x7269;&#x54C1;&#x5230;&#x4E09;&#x7EF4;&#x7684;&#x4E00;&#x4E2A;&#x6A21;&#x578B;&#x4E0A;&#x9762;&#xFF0C;&#x5F15;&#x5BFC;&#x53EA;&#x9700;&#x5728;UI&#x5C42;&#x8868;&#x73B0;&#x5373;&#x53EF;&#x3002;&#x8FD9;&#x91CC;&#x9700;&#x8981;&#x628A;&#x6A21;&#x578B;&#x7684;&#x5750;&#x6807;&#x8F6C;&#x6362;&#x5230;&#x5C4F;&#x5E55;&#x7684;&#x5750;&#x6807;&#xFF0C;&#x8FD9;&#x91CC;&#x8BB0;&#x5F55;&#x4E00;&#x4E0B;&#x3002;</p>
-<p>&#x9996;&#x5148;&#x8981;&#x6E05;&#x695A;&#x8F6C;&#x6362;&#x7684;&#x6B65;&#x9AA4;:</p>
+            <div class="post-content">
+            <p>项目中遇到一个需求，需要添加一个引导，引导用户从UI层拖拽一个物品到三维的一个模型上面，引导只需在UI层表现即可。这里需要把模型的坐标转换到屏幕的坐标，这里记录一下。</p>
+<p>首先要清楚转换的步骤:</p>
 <blockquote>
-<p>&#x6A21;&#x578B;&#x5750;&#x6807; -&gt; &#x4E16;&#x754C;&#x5750;&#x6807; -&gt; &#x5C4F;&#x5E55;&#x5750;&#x6807; -&gt; Canvas&#x5750;&#x6807;</p>
+<p>模型坐标 -&gt; 世界坐标 -&gt; 屏幕坐标 -&gt; Canvas坐标</p>
 </blockquote>
-<p>&#x9700;&#x8981;&#x6CE8;&#x610F;&#x7684;&#x5730;&#x65B9;:</p>
-<ul class="ui list">
-<li><p>&#x6A21;&#x578B;&#x5750;&#x6807;&#x5230;&#x4E16;&#x754C;&#x5750;&#x6807;&#x8FD9;&#x4E00;&#x6B65;&#x4E0D;&#x9700;&#x8981;&#x6211;&#x4EEC;&#x81EA;&#x5DF1;&#x8F6C;&#x6362;&#xFF0C;&#x56E0;&#x4E3A;Transform&#x7684;position&#x5C5E;&#x6027;&#x5C31;&#x662F;&#x6A21;&#x578B;&#x7684;&#x4E16;&#x754C;&#x5750;&#x6807;</p>
+<p>需要注意的地方:</p>
+<ul>
+<li><p>模型坐标到世界坐标这一步不需要我们自己转换，因为Transform的position属性就是模型的世界坐标</p>
 </li>
-<li><p>&#x5C4F;&#x5E55;&#x5750;&#x6807;&#x5230;Canvas&#x5750;&#x6807;&#x8FD9;&#x4E00;&#x6B65;&#x5F88;&#x5BB9;&#x6613;&#x88AB;&#x5FFD;&#x7565;&#xFF0C;&#x5728;&#x8BBE;&#x5907;&#x7684;&#x5206;&#x8FA8;&#x7387;&#x548C;&#x6211;&#x4EEC;<strong>CanvasScaler</strong>&#x8BBE;&#x7F6E;&#x7684;<br><em>Reference Resolution</em>&#x8BBE;&#x7F6E;&#x7684;&#x5206;&#x8FA8;&#x7387;&#x4E0D;&#x662F;&#x4E00;&#x81F4;&#x7684;&#x8BDD;&#xFF0C;&#x90A3;&#x4E48;<em>CanvasScaler</em>&#x4F1A;&#x8FDB;&#x884C;&#x7F29;&#x653E;&#x64CD;&#x4F5C;&#xFF0C;&#x6240;&#x4EE5;&#x6211;&#x4EEC;&#x9700;&#x8981;&#x8003;&#x8651;&#x7F29;&#x653E;&#x4E4B;&#x540E;&#x7684;&#x503C;</p>
+<li><p>屏幕坐标到Canvas坐标这一步很容易被忽略，在设备的分辨率和我们<strong>CanvasScaler</strong>设置的<br><em>Reference Resolution</em>设置的分辨率不是一致的话，那么<em>CanvasScaler</em>会进行缩放操作，所以我们需要考虑缩放之后的值</p>
 </li>
 </ul>
-<p>&#x4E0B;&#x9762;&#x662F;&#x8F6C;&#x6362;&#x8FC7;&#x7A0B;:</p>
+<p>下面是转换过程:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Vector3 modelScreenPos = modelCamera.WorldToScreenPoint(model.transform.position);</span><br><span class="line"></span><br><span class="line">Vector2 canvasRect = canvasScaler.GetComponent&lt;RectTransform&gt;().rect;</span><br><span class="line"></span><br><span class="line">float factorX = canvasRect.width / Screen.width;</span><br><span class="line">float factorY = canvasRect.height / Screen.height;</span><br><span class="line"></span><br><span class="line">Vector3 modelCanvasPos = new Vector3(modelScreenPos.x * factorX, modelScreenPos.y * factorY, 0);</span><br></pre></td></tr></table></figure>
-                        
-                    </div>
+            </div>
+          
 
-                    
-                    
-                    
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/tags/unity/">unity</a>
+		  
+		</div>
+		
 
-                    <div class="description post-description">
-    <span class="post-description-item">
-        <time datetime="2017-03-04T06:16:40.000Z" itemprop="datePublished">2017-03-04</time>
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2017/03/08/monobehaviour_awake_start_function_call_detail/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">MonoBehaviour的Awake,Start等函数的调用原理</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/2017/02/25/unity_monobehavior_awake_function_call_time/">
+        <span class="next-text nav-default">MonoBehaviour的Awake的调用时机</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
 
-    </span>
-    <span class="post-description-item">
         
 
-    <span>
-        <i class="tags icon"></i>
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2014 -
+    
+    2018
+    <span class="footer-author">elangduan@126.com.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
     </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
 
     
-    <span class="ui tiny label">
-        <a href="/tags/unity/">unity</a>
-    </span>
-
-    
-
-    </span>
-</div>
-
-                </div>
-                
-                <div id="pagination" class="nav-web ui text container pagination">
-
-    <div class="ui stackable two column divided grid container">
-        <div class="row">
-            <div class="column nav-left">
-                
-
-                <a href="/2017/03/08/monobehaviour_awake_start_function_call_detail/" class="ui tiny button">
-
-                    <i class="angle left icon"></i>
-                    
-                    MonoBehaviour的Awake,Start等函数的调用原理
-                    
-
-                </a>
-
-                
-            </div>
-            <div class="column nav-right">
-                
-
-                <a href="/2017/02/25/unity_monobehavior_awake_function_call_time/" class="ui tiny button">
-                    
-                    MonoBehaviour的Awake的调用时机
-                    
-                    <i class="angle right icon"></i></a>
-                
-            </div>
-        </div>
-    </div>
-
-</div>
-                
-            </div>
-
-            
-            <div class="three wide computer three wide tablet column">
-
-                <div class="ui sticky article-toc" id="article-toc">
-                    <!-- toc -->
-                    
-                </div>
-
-            </div>
-            
-
-        </div>
-    </div>
-</div>
-
-
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-        </div>
-        <div class="ui vertical footer segment">
-    <div class="ui center aligned container">
-        <div class="ui inverted section divider"></div>
-        &copy; 2018 <a href="/">elangduan@126.com</a>,
-        Powered by <a href="https://github.com/henryhuang/hexo-theme-aloha" target="_blank">Aloha</a> and <a
-                href="http://hexo.io/" target="_blank">Hexo</a>.
-    </div>
-</div>
-
-    </div>
 
 
 
 
-<!-- scripts list from theme config.yml -->
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
 
-<script src="//cdn.bootcss.com/jquery/3.1.0/jquery.min.js"></script>
+  
 
-<script src="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.js"></script>
+    <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=1.1"></script>
 
-<script src="//cdn.bootcss.com/algoliasearch/3.18.1/algoliasearch.min.js"></script>
-
-<script src="//cdn.bootcss.com/algoliasearch-helper-js/2.13.0/algoliasearch.helper.min.js"></script>
-
-<script src="/js/semantic-ui-algolia.js"></script>
-
-<script src="/js/aloha-events.js"></script>
-
-
-
-</body>
+  </body>
 </html>

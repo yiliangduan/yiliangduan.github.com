@@ -1,295 +1,229 @@
-
-
 <!DOCTYPE html>
-<html lang="zh-Hans">
-<head prefix="og: http://ogp.me/ns#">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
-    <meta name="description" content="">
-    <title>C# 泛型集合的Boxing问题 | elangduan</title>
+<html lang="">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1">
 
-    <!-- Open Graph -->
-    <meta name="description" content="&amp;#x4ECA;&amp;#x5929;&amp;#x68C0;&amp;#x67E5;&amp;#x9879;&amp;#x76EE;&amp;#x4E2D;&amp;#x4EE3;&amp;#x7801;&amp;#x7684;Boxing&amp;#x95EE;&amp;#x9898;&amp;#x7684;&amp;#x65F6;&amp;#x5019;&amp;#x3002;&amp;#x6709;&amp;#x4E00;&amp;#x4E2A;&amp;#x70B9;&amp;#x5F53;&amp;#x65F6;&amp;#x8BA9;&amp;#x6211;&amp;#">
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="C# 泛型集合的Boxing问题"/>
+
+
+
+
+  <meta name="keywords" content="csharp," />
+
+
+
+
+
+  <link rel="alternate" href="/default" title="elangduan">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.1" />
+
+
+
+<link rel="canonical" href="http://elangduan.github.com/2017/12/05/ienumerator_generics_boxing_question/"/>
+
+
+<meta name="description" content="今天检查项目中代码的Boxing问题的时候。有一个点当时让我困惑了不少时间。如下: 123456789public IEnumerator&amp;lt;float&amp;gt; Func0()&amp;#123;  yield return 0.1f;&amp;#125;public IEnumerator Func1()&amp;#123;  yield return 0;&amp;#125; 这里在实际代码运行过程中Func1会产生Bo">
 <meta name="keywords" content="csharp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="C# 泛型集合的Boxing问题">
 <meta property="og:url" content="http://elangduan.github.com/2017/12/05/ienumerator_generics_boxing_question/index.html">
 <meta property="og:site_name" content="elangduan">
-<meta property="og:description" content="&amp;#x4ECA;&amp;#x5929;&amp;#x68C0;&amp;#x67E5;&amp;#x9879;&amp;#x76EE;&amp;#x4E2D;&amp;#x4EE3;&amp;#x7801;&amp;#x7684;Boxing&amp;#x95EE;&amp;#x9898;&amp;#x7684;&amp;#x65F6;&amp;#x5019;&amp;#x3002;&amp;#x6709;&amp;#x4E00;&amp;#x4E2A;&amp;#x70B9;&amp;#x5F53;&amp;#x65F6;&amp;#x8BA9;&amp;#x6211;&amp;#">
+<meta property="og:description" content="今天检查项目中代码的Boxing问题的时候。有一个点当时让我困惑了不少时间。如下: 123456789public IEnumerator&amp;lt;float&amp;gt; Func0()&amp;#123;  yield return 0.1f;&amp;#125;public IEnumerator Func1()&amp;#123;  yield return 0;&amp;#125; 这里在实际代码运行过程中Func1会产生Bo">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2017-12-05T15:03:44.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="C# 泛型集合的Boxing问题">
-<meta name="twitter:description" content="&amp;#x4ECA;&amp;#x5929;&amp;#x68C0;&amp;#x67E5;&amp;#x9879;&amp;#x76EE;&amp;#x4E2D;&amp;#x4EE3;&amp;#x7801;&amp;#x7684;Boxing&amp;#x95EE;&amp;#x9898;&amp;#x7684;&amp;#x65F6;&amp;#x5019;&amp;#x3002;&amp;#x6709;&amp;#x4E00;&amp;#x4E2A;&amp;#x70B9;&amp;#x5F53;&amp;#x65F6;&amp;#x8BA9;&amp;#x6211;&amp;#">
+<meta name="twitter:description" content="今天检查项目中代码的Boxing问题的时候。有一个点当时让我困惑了不少时间。如下: 123456789public IEnumerator&amp;lt;float&amp;gt; Func0()&amp;#123;  yield return 0.1f;&amp;#125;public IEnumerator Func1()&amp;#123;  yield return 0;&amp;#125; 这里在实际代码运行过程中Func1会产生Bo">
 
-    <script type="application/ld+json">
-{
-  "@context": "http://schema.org",
-  "@type": "Person",
-  "email": "mailto:elangduan@126.com",
-  "image": "/uploads/avatar.png",
-  "name": "elangduan@126.com",
-  "url": "http://elangduan.github.com"
-}
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=1.1" />
+<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+
+
+
+
+
+<script type="text/javascript">
+  var themeConfig = {
+    fancybox: {
+      enable: false
+    },
+  };
 </script>
-    <script>
-    var algoliaEnabled = false;
-    
-</script>
 
-    
 
-    
-    
-        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-    
-    
-    
-        <!-- stylesheets list from config.yml -->
+
+
+  
+
+
+
+    <title> C# 泛型集合的Boxing问题 - elangduan </title>
+  </head>
+
+  <body>
+    <div id="page">
+      <header id="masthead"><div class="site-header-inner">
+    <h1 class="site-title">
+        <a href="/." class="logo">elangduan</a>
+    </h1>
+
+    <nav id="nav-top">
         
-        <link rel="stylesheet" href="/css/aloha.css">
-        
-        <link rel="stylesheet" href="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.css">
-        
-        <link rel="stylesheet" href="//cdn.bootcss.com/magnific-popup.js/1.1.0/magnific-popup.min.css">
-        
-    
-
-</head>
-<body id="body" style="margin-bottom: 0;" class="pushable">
-
-    <div class="ui top fixed menu">
-        <a class="item" id="menu-icon"><i class="sidebar icon"></i></a>
-    </div>
-
-    <div id="menu-sidebar" class="ui left vertical sidebar menu">
-
-    <div id="sidebar-top">
-        <div class="content">
-            <h3>elangduan</h3>
-        </div>
-    </div>
-    <div class="ui container sidebar-card">
-    <div class="ui people shape content">
-        <div class="active side">
-            <div class="ui card">
-                <div class="image">
-                    <img class="ui medium bordered image" src="/images/avatar.jpg">
-                </div>
-                <div class="content">
-                    <a class="header">elangduan@126.com</a>
-                    
-                        <div class="meta">
-                            Game Developer
-                        </div>
-                    
-                </div>
-                <div class="extra content">
-                    <div class="ui list">
-                        
-                        <div class="item">
-                            <i class="marker icon" style="float: left"></i>
-                            <div class="content">Shanghai</div>
-                        </div>
-                        
-                        
-                        <div class="item">
-                            <i class="mail icon" style="float: left"></i>
-                            <div class="content">
-                                <a href="mailto:elangduan@126.com">elangduan@126.com</a>
-                            </div>
-                        </div>
-                        
-                    </div>
-
-                </div>
-                <div class="extra content">
-                    <div class="ui list">
-                        
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-</div>
-
-    
-    
-
-    
-
-    
-    <a href="/index.html" class="item" >
-        <i class="home icon"></i>
-        HOME
-    </a>
-
-    
-
-    
-</div>
-
-    <div class="pusher body-content">
-        <div id="content" class="ui main container">
-            <!--<div class="ui one column grid">-->
-                <!--<div class="column">-->
-                    <!--<div class="ui main container">-->
-                        <div id="post-ienumerator_generics_boxing_question" class="ui main container article-type-post">
-
-    
-
-    <div class="ui divided grid">
-
-        <div class="two column row" id="article-content">
-
-            <div class="thirteen wide computer thirteen wide tablet sixteen wide mobile column">
+            <ul id="menu-top" class="nav-top-items">
                 
+                    <li class="menu-item">
+                        <a href="/archives">
+                            
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/about">
+                            
+                            
+                                About
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        
+  </nav>
+</div>
 
-<h1 class="ui header">
+      </header>
+      <div id="content">
+        
+    <div id="primary">
+        
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          C# 泛型集合的Boxing问题
+        
+      </h1>
+
+      <time class="post-time">
+          Dec 05 2017
+      </time>
+    </header>
+
+
+
     
-    C# 泛型集合的Boxing问题
-</h1>
-
-
-
-                <div class="article-inner">
-
-                    <div class="article-entry" itemprop="articleBody">
-                        
-                        <p>&#x4ECA;&#x5929;&#x68C0;&#x67E5;&#x9879;&#x76EE;&#x4E2D;&#x4EE3;&#x7801;&#x7684;Boxing&#x95EE;&#x9898;&#x7684;&#x65F6;&#x5019;&#x3002;&#x6709;&#x4E00;&#x4E2A;&#x70B9;&#x5F53;&#x65F6;&#x8BA9;&#x6211;&#x56F0;&#x60D1;&#x4E86;&#x4E0D;&#x5C11;&#x65F6;&#x95F4;&#x3002;&#x5982;&#x4E0B;:</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> IEnumerator&lt;<span class="keyword">float</span>&gt; <span class="title">Func0</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  <span class="keyword">yield</span> <span class="keyword">return</span> <span class="number">0.1</span>f;</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> IEnumerator <span class="title">Func1</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>{</span><br><span class="line">  <span class="keyword">yield</span> <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
-<p>&#x8FD9;&#x91CC;&#x5728;&#x5B9E;&#x9645;&#x4EE3;&#x7801;&#x8FD0;&#x884C;&#x8FC7;&#x7A0B;&#x4E2D;Func1&#x4F1A;&#x4EA7;&#x751F;Boxing&#x800C;Func0&#x6CA1;&#x6709;&#x4EA7;&#x751F;Boxing&#xFF0C;&#x6309;&#x7167;&#x81EA;&#x5DF1;&#x6D4F;&#x89C8;&#x7684;C#&#x7684;&#x6587;&#x6863;&#x5BF9;Boxing&#x7684;&#x7406;&#x89E3;&#x8FD9;&#x91CC;&#x5E94;&#x8BE5;&#x90FD;&#x662F;&#x4F1A;&#x4EA7;&#x751F;Boxing&#x7684;&#x624D;&#x5BF9;&#x3002;&#x4E0B;&#x9762;&#x662F;<a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/types/boxing-and-unboxing" target="_blank" rel="external">C#&#x7684;Boxing&#x6587;&#x6863;&#x8BF4;&#x660E;</a>&#x7684;&#xFF1A;</p>
+            <div class="post-content">
+            <p>今天检查项目中代码的Boxing问题的时候。有一个点当时让我困惑了不少时间。如下:</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> IEnumerator&lt;<span class="keyword">float</span>&gt; <span class="title">Func0</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">yield</span> <span class="keyword">return</span> <span class="number">0.1</span>f;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> IEnumerator <span class="title">Func1</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">yield</span> <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里在实际代码运行过程中Func1会产生Boxing而Func0没有产生Boxing，按照自己浏览的C#的文档对Boxing的理解这里应该都是会产生Boxing的才对。下面是<a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/types/boxing-and-unboxing" target="_blank" rel="external">C#的Boxing文档说明</a>的：</p>
 <blockquote>
 <p>Boxing is the process of converting a value type to the type object or to any interface type implemented by this value type. When the CLR boxes a value type, it wraps the value inside a System.Object and stores it on the managed heap. </p>
 </blockquote>
-<p>&#x67E5;&#x770B;&#x4E86;IEnumerator<t>&#x7684;&#x5B9A;&#x4E49;:</t></p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface IEnumerator&lt;T&gt; : IEnumerator, IDisposable</span><br><span class="line">{</span><br><span class="line">  T Current {<span class="keyword">get</span>;}</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
-<p>&#x662F;interface&#x7C7B;&#x578B;&#xFF0C;&#x90A3;&#x4E48;&#x4E0A;&#x9762;&#x7684;&#x51FD;&#x6570;&#x4E2D;<em>yield return 0.1f</em>&#x4E2D;&#x7684;0.1f&#x8FD9;&#x4E2A;float&#x7C7B;&#x578B;&#x7684;&#x53D8;&#x91CF;&#x8F6C;&#x6362;&#x4E3A;IEnumerator<float>&#x4E3A;&#x4EC0;&#x4E48;&#x4E0D;&#x4F1A;Boxing&#x5462;? &#x5148;&#x67E5;&#x770B;&#x4E0B;&#x4E24;&#x4E2A;&#x65B9;&#x6CD5;&#x7684;IL&#x4EE3;&#x7801;&#xFF0C;&#x5BF9;&#x6BD4;&#x4E0B;IL&#x4EE3;&#x7801;&#x7684;&#x533A;&#x522B;&#x3002;&#x5982;&#x4E0B;&#xFF1A;</float></p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//&#x5BF9;&#x4E8E;Func0</span></span><br><span class="line">.class nested <span class="keyword">private</span> auto ansi <span class="keyword">sealed</span> beforefieldinit <span class="string">&apos;&lt;Func0&gt;c__Iterator0&apos;</span></span><br><span class="line">	...</span><br><span class="line">{</span><br><span class="line">	...</span><br><span class="line">	<span class="comment">// Fields</span></span><br><span class="line">	.field assembly float32 $current <span class="comment">//current&#x7F16;&#x8BD1;&#x6210;&#x4E3A;&#x4E86;&#x6211;&#x4EEC;&#x6307;&#x5B9A;&#x7684;float&#x7C7B;&#x578B;</span></span><br><span class="line">	.field assembly <span class="keyword">bool</span> $disposing</span><br><span class="line">	.field assembly int32 $PC	</span><br><span class="line">	...</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="comment">//&#x5BF9;&#x4E8E;Func1</span></span><br><span class="line">.class nested <span class="keyword">private</span> auto ansi <span class="keyword">sealed</span> beforefieldinit <span class="string">&apos;&lt;Func1&gt;c__Iterator1&apos;</span></span><br><span class="line">	...</span><br><span class="line">{</span><br><span class="line">	...</span><br><span class="line">	<span class="comment">// Fields</span></span><br><span class="line">	.field assembly <span class="keyword">object</span> $current<span class="comment">//current&#x7F16;&#x8BD1;&#x6210;&#x4E3A;&#x4E86;&#x9ED8;&#x8BA4;&#x7684;object&#x7C7B;&#x578B;</span></span><br><span class="line">	.field assembly <span class="keyword">bool</span> $disposing</span><br><span class="line">	.field assembly int32 $PC</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
-<p>&#x90A3;&#x4E48;&#x95EE;&#x9898;&#x5C31;&#x5F88;&#x6E05;&#x695A;&#x4E86;&#xFF0C;Func0&#x5176;&#x5B9E;&#x6BCF;&#x6B21;&#x8FED;&#x4EE3;&#x7684;&#x65F6;&#x5019;&#x63A5;&#x6536;&#x503C;&#x7684;&#x53D8;&#x91CF;&#x5C31;&#x662F;float&#x7C7B;&#x578B;(&#x5BF9;&#x5E94;&#x4E8E;IL&#x7684;float32&#x7C7B;&#x578B;)&#x7684;&#x6240;&#x4EE5;&#x6839;&#x672C;&#x4E0D;&#x9700;&#x8981;&#x8F6C;&#x6362;&#x7C7B;&#x578B;&#x3002;&#x4F46;&#x662F;&#x5BF9;&#x4E8E;Func1&#x51FD;&#x6570;&#xFF0C;&#x7F16;&#x8BD1;&#x6210;IL&#x4EE3;&#x7801;&#x5B58;&#x50A8;&#x5F53;&#x524D;&#x503C;&#x7684;&#x53D8;&#x91CF;&#x662F;object&#x7C7B;&#x578B;&#x7684;&#xFF0C;&#x6240;&#x4EE5;&#x5F53;&#x6211;&#x4EEC;Func1&#x4E2D;&#x8FD4;&#x56DE;&#x503C;&#x4E3A;0&#x7684;int&#x7C7B;&#x578B;&#x65F6;&#xFF0C;&#x8FD9;&#x4E2A;int&#x578B;&#x7684;&#x53D8;&#x91CF;&#x4F1A;&#x88AB;&#x8F6C;&#x6362;&#x6210;object&#x7C7B;&#x578B;&#x800C;&#x5BFC;&#x81F4;Boxing&#x3002;</p>
-<p>&#x5176;&#x5B9E;&#x6B63;&#x786E;&#x7684;&#x64CD;&#x4F5C;&#x662F;&#x5148;&#x770B;<a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/generics/" target="_blank" rel="external">C#&#x5173;&#x4E8E;&#x6CDB;&#x578B;&#x7684;&#x6587;&#x6863;</a>&#x624D;&#x5BF9;&#x3002;&#x4E0D;&#x8FC7;&#x73B0;&#x5728;&#x770B;&#x4E0B;&#x4E5F;&#x4E0D;&#x8FDF;&#x3002;&#x5176;&#x4E2D;&#x7B2C;&#x4E00;&#x6BB5;&#x5C31;&#x6709;&#x5982;&#x4E0B;&#x63CF;&#x8FF0;:</p>
+<p>查看了IEnumerator<t>的定义:</t></p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface IEnumerator&lt;T&gt; : IEnumerator, IDisposable</span><br><span class="line">&#123;</span><br><span class="line">  T Current &#123;<span class="keyword">get</span>;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>是interface类型，那么上面的函数中<em>yield return 0.1f</em>中的0.1f这个float类型的变量转换为IEnumerator<float>为什么不会Boxing呢? 先查看下两个方法的IL代码，对比下IL代码的区别。如下：</float></p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//对于Func0</span></span><br><span class="line">.class nested <span class="keyword">private</span> auto ansi <span class="keyword">sealed</span> beforefieldinit <span class="string">'&lt;Func0&gt;c__Iterator0'</span></span><br><span class="line">	...</span><br><span class="line">&#123;</span><br><span class="line">	...</span><br><span class="line">	<span class="comment">// Fields</span></span><br><span class="line">	.field assembly float32 $current <span class="comment">//current编译成为了我们指定的float类型</span></span><br><span class="line">	.field assembly <span class="keyword">bool</span> $disposing</span><br><span class="line">	.field assembly int32 $PC	</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//对于Func1</span></span><br><span class="line">.class nested <span class="keyword">private</span> auto ansi <span class="keyword">sealed</span> beforefieldinit <span class="string">'&lt;Func1&gt;c__Iterator1'</span></span><br><span class="line">	...</span><br><span class="line">&#123;</span><br><span class="line">	...</span><br><span class="line">	<span class="comment">// Fields</span></span><br><span class="line">	.field assembly <span class="keyword">object</span> $current<span class="comment">//current编译成为了默认的object类型</span></span><br><span class="line">	.field assembly <span class="keyword">bool</span> $disposing</span><br><span class="line">	.field assembly int32 $PC</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>那么问题就很清楚了，Func0其实每次迭代的时候接收值的变量就是float类型(对应于IL的float32类型)的所以根本不需要转换类型。但是对于Func1函数，编译成IL代码存储当前值的变量是object类型的，所以当我们Func1中返回值为0的int类型时，这个int型的变量会被转换成object类型而导致Boxing。</p>
+<p>其实正确的操作是先看<a href="https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/generics/" target="_blank" rel="external">C#关于泛型的文档</a>才对。不过现在看下也不迟。其中第一段就有如下描述:</p>
 <blockquote>
 <p>by using a generic type parameter T you can write a single class that other client code can use without incurring the cost or risk of runtime casts or boxing operations</p>
 </blockquote>
-<p>&#x5230;&#x8FD9;&#x513F;&#x7591;&#x95EE;&#x5C31;&#x6BD4;&#x8F83;&#x660E;&#x786E;&#x7684;&#x89E3;&#x51B3;&#x4E86;&#x3002;</p>
+<p>到这儿疑问就比较明确的解决了。</p>
 
-                        
-                    </div>
+            </div>
+          
 
-                    
-                    
-                    
+    
+      <footer class="post-footer">
+		
+		<div class="post-tags">
+		  
+			<a href="/tags/csharp/">csharp</a>
+		  
+		</div>
+		
 
-                    <div class="description post-description">
-    <span class="post-description-item">
-        <time datetime="2017-12-05T12:16:35.000Z" itemprop="datePublished">2017-12-05</time>
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2017/12/09/ugui_graphics_rebuild_about_image_alpha_fade/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">UGUI的Graphic Rebuild问题</span>
+        <span class="prev-text nav-mobile">Prev</span>
+      </a>
+    
+    
+      <a class="next" href="/2017/12/03/optimizing_graphics_rendering_in_unity_games/">
+        <span class="next-text nav-default">Unity游戏的图形渲染优化(译)</span>
+        <span class="prev-text nav-mobile">Next</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
 
-    </span>
-    <span class="post-description-item">
         
 
-    <span>
-        <i class="tags icon"></i>
+      </footer>
+    
+  </article>
+
+    </div>
+
+      </div>
+
+      <footer id="colophon"><span class="copyright-year">
+    
+        &copy;
+    
+        2014 -
+    
+    2018
+    <span class="footer-author">elangduan@126.com.</span>
+    <span class="power-by">
+        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/frostfan/hexo-theme-polarbear">Polar Bear</a>
     </span>
+</span>
+
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+    
+
 
     
-    <span class="ui tiny label">
-        <a href="/tags/csharp/">csharp</a>
-    </span>
-
-    
-
-    </span>
-</div>
-
-                </div>
-                
-                <div id="pagination" class="nav-web ui text container pagination">
-
-    <div class="ui stackable two column divided grid container">
-        <div class="row">
-            <div class="column nav-left">
-                
-
-                <a href="/2017/12/09/ugui_graphics_rebuild_about_image_alpha_fade/" class="ui tiny button">
-
-                    <i class="angle left icon"></i>
-                    
-                    UGUI的Graphic Rebuild问题
-                    
-
-                </a>
-
-                
-            </div>
-            <div class="column nav-right">
-                
-
-                <a href="/2017/12/03/optimizing_graphics_rendering_in_unity_games/" class="ui tiny button">
-                    
-                    Unity游戏的图形渲染优化(译)
-                    
-                    <i class="angle right icon"></i></a>
-                
-            </div>
-        </div>
-    </div>
-
-</div>
-                
-            </div>
-
-            
-            <div class="three wide computer three wide tablet column">
-
-                <div class="ui sticky article-toc" id="article-toc">
-                    <!-- toc -->
-                    
-                </div>
-
-            </div>
-            
-
-        </div>
-    </div>
-</div>
-
-
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-        </div>
-        <div class="ui vertical footer segment">
-    <div class="ui center aligned container">
-        <div class="ui inverted section divider"></div>
-        &copy; 2018 <a href="/">elangduan@126.com</a>,
-        Powered by <a href="https://github.com/henryhuang/hexo-theme-aloha" target="_blank">Aloha</a> and <a
-                href="http://hexo.io/" target="_blank">Hexo</a>.
-    </div>
-</div>
-
-    </div>
 
 
 
 
-<!-- scripts list from theme config.yml -->
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
 
-<script src="//cdn.bootcss.com/jquery/3.1.0/jquery.min.js"></script>
+  
 
-<script src="//cdn.bootcss.com/semantic-ui/2.2.4/semantic.min.js"></script>
+    <script type="text/javascript" src="/js/src/theme.js?v=1.1"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=1.1"></script>
 
-<script src="//cdn.bootcss.com/algoliasearch/3.18.1/algoliasearch.min.js"></script>
-
-<script src="//cdn.bootcss.com/algoliasearch-helper-js/2.13.0/algoliasearch.helper.min.js"></script>
-
-<script src="/js/semantic-ui-algolia.js"></script>
-
-<script src="/js/aloha-events.js"></script>
-
-
-
-</body>
+  </body>
 </html>
