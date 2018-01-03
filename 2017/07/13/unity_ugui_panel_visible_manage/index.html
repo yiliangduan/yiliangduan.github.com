@@ -23,7 +23,7 @@
 
 
 
-  <link rel="alternate" href="/default" title="elangduan">
+  <link rel="alternate" href="/default" title="elang">
 
 
 
@@ -40,7 +40,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity3D的UIPanel隐藏的处理方式">
 <meta property="og:url" content="http://elangduan.github.com/2017/07/13/unity_ugui_panel_visible_manage/index.html">
-<meta property="og:site_name" content="elangduan">
+<meta property="og:site_name" content="elang">
 <meta property="og:description" content="隐藏的方式 1.1 设置Active为false方式。这种方式UIPanel的所有脚本逻辑、Rendering、Canvas.BuildBatch都会停止。构建的渲染的Mesh也会被清理。 1.2 设置不被渲染的Camera的Layer层上。这种方式相当于只是停掉了Rendering，其他的逻辑照常执行。  优缺点比较 2.1 方式1隐藏Panel的时候构建的Mesh会被清理掉，会节省这部分内存">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2018-01-02T11:05:19.416Z">
@@ -71,19 +71,37 @@
 
 
 
-    <title> Unity3D的UIPanel隐藏的处理方式 - elangduan </title>
+    <title> Unity3D的UIPanel隐藏的处理方式 - elang </title>
   </head>
 
   <body>
     <div id="page">
       <header id="masthead"><div class="site-header-inner">
     <h1 class="site-title">
-        <a href="/." class="logo">elangduan</a>
+        <a href="/." class="logo">elang</a>
     </h1>
 
     <nav id="nav-top">
         
             <ul id="menu-top" class="nav-top-items">
+                
+                    <li class="menu-item">
+                        <a href="/reading">
+                            
+                            
+                                reading
+                            
+                        </a>
+                    </li>
+                
+                    <li class="menu-item">
+                        <a href="/movie">
+                            
+                            
+                                movie
+                            
+                        </a>
+                    </li>
                 
                     <li class="menu-item">
                         <a href="/about">
@@ -150,13 +168,13 @@
       <a class="prev" href="/2017/07/14/unity_sprite_format_summary/">
         <i class="iconfont icon-left"></i>
         <span class="prev-text nav-default">Unity3D Sprite常用存储格式性能对比</span>
-        <span class="prev-text nav-mobile">Prev</span>
+        <span class="prev-text nav-mobile">上一篇</span>
       </a>
     
     
       <a class="next" href="/2017/07/08/unity_render_order_question/">
         <span class="next-text nav-default">Unity模型渲染层级顺序问题</span>
-        <span class="prev-text nav-mobile">Next</span>
+        <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
       </a>
     
@@ -176,12 +194,12 @@
     
         &copy;
     
-        2012 -
+        2015 -
     
     2018
     <span class="footer-author">elangduan@126.com.</span>
     <span class="power-by">
-        Powered by <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/henryhuang/hexo-theme-polarbearsimple">Polar Bear Simple</a>
+        由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> and <a class="theme-link" href="https://github.com/henryhuang/hexo-theme-polarbearsimple">Polar Bear Simple</a> 强力驱动
     </span>
 </span>
 
