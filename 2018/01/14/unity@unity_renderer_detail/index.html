@@ -84,19 +84,19 @@
 
 
 
-<meta name="description" content="之前了解Unity的setpass call和batches把顺道把渲染这块都了解了下，先利用一个思维导图把渲染的几个大的步骤记了下来，下次在探索里面的细节的时候就有清晰的脉络了。">
+<meta name="description" content="之前了解Unity的setpass call和batches时把顺道把渲染这块都了解了下，先利用一个思维导图把渲染的几个大的步骤记了下来，下次在探索里面的细节的时候就有清晰的脉络了。   注1： 得到CullResult，包含了Camera可见的所有Renderer 注2： 遍历所有CullResult，处理每个renderer的materials。每个material被包裹成一个渲染对象Rend">
 <meta name="keywords" content="unity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity渲染详情">
 <meta property="og:url" content="http://elangduan.github.com/2018/01/14/unity@unity_renderer_detail/index.html">
 <meta property="og:site_name" content="elangduan">
-<meta property="og:description" content="之前了解Unity的setpass call和batches把顺道把渲染这块都了解了下，先利用一个思维导图把渲染的几个大的步骤记了下来，下次在探索里面的细节的时候就有清晰的脉络了。">
+<meta property="og:description" content="之前了解Unity的setpass call和batches时把顺道把渲染这块都了解了下，先利用一个思维导图把渲染的几个大的步骤记了下来，下次在探索里面的细节的时候就有清晰的脉络了。   注1： 得到CullResult，包含了Camera可见的所有Renderer 注2： 遍历所有CullResult，处理每个renderer的materials。每个material被包裹成一个渲染对象Rend">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_renderer/1.png">
-<meta property="og:updated_time" content="2018-01-14T08:38:53.647Z">
+<meta property="og:updated_time" content="2018-01-14T09:08:31.064Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity渲染详情">
-<meta name="twitter:description" content="之前了解Unity的setpass call和batches把顺道把渲染这块都了解了下，先利用一个思维导图把渲染的几个大的步骤记了下来，下次在探索里面的细节的时候就有清晰的脉络了。">
+<meta name="twitter:description" content="之前了解Unity的setpass call和batches时把顺道把渲染这块都了解了下，先利用一个思维导图把渲染的几个大的步骤记了下来，下次在探索里面的细节的时候就有清晰的脉络了。   注1： 得到CullResult，包含了Camera可见的所有Renderer 注2： 遍历所有CullResult，处理每个renderer的materials。每个material被包裹成一个渲染对象Rend">
 <meta name="twitter:image" content="http://elangduan.github.com/images/unity_renderer/1.png">
 
 
@@ -328,8 +328,13 @@
       
 
       
-        <p>之前了解Unity的setpass call和batches把顺道把渲染这块都了解了下，先利用一个思维导图把渲染的几个大的步骤记了下来，下次在探索里面的细节的时候就有清晰的脉络了。</p>
+        <p>之前了解Unity的setpass call和batches时把顺道把渲染这块都了解了下，先利用一个思维导图把渲染的几个大的步骤记了下来，下次在探索里面的细节的时候就有清晰的脉络了。</p>
 <p><img src="/images/unity_renderer/1.png" alt=""></p>
+<blockquote>
+<p>注1： 得到CullResult，包含了Camera可见的所有Renderer</p>
+<p>注2： 遍历所有CullResult，处理每个renderer的materials。每个material被包裹成一个渲染对象RenderObjectData</p>
+<p>注3：由Camera的投影矩阵和对象的Z轴向量的积得出</p>
+</blockquote>
 
       
     </div>
