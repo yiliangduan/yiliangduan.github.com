@@ -93,7 +93,7 @@
 <meta property="og:description" content="之前了解Unity的setpass call和batches时把顺道把渲染这块都了解了下，先利用一个思维导图把渲染的几个大的步骤记了下来，下次在探索里面的细节的时候就有清晰的脉络了(这里只记录Forward渲染)。   注1： 得到CullResult，包含了Camera可见的所有Renderer 注2： 遍历所有CullResult，处理每个renderer的materials。每个materi">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_renderer/1.png">
-<meta property="og:updated_time" content="2018-01-15T03:00:44.198Z">
+<meta property="og:updated_time" content="2018-01-15T03:52:38.874Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity渲染详情">
 <meta name="twitter:description" content="之前了解Unity的setpass call和batches时把顺道把渲染这块都了解了下，先利用一个思维导图把渲染的几个大的步骤记了下来，下次在探索里面的细节的时候就有清晰的脉络了(这里只记录Forward渲染)。   注1： 得到CullResult，包含了Camera可见的所有Renderer 注2： 遍历所有CullResult，处理每个renderer的materials。每个materi">
@@ -349,20 +349,21 @@
 <li>RenderOffscreenCameras处理所有的相机Render之后才渲染到场景上的。</li>
 </ul>
 <h4 id="Camera"><a href="#Camera" class="headerlink" title="Camera"></a>Camera</h4><p>现获取相机可见的场景上的所有Render，然后通过裁剪得到一个可见的对象集合。裁剪里面有个比较重要的参数就是相机使用了OcclusionCulling这个功能。使用了OnOcclusionCulling，则会调用Umbra进行Render在场景中的位置关系来处理。</p>
-<p>没有开启OnOcclusionCulling</p>
 <ul>
-<li>根据相机的Plane和每个Render的Bounds做AABB检测。</li>
-</ul>
-<p>开启了OnOcclusionCulling</p>
+<li><p>范围检测</p>
 <ul>
-<li>使用Umbra的API对每个Render的Bounds做可见检测。</li>
+<li>没有开启OnOcclusionCulling, 根据相机的Plane和每个Render的Bounds做AABB检测。</li>
+<li>开启了OnOcclusionCulling, 使用Umbra的API对每个Render的Bounds做可见检测。</li>
 </ul>
-<p>处理了范围或者Umbra的检测之后，还会进行一次场景中的可见检测:</p>
+</li>
+<li><p>可见检测</p>
 <ul>
 <li>对象的renderer是否为空了。</li>
 <li>对象是否是disable状态，如果是则不需要渲染了。</li>
 <li>对象是否被Camera的lod功能剔除了。</li>
 <li>对象是否被Camera的LayerDistance剔除了。</li>
+</ul>
+</li>
 </ul>
 <h4 id="RenderLoop"><a href="#RenderLoop" class="headerlink" title="RenderLoop"></a>RenderLoop</h4><h4 id="DoForwardVertexRenderLoop"><a href="#DoForwardVertexRenderLoop" class="headerlink" title="DoForwardVertexRenderLoop"></a>DoForwardVertexRenderLoop</h4><p>处理RenderLoop中得到的渲染对象数据(RenderObjectData)集合。处理之后把得到需要渲染的一个RODataVLit数据集合PlainRenderPasses，每个RODataVLit数据对应一个需要渲染的Pass和渲染这个Pass需要的其他数据(subshader、light、material等数据)。</p>
 <h4 id="SortRenderPassData"><a href="#SortRenderPassData" class="headerlink" title="SortRenderPassData"></a>SortRenderPassData</h4><p>处理PlainRenderPasses，把每个Pass都按照导图里面列出的元素的顺序优先级排序，排序之后的顺序就是接下来要渲染的顺序了。</p>
