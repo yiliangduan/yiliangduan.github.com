@@ -281,7 +281,7 @@
               
                 
                 <a class="post-title-link" href="/2018/01/14/unity@unity_renderer_detail/" itemprop="url">
-                  Unity渲染详情
+                  Unity渲染之概述
                 </a>
               
             
@@ -333,11 +333,13 @@
 <p>注2： 遍历所有CullResult，处理每个renderer的materials。每个material被包裹成一个渲染对象RenderObjectData</p>
 <p>注3：由Camera的投影矩阵和对象的Z轴向量的积得出</p>
 </blockquote>
-<h4 id="RenderManager"><a href="#RenderManager" class="headerlink" title="RenderManager"></a>RenderManager</h4><ul>
+<p><strong>RenderManager</strong></p>
+<ul>
 <li>RenderCameras</li>
 <li>RenderOffscreenCameras</li>
 </ul>
-<h4 id="RenderCameras和RenderOffscreenCameras"><a href="#RenderCameras和RenderOffscreenCameras" class="headerlink" title="RenderCameras和RenderOffscreenCameras"></a>RenderCameras和RenderOffscreenCameras</h4><p>相同点:</p>
+<p><strong>RenderCameras和RenderOffscreenCameras</strong></p>
+<p>相同点:</p>
 <ul>
 <li>遍历所有的离屏渲染的相机，先让每个相机做裁剪操作操作，裁剪完之后得到裁剪之后的对象集合，然后让相机渲染这个集合。</li>
 </ul>
@@ -346,7 +348,7 @@
 <li>RenderCameras是即时渲染的，即处理一个相机的Render就会马上渲染到场景上，接着再处理第二个相机。</li>
 <li>RenderOffscreenCameras处理所有的相机Render之后才渲染到场景上的。</li>
 </ul>
-<h4 id="Camera"><a href="#Camera" class="headerlink" title="Camera"></a>Camera</h4><p>现获取相机可见的场景上的所有Render，然后通过裁剪得到一个可见的对象集合。裁剪里面有个比较重要的参数就是相机使用了OcclusionCulling这个功能。使用了OnOcclusionCulling，则会调用Umbra进行Render在场景中的位置关系来处理。</p>
+<p><strong>Cull</strong><br>现获取相机可见的场景上的所有Render，然后通过裁剪得到一个可见的对象集合。裁剪里面有个比较重要的参数就是相机使用了OcclusionCulling这个功能。使用了OnOcclusionCulling，则会调用Umbra进行Render在场景中的位置关系来处理。</p>
 <ul>
 <li><p>范围检测</p>
 <ul>
@@ -363,9 +365,21 @@
 </ul>
 </li>
 </ul>
-<h4 id="RenderLoop"><a href="#RenderLoop" class="headerlink" title="RenderLoop"></a>RenderLoop</h4><h4 id="DoForwardVertexRenderLoop"><a href="#DoForwardVertexRenderLoop" class="headerlink" title="DoForwardVertexRenderLoop"></a>DoForwardVertexRenderLoop</h4><p>处理RenderLoop中得到的渲染对象数据(RenderObjectData)集合。处理之后把得到需要渲染的一个RODataVLit数据集合PlainRenderPasses，每个RODataVLit数据对应一个需要渲染的Pass和渲染这个Pass需要的其他数据(subshader、light、material等数据)。</p>
-<h4 id="SortRenderPassData"><a href="#SortRenderPassData" class="headerlink" title="SortRenderPassData"></a>SortRenderPassData</h4><p>处理PlainRenderPasses，把每个Pass都按照导图里面列出的元素的顺序优先级排序，排序之后的顺序就是接下来要渲染的顺序了。</p>
-<h4 id="PerformRendering"><a href="#PerformRendering" class="headerlink" title="PerformRendering"></a>PerformRendering</h4><p>在这个方法里面处理DoForwardVertexRenderLoop所得的RPDataVLit数据。</p>
+<p>经过Cull处理之后得到了一个渲染的CullResults的数据对象。CullResults包含了对应的一个相机的需要渲染的Render集合、灯光信息、阴影等信息。</p>
+<p><strong>RenderLoop</strong></p>
+<p>这个步骤就处理上一步得到的CullResults数据，遍历CullResults里面的Render集合，对每个Render的上使用的material信息(Material,RenderQueue,subShaderIndex,lightmap,staticBatchIndex,renderer等)进行收集。得到一个需要渲染的已material为基础的RenderObjectData对象集合。</p>
+<p>有了这个数据，就可以开始进行渲染的操作了，接下来考虑的是使用Forward渲染还是Deferred模式渲染。不管那种渲染流程基本一致，这个考虑Forward渲染的方式。步骤如下:</p>
+<ul>
+<li>渲染Opaque物体</li>
+<li>渲染天空盒</li>
+<li>处理ImageFilters</li>
+<li>渲染透明物体</li>
+</ul>
+<p>这几个步骤渲染完成之后真个一帧的Render渲染工作就完成了。</p>
+<p><strong>DoForwardVertexRenderLoop</strong><br>处理RenderLoop中得到的渲染对象数据(RenderObjectData)集合。处理之后把得到需要渲染的一个RODataVLit数据集合PlainRenderPasses，每个RODataVLit数据对应一个需要渲染的Pass和渲染这个Pass需要的其他数据(subshader、light、material等数据)。</p>
+<p><strong>SortRenderPassData</strong><br>处理PlainRenderPasses，把每个Pass都按照导图里面列出的元素的顺序优先级排序，排序之后的顺序就是接下来要渲染的顺序了。这里面的排序规则还是比较多的，这也关乎到场景上的模型被渲染之后的显示问题。比如两个Renderer A和B，两者使用的都是透明贴图，需要做透明混合处理。A的RenderQueue设置为3000，B的RenderQueue设置为30001，那么排序之后A在B的前面渲染，这样A的Renderer渲染出来的物体不会遮挡住B。排序的规则大致和导图里面的是一致的。</p>
+<p><strong>PerformRendering</strong></p>
+<p>在这个方法里面处理DoForwardVertexRenderLoop所得的RPDataVLit数据。</p>
 
           
         
