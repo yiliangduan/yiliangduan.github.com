@@ -350,7 +350,8 @@
 <li>RenderCameras是即时渲染的，即处理一个相机的Render就会马上渲染到场景上，接着再处理第二个相机。</li>
 <li>RenderOffscreenCameras处理所有的相机Render之后才渲染到场景上的。</li>
 </ul>
-<p><strong>Cull</strong><br>现获取相机可见的场景上的所有Render，然后通过裁剪得到一个可见的对象集合。裁剪里面有个比较重要的参数就是相机使用了OcclusionCulling这个功能。使用了OnOcclusionCulling，则会调用Umbra进行Render在场景中的位置关系来处理。</p>
+<p><strong>Cull</strong></p>
+<p>现获取相机可见的场景上的所有Render，然后通过裁剪得到一个可见的对象集合。裁剪里面有个比较重要的参数就是相机使用了OcclusionCulling这个功能。使用了OnOcclusionCulling，则会调用Umbra进行Render在场景中的位置关系来处理。</p>
 <ul>
 <li><p>范围检测</p>
 <ul>
@@ -378,8 +379,10 @@
 <li>渲染透明物体</li>
 </ul>
 <p>这几个步骤渲染完成之后真个一帧的Render渲染工作就完成了。</p>
-<p><strong>DoForwardVertexRenderLoop</strong><br>处理RenderLoop中得到的渲染对象数据(RenderObjectData)集合。处理之后把得到需要渲染的一个RODataVLit数据集合PlainRenderPasses，每个RODataVLit数据对应一个需要渲染的Pass和渲染这个Pass需要的其他数据(subshader、light、material等数据)。</p>
-<p><strong>SortRenderPassData</strong><br>处理PlainRenderPasses，把每个Pass都按照导图里面列出的元素的顺序优先级排序，排序之后的顺序就是接下来要渲染的顺序了。这里面的排序规则还是比较多的，这也关乎到场景上的模型被渲染之后的显示问题。比如两个Renderer A和B，两者使用的都是透明贴图，需要做透明混合处理。A的RenderQueue设置为3000，B的RenderQueue设置为30001，那么排序之后A在B的前面渲染，这样A的Renderer渲染出来的物体不会遮挡住B。排序的规则大致和导图里面的是一致的。</p>
+<p><strong>DoForwardVertexRenderLoop</strong></p>
+<p>处理RenderLoop中得到的渲染对象数据(RenderObjectData)集合。处理之后把得到需要渲染的一个RODataVLit数据集合PlainRenderPasses，每个RODataVLit数据对应一个需要渲染的Pass和渲染这个Pass需要的其他数据(subshader、light、material等数据)。</p>
+<p><strong>SortRenderPassData</strong></p>
+<p>处理PlainRenderPasses，把每个Pass都按照导图里面列出的元素的顺序优先级排序，排序之后的顺序就是接下来要渲染的顺序了。这里面的排序规则还是比较多的，这也关乎到场景上的模型被渲染之后的显示问题。比如两个Renderer A和B，两者使用的都是透明贴图，需要做透明混合处理。A的RenderQueue设置为3000，B的RenderQueue设置为30001，那么排序之后A在B的前面渲染，这样A的Renderer渲染出来的物体不会遮挡住B。排序的规则大致和导图里面的是一致的。</p>
 <p><strong>PerformRendering</strong></p>
 <p>在这个方法里面处理DoForwardVertexRenderLoop所得的RPDataVLit数据。</p>
 
