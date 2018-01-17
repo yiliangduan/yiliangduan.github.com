@@ -93,7 +93,7 @@
 <meta property="og:description" content="之前了解Unity的setpass call和batches时把顺道把渲染这块都了解了下，先利用一个思维导图把渲染的几个大的步骤记了下来，下次在探索里面的细节的时候就有清晰的脉络了(这里只记录Forward渲染)。   注1： 得到CullResult，包含了Camera可见的所有Renderer 注2： 遍历所有CullResult，处理每个renderer的materials。每个materi">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_renderer/1.png">
-<meta property="og:updated_time" content="2018-01-17T09:37:12.591Z">
+<meta property="og:updated_time" content="2018-01-17T14:03:02.934Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity渲染之概述">
 <meta name="twitter:description" content="之前了解Unity的setpass call和batches时把顺道把渲染这块都了解了下，先利用一个思维导图把渲染的几个大的步骤记了下来，下次在探索里面的细节的时候就有清晰的脉络了(这里只记录Forward渲染)。   注1： 得到CullResult，包含了Camera可见的所有Renderer 注2： 遍历所有CullResult，处理每个renderer的materials。每个materi">
@@ -344,7 +344,7 @@
 <p><strong>RenderCameras和RenderOffscreenCameras</strong></p>
 <p>相同点:</p>
 <ul>
-<li>遍历所有的离屏渲染的相机，先让每个相机做裁剪操作操作，裁剪完之后得到裁剪之后的对象集合，然后让相机渲染这个集合。</li>
+<li>遍历所有的渲染的相机(或离屏渲染的相机)，先让每个相机做裁剪操作，裁剪完之后得到裁剪之后的对象集合，然后让相机渲染这个集合。</li>
 </ul>
 <p>不同点:</p>
 <ul>
