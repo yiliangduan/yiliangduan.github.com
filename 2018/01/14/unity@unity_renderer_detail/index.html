@@ -93,7 +93,7 @@
 <meta property="og:description" content="之前了解Unity的setpass call和batches时把顺道把渲染这块都了解了下，先利用一个思维导图把渲染的几个大的步骤记了下来，下次在探索里面的细节的时候就有清晰的脉络了(这里只记录Forward渲染)。   注1： 得到CullResult，包含了Camera可见的所有Renderer 注2： 遍历所有CullResult，处理每个renderer的materials。每个materi">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_renderer/1.png">
-<meta property="og:updated_time" content="2018-01-16T01:43:10.245Z">
+<meta property="og:updated_time" content="2018-01-17T09:37:12.591Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity渲染之概述">
 <meta name="twitter:description" content="之前了解Unity的setpass call和batches时把顺道把渲染这块都了解了下，先利用一个思维导图把渲染的几个大的步骤记了下来，下次在探索里面的细节的时候就有清晰的脉络了(这里只记录Forward渲染)。   注1： 得到CullResult，包含了Camera可见的所有Renderer 注2： 遍历所有CullResult，处理每个renderer的materials。每个materi">
@@ -385,7 +385,7 @@
 <p><strong>SortRenderPassData</strong></p>
 <p>处理PlainRenderPasses，把每个Pass都按照导图里面列出的元素的顺序优先级排序，排序之后的顺序就是接下来要渲染的顺序了。这里面的排序规则还是比较多的，这也关乎到场景上的模型被渲染之后的显示问题。比如两个Renderer A和B，两者使用的都是透明贴图，需要做透明混合处理。A的RenderQueue设置为3000，B的RenderQueue设置为30001，那么排序之后A在B的前面渲染，这样A的Renderer渲染出来的物体不会遮挡住B。排序的规则大致和导图里面的是一致的。</p>
 <p><strong>PerformRendering</strong></p>
-<p>在这个方法里面处理DoForwardVertexRenderLoop所得的RPDataVLit数据。</p>
+<p>这个方法里遍历在DoForwardVertexRenderLoop中处理得到的PlainRenderPasses集合，上面提到这个集合的的每个元素是一个pass需要渲染的内容。遍历这个数据集合对需要的渲染的mesh做动态合批，处理不同的pass里面的阴影。做好这些之后所有要在CPU处理的事情都做好了。</p>
 
       
     </div>
