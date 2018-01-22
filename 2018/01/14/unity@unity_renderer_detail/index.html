@@ -93,7 +93,7 @@
 <meta property="og:description" content="之前了解Unity的setpass call和batches时把顺道把渲染这块的代码(4.7.f1)也阅读了下，先利用一个思维导图把渲染的几个大的步骤记下来，以便有个整体的脉络(这里只记录Forward渲染)。   注1： 得到CullResult，包含了Camera可见的所有Renderer 注2： 遍历所有CullResult，处理每个renderer的materials。每个material">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_renderer/1.png">
-<meta property="og:updated_time" content="2018-01-17T14:22:50.127Z">
+<meta property="og:updated_time" content="2018-01-19T14:26:44.075Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity渲染之概述">
 <meta name="twitter:description" content="之前了解Unity的setpass call和batches时把顺道把渲染这块的代码(4.7.f1)也阅读了下，先利用一个思维导图把渲染的几个大的步骤记下来，以便有个整体的脉络(这里只记录Forward渲染)。   注1： 得到CullResult，包含了Camera可见的所有Renderer 注2： 遍历所有CullResult，处理每个renderer的materials。每个material">
@@ -387,6 +387,7 @@
 <p><strong>PerformRendering</strong></p>
 <p>这个方法里遍历在DoForwardVertexRenderLoop中处理得到的PlainRenderPasses集合，上面提到这个集合的的每个元素是一个pass需要渲染的内容。遍历这个数据集合对需要的渲染的mesh做动态合批，处理不同的pass里面的阴影。做好这些之后所有要在CPU处理的事情都做好了。</p>
 <p><strong>BatchRenderer</strong></p>
+<p>PerformRendering里遍历PlainRenderPasses，会对每个pass需要渲染的renderer用BatchRenderer处理，把可以合并在一个pass中渲染的renderer记录在一个动态数组中，当接下来遍历的元素不可以合并到当前的pass的时候，这个数组的所有renderer马上进行一次合批操作，然后再记录记下来这个元素。重复操作，一直到PlainRenderPasses的所有元素遍历完成。</p>
 <p><strong>RenderMultiple</strong></p>
 
       
