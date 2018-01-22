@@ -387,8 +387,9 @@
 <p><strong>PerformRendering</strong></p>
 <p>这个方法里遍历在DoForwardVertexRenderLoop中处理得到的PlainRenderPasses集合，上面提到这个集合的的每个元素是一个pass需要渲染的内容。遍历这个数据集合对需要的渲染的mesh做动态合批，处理不同的pass里面的阴影。做好这些之后所有要在CPU处理的事情都做好了。</p>
 <p><strong>BatchRenderer</strong></p>
-<p>PerformRendering里遍历PlainRenderPasses，会对每个pass需要渲染的renderer用BatchRenderer处理，把可以合并在一个pass中渲染的renderer记录在一个动态数组中，当接下来遍历的元素不可以合并到当前的pass的时候，这个数组的所有renderer马上进行一次合批操作，然后再记录记下来这个元素。重复操作，一直到PlainRenderPasses的所有元素遍历完成。</p>
+<p>PerformRendering里遍历PlainRenderPasses，会对每个pass需要渲染的renderer用BatchRenderer处理，把可以合并在一个pass中渲染的renderer记录在一个动态数组中，当接下来遍历的元素不可以合并到当前的pass的时候，这个数组的所有renderer马上进行一次合批操作，然后再记录记下来这个元素。重复操作，一直到PlainRenderPasses的所有元素遍历完成。合并的具体操作在Renderer(MeshRenderer、ParticleSystemRenderer和SpriteRenderer)的RenderMultiple操作里面完成。</p>
 <p><strong>RenderMultiple</strong></p>
+<p>这个函数会处理每个需要合并的的renderer集合。首先会判断是动态合并还是静态合并，然后对renderer集合做相应的动态或者静态合批处理。</p>
 
       
     </div>
