@@ -328,9 +328,7 @@
           <p>之前了解Unity的setpass call和batches时把顺道把渲染这块的代码(4.7.f1)也阅读了下，先利用一个思维导图把渲染的几个大的步骤记下来，以便有个整体的脉络(这里只记录Forward渲染)。</p>
 <p><img src="/images/unity_renderer/1.png" alt=""></p>
 <blockquote>
-<p>注1： 得到CullResult，包含了Camera可见的所有Renderer</p>
-<p>注2： 遍历所有CullResult，处理每个renderer的materials。每个material被包裹成一个渲染对象RenderObjectData</p>
-<p>注3：由Camera的投影矩阵和对象的Z轴向量的积得出</p>
+<p>注1：由Camera的投影矩阵和对象的Z轴向量的积得出</p>
 </blockquote>
           <!--noindex-->
           <div class="post-more-link text-center">
