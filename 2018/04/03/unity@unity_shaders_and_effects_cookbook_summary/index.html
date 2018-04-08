@@ -95,7 +95,8 @@
 <meta property="og:image" content="http://elangduan.github.com/images/unity_shader_effect_cookbook/phong_light.png">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_shader_effect_cookbook/phong_model_cal.png">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_shader_effect_cookbook/blinnphong_model_cal.png">
-<meta property="og:updated_time" content="2018-04-08T12:15:27.024Z">
+<meta property="og:image" content="http://elangduan.github.com/images/unity_shader_effect_cookbook/extrusion_model.png">
+<meta property="og:updated_time" content="2018-04-08T13:06:06.222Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity Shaders and Effects Cookbook总结">
 <meta name="twitter:description" content="Phong和BlinnPhong反射类型光照模型   Phong Phong模型是基于光照(图中1 Light向量)的方向和用户的视角(图1 View向量)方向进行计算的。通过计算Light的反射向量与用户的视角方向向量的向量积作为光照的强度因子。 计算公式：  代码方法: 1234567891011121314151617//lightDir就是图1的Light向量，viewDir就是图1的V">
@@ -337,12 +338,22 @@
 <p>代码方法:</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//lightDir就是图1的Light向量，viewDir就是图1的View向量</span></span><br><span class="line"><span class="function">fixed4 <span class="title">LightingPhong</span><span class="params">(SurfaceOutput s, fixed3 lightDir, half3 viewDir, fixed atten)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  	<span class="keyword">float</span> NdotL = dot(s.Normal - lightDir);</span><br><span class="line">  </span><br><span class="line">    float3 halfVector = normalize(lightDir + viewDir);</span><br><span class="line">  	<span class="keyword">float</span> NdotH = max(<span class="number">0</span>, dot(s.Normal, halfVector));</span><br><span class="line">  	<span class="keyword">float</span> spec = <span class="built_in">pow</span>(NdotH, _SpecPower), _SpecularColor);</span><br><span class="line">  </span><br><span class="line">  	fixed4 color;</span><br><span class="line">  	color.rgb = (s.Albedo * _LightColor0.rgb * max(<span class="number">0</span>, NdotL) * atten) + (_LightColor0.rgb * finalSpec);</span><br><span class="line">  	color.a = s.Alpha;</span><br><span class="line">  </span><br><span class="line">  	<span class="keyword">return</span> color;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <ol>
-<li><p>挤压效果</p>
-</li>
-<li><p>雪花效果</p>
-</li>
-<li><p>玻璃效果</p>
-</li>
+<li>挤压效果</li>
+</ol>
+<p><img src="/images/unity_shader_effect_cookbook/extrusion_model.png" alt=""></p>
+<p>这种挤压的效果的原理是<font color="red">将顶点沿发现方向进行投影</font>,用代码表示就是这样:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">v.vertex.xyz += v.normal * _Amount;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>_Amount 是挤压的因子</p>
+</blockquote>
+<p>还可以通过额外添加一个纹理(或者使用主要纹理的alpha通道)来表示挤压的程度:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sampler2D _ExtrusionTex;</span><br><span class="line">void vert(inout appdata_full v)</span><br><span class="line">&#123;</span><br><span class="line">	float4 tex = tex2Dlod(_ExtrusionTex, float4(v.texcoord.xy, 0, 0));;</span><br><span class="line">	float extrusion = UnpackNormal(tex.r);</span><br><span class="line">	</span><br><span class="line">	v.vertex.xyz += v.normal * _Amount * extrusion;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>从顶点修改器中采样一个纹理，应该使用texDlod而不是tex2D。</p>
+</blockquote>
+<ol>
+<li>雪花效果</li>
+<li>玻璃效果</li>
 </ol>
 
       
