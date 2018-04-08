@@ -84,20 +84,20 @@
 
 
 
-<meta name="description" content="Phong和BlinnPhong反射类型光照模型 Phong的计算公式：  挤压效果雪花效果玻璃效果">
+<meta name="description" content="Phong和BlinnPhong反射类型光照模型  Phong  计算公式：  代码方法: 12float3 reflectionVector = normalize(2.0 * Normal * NdotL - Light)  BlinnPhong  挤压效果雪花效果玻璃效果">
 <meta name="keywords" content="unity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity Shaders and Effects Cookbook总结">
 <meta property="og:url" content="http://elangduan.github.com/2018/04/03/unity@unity_shaders_and_effects_cookbook_summary/index.html">
 <meta property="og:site_name" content="elangduan">
-<meta property="og:description" content="Phong和BlinnPhong反射类型光照模型 Phong的计算公式：  挤压效果雪花效果玻璃效果">
+<meta property="og:description" content="Phong和BlinnPhong反射类型光照模型  Phong  计算公式：  代码方法: 12float3 reflectionVector = normalize(2.0 * Normal * NdotL - Light)  BlinnPhong  挤压效果雪花效果玻璃效果">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_shader_effect_cookbook/phong_light.png">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_shader_effect_cookbook/phone_model_cal.png">
-<meta property="og:updated_time" content="2018-04-08T11:30:34.126Z">
+<meta property="og:updated_time" content="2018-04-08T12:00:55.140Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity Shaders and Effects Cookbook总结">
-<meta name="twitter:description" content="Phong和BlinnPhong反射类型光照模型 Phong的计算公式：  挤压效果雪花效果玻璃效果">
+<meta name="twitter:description" content="Phong和BlinnPhong反射类型光照模型  Phong  计算公式：  代码方法: 12float3 reflectionVector = normalize(2.0 * Normal * NdotL - Light)  BlinnPhong  挤压效果雪花效果玻璃效果">
 <meta name="twitter:image" content="http://elangduan.github.com/images/unity_shader_effect_cookbook/phong_light.png">
 
 
@@ -319,10 +319,18 @@
       
 
       
-        <h3 id="Phong和BlinnPhong反射类型光照模型"><a href="#Phong和BlinnPhong反射类型光照模型" class="headerlink" title="Phong和BlinnPhong反射类型光照模型"></a>Phong和BlinnPhong反射类型光照模型</h3><p><img src="/images/unity_shader_effect_cookbook/phong_light.png" alt=""></p>
-<p>Phong的计算公式：</p>
+        <h4 id="Phong和BlinnPhong反射类型光照模型"><a href="#Phong和BlinnPhong反射类型光照模型" class="headerlink" title="Phong和BlinnPhong反射类型光照模型"></a>Phong和BlinnPhong反射类型光照模型</h4><p><img src="/images/unity_shader_effect_cookbook/phong_light.png" alt=""></p>
+<ol>
+<li>Phong</li>
+</ol>
+<p>计算公式：</p>
 <p><img src="/images/unity_shader_effect_cookbook/phone_model_cal.png" alt=""></p>
-<h3 id="挤压效果"><a href="#挤压效果" class="headerlink" title="挤压效果"></a>挤压效果</h3><h3 id="雪花效果"><a href="#雪花效果" class="headerlink" title="雪花效果"></a>雪花效果</h3><h3 id="玻璃效果"><a href="#玻璃效果" class="headerlink" title="玻璃效果"></a>玻璃效果</h3>
+<p>代码方法:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">float3 reflectionVector = normalize(<span class="number">2.0</span> * Normal * NdotL - Light)</span><br></pre></td></tr></table></figure>
+<ol>
+<li>BlinnPhong</li>
+</ol>
+<h4 id="挤压效果"><a href="#挤压效果" class="headerlink" title="挤压效果"></a>挤压效果</h4><h4 id="雪花效果"><a href="#雪花效果" class="headerlink" title="雪花效果"></a>雪花效果</h4><h4 id="玻璃效果"><a href="#玻璃效果" class="headerlink" title="玻璃效果"></a>玻璃效果</h4>
       
     </div>
 
@@ -471,7 +479,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Phong和BlinnPhong反射类型光照模型"><span class="nav-number">1.</span> <span class="nav-text">Phong和BlinnPhong反射类型光照模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#挤压效果"><span class="nav-number">2.</span> <span class="nav-text">挤压效果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#雪花效果"><span class="nav-number">3.</span> <span class="nav-text">雪花效果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#玻璃效果"><span class="nav-number">4.</span> <span class="nav-text">玻璃效果</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Phong和BlinnPhong反射类型光照模型"><span class="nav-number">1.</span> <span class="nav-text">Phong和BlinnPhong反射类型光照模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#挤压效果"><span class="nav-number">2.</span> <span class="nav-text">挤压效果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#雪花效果"><span class="nav-number">3.</span> <span class="nav-text">雪花效果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#玻璃效果"><span class="nav-number">4.</span> <span class="nav-text">玻璃效果</span></a></li></ol></div>
             
 
           </div>
