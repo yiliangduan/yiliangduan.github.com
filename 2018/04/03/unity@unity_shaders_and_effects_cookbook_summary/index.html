@@ -84,22 +84,22 @@
 
 
 
-<meta name="description" content="Phong和BlinnPhong反射类型光照模型   Phong Phong模型是基于光照(图中1 Light向量)的方向和用户的视角(图1 View向量)方向进行计算的。通过计算Light的反射向量与用户的视角方向向量的向量积作为光照的强度因子。 计算公式：  代码方法: 1234567891011121314151617//lightDir就是图1的Light向量，viewDir就是图1的V">
+<meta name="description" content="Phong和BlinnPhong反射类型光照模型  Phong Phong模型是基于光照(图中1 Light向量)的方向和用户的视角(图1 View向量)方向进行计算的。通过计算Light的反射向量与用户的视角方向向量的向量积作为光照的强度因子。 计算公式：  代码方法: 1234567891011121314151617//lightDir就是图1的Light向量，viewDir就是图1的Vie">
 <meta name="keywords" content="unity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity Shaders and Effects Cookbook总结">
 <meta property="og:url" content="http://elangduan.github.com/2018/04/03/unity@unity_shaders_and_effects_cookbook_summary/index.html">
 <meta property="og:site_name" content="elangduan">
-<meta property="og:description" content="Phong和BlinnPhong反射类型光照模型   Phong Phong模型是基于光照(图中1 Light向量)的方向和用户的视角(图1 View向量)方向进行计算的。通过计算Light的反射向量与用户的视角方向向量的向量积作为光照的强度因子。 计算公式：  代码方法: 1234567891011121314151617//lightDir就是图1的Light向量，viewDir就是图1的V">
+<meta property="og:description" content="Phong和BlinnPhong反射类型光照模型  Phong Phong模型是基于光照(图中1 Light向量)的方向和用户的视角(图1 View向量)方向进行计算的。通过计算Light的反射向量与用户的视角方向向量的向量积作为光照的强度因子。 计算公式：  代码方法: 1234567891011121314151617//lightDir就是图1的Light向量，viewDir就是图1的Vie">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_shader_effect_cookbook/phong_light.png">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_shader_effect_cookbook/phong_model_cal.png">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_shader_effect_cookbook/blinnphong_model_cal.png">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_shader_effect_cookbook/extrusion_model.png">
-<meta property="og:updated_time" content="2018-04-09T01:21:56.836Z">
+<meta property="og:updated_time" content="2018-04-09T01:27:12.864Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity Shaders and Effects Cookbook总结">
-<meta name="twitter:description" content="Phong和BlinnPhong反射类型光照模型   Phong Phong模型是基于光照(图中1 Light向量)的方向和用户的视角(图1 View向量)方向进行计算的。通过计算Light的反射向量与用户的视角方向向量的向量积作为光照的强度因子。 计算公式：  代码方法: 1234567891011121314151617//lightDir就是图1的Light向量，viewDir就是图1的V">
+<meta name="twitter:description" content="Phong和BlinnPhong反射类型光照模型  Phong Phong模型是基于光照(图中1 Light向量)的方向和用户的视角(图1 View向量)方向进行计算的。通过计算Light的反射向量与用户的视角方向向量的向量积作为光照的强度因子。 计算公式：  代码方法: 1234567891011121314151617//lightDir就是图1的Light向量，viewDir就是图1的Vie">
 <meta name="twitter:image" content="http://elangduan.github.com/images/unity_shader_effect_cookbook/phong_light.png">
 
 
@@ -321,25 +321,21 @@
       
 
       
-        <ol>
-<li>Phong和BlinnPhong反射类型光照模型</li>
-</ol>
+        <p><strong>Phong和BlinnPhong反射类型光照模型</strong></p>
 <p><img src="/images/unity_shader_effect_cookbook/phong_light.png" alt=""></p>
-<p><strong>Phong</strong></p>
+<p><em>Phong</em></p>
 <p>Phong模型是基于光照(图中1 Light向量)的方向和用户的视角(图1 View向量)方向进行计算的。通过计算Light的反射向量与用户的视角方向向量的向量积作为光照的强度因子。</p>
 <p>计算公式：</p>
 <p><img src="/images/unity_shader_effect_cookbook/phong_model_cal.png" alt=""></p>
 <p>代码方法:</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//lightDir就是图1的Light向量，viewDir就是图1的View向量</span></span><br><span class="line"><span class="function">fixed4 <span class="title">LightingPhong</span><span class="params">(SurfaceOutput s, fixed3 lightDir, half3 viewDir, fixed atten)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">//Reflection</span></span><br><span class="line">  	<span class="keyword">float</span> NdotL = dot(s.Normal - lightDir);</span><br><span class="line">	float3 reflectionVector = normalize(<span class="number">2.0</span> * Normal * NdotL - Light);</span><br><span class="line">    </span><br><span class="line">  	<span class="comment">//Specular</span></span><br><span class="line">  	<span class="keyword">float</span> spec = <span class="built_in">pow</span>(max(<span class="number">0</span>, dot(reflectionVector, viewDir)), _SpecPower);</span><br><span class="line">  	float3 finalSpec = _SpecularColor.rgb * spec;</span><br><span class="line">  </span><br><span class="line">  	fixed4 color;</span><br><span class="line">  	color.rgb = (s.Albedo * _LightColor0.rgb * max(<span class="number">0</span>, NdotL) * atten) + (_LightColor0.rgb * finalSpec);</span><br><span class="line">  	color.a = s.Alpha;</span><br><span class="line">  </span><br><span class="line">  	<span class="keyword">return</span> color;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>BlinnPhong</strong></p>
+<p><em>BlinnPhong</em></p>
 <p>BlinnPhong可以看作是堆Phong模型的简化版，它是通过视角方向（View）和光照方向（Light）构成的半角向量（Half）来计算光照的。直接使用半角向量而不用计算光照的反射向量的方式更加高效。</p>
 <p>计算公式：</p>
 <p><img src="/images/unity_shader_effect_cookbook/blinnphong_model_cal.png" alt=""></p>
 <p>代码方法:</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//lightDir就是图1的Light向量，viewDir就是图1的View向量</span></span><br><span class="line"><span class="function">fixed4 <span class="title">LightingPhong</span><span class="params">(SurfaceOutput s, fixed3 lightDir, half3 viewDir, fixed atten)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  	<span class="keyword">float</span> NdotL = dot(s.Normal - lightDir);</span><br><span class="line">  </span><br><span class="line">    float3 halfVector = normalize(lightDir + viewDir);</span><br><span class="line">  	<span class="keyword">float</span> NdotH = max(<span class="number">0</span>, dot(s.Normal, halfVector));</span><br><span class="line">  	<span class="keyword">float</span> spec = <span class="built_in">pow</span>(NdotH, _SpecPower), _SpecularColor);</span><br><span class="line">  </span><br><span class="line">  	fixed4 color;</span><br><span class="line">  	color.rgb = (s.Albedo * _LightColor0.rgb * max(<span class="number">0</span>, NdotL) * atten) + (_LightColor0.rgb * finalSpec);</span><br><span class="line">  	color.a = s.Alpha;</span><br><span class="line">  </span><br><span class="line">  	<span class="keyword">return</span> color;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ol>
-<li>挤压效果</li>
-</ol>
+<p><strong>挤压效果</strong></p>
 <p><img src="/images/unity_shader_effect_cookbook/extrusion_model.png" alt=""></p>
 <p>这种挤压的效果的原理是<font color="red">将顶点沿发现方向进行投影</font>,用代码表示就是这样:</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">v.vertex.xyz += v.normal * _Amount;</span><br></pre></td></tr></table></figure>
@@ -351,9 +347,7 @@
 <blockquote>
 <p>从顶点修改器中采样一个纹理，应该使用texDlod而不是tex2D。</p>
 </blockquote>
-<ol>
-<li>抓取功能</li>
-</ol>
+<p><strong>抓取功能</strong></p>
 <blockquote>
 <p>原理是结合vertex和fragment着色器以及抓取通行技术，然后对抓取纹理进行采样，在对其UV值做一点修改来制作出一些细微的变形效果。</p>
 </blockquote>
