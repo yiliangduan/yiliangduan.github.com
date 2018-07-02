@@ -68,8 +68,6 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="cplusplus," />
-
 
 
 
@@ -84,18 +82,13 @@
 
 
 
-<meta name="description" content="总结一个下c++虚函数的内存结构问题 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647class A&amp;#123;public:    A()&amp;#123;print1();&amp;#125; //在构造函数里面调用virtual函数的做法本身不对，这里只为测试    virtual v">
-<meta name="keywords" content="cplusplus">
-<meta property="og:type" content="article">
-<meta property="og:title" content="C++虚函数的内存结构浅析">
-<meta property="og:url" content="http://elangduan.github.com/2015/06/20/cpp@memory_format_structure/index.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="elangduan">
+<meta property="og:url" content="http://elangduan.github.com/page/9/index.html">
 <meta property="og:site_name" content="elangduan">
-<meta property="og:description" content="总结一个下c++虚函数的内存结构问题 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647class A&amp;#123;public:    A()&amp;#123;print1();&amp;#125; //在构造函数里面调用virtual函数的做法本身不对，这里只为测试    virtual v">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-03-08T11:54:34.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="C++虚函数的内存结构浅析">
-<meta name="twitter:description" content="总结一个下c++虚函数的内存结构问题 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647class A&amp;#123;public:    A()&amp;#123;print1();&amp;#125; //在构造函数里面调用virtual函数的做法本身不对，这里只为测试    virtual v">
+<meta name="twitter:title" content="elangduan">
 
 
 
@@ -123,13 +116,13 @@
 
 
 
-  <link rel="canonical" href="http://elangduan.github.com/2015/06/20/cpp@memory_format_structure/"/>
+  <link rel="canonical" href="http://elangduan.github.com/page/9/"/>
 
 
 
 
 
-  <title> C++虚函数的内存结构浅析 | elangduan </title>
+  <title> elangduan </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -150,7 +143,9 @@
     
   
 
-  <div class="container one-collumn sidebar-position-left page-post-detail ">
+  <div class="container one-collumn sidebar-position-left 
+   page-home 
+ ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -239,9 +234,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-
-  <div id="posts" class="posts-expand">
+  <section id="posts" class="posts-expand">
     
+      
 
   
 
@@ -274,7 +269,10 @@
             
             
               
-                C++虚函数的内存结构浅析
+                
+                <a class="post-title-link" href="/2015/06/20/cpp@memory_format_structure/" itemprop="url">
+                  C++虚函数的内存结构浅析
+                </a>
               
             
           </h1>
@@ -316,69 +314,50 @@
       
 
       
-        <p>总结一个下c++虚函数的内存结构问题</p>
+        
+          
+            <p>总结一个下c++虚函数的内存结构问题</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span>&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    A()&#123;print1();&#125; <span class="comment">//在构造函数里面调用virtual函数的做法本身不对，这里只为测试</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">print1</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"A print1"</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> :</span> <span class="keyword">public</span> A&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">print1</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"B print1"</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span>&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">char</span> ch;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">print2</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt;<span class="string">"C print2"</span>&lt;&lt;<span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">D</span> :</span> <span class="keyword">public</span> A, <span class="keyword">public</span> C</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> cd;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">print1</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"D print1"</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">print2</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"D print2"</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//Q1</span></span><br><span class="line">    B b; <span class="comment">// 输出 A print1</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//Q2</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="keyword">sizeof</span>(D) &lt;&lt;<span class="built_in">std</span>::<span class="built_in">endl</span>; <span class="comment">//16</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>//A1:<br>输出A print1的原因是在class A的构造方法里面，对象b的构造方法内部还没有执行，<br>所以对象b还没有初始化也就没有虚函数表，在A的构造方法里面this指针就是A类型的，<br>所以是调用A的print1</p>
 <p>//A2</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//A的内存布局为</span></span><br><span class="line">----------</span><br><span class="line">__vfptr = <span class="number">0x00c0ae48</span> <span class="keyword">const</span> A::`vftable'&#123;<span class="keyword">for</span> `A'&#125;</span><br><span class="line"></span><br><span class="line">----------</span><br><span class="line"></span><br><span class="line"><span class="comment">//C的内存布局</span></span><br><span class="line">----------</span><br><span class="line">__vfptr = <span class="number">0x00c0abd8</span> <span class="keyword">const</span> C::`vftable'&#123;<span class="keyword">for</span> `C'&#125;</span><br><span class="line">ch = <span class="number">0xcccccccc</span></span><br><span class="line">----------</span><br><span class="line"></span><br><span class="line"><span class="comment">//D的内存布局</span></span><br><span class="line">---------</span><br><span class="line">A = &#123;__vfptr = <span class="number">0x00c0ae48</span> <span class="keyword">const</span> D::`vftable'&#123;<span class="keyword">for</span> `A'&#125; &#125;</span><br><span class="line">B = &#123;__vfptr = <span class="number">0x00c0abd8</span> <span class="keyword">const</span> D::`vftable'&#123;<span class="keyword">for</span> `C'&#125;</span><br><span class="line">     ch = <span class="number">0xcccccccc</span></span><br><span class="line">    &#125;</span><br><span class="line">cd = <span class="number">0xcccccccc</span></span><br><span class="line">---------</span><br></pre></td></tr></table></figure>
 <p>所以 sizeof(D) = 4 + 8 + 4 （C的大小为8是因为内存还要对其）</p>
 
+          
+        
       
     </div>
 
     <div>
       
-        
-
-      
     </div>
 
     <div>
-      
-        
-
       
     </div>
 
 
     <footer class="post-footer">
       
-        <div class="post-tags">
-          
-            <a href="/tags/cplusplus/" rel="tag"># cplusplus</a>
-          
-        </div>
+
       
 
       
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/04/09/csharp@const_static_vs_readonly_keyworld/" rel="prev" title="C# 的const, static 和 readonly 关键字的理解">
-                C# 的const, static 和 readonly 关键字的理解 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
       
-
-      
+        <div class="post-eof"></div>
       
     </footer>
   </article>
 
 
+    
+  </section>
 
-    <div class="post-spread">
-      
-    </div>
-  </div>
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/8/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span>
+  </nav>
+
 
 
           </div>
@@ -543,10 +522,6 @@
   
 
   
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
-
-
 
   
 
