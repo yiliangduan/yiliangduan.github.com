@@ -94,7 +94,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://elangduan.github.com/images/ugui_graphics_rebuild/ugui_graphic_rebuild_profiler.png">
 <meta property="og:image" content="http://elangduan.github.com/images/ugui_graphics_rebuild/ugui_graphic_rebuild_profiler_perfomance.png">
-<meta property="og:updated_time" content="2018-01-02T11:09:57.723Z">
+<meta property="og:updated_time" content="2018-01-02T11:09:58.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="UGUI的Graphic Rebuild问题">
 <meta name="twitter:description" content="今天在项目中发现了一个UI的性能消耗比较异常的问题。在Unity的Profiler里面我看到一项Canvas.SendWillRenderCanvasesCPU消耗持续比较高，但是查看游戏的UI界面好像动态变化的UI并没有。在逐个关闭UI才定位到有一张图片一直在做渐变效果，所以才导致UI一直在重建。这里写个简单的例子模拟下，在场景中创建一张Image，然后挂载一个测试脚本，在这个脚本里面一直更新这">
