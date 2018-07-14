@@ -84,19 +84,19 @@
 
 
 
-<meta name="description" content="MemoryPool主要是对内存分配的碎片化和频繁分配和释放进行优化。MemoryPool的设计结构如下:  header_dynamic_array是一个用来保存分配的内存块的地址，其中每个内存块的大小都是固定的，不支持分配超过固定大小的内存块。 memory_blocks是真正的内存块。这些内存块在一次使用之后并不会被真正释放，而是利用memset清空数据，等着下一次利用。 header_dy">
+<meta name="description" content="MemoryPool主要是对内存分配的碎片化和频繁分配和释放进行优化。  MemoryPool的设计结构如下: 123456789101112131415161718192021public class MemoryPool&amp;#123;    ...  private:    struct Bubble    &amp;#123;        char data[1]; //只是一个占位符,其实这个成">
 <meta name="keywords" content="unity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity的MemoryPool模块">
 <meta property="og:url" content="http://elangduan.github.com/2018/07/04/unity@unity_memorypool/index.html">
 <meta property="og:site_name" content="elangduan">
-<meta property="og:description" content="MemoryPool主要是对内存分配的碎片化和频繁分配和释放进行优化。MemoryPool的设计结构如下:  header_dynamic_array是一个用来保存分配的内存块的地址，其中每个内存块的大小都是固定的，不支持分配超过固定大小的内存块。 memory_blocks是真正的内存块。这些内存块在一次使用之后并不会被真正释放，而是利用memset清空数据，等着下一次利用。 header_dy">
+<meta property="og:description" content="MemoryPool主要是对内存分配的碎片化和频繁分配和释放进行优化。  MemoryPool的设计结构如下: 123456789101112131415161718192021public class MemoryPool&amp;#123;    ...  private:    struct Bubble    &amp;#123;        char data[1]; //只是一个占位符,其实这个成">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_memorypool/unity_memorypool_1.png">
-<meta property="og:updated_time" content="2018-07-05T01:31:19.286Z">
+<meta property="og:updated_time" content="2018-07-14T02:37:40.605Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity的MemoryPool模块">
-<meta name="twitter:description" content="MemoryPool主要是对内存分配的碎片化和频繁分配和释放进行优化。MemoryPool的设计结构如下:  header_dynamic_array是一个用来保存分配的内存块的地址，其中每个内存块的大小都是固定的，不支持分配超过固定大小的内存块。 memory_blocks是真正的内存块。这些内存块在一次使用之后并不会被真正释放，而是利用memset清空数据，等着下一次利用。 header_dy">
+<meta name="twitter:description" content="MemoryPool主要是对内存分配的碎片化和频繁分配和释放进行优化。  MemoryPool的设计结构如下: 123456789101112131415161718192021public class MemoryPool&amp;#123;    ...  private:    struct Bubble    &amp;#123;        char data[1]; //只是一个占位符,其实这个成">
 <meta name="twitter:image" content="http://elangduan.github.com/images/unity_memorypool/unity_memorypool_1.png">
 
 
@@ -318,13 +318,14 @@
       
 
       
-        <p>MemoryPool主要是对内存分配的碎片化和频繁分配和释放进行优化。MemoryPool的设计结构如下:</p>
+        <blockquote>
+<p>MemoryPool主要是对内存分配的碎片化和频繁分配和释放进行优化。</p>
+</blockquote>
+<p>MemoryPool的设计结构如下:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MemoryPool</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    ...</span><br><span class="line">  </span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">Bubble</span></span></span><br><span class="line"><span class="class">    &#123;</span></span><br><span class="line">        <span class="keyword">char</span> data[<span class="number">1</span>]; <span class="comment">//只是一个占位符,其实这个成员变量加不加sizeof(Block)大小都是1个字节</span></span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">typedef</span> dynamic_array&lt;Bubble*&gt; Bubbles;</span><br><span class="line"></span><br><span class="line">    Bubble m_Bubbles;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">void</span>* m_HeadOfFreeList;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">int</span> m_BlockSize; <span class="comment">//每个Block的大小</span></span><br><span class="line">    <span class="keyword">int</span> m_BubbleSize; <span class="comment">//每个Bubble的大小</span></span><br><span class="line">    <span class="keyword">int</span> m_BlocksPerBubble; <span class="comment">//一个Bubble里面有几个Block</span></span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里解释下里面的结构布局:</p>
 <p><img src="/images/unity_memorypool/unity_memorypool_1.png" alt=""></p>
-<p>header_dynamic_array是一个用来保存分配的内存块的地址，其中每个内存块的大小都是固定的，不支持分配超过固定大小的内存块。</p>
-<p>memory_blocks是真正的内存块。这些内存块在一次使用之后并不会被真正释放，而是利用memset清空数据，等着下一次利用。</p>
-<p>header_dynamic_array的设计比较巧妙,结构如下:</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Block</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">char</span> data[<span class="number">1</span>];</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> dynamic_array&lt;Block*&gt; Blocks;</span><br><span class="line"></span><br><span class="line">Blocks m_Blocks;</span><br></pre></td></tr></table></figure>
-<p>//TODO</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
       
     </div>
