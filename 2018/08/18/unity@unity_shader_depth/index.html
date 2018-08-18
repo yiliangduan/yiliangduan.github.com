@@ -94,7 +94,8 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_depth/1.png">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_depth/2.png">
-<meta property="og:updated_time" content="2018-08-18T03:00:09.796Z">
+<meta property="og:image" content="http://elangduan.github.com/images/unity_depth/3.png">
+<meta property="og:updated_time" content="2018-08-18T03:53:05.079Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity 渲染的深度值获取">
 <meta name="twitter:description" content="深度值是对象距离摄像机距离的一个参考值，在制作一些场景效果时会经常用得到。深度值是在顶点着色器之后的像素着色器之前的深度测试阶段生成的，所以获取深度值就得在像素着色器中获取。下面创建了一个简单的场景来显示深度信息 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748Pass&amp;#">
@@ -327,6 +328,12 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">o.scrPos = ComputeScreenPos(o.clipPos);</span><br></pre></td></tr></table></figure>
 <p> 裁剪坐标转换到屏幕坐标要处理的工作就是根据屏幕的宽高来转换到对应的坐标,计算公式如下：</p>
 <p><img src="/images/unity_depth/2.png" alt=""></p>
+<p>利用这个公式即可根据裁剪坐标计算出屏幕坐标，但是当查看Unity内置的ComputeScreenPos函数时发现里面并不是这样计算的:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">inline</span> float4 <span class="title">ComputeNonStereoScreenPos</span><span class="params">(float4 pos)</span> </span>&#123;</span><br><span class="line">    float4 o = pos * <span class="number">0.5f</span>;</span><br><span class="line">    <span class="comment">//_ProjectionParams.x的值为1或者-1</span></span><br><span class="line">    o.xy = float2(o.x, o.y*_ProjectionParams.x) + o.w;</span><br><span class="line">    o.zw = pos.zw;</span><br><span class="line">    <span class="keyword">return</span> o;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">inline</span> float4 <span class="title">ComputeScreenPos</span><span class="params">(float4 pos)</span> </span>&#123;</span><br><span class="line">    float4 o = ComputeNonStereoScreenPos(pos);</span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> defined(UNITY_SINGLE_PASS_STEREO)</span></span><br><span class="line">    o.xy = TransformStereoScreenSpaceTex(o.xy, pos.w);</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">    <span class="keyword">return</span> o;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>主要看ComputeNonStereoScreenPos函数发现这个计算和我们上面列出的计算屏幕坐标的方式不同，仔细推导发现这个计算方式是这样得来的:</p>
+<p><img src="/images/unity_depth/3.png" alt=""></p>
+<p>再结合像素着色器中计算深度的接口SAMPLE_DEPTH_TEXTURE_PROJ就明白其中的原因了。从标准的计算屏幕坐标的公式计算好的screen坐标的区间范围是[0, pixelwidth],这个区间就是屏幕像素大小的区间。而通过ComputeScreenPos计算得到的newScreen的坐标的区间范围是[0, w]的范围，这个不是真正的屏幕坐标，但是不要紧，在使用到这个坐标的SAMPLE_DEPTH_TEXTURE_PROJ中是这样的：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SAMPLE_DEPTH_TEXTURE_PROJ(sampler, uv) (tex2Dproj(sampler, uv).r)</span></span><br><span class="line"></span><br><span class="line"><span class="function">half4 <span class="title">tex2Dproj</span><span class="params">(sampler2D s, in half4 t)</span> </span>&#123; <span class="keyword">return</span> tex2D(s, t.xy / t.w); &#125;</span><br></pre></td></tr></table></figure>
 
       
     </div>
