@@ -337,7 +337,7 @@
 <p><img src="/images/unity_depth/3.png" alt=""></p>
 <p>再结合像素着色器中计算深度的接口SAMPLE_DEPTH_TEXTURE_PROJ就明白其中的原因了。从标准的计算屏幕坐标的公式计算好的screen坐标的区间范围是[0, pixelwidth],这个区间就是屏幕像素大小的区间。而通过ComputeScreenPos计算得到的newScreen的坐标的区间范围是[0, w]的范围，这个不是真正的屏幕坐标，但是不要紧，在使用到这个坐标的SAMPLE_DEPTH_TEXTURE_PROJ中是这样的：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SAMPLE_DEPTH_TEXTURE_PROJ(sampler, uv) (tex2Dproj(sampler, uv).r)</span></span><br><span class="line"></span><br><span class="line"><span class="function">half4 <span class="title">tex2Dproj</span><span class="params">(sampler2D s, in half4 t)</span> </span>&#123; <span class="keyword">return</span> tex2D(s, t.xy / t.w); &#125;</span><br></pre></td></tr></table></figure>
-<p>tex2D 里面会再把t.xy转换成[0, 1]的区间来采样纹理。这样ComputeScreenPos计算的结果正好适用。</p>
+<p>tex2D 里面会再把t.xy转换成[0, 1]的区间来采样纹理。这样ComputeScreenPos计算的结果正好用作采样_CameraDepthTexture的UV值。</p>
 
       
     </div>
