@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="csharp," />
+  <meta name="keywords" content="unity," />
 
 
 
@@ -84,18 +84,23 @@
 
 
 
-<meta name="description" content="UI图片资源对于项目里面内存的占用还是包大小的比例都是很大一部分，这里对带Alpha的图片的几种常用格式做了下对比，便于找出最好的解决方案应用到项目中去  测试环境: Unity5.5.4f1, Window7, 魅蓝Note1  在网上找了8张512x512的PNG图片，分别测试了RGBA32、RGBA16和ETC1+Alpha(这种格式主要是考虑Android平台)三种格式在魅蓝Note1上的">
-<meta name="keywords" content="csharp">
+<meta name="description" content="12345678910111213141516171819202122232425262728293031323334353637383940414243public enum AnimState&amp;#123;    Relax,    Fly&amp;#125;public void Update()&amp;#123;    if (mAnimState == AnimState.Fly)    &amp;#123;">
+<meta name="keywords" content="unity">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Unity3D Sprite常用存储格式性能对比">
-<meta property="og:url" content="http://elangduan.github.com/2017/07/14/unity@ugui_sprite_format_summary/index.html">
+<meta property="og:title" content="Unity的Animator BlendTree">
+<meta property="og:url" content="http://elangduan.github.com/2018/10/11/unity@Animator_BlendTree/index.html">
 <meta property="og:site_name" content="elangduan">
-<meta property="og:description" content="UI图片资源对于项目里面内存的占用还是包大小的比例都是很大一部分，这里对带Alpha的图片的几种常用格式做了下对比，便于找出最好的解决方案应用到项目中去  测试环境: Unity5.5.4f1, Window7, 魅蓝Note1  在网上找了8张512x512的PNG图片，分别测试了RGBA32、RGBA16和ETC1+Alpha(这种格式主要是考虑Android平台)三种格式在魅蓝Note1上的">
+<meta property="og:description" content="12345678910111213141516171819202122232425262728293031323334353637383940414243public enum AnimState&amp;#123;    Relax,    Fly&amp;#125;public void Update()&amp;#123;    if (mAnimState == AnimState.Fly)    &amp;#123;">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-11-18T12:27:44.000Z">
+<meta property="og:image" content="http://elangduan.github.com/images/unity_blendtree/1.png">
+<meta property="og:image" content="http://elangduan.github.com/images/unity_blendtree/2.png">
+<meta property="og:image" content="http://elangduan.github.com/images/unity_blendtree/3.png">
+<meta property="og:image" content="http://elangduan.github.com/images/unity_blendtree/4.png">
+<meta property="og:updated_time" content="2018-10-18T09:47:24.612Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Unity3D Sprite常用存储格式性能对比">
-<meta name="twitter:description" content="UI图片资源对于项目里面内存的占用还是包大小的比例都是很大一部分，这里对带Alpha的图片的几种常用格式做了下对比，便于找出最好的解决方案应用到项目中去  测试环境: Unity5.5.4f1, Window7, 魅蓝Note1  在网上找了8张512x512的PNG图片，分别测试了RGBA32、RGBA16和ETC1+Alpha(这种格式主要是考虑Android平台)三种格式在魅蓝Note1上的">
+<meta name="twitter:title" content="Unity的Animator BlendTree">
+<meta name="twitter:description" content="12345678910111213141516171819202122232425262728293031323334353637383940414243public enum AnimState&amp;#123;    Relax,    Fly&amp;#125;public void Update()&amp;#123;    if (mAnimState == AnimState.Fly)    &amp;#123;">
+<meta name="twitter:image" content="http://elangduan.github.com/images/unity_blendtree/1.png">
 
 
 
@@ -123,13 +128,13 @@
 
 
 
-  <link rel="canonical" href="http://elangduan.github.com/2017/07/14/unity@ugui_sprite_format_summary/"/>
+  <link rel="canonical" href="http://elangduan.github.com/2018/10/11/unity@Animator_BlendTree/"/>
 
 
 
 
 
-  <title> Unity3D Sprite常用存储格式性能对比 | elangduan </title>
+  <title> Unity的Animator BlendTree | elangduan </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -250,7 +255,7 @@
   
 
   <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2017/07/14/unity@ugui_sprite_format_summary/">
+  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2018/10/11/unity@Animator_BlendTree/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="elangduan@126.com">
@@ -274,7 +279,7 @@
             
             
               
-                Unity3D Sprite常用存储格式性能对比
+                Unity的Animator BlendTree
               
             
           </h1>
@@ -286,8 +291,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-14T18:08:34+08:00">
-              2017-07-14
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-10-11T20:26:10+08:00">
+              2018-10-11
             </time>
             
           </span>
@@ -316,39 +321,11 @@
       
 
       
-        <p>UI图片资源对于项目里面内存的占用还是包大小的比例都是很大一部分，这里对带Alpha的图片的几种常用格式做了下对比，便于找出最好的解决方案应用到项目中去</p>
-<blockquote>
-<p>测试环境: Unity5.5.4f1, Window7, 魅蓝Note1</p>
-</blockquote>
-<p>在网上找了8张512x512的PNG图片，分别测试了RGBA32、RGBA16和ETC1+Alpha(这种格式主要是考虑Android平台)三种格式在魅蓝Note1上的显示效果、AB的大小和加载时间(测试了5次求的平均值)。</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">格式</th>
-<th style="text-align:center">AB大小</th>
-<th style="text-align:center">加载时间</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">RGBA32</td>
-<td style="text-align:center">17.5MB</td>
-<td style="text-align:center">545ms</td>
-</tr>
-<tr>
-<td style="text-align:center">RGBA16</td>
-<td style="text-align:center">3.01MB</td>
-<td style="text-align:center">326ms</td>
-</tr>
-<tr>
-<td style="text-align:center">ETC1+Alpha</td>
-<td style="text-align:center">3.19MB</td>
-<td style="text-align:center">385ms</td>
-</tr>
-</tbody>
-</table>
-<p>对于显示效果图,<a href="http://pan.baidu.com/s/1i5j54k1" target="_blank" rel="external">可以到这里下载</a></p>
-<p>通过上面对比，可以看到ETC1+Alpha这种格式的显示效果和RGBA32的相差不是很大，但是AB的大小和加载时间确实和RGBA16的比较接近。至于RGBA16虽然AB的大小和加载速度很有优势，但是无奈显示效果和RGBA32相差太大。可以考虑使用这种格式应用到项目中来降低包大小和提高加载速度。</p>
+        <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> AnimState</span><br><span class="line">&#123;</span><br><span class="line">    Relax,</span><br><span class="line">    Fly</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Update</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mAnimState == AnimState.Fly)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (mFlyTimer.IsTimeUp)</span><br><span class="line">        &#123;</span><br><span class="line">            EnterRelaxState();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (mAnimState == AnimState.Relax)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (mRelaxTimer.IsTimeUp)</span><br><span class="line">        &#123;</span><br><span class="line">            EnterFlyState();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">EnterRelaxState</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//这里的范围固定是[0,100)不管是多少个Motion,所有motion的概率加起来等于100即可.</span></span><br><span class="line">    <span class="keyword">int</span> randomValue = Random.Range(<span class="number">0</span>, <span class="number">100</span>);</span><br><span class="line"></span><br><span class="line">    TargetAnimator.SetInteger(mAnimArgument_BehaviourId, <span class="number">2</span>);</span><br><span class="line">    TargetAnimator.SetFloat(mAnimArgument_RelaxRandom, randomValue);</span><br><span class="line">    mAnimState = AnimState.Relax;</span><br><span class="line"></span><br><span class="line">    mRelaxTimer.Reset(RelaxDuration);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">EnterFlyState</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    TargetAnimator.SetInteger(mAnimArgument_BehaviourId, <span class="number">1</span>);</span><br><span class="line">    mAnimState = AnimState.Fly;</span><br><span class="line"></span><br><span class="line">    mFlyTimer.Reset(FlyDuration);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/images/unity_blendtree/1.png" alt=""></p>
+<p><img src="/images/unity_blendtree/2.png" alt=""></p>
+<p><img src="/images/unity_blendtree/3.png" alt=""></p>
+<p><img src="/images/unity_blendtree/4.png" alt=""></p>
 
       
     </div>
@@ -372,7 +349,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/csharp/" rel="tag"># csharp</a>
+            <a href="/tags/unity/" rel="tag"># unity</a>
           
         </div>
       
@@ -381,8 +358,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/07/13/unity@ugui_panel_visible_manage/" rel="next" title="Unity3D的UIPanel隐藏的处理方式">
-                <i class="fa fa-chevron-left"></i> Unity3D的UIPanel隐藏的处理方式
+              <a href="/2018/08/18/unity@unity_shader_depth/" rel="next" title="Unity 渲染的深度值获取">
+                <i class="fa fa-chevron-left"></i> Unity 渲染的深度值获取
               </a>
             
           </div>
@@ -390,10 +367,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/08/20/unity@shader_if_state_performance/" rel="prev" title="Unity中shader代码的条件分支的性能问题">
-                Unity中shader代码的条件分支的性能问题 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
