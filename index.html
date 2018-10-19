@@ -558,28 +558,17 @@
 
       
         
-          
-            <p>MemoryPool主要是对内存分配的碎片化和频繁分配和释放进行优化。</p>
+          <p>MemoryPool主要是对内存分配的碎片化和频繁分配和释放进行优化。</p>
 <p><strong>结构</strong></p>
 <p>MemoryPool的设计结构如下:</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MemoryPool</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    ...</span><br><span class="line">  </span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">Bubble</span></span></span><br><span class="line"><span class="class">    &#123;</span></span><br><span class="line">        <span class="keyword">char</span> data[<span class="number">1</span>]; <span class="comment">//只是一个占位符,其实这个成员变量加不加sizeof(Block)大小都是1个字节</span></span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">typedef</span> dynamic_array&lt;Bubble*&gt; Bubbles;</span><br><span class="line"></span><br><span class="line">    Bubble m_Bubbles;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">void</span>* m_HeadOfFreeList;</span><br><span class="line">  </span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里解释下里面的结构布局:</p>
-<p><img src="/images/unity_memorypool/unity_memorypool_1.png" alt=""></p>
-<p>这里有个巧妙的设计就是Bubble分配了一块内存，这块内存会被分成几个指定的Block。这些Block在没有分配给用户使用的时候每个Block的首部4字节会存储下一个Block的首部地址，对于第一个Block的首部地址就单独用一个4字节的成员变量保存，就像一个链表一样。这样就不需要另外在用其他变量去保存每个Block的地址。</p>
-<p><strong>分配</strong></p>
-<p>每次用户请求内存的时候，固定给用户返回一个Block，这里有一个限制就是用户不能一次请求大于Block大小的内存。具体如下:</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">Bubble * bubble = (Bubble*)<span class="built_in">malloc</span>(BubbleSize);<span class="comment">//BubbleSize大小在创建MemoryPool的时候固定设置</span></span><br><span class="line"></span><br><span class="line">m_Bubbles.push_back(bubble); <span class="comment">//所有分配的bubble都会存起来，等待用户清理，然后在循环利用</span></span><br><span class="line"></span><br><span class="line">m_HeadOfFreeList = bubble-data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span>* oldHeadOfFreeList = m_HeadOfFreeList;</span><br><span class="line"><span class="keyword">void</span> **newBubble = (<span class="keyword">void</span>**)m_HeadOfFreeList;</span><br><span class="line"></span><br><span class="line"><span class="comment">//这里是把新分配的Bubble这块内存，相当于分成若干个Block，每个Block的首地址内存存储下一个Block的首地址</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> j=<span class="number">0</span>; j&lt;m_BlocksPerBubble<span class="number">-1</span>; ++j)<span class="comment">//m_BlocksPerBubble是每个Bubble有几个Block</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">//当前地址存储下一个Block的首地址</span></span><br><span class="line">  newBubble[<span class="number">0</span>] = (<span class="keyword">char</span>*)newBubble + m_BlockSize;<span class="comment">//m_BlockSize是每个Block的大小。</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment">//newBubble移动到一下个Block地址</span></span><br><span class="line">  newBubble = (<span class="keyword">void</span>**)newBubble[<span class="number">0</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">newBubble[<span class="number">0</span>] = oldHeadOfFreeList; <span class="comment">//保存到之前可用内存的首地址</span></span><br></pre></td></tr></table></figure>
-<p>通过上述操作就可以分配一块新的可用的内存，当用户申请内存的时候直接返回给用户一个Block的地址即可:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">void * allocBlock = m_HeadOfFreeList; //allocBlock返回给用户</span><br><span class="line"></span><br><span class="line">m_HeadOfFreeList = *((void**)m_HeadOfFreeList); //移动到下一个Block</span><br></pre></td></tr></table></figure>
-<p>分配内存给用户的时候会有两个问题。</p>
-<ul>
-<li>分配内存给用户的时候必须限制用户最大分配Block大小的内存，否则返回NULL。</li>
-<li>因为分配的这个Block是在一个大块的连续的Bubble内存中，如果Block不是Bubble中最后一块内存，那么用户越界的话不会产生错误，但是会把下一个Block的数据给覆盖的问题。</li>
-</ul>
-<p><strong>释放</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">//首先判断释放的这块内存是否是m_Bubbles分配的</span><br><span class="line"></span><br><span class="line">//先把需要释放的这块内存存储下当前可用内存的地址</span><br><span class="line">*((void**)mem_Block) = m_HeadOfFreeList; //mem_Block是要释放的内存</span><br><span class="line"></span><br><span class="line">//再把当前可用内存的地址只想释放的这块内存</span><br><span class="line">m_HeadOfFreeList = mem_Block;</span><br></pre></td></tr></table></figure>
-
-          
+          <!--noindex-->
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2018/07/14/unity@unity_memorypool/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
