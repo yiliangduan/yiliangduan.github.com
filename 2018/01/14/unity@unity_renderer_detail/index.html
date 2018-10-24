@@ -84,19 +84,19 @@
 
 
 
-<meta name="description" content="之前了解Unity的setpass call和batches时把顺道把渲染这块的代码(4.7.f1)也阅读了下，先利用一个思维导图把渲染的几个大的步骤记下来，以便有个整体的脉络(这里只记录Forward渲染)。   注1：由Camera的投影矩阵和对象的Z轴向量的积得出">
+<meta name="description" content="unity 4.7.1f1  之前了解Unity的setpass call和batches时把顺道把渲染这块的代码(4.7.f1)也阅读了下，先利用一个思维导图把渲染的几个大的步骤记下来，以便有个整体的脉络(这里只记录Forward渲染)。   注1：由Camera的投影矩阵和对象的Z轴向量的积得出">
 <meta name="keywords" content="unity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity渲染之概述">
 <meta property="og:url" content="http://elangduan.github.com/2018/01/14/unity@unity_renderer_detail/index.html">
 <meta property="og:site_name" content="elangduan">
-<meta property="og:description" content="之前了解Unity的setpass call和batches时把顺道把渲染这块的代码(4.7.f1)也阅读了下，先利用一个思维导图把渲染的几个大的步骤记下来，以便有个整体的脉络(这里只记录Forward渲染)。   注1：由Camera的投影矩阵和对象的Z轴向量的积得出">
+<meta property="og:description" content="unity 4.7.1f1  之前了解Unity的setpass call和batches时把顺道把渲染这块的代码(4.7.f1)也阅读了下，先利用一个思维导图把渲染的几个大的步骤记下来，以便有个整体的脉络(这里只记录Forward渲染)。   注1：由Camera的投影矩阵和对象的Z轴向量的积得出">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_renderer/1.png">
-<meta property="og:updated_time" content="2018-01-22T02:10:18.000Z">
+<meta property="og:updated_time" content="2018-10-24T04:32:45.600Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity渲染之概述">
-<meta name="twitter:description" content="之前了解Unity的setpass call和batches时把顺道把渲染这块的代码(4.7.f1)也阅读了下，先利用一个思维导图把渲染的几个大的步骤记下来，以便有个整体的脉络(这里只记录Forward渲染)。   注1：由Camera的投影矩阵和对象的Z轴向量的积得出">
+<meta name="twitter:description" content="unity 4.7.1f1  之前了解Unity的setpass call和batches时把顺道把渲染这块的代码(4.7.f1)也阅读了下，先利用一个思维导图把渲染的几个大的步骤记下来，以便有个整体的脉络(这里只记录Forward渲染)。   注1：由Camera的投影矩阵和对象的Z轴向量的积得出">
 <meta name="twitter:image" content="http://elangduan.github.com/images/unity_renderer/1.png">
 
 
@@ -318,7 +318,10 @@
       
 
       
-        <p>之前了解Unity的setpass call和batches时把顺道把渲染这块的代码(4.7.f1)也阅读了下，先利用一个思维导图把渲染的几个大的步骤记下来，以便有个整体的脉络(这里只记录Forward渲染)。</p>
+        <blockquote>
+<p>unity 4.7.1f1</p>
+</blockquote>
+<p>之前了解Unity的setpass call和batches时把顺道把渲染这块的代码(4.7.f1)也阅读了下，先利用一个思维导图把渲染的几个大的步骤记下来，以便有个整体的脉络(这里只记录Forward渲染)。</p>
 <p><img src="/images/unity_renderer/1.png" alt=""></p>
 <blockquote>
 <p>注1：由Camera的投影矩阵和对象的Z轴向量的积得出</p>
