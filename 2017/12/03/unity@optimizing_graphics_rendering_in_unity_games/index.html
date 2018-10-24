@@ -104,7 +104,7 @@
   var CONFIG = {
     root: '/',
     scheme: 'Mist',
-    sidebar: {"position":"left","display":"hide"},
+    sidebar: {"position":"left","display":"remove"},
     fancybox: true,
     motion: true,
     duoshuo: {
@@ -526,101 +526,6 @@
           
 
         </div>
-        
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <section class="site-overview sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image"
-               src="/uploads/avatar.png"
-               alt="elangduan@126.com" />
-          <p class="site-author-name" itemprop="name">elangduan@126.com</p>
-          <p class="site-description motion-element" itemprop="description"></p>
-        </div>
-        <nav class="site-state motion-element">
-          <div class="site-state-item site-state-posts">
-            <a href="/">
-              <span class="site-state-item-count">37</span>
-              <span class="site-state-item-name">日志</span>
-            </a>
-          </div>
-
-          
-
-          
-            <div class="site-state-item site-state-tags">
-              
-                <span class="site-state-item-count">8</span>
-                <span class="site-state-item-name">标签</span>
-              
-            </div>
-          
-
-        </nav>
-
-        
-
-        <div class="links-of-author motion-element">
-          
-        </div>
-
-        
-        
-
-        
-        
-
-        
-
-
-      </section>
-
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#介绍"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#渲染的简介"><span class="nav-number">2.</span> <span class="nav-text">渲染的简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#渲染问题的类型"><span class="nav-number">3.</span> <span class="nav-text">渲染问题的类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#理解渲染的问题"><span class="nav-number">4.</span> <span class="nav-text">理解渲染的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Profiler-window"><span class="nav-number">4.1.</span> <span class="nav-text">Profiler window</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Frame-Debugger"><span class="nav-number">4.2.</span> <span class="nav-text">Frame Debugger</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#确定导致性能问题的原因"><span class="nav-number">4.3.</span> <span class="nav-text">确定导致性能问题的原因</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CPU性能受限"><span class="nav-number">5.</span> <span class="nav-text">CPU性能受限</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#图形工作"><span class="nav-number">5.1.</span> <span class="nav-text">图形工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#找出导致性能问题的任务"><span class="nav-number">5.2.</span> <span class="nav-text">找出导致性能问题的任务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发送命令到GPU"><span class="nav-number">5.3.</span> <span class="nav-text">发送命令到GPU</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#减少渲染对象的数量"><span class="nav-number">5.3.1.</span> <span class="nav-text">减少渲染对象的数量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#减少每个最终会渲染的对象的渲染次数。"><span class="nav-number">5.3.2.</span> <span class="nav-text">减少每个最终会渲染的对象的渲染次数。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#将渲染对象合并到更少的批次-batches-里"><span class="nav-number">5.3.3.</span> <span class="nav-text">将渲染对象合并到更少的批次(batches)里</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#裁剪，排序和合批"><span class="nav-number">5.4.</span> <span class="nav-text">裁剪，排序和合批</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#蒙皮网格"><span class="nav-number">5.5.</span> <span class="nav-text">蒙皮网格</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#主线程的操作与渲染无关"><span class="nav-number">5.6.</span> <span class="nav-text">主线程的操作与渲染无关</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GPU性能受限"><span class="nav-number">6.</span> <span class="nav-text">GPU性能受限</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#填充率"><span class="nav-number">6.1.</span> <span class="nav-text">填充率</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内存带宽"><span class="nav-number">6.2.</span> <span class="nav-text">内存带宽</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#顶点处理"><span class="nav-number">6.3.</span> <span class="nav-text">顶点处理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
-      
-
-    </div>
-  </aside>
-
-
         
       </div>
     </main>
