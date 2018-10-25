@@ -87,14 +87,14 @@
 <meta name="description" content="unity 5.6.6f1  再检查项目的内存问题时发现Lightmap的加载会消耗大量堆内存(高达17M，总共差不多35张lightmap贴图)。抛开lightmap的资源内存分配理论上不应该消耗堆内存才对，查看加载的代码最终发现了问题。  LightmapSettings.lightmaps 每次返回的是一个新创建的数组。在所有的lightmap加载完成后去查找单独每个lightmap数据的">
 <meta name="keywords" content="unity">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Unity的Lightmap加载注意事项">
+<meta property="og:title" content="Unity的Lightmap加载的内存问题">
 <meta property="og:url" content="http://elangduan.github.com/2018/10/24/unity@lightmap_remind/index.html">
 <meta property="og:site_name" content="elangduan">
 <meta property="og:description" content="unity 5.6.6f1  再检查项目的内存问题时发现Lightmap的加载会消耗大量堆内存(高达17M，总共差不多35张lightmap贴图)。抛开lightmap的资源内存分配理论上不应该消耗堆内存才对，查看加载的代码最终发现了问题。  LightmapSettings.lightmaps 每次返回的是一个新创建的数组。在所有的lightmap加载完成后去查找单独每个lightmap数据的">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-10-24T03:34:22.493Z">
+<meta property="og:updated_time" content="2018-10-25T02:17:47.636Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Unity的Lightmap加载注意事项">
+<meta name="twitter:title" content="Unity的Lightmap加载的内存问题">
 <meta name="twitter:description" content="unity 5.6.6f1  再检查项目的内存问题时发现Lightmap的加载会消耗大量堆内存(高达17M，总共差不多35张lightmap贴图)。抛开lightmap的资源内存分配理论上不应该消耗堆内存才对，查看加载的代码最终发现了问题。  LightmapSettings.lightmaps 每次返回的是一个新创建的数组。在所有的lightmap加载完成后去查找单独每个lightmap数据的">
 
 
@@ -129,7 +129,7 @@
 
 
 
-  <title> Unity的Lightmap加载注意事项 | elangduan </title>
+  <title> Unity的Lightmap加载的内存问题 | elangduan </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -254,7 +254,7 @@
             
             
               
-                Unity的Lightmap加载注意事项
+                Unity的Lightmap加载的内存问题
               
             
           </h1>
