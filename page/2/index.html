@@ -225,7 +225,7 @@
   
 
   <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2018/07/14/mono@string_concat_memory/">
+  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2018/07/14/unity@unity_memorypool/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="elangduan@126.com">
@@ -250,8 +250,8 @@
             
               
                 
-                <a class="post-title-link" href="/2018/07/14/mono@string_concat_memory/" itemprop="url">
-                  C#的string内存消耗问题的一个点
+                <a class="post-title-link" href="/2018/07/14/unity@unity_memorypool/" itemprop="url">
+                  Unity的MemoryPool模块
                 </a>
               
             
@@ -296,12 +296,15 @@
       
         
           <blockquote>
-<p>unity 5.6.6f1</p>
+<p>unity 4.7.1f1</p>
 </blockquote>
-<p>今天在看<a href="https://tig.qpic.cn/doc/2018%E8%85%BE%E8%AE%AF%E7%A7%BB%E5%8A%A8%E6%B8%B8%E6%88%8F%E6%8A%80%E6%9C%AF%E8%AF%84%E5%AE%A1%E6%A0%87%E5%87%86%E4%B8%8E%E5%AE%9E%E8%B7%B5%E6%A1%88%E4%BE%8B.pdf" target="_blank" rel="external">这个文档</a>时发现其中对string的内存消耗问题有个点没有解释到根本原因，这里坐下测试并分析下其中的原因。</p>
+<p>MemoryPool主要是对内存分配的碎片化和频繁分配和释放进行优化。</p>
+<p><strong>结构</strong></p>
+<p>MemoryPool的设计结构如下:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MemoryPool</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    ...</span><br><span class="line">  </span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">Bubble</span></span></span><br><span class="line"><span class="class">    &#123;</span></span><br><span class="line">        <span class="keyword">char</span> data[<span class="number">1</span>]; <span class="comment">//只是一个占位符,其实这个成员变量加不加sizeof(Block)大小都是1个字节</span></span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">typedef</span> dynamic_array&lt;Bubble*&gt; Bubbles;</span><br><span class="line"></span><br><span class="line">    Bubble m_Bubbles;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">void</span>* m_HeadOfFreeList;</span><br><span class="line">  </span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
           <!--noindex-->
           <div class="post-more-link text-center">
-            <a class="btn" href="/2018/07/14/mono@string_concat_memory/#more" rel="contents">
+            <a class="btn" href="/2018/07/14/unity@unity_memorypool/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
