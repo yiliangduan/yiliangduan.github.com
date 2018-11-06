@@ -92,10 +92,12 @@
 <meta property="og:site_name" content="elangduan">
 <meta property="og:description" content="unity 5.6.6f1  今天在看这个游戏性能总结文档8P时发现其中对string的内存消耗问题有个点做了测试，但是看了得出的结论之后并没有解答我心中的疑惑。问题点是这样的:">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-11-05T12:56:53.930Z">
+<meta property="og:image" content="http://elangduan.github.com/images/mono_string_memory/1.png">
+<meta property="og:updated_time" content="2018-11-06T02:13:33.961Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="C#的string内存消耗问题的一个疑问">
 <meta name="twitter:description" content="unity 5.6.6f1  今天在看这个游戏性能总结文档8P时发现其中对string的内存消耗问题有个点做了测试，但是看了得出的结论之后并没有解答我心中的疑惑。问题点是这样的:">
+<meta name="twitter:image" content="http://elangduan.github.com/images/mono_string_memory/1.png">
 
 
 
@@ -307,7 +309,11 @@
 <li>+号次数 </li>
 <li>编译器做了优化</li>
 </ul>
-<p>个人觉得和+号次数没有关系，那么就是编译器优化或者其他原因了。针对于编译器优化文档里没有做出解释，那么自己追究下到底为什么情况(1)编译器可以优化而情况(2)却优化不了。</p>
+<p>个人觉得和+号次数没有关系，很简单用一个例子测试下就可以排除。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">testStringBuilder_plus_2</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">string</span> test = <span class="string">"abc"</span> + <span class="string">"efg"</span>;</span><br><span class="line">    test += <span class="string">"h"</span>;</span><br><span class="line">    <span class="keyword">int</span> index = test.Length;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>让这个函数在Update中每帧都调用，Profiler的结果如下:</p>
+<p><img src="/images/mono_string_memory/1.png" alt=""></p>
+<p><em>testStringBuilder_plus_2</em>结果看出，这应该是和运算规则有关系，有可能是编译器针对不同的运算规则会做出优化。</p>
 <p>//TODO</p>
 
       
