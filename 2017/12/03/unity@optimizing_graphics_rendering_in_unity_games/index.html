@@ -1,163 +1,302 @@
-	<!DOCTYPE HTML>
-<html>
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
 <head>
-  <meta charset="utf-8">
-  
-  <title>Unity游戏的图形渲染优化(译) | 暮鼓晨钟的笔记</title>
-  <meta name="author" content="elangduan@126.com">
-  
-  <meta name="description" content="原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
-介绍在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。
-在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非常依赖游戏运行的硬件和操作系统。通过调查，实验和细心的分析实验结果来解决性能问题是我们最重要的方式。
-这篇文章包含的信息主要是大部分常见的性能问题的修改建议和一些更深层次的阅读链接。我们的游戏中可能也存在这其中的一个问题或者一些问题或者都没有包含。但是这篇文章仍然将帮助我们理解我们自己的问题同时给予我们去搜索我们问题的知识和线索。
-渲染的简介在我们开始介绍之前，让我们快速简单看下Unity渲染一帧时其内部发生了什么。理解事件流和正确的术语将会帮助我们 理解，调查和解决我们的性能问题。
-注:在这篇文章中，我们将会使用”对象(object)”术语来表示一个我们游戏的渲染的对象。任何渲染组件的GameObject将会被统称为对象。
-在最基本的层面上，渲染可以描述为一下几步：
 
-CPU计算出必须渲染的对象和决定怎么去绘制。
-CPU发送指令到GPU。
-GPU根据CPU的指令来确定绘制的内容。
 
-现在让我们来更近一步看看究竟发生了什么。这篇文章后面将会详细的介绍上面的每一个步骤。但是现在让我们先来熟悉下文中使用的词语和理解CPU和GPU在渲染中扮演的不同角色。
-描述渲染的词语通常用渲染管线(rendering pipeline)，记住这是一个非常有用的情景。高效的渲染都是关于保持更高信息的传送能力。
-对于每一个渲染的帧，CPU会做如下的工作:
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-CPU会检查场景中的每一个对象来决定这个对象是否需要被渲染。只有当这个对象满足特定的条件的时候才会被渲染；例如，它的包围盒的一些部分在相机视锥体内。一个对象如果将不会被渲染我们称之为这个对象被裁剪了(culled)。关于相机的视锥体和视锥体裁剪的更多信息可以看着这篇文章。
-CPU搜集每一个将会被渲染的对象的信息然后将这些数据分类放入叫做draw calls命令中。一个draw call包含了一个mesh和这个mesh怎样被渲染的数据；例如，这个mesh用哪一张贴图。基于这些情况，共享设置的图像会合并到一些相同的draw call中。合并不同对象的数据到同一个draw call中我们称之为batching。
-CPU为每次draw call创建一个叫batch的数据包。batchs有可能包含了draw calls之外的数据，但是这种情况不像常见的一个性能问题，因此我们不会在这篇文章里面来讨论。
 
-对于每个draw call包含的batchs，CPU现在必须要入如下的工作:
 
-CPU可以向GPU发送一个命令来改变一些被统称为渲染状态的变量。这个命令叫做SetPass call。SetPass call告诉GPU哪个设置被用来渲染下一个mesh。只有当上一个mesh渲染完成下一个mesh准备渲染的时候需要改变渲染状态的时候才需要发送SetPass call命令。
-CPU发送draw call命令到GPU。draw call会指示GPU使用上一次设置好的SetPass call去渲染制定的mesh。
-基于这些情况，batchs的数据被渲染可能需要不止一个pass。一个pass是一段着色器的代码，使用一个新的pass需要改变渲染状态。对于一个batchs中的每个pass，CPU必须发送一个新的SetPass call命令同时必须再次发送draw call命令。这个pass才会生效。
 
-同时，GPU会做如下的工作:
 
-GPU按照CPU发送的顺序来处理CPU发送的任务。
-如果当前的任务是SetPass call，GPU就更新渲染状态。
-如果当前的任务是draw call, GPU就渲染这个draw call的mesh。这个是分阶段进行的，每个阶段单独定义在着色器代码中。这部分渲染比较复杂我们不会详细的讨论，但是这部分对于我们去理解顶点着色器(vertex shader)这部分代码和片段着色器(fragment shader)这部分代码非常有用。顶点着色器是用来告诉GPU怎么去处理mesh的顶点数据的代码，片段着色器使用来怎样去处理每个单独像素代码。
-GPU重复处理从CPU发送过来的任务，直到所有的任务都处理完成。
 
-现在我们理解了当Unity渲染一帧时其内部发生了什么，接下来让我们思考下当渲染发生的时候会随之发生什么问题。">
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="Unity游戏的图形渲染优化(译)"/>
-  <meta property="og:site_name" content="暮鼓晨钟的笔记"/>
+
+
+
+
 
   
   
-		<!-- favicon -->
-		<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
-		<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
-		<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
-		<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
-		<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
-		<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
-		<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
-		<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
-		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
-		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
-		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
-		<link rel="manifest" href="/manifest.json">
-		<meta name="msapplication-TileColor" content="#009688">
-		<meta name="msapplication-TileImage" content="/mstile-144x144.png">
-		<meta name="theme-color" content="#009688">
-		<!-- favicon end -->
-    <!-- <link href="/favicon.ico" rel="icon"> -->
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
   
 
-  <!-- toc -->
-  <link rel="stylesheet" href="/libs/tocify/jquery.tocify.css" media="screen" type="text/css">
+  
+    
+    
+  
 
-  <!-- <link rel="stylesheet" href="/libs/bs/css/bootstrap.min.css" media="screen" type="text/css"> -->
-  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" media="screen" type="text/css">
-
-  <!-- material design -->
-	<!-- <link rel="stylesheet" href="/libs/bs-material/css/ripples.min.css" media="screen" type="text/css"> -->
-  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/ripples.min.css" media="screen" type="text/css">
-  <!-- <link rel="stylesheet" href="/libs/bs-material/css/material.min.css" media="screen" type="text/css"> -->
-	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css" media="screen" type="text/css">
-
-  <link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css">
-
-  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  
 
   
 
   
 
-  <script src="//apps.bdimg.com/libs/jquery/2.0.3/jquery.min.js"></script>
-	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
+  
 
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="graphics," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。  介绍在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。 在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非常依">
+<meta name="keywords" content="graphics">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Unity游戏的图形渲染优化(译)">
+<meta property="og:url" content="http://elangduan.github.com/2017/12/03/unity@optimizing_graphics_rendering_in_unity_games/index.html">
+<meta property="og:site_name" content="暮鼓晨钟的笔记">
+<meta property="og:description" content="原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。  介绍在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。 在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非常依">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-12-17T13:05:04.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Unity游戏的图形渲染优化(译)">
+<meta name="twitter:description" content="原文Optimizing graphics rendering in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。  介绍在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。 在阅读这篇文章之前，必须明白没有一个同样的尺度来提高渲染的性能问题。在我们游戏中影响性能问题的原因有很多同时非常依">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"remove"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'elangduan'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://elangduan.github.com/2017/12/03/unity@optimizing_graphics_rendering_in_unity_games/"/>
+
+
+
+
+
+  <title> Unity游戏的图形渲染优化(译) | 暮鼓晨钟的笔记 </title>
 </head>
 
- 	<body>
-	  <nav class="navbar navbar-default">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">菜单</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="/">暮鼓晨钟的笔记</a>
-        </div>
-        <div id="navbar" class="collapse navbar-collapse">
-            <ul class="nav navbar-nav navbar-right">
-                
-                <li>
-                    <a href="/" title="">
-                    <i class="fa fa-home"></i>首页
-                    </a>
-                </li>
-                
-                <li>
-                    <a href="/archives" title="">
-                    <i class="fa fa-list"></i>存档
-                    </a>
-                </li>
-                
-                <li>
-                    <a href="/about" title="">
-                    <i class="fa fa-info-circle"></i>关于
-                    </a>
-                </li>
-                
-                <li>
-                    <a href="/atom.xml" title="这是一个订阅源">
-                    <i class="fa fa-rss"></i>RSS
-                    </a>
-                </li>
-                
-            </ul>
-        </div>
-    </div>
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">暮鼓晨钟的笔记</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
 </nav>
 
-	  <div class="container" >
-	    <div class="row">
-	
-	<div class="col-md-9 center-content">
-	
 
-		<div class="content">
-			<!-- index -->
-		   
 
-			  		<h2>Unity游戏的图形渲染优化(译)</h2>
-					
-					<div>
-						<span class="post-time">2017-12-03 16:15:35</span>
-					</div>	
-					
+ </div>
+    </header>
 
-					<div class="article-content">
-						<blockquote>
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2017/12/03/unity@optimizing_graphics_rendering_in_unity_games/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="elangduan@126.com">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/uploads/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="暮鼓晨钟的笔记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="暮鼓晨钟的笔记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Unity游戏的图形渲染优化(译)
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-12-03T16:15:35+08:00">
+              2017-12-03
+            </time>
+            
+          </span>
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
 <p>原文<a href="https://unity3d.com/cn/learn/tutorials/temas/performance-optimization/optimizing-graphics-rendering-unity-games?playlist=44069" target="_blank" rel="external">Optimizing graphics rendering in Unity games</a>。这里对这篇文章的粗略翻译，当作自己的笔记。</p>
 </blockquote>
 <h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>在这篇文章中我们将会学习Unity在渲染一帧的时候其内部的发生的事情，在渲染的时候会发生什么类型的性能问题同时我们怎样去处理这些性能问题。</p>
@@ -328,55 +467,216 @@ GPU重复处理从CPU发送过来的任务，直到所有的任务都处理完�
 </ul>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>我们学习了Unity渲染是怎样工作的，当渲染的时候会出现什么类型的问题，怎样提高我们游戏的性能。使用这部分知识并且使用性能分析工具，我们可以修复渲染相关的性能问题，构建我们的游戏使得游戏的渲染管线更显平滑和高率。</p>
 
-					</div>
+      
+    </div>
 
-			  <!-- about -->
-			  
-		</div>
+    <div>
+      
+        
 
-		<!-- pagination -->
-	  
+      
+    </div>
 
-		<div class="comment-section">
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/graphics/" rel="tag"># graphics</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/18/unity@optimizing_garbage_collection_in_unity_games/" rel="next" title="Unity游戏内存回收的优化(译)">
+                <i class="fa fa-chevron-left"></i> Unity游戏内存回收的优化(译)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/12/05/csharp@ienumerator_generics_boxing_question/" rel="prev" title="C# 泛型集合的Boxing问题">
+                C# 泛型集合的Boxing问题 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" align="center">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+
+  <span class="author" itemprop="copyrightHolder">elangduan@126.com | </span>
+
+  <span>
+    powered by <a class="theme-link" href="https://hexo.io">hexo</a>
+  </span>
+
+  <span>
+    & theme <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next"> NexT</a>
+  </span>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
   
 
-</div>
-	</div>
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
 
-	
-
-</div>
 
 
-		<footer>
-			
 
-<p>
-  由 <a href="https://hexo.io">hexo</a> 强力驱动 | 搭载 <a href="https://github.com/wayou/hexo-theme-material">material</a> 主题
-</p>
-<p>
-  &copy; 2018 <a href="http://elangduan.github.com"> elangduan@126.com </a>
-</p>
-<a id="gotop" href="#" title="back to top"><i class="mdi-hardware-keyboard-arrow-up"></i></a>
 
-		</footer>
-	  </div>
 
-		<!-- <script src="/libs/bs/js/bootstrap.min.js"></script> -->
-		<script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-		<script>(typeof $().modal == 'function')|| document.write('<script src="/libs/bs/js/bootstrap.min.js" type="text/javascript"><\/script>')</script>
 
-		<!-- material design -->
-		<!-- <script src="/libs/bs-material/js/ripples.min.js"></script> -->
-		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/ripples.min.js"></script>
-		<!-- <script src="/libs/bs-material/js/material.min.js"></script> -->
-		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/material.min.js"></script>
-		<!-- toc -->
-		<!-- <script src="/libs/tocify/jquery-ui.min.js"></script> -->
-		<script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-		<script src="/libs/tocify/jquery.tocify.custom.js"></script>
 
-		<script src="/js/main.js"></script>
 
-	</body>
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"elangduan"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
 </html>

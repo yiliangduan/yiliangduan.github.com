@@ -1,131 +1,306 @@
-	<!DOCTYPE HTML>
-<html>
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
 <head>
-  <meta charset="utf-8">
-  
-  <title>Quaternion的插值分析及总结 | 暮鼓晨钟的笔记</title>
-  <meta name="author" content="elangduan@126.com">
-  
-  <meta name="description" content="下面的内容是阅读3D数学基础后结合自己的理解的总结
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
-Unity中应用我们接触到的地方就是Unity的Transform组件。Transform组件维护了四元数实现方位角位的变换。但是我们也看到Transform组件提供了eulerAgnles属性，按理说里面也实现了欧拉角的，但事实并不是这样。接下">
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="Quaternion的插值分析及总结"/>
-  <meta property="og:site_name" content="暮鼓晨钟的笔记"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
 
   
   
-		<!-- favicon -->
-		<link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png">
-		<link rel="apple-touch-icon" sizes="60x60" href="/apple-touch-icon-60x60.png">
-		<link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png">
-		<link rel="apple-touch-icon" sizes="76x76" href="/apple-touch-icon-76x76.png">
-		<link rel="apple-touch-icon" sizes="114x114" href="/apple-touch-icon-114x114.png">
-		<link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png">
-		<link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon-144x144.png">
-		<link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png">
-		<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
-		<link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
-		<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
-		<link rel="manifest" href="/manifest.json">
-		<meta name="msapplication-TileColor" content="#009688">
-		<meta name="msapplication-TileImage" content="/mstile-144x144.png">
-		<meta name="theme-color" content="#009688">
-		<!-- favicon end -->
-    <!-- <link href="/favicon.ico" rel="icon"> -->
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
   
 
-  <!-- toc -->
-  <link rel="stylesheet" href="/libs/tocify/jquery.tocify.css" media="screen" type="text/css">
+  
+    
+    
+  
 
-  <!-- <link rel="stylesheet" href="/libs/bs/css/bootstrap.min.css" media="screen" type="text/css"> -->
-  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.min.css" media="screen" type="text/css">
-
-  <!-- material design -->
-	<!-- <link rel="stylesheet" href="/libs/bs-material/css/ripples.min.css" media="screen" type="text/css"> -->
-  <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/ripples.min.css" media="screen" type="text/css">
-  <!-- <link rel="stylesheet" href="/libs/bs-material/css/material.min.css" media="screen" type="text/css"> -->
-	<link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css" media="screen" type="text/css">
-
-  <link rel="stylesheet" href="/css/highlight.light.css" media="screen" type="text/css">
-
-  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  
 
   
 
   
 
-  <script src="//apps.bdimg.com/libs/jquery/2.0.3/jquery.min.js"></script>
-	<script>window.jQuery || document.write('<script src="/libs/jquery-2.0.3.min.js" type="text/javascript"><\/script>')</script>
+  
 
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="unity," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="下面的内容是阅读3D数学基础后结合自己的理解的总结  Unity中应用我们接触到的地方就是Unity的Transform组件。Transform组件维护了四元数实现方位角位的变换。但是我们也看到Transform组件提供了eulerAgnles属性，按理说里面也实现了欧拉角的，但事实并不是这样。接下来详细分析下 首先看看类似与这种操作，我们对一个GameObject实现旋转的时候，可以直接对其t">
+<meta name="keywords" content="unity">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Quaternion的插值分析及总结">
+<meta property="og:url" content="http://elangduan.github.com/2017/08/30/unity@quaternion_interpolation_note/index.html">
+<meta property="og:site_name" content="暮鼓晨钟的笔记">
+<meta property="og:description" content="下面的内容是阅读3D数学基础后结合自己的理解的总结  Unity中应用我们接触到的地方就是Unity的Transform组件。Transform组件维护了四元数实现方位角位的变换。但是我们也看到Transform组件提供了eulerAgnles属性，按理说里面也实现了欧拉角的，但事实并不是这样。接下来详细分析下 首先看看类似与这种操作，我们对一个GameObject实现旋转的时候，可以直接对其t">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://elangduan.github.com/images/quaternion/derivation.jpg">
+<meta property="og:image" content="http://elangduan.github.com/images/quaternion/effect_drawing.png">
+<meta property="og:image" content="http://elangduan.github.com/images/quaternion/different.jpg">
+<meta property="og:updated_time" content="2018-01-02T06:12:42.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Quaternion的插值分析及总结">
+<meta name="twitter:description" content="下面的内容是阅读3D数学基础后结合自己的理解的总结  Unity中应用我们接触到的地方就是Unity的Transform组件。Transform组件维护了四元数实现方位角位的变换。但是我们也看到Transform组件提供了eulerAgnles属性，按理说里面也实现了欧拉角的，但事实并不是这样。接下来详细分析下 首先看看类似与这种操作，我们对一个GameObject实现旋转的时候，可以直接对其t">
+<meta name="twitter:image" content="http://elangduan.github.com/images/quaternion/derivation.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"remove"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'elangduan'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://elangduan.github.com/2017/08/30/unity@quaternion_interpolation_note/"/>
+
+
+
+
+
+  <title> Quaternion的插值分析及总结 | 暮鼓晨钟的笔记 </title>
 </head>
 
- 	<body>
-	  <nav class="navbar navbar-default">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">菜单</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="/">暮鼓晨钟的笔记</a>
-        </div>
-        <div id="navbar" class="collapse navbar-collapse">
-            <ul class="nav navbar-nav navbar-right">
-                
-                <li>
-                    <a href="/" title="">
-                    <i class="fa fa-home"></i>首页
-                    </a>
-                </li>
-                
-                <li>
-                    <a href="/archives" title="">
-                    <i class="fa fa-list"></i>存档
-                    </a>
-                </li>
-                
-                <li>
-                    <a href="/about" title="">
-                    <i class="fa fa-info-circle"></i>关于
-                    </a>
-                </li>
-                
-                <li>
-                    <a href="/atom.xml" title="这是一个订阅源">
-                    <i class="fa fa-rss"></i>RSS
-                    </a>
-                </li>
-                
-            </ul>
-        </div>
-    </div>
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">暮鼓晨钟的笔记</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
 </nav>
 
-	  <div class="container" >
-	    <div class="row">
-	
-	<div class="col-md-9 center-content">
-	
 
-		<div class="content">
-			<!-- index -->
-		   
 
-			  		<h2>Quaternion的插值分析及总结</h2>
-					
-					<div>
-						<span class="post-time">2017-08-30 23:40:10</span>
-					</div>	
-					
+ </div>
+    </header>
 
-					<div class="article-content">
-						<blockquote>
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2017/08/30/unity@quaternion_interpolation_note/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="elangduan@126.com">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/uploads/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="暮鼓晨钟的笔记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="暮鼓晨钟的笔记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Quaternion的插值分析及总结
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-30T23:40:10+08:00">
+              2017-08-30
+            </time>
+            
+          </span>
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
 <p>下面的内容是阅读<a href="https://book.douban.com/subject/1400419/" target="_blank" rel="external">3D数学基础</a>后结合自己的理解的总结</p>
 </blockquote>
 <h4 id="Unity中应用"><a href="#Unity中应用" class="headerlink" title="Unity中应用"></a>Unity中应用</h4><p>我们接触到的地方就是Unity的Transform组件。Transform组件维护了四元数实现方位角位的变换。但是我们也看到Transform组件提供了eulerAgnles属性，按理说里面也实现了欧拉角的，但事实并不是这样。接下来详细分析下</p>
@@ -155,55 +330,216 @@ Unity中应用我们接触到的地方就是Unity的Transform组件。Transform�
 <p><img src="/images/quaternion/different.jpg" alt=""></p>
 <p>项目中的使用问题:</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> Quaternion _sphereOriginRotation;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">readonly</span> <span class="keyword">float</span> _rotationFactor = <span class="number">0.2</span>f;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Start</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    _sphereOriginRotation = Sphere.rotation;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Update</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//这样用其实没有用上Slerp的球面线性差值的特性</span></span><br><span class="line">    Sphere.rotation = Quaternion.Slerp(Sphere.rotation, Target.rotation, _rotationFactor);</span><br><span class="line"> </span><br><span class="line">    <span class="comment">//上面这么写的话，其实和用Lerp得到的效果基本一样。但是Lerp的计算效率会高很多</span></span><br><span class="line">    Sphere.rotation = Quaternion.Lerp(Sphere.rotation, Target.rotation, _rotationFactor);</span><br><span class="line">         </span><br><span class="line">    <span class="comment">//要用到Slerp的球面差值的特性可以这样写,改变目标旋转的物体之前，先保存这个物体的Rotation</span></span><br><span class="line">    Sphere.rotation = Quaternion.Slerp(_sphereOriginRotation, Target.rotation, _rotationFactor);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-					</div>
+      
+    </div>
 
-			  <!-- about -->
-			  
-		</div>
+    <div>
+      
+        
 
-		<!-- pagination -->
-	  
+      
+    </div>
 
-		<div class="comment-section">
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/unity/" rel="tag"># unity</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/20/unity@shader_if_state_performance/" rel="next" title="Unity中shader代码的条件分支的性能问题">
+                <i class="fa fa-chevron-left"></i> Unity中shader代码的条件分支的性能问题
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/18/unity@optimizing_garbage_collection_in_unity_games/" rel="prev" title="Unity游戏内存回收的优化(译)">
+                Unity游戏内存回收的优化(译) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+        </div>
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" align="center">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+
+  <span class="author" itemprop="copyrightHolder">elangduan@126.com | </span>
+
+  <span>
+    powered by <a class="theme-link" href="https://hexo.io">hexo</a>
+  </span>
+
+  <span>
+    & theme <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next"> NexT</a>
+  </span>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
   
 
-</div>
-	</div>
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
 
-	
-
-</div>
 
 
-		<footer>
-			
 
-<p>
-  由 <a href="https://hexo.io">hexo</a> 强力驱动 | 搭载 <a href="https://github.com/wayou/hexo-theme-material">material</a> 主题
-</p>
-<p>
-  &copy; 2018 <a href="http://elangduan.github.com"> elangduan@126.com </a>
-</p>
-<a id="gotop" href="#" title="back to top"><i class="mdi-hardware-keyboard-arrow-up"></i></a>
 
-		</footer>
-	  </div>
 
-		<!-- <script src="/libs/bs/js/bootstrap.min.js"></script> -->
-		<script src="//apps.bdimg.com/libs/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-		<script>(typeof $().modal == 'function')|| document.write('<script src="/libs/bs/js/bootstrap.min.js" type="text/javascript"><\/script>')</script>
 
-		<!-- material design -->
-		<!-- <script src="/libs/bs-material/js/ripples.min.js"></script> -->
-		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/ripples.min.js"></script>
-		<!-- <script src="/libs/bs-material/js/material.min.js"></script> -->
-		<script src="//apps.bdimg.com/libs/bootstrap-material/0.3.0/js/material.min.js"></script>
-		<!-- toc -->
-		<!-- <script src="/libs/tocify/jquery-ui.min.js"></script> -->
-		<script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-		<script src="/libs/tocify/jquery.tocify.custom.js"></script>
 
-		<script src="/js/main.js"></script>
 
-	</body>
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"elangduan"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
 </html>
