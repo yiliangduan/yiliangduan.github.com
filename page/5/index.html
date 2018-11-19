@@ -225,125 +225,6 @@
   
 
   <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2017/07/13/unity@ugui_panel_visible_manage/">
-
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="elangduan@126.com">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/uploads/avatar.png">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="暮鼓晨钟的笔记">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="暮鼓晨钟的笔记" src="">
-    </span>
-  </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2017/07/13/unity@ugui_panel_visible_manage/" itemprop="url">
-                  Unity3D的UIPanel隐藏的处理方式
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-13T23:40:10+08:00">
-              2017-07-13
-            </time>
-            
-          </span>
-
-          
-
-          
-
-          
-
-          
-          
-
-          
-          
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <ol>
-<li><p>隐藏的方式</p>
-<p>1.1 设置Active为false方式。这种方式UIPanel的所有脚本逻辑、Rendering、Canvas.BuildBatch都会停止。构建的渲染的Mesh也会被清理。</p>
-<p>1.2 设置不被渲染的Camera的Layer层上。这种方式相当于只是停掉了Rendering，其他的逻辑照常执行。</p>
-</li>
-<li><p>优缺点比较</p>
-<p>2.1 方式1隐藏Panel的时候构建的Mesh会被清理掉，会节省这部分内存。而且在动态Panel的时候(Panel上包含移动变化的GameObject)，Canvas的BuildBatch不会再调用，这会节省CPU(节省的程度根据Panel的复杂度决定的)。但是这种方式在隐藏和重新显示的时候由于需要重新构建渲染的Mesh，会消耗一定的CPU和产生GC.Allocate。</p>
-<p>2.2 方式2的好处在于Panel隐藏和重新显示的时候不需要重新构建渲染的Mesh，不会产生额外的CPU消耗和GC.Allocate。但是这种方式在隐藏的时候Panel的所有逻辑任然在执行(Update等)，在动态Panel的话Canvas的BuildBatch也会照常执行，这会一直消耗CPU资源。</p>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
   <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2017/07/08/unity@render_order_question/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -737,6 +618,153 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">//Coroutine.cpp</span><br><span class="line"></span><br><span class="line">// Run其实是一个递归的操作，在CallDelayed之后回调coroutineCallback里面会根据条件再次进入Run，</span><br><span class="line">// 直到MoveNext返回false，条件结束了。</span><br><span class="line">void Coroutine::Run (...)</span><br><span class="line">&#123;</span><br><span class="line">	//根据IEnumerator的特性，首先得调用下MoveNext，所以这里进入Run之后首先会调用一次MoveNext(), </span><br><span class="line">	//就是&lt;Test&gt;c__Iterator0的MoveNext。这样就给current赋值了</span><br><span class="line">	ScriptingInvocation invocation(MoveNext);</span><br><span class="line">	...</span><br><span class="line"> 	ScriptingObjectPtr monoWait = invocation.Invoke(&amp;exception)</span><br><span class="line">	</span><br><span class="line">	//调用Current</span><br><span class="line">	ScriptingInvocation invocation(Current);</span><br><span class="line">	...</span><br><span class="line"> 	ScriptingObjectPtr monoWait = invocation.Invoke(&amp;exception);</span><br><span class="line"> 	</span><br><span class="line"> 	</span><br><span class="line">	//可以在Sample里面看到Current函数在调用过第一次MoveNext之后被赋值为WaitForSeconds对象，</span><br><span class="line">	//所以这里waitClass就可以获取WaitForSeconds对象的等待时间了</span><br><span class="line">	ScriptingClassPtr waitClass = scripting_object_get_class (monoWait, GetScriptingTypeRegistry());</span><br><span class="line"></span><br><span class="line">	if (scripting_class_is_subclass_of (waitClass, classes.waitForSeconds))</span><br><span class="line">	&#123;</span><br><span class="line">		float waitTime = 0;//通过waitClass获取WaitForSeconds对象的等待时间</span><br><span class="line">		MarshallManagedStructIntoNative(monoWait, &amp;waitTime);</span><br><span class="line">	</span><br><span class="line">		// 这里添加到DelayedCallManager里面</span><br><span class="line">		// coroutineCallback里面处理了我们在一个方法里面多次yield return的操作，</span><br><span class="line">		// 这个方法里面会递归调用Run直到所有的操作处理完成</span><br><span class="line">		CallDelayed(coroutineCallback, monobehaviour, waitTime, , ,);</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">//DelayedCallManager.cpp</span><br><span class="line"></span><br><span class="line">void DelayedCallManager::Update()</span><br><span class="line">&#123;</span><br><span class="line">	float time = GetCurTime();</span><br><span class="line">	int frame = GetTimeManager().GetFrameCount();</span><br><span class="line">	</span><br><span class="line">	Container::iterator iterator = m_CallObjects.begin (); //m_CallObjects保存了所有注册的Coroutine对象</span><br><span class="line">	</span><br><span class="line">	// iterator-&gt;time 在注册的时候赋值是: 当前时间 + 等待的时间(new WaitForSeconds(5),那么就是5秒)</span><br><span class="line">	// iterator-&gt;time &lt;= time 这个条件判断了iterator的定时时间是否满足了</span><br><span class="line">	// 比如上面我们加入定义new WaitForSeconds(5)，</span><br><span class="line">	// 满足的条件时就当当前时间time要大于iterator满足的时间的时候，则进入这个while循环内</span><br><span class="line">	while (iterator !=  m_CallObjects.end () &amp;&amp; iterator-&gt;time &lt;= time) </span><br><span class="line">	&#123;</span><br><span class="line">		//判断帧是否满足,加入用到了new WaitForFixedUpdate()之类的</span><br><span class="line">		if (cb.timeStamp != m_TimeStamp &amp;&amp; cb.frame &lt;= frame) 		&#123;</span><br><span class="line">			//调用CoroutineCallback了</span><br><span class="line">		&#125;	</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>其他的的类型会直接在下一帧调用,比如yield return 0</p>
 <p>整个过程粗略的看大概就是这个样子。上面的分析没有深入到每个条件判断之类的，但是已经够了解Coroutine的全貌了。有错误的地方欢迎指出来，非常感谢。</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2017/05/10/opengl@openg_normal_mapping_transform_martix_derivation/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="elangduan@126.com">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/uploads/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="暮鼓晨钟的笔记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="暮鼓晨钟的笔记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/05/10/opengl@openg_normal_mapping_transform_martix_derivation/" itemprop="url">
+                  OpenGL中Normal的变换矩阵的推导
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-10T22:15:39+08:00">
+              2017-05-10
+            </time>
+            
+          </span>
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>本文的结论通过 <a href="http://www.lighthouse3d.com/tutorials/glsl-12-tutorial/the-normal-matrix/" target="_blank" rel="external">the-normal-matrix</a> 获得的。</p>
+<p>今天在学习OpenGL shader的时候遇到一个困惑的地方,先上代码:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">//vertex shader</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">layout (location = 1) in vec3 aNormal;</span><br><span class="line"></span><br><span class="line">out vec3 Normal;</span><br><span class="line"></span><br><span class="line">uniform mat4 model;</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	mat3 normalMatrix = transpose(inverse(mat3(model)));</span><br><span class="line">    </span><br><span class="line">	Normal = normalize(normalMatrix * aNormal);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><em>Normal</em> 是计算好输出给 <em>fragment</em> 用来计算光照的</p>
+<p><em>aNormal</em> 是直接通过 <em>vertex data</em> 传入的数据</p>
+<p><em>model</em> 是模型坐标</p>
+</blockquote>
+<p>这里的通过对model做矩阵逆运算再转置得normalMatrix再和aNormal运算得到最后的Normal整个过程比较困惑，最终得到的Normal和aNormal到底区别在哪里。</p>
+<p>下面详细说明下法线需要逆+转置的原因:</p>
+<p><img src="/images/opengl_normal/normal_image.jpeg" alt=""></p>
+<blockquote>
+<p>N表示法线(Normal)</p>
+<p>V为表面的一条切线(Tangent)</p>
+<p>N垂直于平面abc，所以N也垂直平台abc的一条切线T</p>
+</blockquote>
+<p><em>现在假设图中的平台abc是模型中的一个面</em></p>
+<p>法线N的数据可以是建模的时候存储在一张法线的贴图中，也可以通过在Vertex中来动态的计算得来。如果是动态计算的话那就不需要考虑本文考虑的变换问题了，但是这样比较消耗性能。这里我们假如使用法线贴图数据，现在在vertex中得到的aNormal数据就是读取的法线贴图的数据。如果模型按照等比缩放的话，那么N任然可以保持垂直于平面abc，但是现在平面不按照等比缩放的话(abc不等比缩放到a’b’c)，这样会导致N不再垂直于平台a’b’c平面了。那么我们怎样来得到垂直于缩放之后的平面a’b’c的法线N’呢? 接下来可以推导一下:</p>
+<p>因为N(Normal)是垂直于V(Tangent)的，可得:</p>
+<blockquote>
+<p>N•T=0 N和T都是向量</p>
+</blockquote>
+<p>假设向量 N = {a, b, c}, V = {x, y, z}</p>
+<p>那么向量N•T用矩阵来表示的话可以表示为:</p>
+<p>$$ N^T V = 0 $$ 这里对矩阵做了转置</p>
+<p><img src="/images/opengl_normal/CodeCogsEqn.png" alt=""></p>
+<p>现在对平面abc通过矩阵M来进行变化，变换的结果为a’b’c。a’b’c的法线为N’。那么:</p>
+<p>$$ N • I • V = 0 $$ 其中I为单位向量</p>
+<p>转换为矩阵表现形式:</p>
+<p>$$ N M^{-1} M V = 0 $$ </p>
+<p>可得:</p>
+<p>$$ M^{-T} N M V = 0 $$ </p>
+<blockquote>
+<p>矩阵乘法满足结合律不满足交换率,所以对M求了转置</p>
+</blockquote>
+<p>$$ {(M^{-T} N) \over N’}{(MV)\over V’} = {0 \over 0} $$</p>
+<p>这样我们可得法线变换的矩阵为 $$M^{-T}$$</p>
+<p>这样我们就得出了我们最开始提出的问题了。当模型进行不等比的缩放的时候，法向量会出现不再垂直于变换之后的平面，那么我们需要通过模型的缩放变换矩阵的转置+逆的矩阵来变换法向量N，最终可以得到垂直于变化之后的平面的法向量。</p>
 
           
         
