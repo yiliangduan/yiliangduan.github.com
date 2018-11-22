@@ -308,7 +308,7 @@
 <p>It’s the submission of a shader to the graphics card, which includes the graphics card driver compiling it into a card-specific format.</p>
 <p>You may want to look into ShaderVariantCollection.</p>
 </blockquote>
-<p>其实就是把shader从CPU提交到GPU，这其中包含了显卡驱动把这些shader编译成GPU特定的格式操作。按照作者的建议我查阅了ShaderVariantCollection，原来Unity提供了预编译Shader的接口。查看了ShaderVariantCollection的API文档，Unity在运行过程中会自动搜集使用的Shader以及这些Shader用到的Variant。然后我们可以在GraphicsSettings菜单里保存这些搜集的数据成ShaderVariantCollection 格式的Asset文件当项目运行起来时加载这个Asset，然后调用ShaderVariantCollection的WarmUp方法即可，这些Shader就会加载解析并编译好，下次加载的资源如果引用到了这个Shader的话不需要再次去解析编译了，避免了重复的CPU开销。ShaderVariantCollection具体工具原理<a href="https://docs.unity3d.com/ScriptReference/ShaderVariantCollection.WarmUp.html" target="_blank" rel="external">文档描述</a>如下:</p>
+<p>其实就是把shader从CPU提交到GPU，这其中包含了显卡驱动把这些shader编译成GPU特定的格式操作。按照作者的建议我查阅了ShaderVariantCollection，原来Unity提供了预编译Shader的接口。查看了ShaderVariantCollection的API文档，Unity在运行过程中会自动搜集使用的Shader以及这些Shader用到的Variant。然后我们可以在GraphicsSettings菜单里保存这些搜集的数据成ShaderVariantCollection 格式的Asset文件当项目运行起来时加载这个Asset，然后调用ShaderVariantCollection的WarmUp方法即可，这些Shader就会加载解析并编译好，下次加载的资源如果引用到了这个Shader的话不需要再次去解析编译了，避免了重复的CPU开销。ShaderVariantCollection具体工作原理<a href="https://docs.unity3d.com/ScriptReference/ShaderVariantCollection.WarmUp.html" target="_blank" rel="external">文档描述</a>如下:</p>
 <blockquote>
 <p>Calling this function will perform dummy one-invisible-triangle rendering for the shaders and their variants in this ShaderVariantCollection.</p>
 </blockquote>
