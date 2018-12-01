@@ -223,7 +223,7 @@
   
 
   <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2018/08/18/unity@unity_shader_depth/">
+  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2018/08/18/unity/unity_shader_depth/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="elangduan@126.com">
@@ -248,7 +248,7 @@
             
               
                 
-                <a class="post-title-link" href="/2018/08/18/unity@unity_shader_depth/" itemprop="url">
+                <a class="post-title-link" href="/2018/08/18/unity/unity_shader_depth/" itemprop="url">
                   Unity 渲染的深度值获取
                 </a>
               
@@ -299,7 +299,7 @@
 <p>深度值是对象距离摄像机距离的一个参考值，在制作一些场景效果时会经常用得到。深度值是在顶点着色器之后的像素着色器之前的深度测试阶段生成的，所以获取深度值就得在像素着色器中获取。下面创建了一个简单的场景来显示深度信息</p>
           <!--noindex-->
           <div class="post-more-link text-center">
-            <a class="btn" href="/2018/08/18/unity@unity_shader_depth/#more" rel="contents">
+            <a class="btn" href="/2018/08/18/unity/unity_shader_depth/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -340,7 +340,7 @@
   
 
   <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2018/07/14/unity@unity_memorypool/">
+  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2018/07/14/unity/unity_memorypool/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="elangduan@126.com">
@@ -365,7 +365,7 @@
             
               
                 
-                <a class="post-title-link" href="/2018/07/14/unity@unity_memorypool/" itemprop="url">
+                <a class="post-title-link" href="/2018/07/14/unity/unity_memorypool/" itemprop="url">
                   Unity的MemoryPool模块
                 </a>
               
@@ -419,7 +419,7 @@
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MemoryPool</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    ...</span><br><span class="line">  </span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">Bubble</span></span></span><br><span class="line"><span class="class">    &#123;</span></span><br><span class="line">        <span class="keyword">char</span> data[<span class="number">1</span>]; <span class="comment">//只是一个占位符,其实这个成员变量加不加sizeof(Block)大小都是1个字节</span></span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">typedef</span> dynamic_array&lt;Bubble*&gt; Bubbles;</span><br><span class="line"></span><br><span class="line">    Bubble m_Bubbles;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">void</span>* m_HeadOfFreeList;</span><br><span class="line">  </span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
           <!--noindex-->
           <div class="post-more-link text-center">
-            <a class="btn" href="/2018/07/14/unity@unity_memorypool/#more" rel="contents">
+            <a class="btn" href="/2018/07/14/unity/unity_memorypool/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -460,7 +460,7 @@
   
 
   <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2018/06/30/unity@unity_jobscheduler/">
+  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2018/06/30/unity/unity_jobscheduler/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="elangduan@126.com">
@@ -485,7 +485,7 @@
             
               
                 
-                <a class="post-title-link" href="/2018/06/30/unity@unity_jobscheduler/" itemprop="url">
+                <a class="post-title-link" href="/2018/06/30/unity/unity_jobscheduler/" itemprop="url">
                   Unity的JobScheduler模块
                 </a>
               
@@ -573,7 +573,7 @@
   
 
   <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2018/04/03/unity@unity_shaders_and_effects_cookbook_summary/">
+  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2018/04/03/unity/unity_shaders_and_effects_cookbook_summary/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="elangduan@126.com">
@@ -598,7 +598,7 @@
             
               
                 
-                <a class="post-title-link" href="/2018/04/03/unity@unity_shaders_and_effects_cookbook_summary/" itemprop="url">
+                <a class="post-title-link" href="/2018/04/03/unity/unity_shaders_and_effects_cookbook_summary/" itemprop="url">
                   Unity Shaders and Effects Cookbook总结
                 </a>
               
