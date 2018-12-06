@@ -90,7 +90,7 @@
 <meta property="og:site_name" content="暮鼓晨钟的笔记">
 <meta property="og:description" content="unity 5.6.6f1  准备写一个Mesh优化的工具链，可以实现MeshRenderer的合并。要想把所有的MeshRenderer合并，则必须考虑这几种情况:  需要合并的MeshRenderer都使用了相同的Material，并且Material的属性相同。这种情况可以直接合并  需要合并的MeshRenderer使用了相同的Material，但是Material的属性存在不同，这种情">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-12-06T05:41:44.972Z">
+<meta property="og:updated_time" content="2018-12-06T05:44:47.341Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity Mesh合并工具">
 <meta name="twitter:description" content="unity 5.6.6f1  准备写一个Mesh优化的工具链，可以实现MeshRenderer的合并。要想把所有的MeshRenderer合并，则必须考虑这几种情况:  需要合并的MeshRenderer都使用了相同的Material，并且Material的属性相同。这种情况可以直接合并  需要合并的MeshRenderer使用了相同的Material，但是Material的属性存在不同，这种情">
@@ -309,12 +309,13 @@
 </ol>
 <p>第1种情况只需合并MeshRenderer操作即可，第3种情况涉及到先合并贴图再合并修改统一的Material，然后合并MeshRenderer。基于此模块化这些步骤成单独的功能：</p>
 <ul>
-<li>贴图合并</li>
-<li>修改MeshRenderer的Material中的贴图为合并之后的大图集，并且根据之前使用的贴图再大图集中的偏移重写MeshRenderer的UV。</li>
-<li>合并MeshRenderer</li>
+<li>贴图合并工具</li>
+<li>修改MeshRenderer的Material中的贴图为合并之后的大图集，并且根据之前使用的贴图再大图集中的偏移重写MeshRenderer的UV的工具</li>
+<li>合并MeshRenderer工具</li>
 </ul>
 <a id="more"></a> 
-<h3 id="贴图合并工具"><a href="#贴图合并工具" class="headerlink" title="贴图合并工具"></a>贴图合并工具</h3><p>这里实现了一个简单的合并贴图的工具<a href="https://github.com/elangduan/unity-atlastool" target="_blank" rel="external">AtlasTool</a></p>
+<p><strong>贴图合并工具</strong></p>
+<p>这里实现了一个简单的合并贴图的工具<a href="https://github.com/elangduan/unity-atlastool" target="_blank" rel="external">AtlasTool</a></p>
 <p><em>使用方式</em></p>
 <p>在Unity的Project窗口中，选中一个存放图片的文件夹。右键菜单中可以看到 [Pack Texture], [Pack Texture(All Relayout)] 选项, 即可合并该文件夹下的所有贴图.</p>
 <p>合并贴图之后会生成对应的Asset文件和Atlas文件。Asset文件保存了Atlas文件中每张贴图在图集中的偏移，缩放和对原始图片的引用。</p>
@@ -323,6 +324,7 @@
 <li>Pack Texture:  如果之前合并过贴图，该种模式下会继承上次贴图的合并后在图集中的偏移，不会改动之前已经合过贴图的位置。</li>
 <li>Pack Texture(All Relayout): 全部重新排列合图，这种情况下可能改变之前已经合过贴图的在图集中的偏移。</li>
 </ul>
+<p>// TODO</p>
 <p><em>End</em></p>
 
       
