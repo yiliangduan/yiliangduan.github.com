@@ -93,7 +93,7 @@
 <meta property="og:image" content="http://elangduan.github.com/images/unity_atlas_tool/2.png">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_atlas_tool/1.png">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_atlas_tool/3.png">
-<meta property="og:updated_time" content="2018-12-06T07:47:50.053Z">
+<meta property="og:updated_time" content="2018-12-06T07:51:17.465Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity Mesh合并工具">
 <meta name="twitter:description" content="unity 5.6.6f1  Mesh优化的工具链 准备写一个Mesh优化的工具链，可以实现MeshRenderer的合并。要想把所有的MeshRenderer合并，则必须考虑这几种情况:  需要合并的MeshRenderer都使用了相同的Material，并且Material的属性相同。这种情况可以直接合并  需要合并的MeshRenderer使用了相同的Material，但是Material">
@@ -320,7 +320,7 @@
 </ul>
 <a id="more"></a> 
 <p>贴图合并工具</p>
-<p>这里实现了一个简单的合并贴图的工具<a href="https://github.com/elangduan/unity-atlastool" target="_blank" rel="external">AtlasTool</a>,使用是在Unity的Project窗口中，选中一个存放图片的文件夹。右键菜单中可以看到 [Pack Texture], [Pack Texture(All Relayout)] 选项, 即可合并该文件夹下的所有贴图。，具体如图所示:</p>
+<p>这里实现了一个简单的合并贴图的工具<a href="https://github.com/elangduan/unity-atlastool" target="_blank" rel="external">AtlasTool</a>，在Unity的Project窗口中，选中一个存放图片的文件夹。右键菜单中可以看到 [Pack Texture], [Pack Texture(All Relayout)] 选项, 即可合并该文件夹下的所有贴图。具体如图所示:</p>
 <p>选中一个存放了图片的文件夹:</p>
 <p><img src="/images/unity_atlas_tool/2.png" alt=""></p>
 <p>执行合图操作之后，将会合并贴图并将结果生成在事先在AtlasConfig.cs中配置好的路径中(这里测试配置的是Assets/Res目录)。结果包含两类文件Asset和Atlas，Asset文件保存了Atlas文件中每张贴图在图集中的偏移，缩放和对原始图片的引用。如果选中的目录下既有带Alpha的图片又有不带Alpha的图片，工具会根据是否带Alpha进行归类并且结果输出到不同的目录。如下图:</p>
