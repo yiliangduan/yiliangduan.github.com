@@ -303,14 +303,14 @@
 </li>
 <li><p>需要合并的MeshRenderer使用了相同的Material，但是Material的属性存在不同，这种情况如果合并的话需要将Material的不同属性保存下来，在运行时候通过MaterialBlockProperty来改变其属性。（工具里面对这种情况暂保持不合并）</p>
 </li>
-<li><p>需要合并的MeshRenderer使用了不同的Material，但是Shader相同并除了Shader所使用的Texture不同之外其他属性相同。这种情况先合并贴图，然后合并MeshRenderer。</p>
+<li><p>需要合并的MeshRenderer使用了不同的Material，但是Shader相同并除了Shader所使用的Texture不同之外其他属性都相同。这种情况先合并贴图，然后根据贴图再图集中的位置偏移重写MeshRenderer的UV，然后合并MeshRenderer。</p>
 </li>
 <li>需要合并的MeshRenderer使用了不同的Material并且使用Shader不同，这种情况合并不了。</li>
 </ol>
 <p>第1种情况只需合并MeshRenderer操作即可，第3种情况涉及到先合并贴图再合并修改统一的Material，然后合并MeshRenderer。基于此模块化这些步骤成单独的功能：</p>
 <ul>
 <li>贴图合并工具</li>
-<li>修改MeshRenderer的Material中的贴图为合并之后的大图集，并且根据之前使用的贴图再大图集中的偏移重写MeshRenderer的UV的工具</li>
+<li>重写MeshRenderer的UV的工具</li>
 <li>合并MeshRenderer工具</li>
 </ul>
           <!--noindex-->
