@@ -92,7 +92,8 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_atlas_tool/2.png">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_atlas_tool/1.png">
-<meta property="og:updated_time" content="2018-12-06T07:40:35.272Z">
+<meta property="og:image" content="http://elangduan.github.com/images/unity_atlas_tool/3.png">
+<meta property="og:updated_time" content="2018-12-06T07:44:17.060Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity Mesh合并工具">
 <meta name="twitter:description" content="unity 5.6.6f1  Mesh优化的工具链 准备写一个Mesh优化的工具链，可以实现MeshRenderer的合并。要想把所有的MeshRenderer合并，则必须考虑这几种情况:  需要合并的MeshRenderer都使用了相同的Material，并且Material的属性相同。这种情况可以直接合并  需要合并的MeshRenderer使用了相同的Material，但是Material">
@@ -324,6 +325,8 @@
 <p><img src="/images/unity_atlas_tool/2.png" alt=""></p>
 <p>执行合图操作之后，将会合并贴图并将结果生成在事先在AtlasConfig.cs中配置好的路径中(这里测试配置的是Assets/Res目录)。结果包含两类文件Asset和Atlas，Asset文件保存了Atlas文件中每张贴图在图集中的偏移，缩放和对原始图片的引用。如果选中的目录下既有带Alpha的图片又有不带Alpha的图片，工具会根据是否带Alpha进行归类并且结果输出到不同的目录。如下图:</p>
 <p><img src="/images/unity_atlas_tool/1.png" alt=""></p>
+<p>生成的Asset文件保存的信息如图:</p>
+<p><img src="/images/unity_atlas_tool/3.png" alt=""></p>
 <p>由于这些合并后的贴图是用于MeshRenderer的贴图，并且MeshRenderer会根据这些贴图再图集中的偏移而要改变自己的UV，所以为了避免每次合图之后MeshRenderer都需要重写UV的操作，这里的合图有两个选项<em>Pack Texture</em>和<em>Pack Texture(All Relayout)</em>。<em>Pack Texture</em>选中执行过程中不会对之前合并好的贴图进行改变，保持其在图集中的位置偏移，而<em>Pack Texture(All Relayout)</em>相当于重新排列每张图片在图集中的位置。所以需要注意这两点:</p>
 <ul>
 <li>Pack Texture:  如果之前合并过贴图，该种模式下会继承上次贴图的合并后在图集中的偏移，不会改动之前已经合过贴图的位置。</li>
