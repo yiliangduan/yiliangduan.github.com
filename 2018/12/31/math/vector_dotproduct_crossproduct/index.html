@@ -93,7 +93,7 @@
 <meta property="og:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/1.png">
 <meta property="og:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/2.png">
 <meta property="og:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/3.png">
-<meta property="og:updated_time" content="2019-01-01T08:05:16.423Z">
+<meta property="og:updated_time" content="2019-01-01T08:09:48.769Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="向量的点积与叉积">
 <meta name="twitter:description" content="今天看到一个几何的题目，正好用到了向量的点积和叉积。但是具体的公式计算却忘记了，知识不用就忘得快。特别做一个笔记，整理记录一下。  以下的内容是阅读”3D数学基础: 图形与游戏开发”书籍结合自己的理解的总结">
@@ -309,20 +309,21 @@
 </blockquote>
 <p><img src="/images/math_vector_dot_cross_product/1.png" alt=""></p>
 <p><em>代数定义</em>:<br>$$<br>\vec{a} \cdot \vec{b} = \sum_{i=1}^na_ib_j = a_1b_1 + a_2b_2+ \cdots+a_nb_n<br>$$</p>
-<p>计算结果是一个标量:<br>$$<br>\begin{matrix}<br>a_1   \<br>a_2   \<br>\cdot \<br>\cdot \<br>a_n   \<br>\end{matrix}<br>\cdot<br>\begin{matrix}<br>b_1   \<br>b_2   \<br>\cdot \<br>\cdot \<br>b_n   \<br>\end{matrix}<br>=<br>a_1b_1 + a_2b_2 + \cdots a_nb_n<br>$$</p>
+<p>计算结果是一个标量:<br>$$<br>\left[<br>\begin{matrix}<br>a_1   \<br>a_2   \<br>\cdot \<br>\cdot \<br>a_n   \<br>\end{matrix}<br>\right]<br>\cdot<br>\left[<br>\begin{matrix}<br>b_1   \<br>b_2   \<br>\cdot \<br>\cdot \<br>b_n   \<br>\end{matrix}<br>\right]<br>=<br>a_1b_1 + a_2b_2 + \cdots a_nb_n<br>$$</p>
 <p>计算的例子:</p>
 <ul>
 <li>2D向量计算</li>
 </ul>
-<p>$$<br>\begin{matrix}<br>4   \<br>6   \<br>\end{matrix}<br>\cdot<br>\begin{matrix}<br>-3   \<br>7  \<br>\end{matrix}<br>=<br>(4) \times (-3) + (6)\times(7) = 30<br>$$</p>
+<p>$$<br>\left[<br>\begin{matrix}<br>4   \<br>6   \<br>\end{matrix}<br>\right]<br>\cdot<br>\left[<br>\begin{matrix}<br>-3   \<br>7  \<br>\end{matrix}<br>\right]<br>=<br>(4) \times (-3) + (6)\times(7) = 30<br>$$</p>
 <ul>
 <li>3D向量计算</li>
 </ul>
-<p>$$<br>\begin{matrix}<br>3   \<br>-2   \<br>7   \<br>\end{matrix}<br>\cdot<br>\begin{matrix}<br>0   \<br>4  \<br>-1  \<br>\end{matrix}<br>=<br>(3)\times(0) + (-2)\times(4) + (7)\times(-1) = -15<br>$$</p>
+<p>$$<br>\left[<br>\begin{matrix}<br>3   \<br>-2   \<br>7   \<br>\end{matrix}<br>\right]<br>\cdot<br>\left[<br>\begin{matrix}<br>0   \<br>4  \<br>-1  \<br>\end{matrix}<br>\right]<br>=<br>(3)\times(0) + (-2)\times(4) + (7)\times(-1) = -15<br>$$</p>
 <p><em>几何定义:</em><br>$$<br>\vec{a} \cdot \vec{b} = |\vec{a}| |\vec{b}| cos\theta<br>$$</p>
 <p>可以转换一下得到:<br>$$<br>\theta = arccos( \frac{ \vec{a} \cdot \vec{b} }{ |\vec{a}|  |\vec{b}| })<br>$$<br>这个公式就可以求得两个向量的夹角</p>
 <p>计算的例子:</p>
-<p>$$<br>\theta = arccos( \frac{  \begin{matrix}<br>4   \<br>6   \<br>\end{matrix}<br>\cdot<br>\begin{matrix}<br>-3   \<br>7  \<br>\end{matrix}  }<br>{ (\sqrt{ (4)^2 + (6)^2}  \sqrt{(-3)^2 + (7)^2} })<br>\approx arccos(\frac{30}{54.92})<br>\approx 58.34<br>$$</p>
+<p>$$<br>\theta = arccos( \frac{  \left[\begin{matrix}<br>4   \<br>6   \<br>\end{matrix}<br>\right]<br>\cdot<br>\left[<br>\begin{matrix}<br>-3   \<br>7  \<br>\end{matrix}  \right]}</p>
+<p>{ (\sqrt{ (4)^2 + (6)^2}  \sqrt{(-3)^2 + (7)^2} })<br>\approx arccos(\frac{30}{54.92})<br>\approx 58.34<br>$$</p>
 <p><strong>叉积(Cross Product)</strong></p>
 <blockquote>
 <p>叉积可以得到两个向量组成的平面的垂直向量，在图形学里面这条垂直向量就是这个面的法线。</p>
