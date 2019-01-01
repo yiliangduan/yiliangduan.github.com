@@ -82,21 +82,21 @@
 
 
 
-<meta name="description" content="unity 5.6.6f1  Mesh优化的工具链 准备写一个Mesh优化的工具链，可以实现MeshRenderer的合并。要想把所有的MeshRenderer合并，则必须考虑这几种情况:  需要合并的MeshRenderer都使用了相同的Material，并且Material的属性相同。这种情况可以直接合并  需要合并的MeshRenderer使用了相同的Material，但是Material">
+<meta name="description" content="unity 5.6.6f1  准备写一个Mesh优化的工具链，可以实现MeshRenderer的合并。要想把所有的MeshRenderer合并，则必须考虑这几种情况:  需要合并的MeshRenderer都使用了相同的Material，并且Material的属性相同。这种情况可以直接合并  需要合并的MeshRenderer使用了相同的Material，但是Material的属性存在不同，这种情">
 <meta name="keywords" content="unity">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Unity Mesh合并工具">
+<meta property="og:title" content="Unity Texture合并工具">
 <meta property="og:url" content="http://elangduan.github.com/2018/12/06/unity/texture_pack_tool/index.html">
 <meta property="og:site_name" content="暮鼓晨钟的笔记">
-<meta property="og:description" content="unity 5.6.6f1  Mesh优化的工具链 准备写一个Mesh优化的工具链，可以实现MeshRenderer的合并。要想把所有的MeshRenderer合并，则必须考虑这几种情况:  需要合并的MeshRenderer都使用了相同的Material，并且Material的属性相同。这种情况可以直接合并  需要合并的MeshRenderer使用了相同的Material，但是Material">
+<meta property="og:description" content="unity 5.6.6f1  准备写一个Mesh优化的工具链，可以实现MeshRenderer的合并。要想把所有的MeshRenderer合并，则必须考虑这几种情况:  需要合并的MeshRenderer都使用了相同的Material，并且Material的属性相同。这种情况可以直接合并  需要合并的MeshRenderer使用了相同的Material，但是Material的属性存在不同，这种情">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_atlas_tool/2.png">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_atlas_tool/1.png">
 <meta property="og:image" content="http://elangduan.github.com/images/unity_atlas_tool/3.png">
-<meta property="og:updated_time" content="2018-12-06T07:52:14.475Z">
+<meta property="og:updated_time" content="2019-01-01T07:15:53.688Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Unity Mesh合并工具">
-<meta name="twitter:description" content="unity 5.6.6f1  Mesh优化的工具链 准备写一个Mesh优化的工具链，可以实现MeshRenderer的合并。要想把所有的MeshRenderer合并，则必须考虑这几种情况:  需要合并的MeshRenderer都使用了相同的Material，并且Material的属性相同。这种情况可以直接合并  需要合并的MeshRenderer使用了相同的Material，但是Material">
+<meta name="twitter:title" content="Unity Texture合并工具">
+<meta name="twitter:description" content="unity 5.6.6f1  准备写一个Mesh优化的工具链，可以实现MeshRenderer的合并。要想把所有的MeshRenderer合并，则必须考虑这几种情况:  需要合并的MeshRenderer都使用了相同的Material，并且Material的属性相同。这种情况可以直接合并  需要合并的MeshRenderer使用了相同的Material，但是Material的属性存在不同，这种情">
 <meta name="twitter:image" content="http://elangduan.github.com/images/unity_atlas_tool/2.png">
 
 
@@ -131,7 +131,7 @@
 
 
 
-  <title> Unity Mesh合并工具 | 暮鼓晨钟的笔记 </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <title> Unity Texture合并工具 | 暮鼓晨钟的笔记 </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -256,7 +256,7 @@
             
             
               
-                Unity Mesh合并工具
+                Unity Texture合并工具
               
             
           </h1>
@@ -301,7 +301,6 @@
         <blockquote>
 <p>unity 5.6.6f1</p>
 </blockquote>
-<p>Mesh优化的工具链</p>
 <p>准备写一个Mesh优化的工具链，可以实现MeshRenderer的合并。要想把所有的MeshRenderer合并，则必须考虑这几种情况:</p>
 <ol>
 <li><p>需要合并的MeshRenderer都使用了相同的Material，并且Material的属性相同。这种情况可以直接合并</p>
@@ -333,10 +332,6 @@
 <li>Pack Texture:  如果之前合并过贴图，该种模式下会继承上次贴图的合并后在图集中的偏移，不会改动之前已经合过贴图的位置。</li>
 <li>Pack Texture(All Relayout): 全部重新排列合图，这种情况下可能改变之前已经合过贴图的在图集中的偏移。</li>
 </ul>
-<p>UV重写工具</p>
-<p>// TODO</p>
-<p>Mesh合并工具</p>
-<p>//TODO</p>
 <p><em>End</em></p>
 
       
