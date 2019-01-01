@@ -93,7 +93,7 @@
 <meta property="og:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/1.png">
 <meta property="og:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/2.png">
 <meta property="og:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/3.png">
-<meta property="og:updated_time" content="2019-01-01T09:50:24.806Z">
+<meta property="og:updated_time" content="2019-01-01T09:55:02.369Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="向量的点积与叉积">
 <meta name="twitter:description" content="今天看到一个几何的题目，正好用到了向量的点积和叉积。但是具体的公式计算却忘记了，知识不用就忘得快。特别做一个笔记，整理记录一下。  以下的内容是阅读”3D数学基础: 图形与游戏开发”书籍结合自己的理解的总结">
@@ -328,7 +328,9 @@
 <p>叉积可以得到两个向量组成的平面的垂直向量，在图形学里面这条垂直向量就是这个面的法线。</p>
 </blockquote>
 <p><img src="/images/math_vector_dot_cross_product/2.png" alt=""></p>
-<p>定义:<br>$$<br>\vec{a} \times \vec{b} = |\vec{a}| |\vec{b}| sin\theta<br>$$<br>假设 (其中i, j, j都是基向量):<br>$$<br>\vec{a} = x_1\vec{i} + y_1\vec{j} + z_1\vec{k}<br>$$<br>$$<br>\vec{b} = x_2\vec{i} + y_2\vec{j} + z_2\vec{k}<br>$$<br>则可以通过行列式的方式计算出垂直向量:<br>$$<br>\vec{a} \times \vec{b} =<br>\left[<br>\begin{matrix}<br>i &amp; j &amp; k \\<br>x_1 &amp; y_1 &amp; z_1 \\<br>x_2 &amp; y_2 &amp; z_2 \\<br>\end{matrix}<br>\right]<br>$$<br>$$<br>=<br>\left[<br>\begin{matrix}<br>y_1 &amp; z_1 \\<br>y_2 &amp; z_2 \\<br>\end{matrix}<br>\right]<br>i<br>-<br>\left[<br>\begin{matrix}<br>x_1 &amp; y_1 \\<br>x_2 &amp; y_2 \\<br>\end{matrix}<br>\right]<br>j<br>+<br>\left[<br>\begin{matrix}<br>x_1 &amp; z_1 \\<br>x_2 &amp; z_2 \\<br>\end{matrix}<br>\right]<br>k<br>$$<br>$$<br>=(y_1z_2-y_2z1)i - (x_1y_2-x_2y_1)j+(x_1z_2-x_2z_1)k<br>$$<br>其实根据定义可以看出，叉积求出的结果正好是向量两个向量组成的平行四边形的面积。</p>
+<p>定义:<br>$$<br>\vec{a} \times \vec{b} = |\vec{a}| |\vec{b}| sin\theta<br>$$<br>假设 (其中i, j, j都是基向量):<br>$$<br>\vec{a} = x_1\vec{i} + y_1\vec{j} + z_1\vec{k}<br>$$<br>$$<br>\vec{b} = x_2\vec{i} + y_2\vec{j} + z_2\vec{k}<br>$$<br>则可以通过行列式的方式计算出垂直向量:<br>$$<br>\vec{a} \times \vec{b} =<br>\left[<br>\begin{matrix}<br>i &amp; j &amp; k \\<br>x_1 &amp; y_1 &amp; z_1 \\<br>x_2 &amp; y_2 &amp; z_2 \\<br>\end{matrix}<br>\right]<br>$$<br>$$<br>=<br>\left[<br>\begin{matrix}<br>y_1 &amp; z_1 \\<br>y_2 &amp; z_2 \\<br>\end{matrix}<br>\right]<br>\vec{i}<br>-<br>\left[<br>\begin{matrix}<br>x_1 &amp; y_1 \\<br>x_2 &amp; y_2 \\<br>\end{matrix}<br>\right]<br>\vec{j}<br>+<br>\left[<br>\begin{matrix}<br>x_1 &amp; z_1 \\<br>x_2 &amp; z_2 \\<br>\end{matrix}<br>\right]<br>\vec{k}<br>$$<br>$$<br>=(y_1z_2-y_2z1)\vec{i} - (x_1y_2-x_2y_1)\vec{j}+(x_1z_2-x_2z_1)\vec{k}<br>$$</p>
+<p>得到垂直向量(法线量):<br>$$<br>\vec{normal}=<br>=(y_1z_2-y_2z1)\vec{i} - (x_1y_2-x_2y_1)\vec{j}+(x_1z_2-x_2z_1)\vec{k}<br>$$</p>
+<p>其实根据定义可以看出，叉积求出的结果正好是向量两个向量组成的平行四边形的面积。</p>
 <p><img src="/images/math_vector_dot_cross_product/3.png" alt=""></p>
 <p>如上图，平行四边形的面积可以由如下公式求得<br>$$<br>area = |\vec a|h<br>$$<br>而高度h可以由如下公式求得<br>$$<br>h = |\vec b|sin\theta<br>$$<br>正好验证两个向量的叉积的值就是这两个向量组成的平行四边形的面积。</p>
 
