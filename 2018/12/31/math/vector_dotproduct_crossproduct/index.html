@@ -93,7 +93,7 @@
 <meta property="og:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/1.png">
 <meta property="og:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/2.png">
 <meta property="og:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/3.png">
-<meta property="og:updated_time" content="2019-01-08T02:35:12.798Z">
+<meta property="og:updated_time" content="2019-01-08T02:47:15.531Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="记录一些零碎的知识点">
 <meta name="twitter:description" content="过段时间需要进行一次测试，会有笔试题目。整理一些Unity和图形相关的一些零碎知识，复习下。  参考:  1. 3D数学基础: 图形与游戏开发">
@@ -303,7 +303,7 @@
 <p>参考:  1. <a href="https://book.douban.com/subject/1400419/" target="_blank" rel="external">3D数学基础: 图形与游戏开发</a></p>
 </blockquote>
 <a id="more"></a> 
-<h3 id="点积-Dot-Product"><a href="#点积-Dot-Product" class="headerlink" title="点积(Dot Product)"></a>点积(Dot Product)</h3><blockquote>
+<h3 id="点积-Dot-Product-和叉积-Cross-Product"><a href="#点积-Dot-Product-和叉积-Cross-Product" class="headerlink" title="点积(Dot Product)和叉积(Cross Product)"></a>点积(Dot Product)和叉积(Cross Product)</h3><h4 id="点积-Dot-Product"><a href="#点积-Dot-Product" class="headerlink" title="点积(Dot Product)"></a>点积(Dot Product)</h4><blockquote>
 <p>点积最直接的意义就是可以计算出两个向量的夹角</p>
 </blockquote>
 <p><img src="/images/math_vector_dot_cross_product/1.png" alt=""></p>
@@ -322,8 +322,7 @@
 <p>可以转换一下得到:<br>$$<br>\theta = arccos( \frac{ \vec{a} \cdot \vec{b} }{ |\vec{a}|  |\vec{b}| })<br>$$<br>这个公式就可以求得两个向量的夹角</p>
 <p>计算的例子:</p>
 <p>$$<br>\theta = arccos(<br>\frac{<br>\left[<br>\begin{matrix}<br>4   \\<br>6   \\<br>\end{matrix}<br>\right]<br>\cdot<br>\left[<br>\begin{matrix}<br>-3   \\<br>7  \\<br>\end{matrix}<br>\right]}<br>{ (\sqrt{ (4)^2 + (6)^2}  \sqrt{(-3)^2 + (7)^2} })<br>\approx arccos(\frac{30}{54.92})<br>\approx 58.34<br>$$</p>
-<p><strong>叉积(Cross Product)</strong></p>
-<blockquote>
+<h4 id="叉积-Cross-Product"><a href="#叉积-Cross-Product" class="headerlink" title="叉积(Cross Product)"></a>叉积(Cross Product)</h4><blockquote>
 <p>叉积可以得到两个向量组成的平面的垂直向量，在图形学里面这条垂直向量就是这个面的法线。</p>
 </blockquote>
 <p><img src="/images/math_vector_dot_cross_product/2.png" alt=""></p>
@@ -332,7 +331,7 @@
 <p>其实根据定义可以看出，叉积求出的结果正好是向量两个向量组成的平行四边形的面积。</p>
 <p><img src="/images/math_vector_dot_cross_product/3.png" alt=""></p>
 <p>如上图，平行四边形的面积可以由如下公式求得<br>$$<br>area = |\vec a|h<br>$$<br>而高度h可以由如下公式求得<br>$$<br>h = |\vec b|sin\theta<br>$$<br>正好验证两个向量的叉积的值就是这两个向量组成的平行四边形的面积。</p>
-<h3 id="光照"><a href="#光照" class="headerlink" title="光照"></a>光照</h3>
+<h3 id="光照"><a href="#光照" class="headerlink" title="光照"></a>光照</h3><h4 id="Phong-Lighting-Model"><a href="#Phong-Lighting-Model" class="headerlink" title="Phong Lighting Model"></a>Phong Lighting Model</h4><h4 id="Blinn-Phong-Lighting-Model"><a href="#Blinn-Phong-Lighting-Model" class="headerlink" title="Blinn-Phong Lighting Model"></a>Blinn-Phong Lighting Model</h4>
       
     </div>
 
