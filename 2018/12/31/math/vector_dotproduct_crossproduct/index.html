@@ -94,7 +94,7 @@
 <meta property="og:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/2.png">
 <meta property="og:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/3.png">
 <meta property="og:image" content="http://elangduan.github.com/images/note/1.png">
-<meta property="og:updated_time" content="2019-01-08T03:19:54.584Z">
+<meta property="og:updated_time" content="2019-01-08T03:26:09.834Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="记录一些零碎的知识点">
 <meta name="twitter:description" content="过段时间需要进行一次测试，会有笔试题目。整理一些Unity和图形相关的一些零碎知识，复习下。  参考:  1. 3D数学基础: 图形与游戏开发 ​           2. LearnOpenGL">
@@ -335,9 +335,9 @@
 <p>如上图，平行四边形的面积可以由如下公式求得<br>$$<br>area = |\vec a|h<br>$$<br>而高度h可以由如下公式求得<br>$$<br>h = |\vec b|sin\theta<br>$$<br>正好验证两个向量的叉积的值就是这两个向量组成的平行四边形的面积。</p>
 <h3 id="光照"><a href="#光照" class="headerlink" title="光照"></a>光照</h3><h4 id="Phong-Lighting-Model"><a href="#Phong-Lighting-Model" class="headerlink" title="Phong Lighting Model"></a>Phong Lighting Model</h4><p>Phong光照的三个光照元素:</p>
 <ul>
-<li>环境光(Ambient)</li>
-<li>漫反射(Diffuse) - 模拟</li>
-<li>镜面光(Specular)</li>
+<li>环境光(Ambient) - 物体不会是完全黑暗的，有诸如月光，远处的光线灯环境中的光源，环境光就是模拟这种光照的。</li>
+<li>漫反射(Diffuse) - 模拟光源对物体方向性影响。物体的某一部分越是正对着光源，它就会越亮。它是Phong光照模型视觉上影响最大的元素。</li>
+<li>镜面光(Specular) - 模拟有光泽的物体表面出现的亮点，镜面光照的颜色相比于物体的颜色会更接近光源的颜色。</li>
 </ul>
 <p>三个元素组成最终的光照效果，过程如下(引用<a href="https://learnopengl.com/" target="_blank" rel="external">LearnOpenGL</a>图片):</p>
 <p><img src="/images/note/1.png" alt=""></p>
