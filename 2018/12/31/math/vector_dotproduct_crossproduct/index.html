@@ -66,7 +66,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="math," />
+  <meta name="keywords" content="math,unity,opengl,cpp," />
 
 
 
@@ -82,21 +82,21 @@
 
 
 
-<meta name="description" content="今天看到一个几何的题目，正好用到了向量的点积和叉积。但是具体的公式计算却忘记了，知识不用就忘得快。特别做一个笔记，整理记录一下。  以下的内容是阅读”3D数学基础: 图形与游戏开发”书籍结合自己的理解的总结">
-<meta name="keywords" content="math">
+<meta name="description" content="过段时间需要进行一次测试，会有笔试题目。整理一些Unity和图形相关的一些零碎知识，复习下。  参考:  1. 3D数学基础: 图形与游戏开发">
+<meta name="keywords" content="math,unity,opengl,cpp">
 <meta property="og:type" content="article">
-<meta property="og:title" content="向量的点积与叉积">
+<meta property="og:title" content="记录一些零碎的知识点">
 <meta property="og:url" content="http://elangduan.github.com/2018/12/31/math/vector_dotproduct_crossproduct/index.html">
 <meta property="og:site_name" content="暮鼓晨钟的笔记">
-<meta property="og:description" content="今天看到一个几何的题目，正好用到了向量的点积和叉积。但是具体的公式计算却忘记了，知识不用就忘得快。特别做一个笔记，整理记录一下。  以下的内容是阅读”3D数学基础: 图形与游戏开发”书籍结合自己的理解的总结">
+<meta property="og:description" content="过段时间需要进行一次测试，会有笔试题目。整理一些Unity和图形相关的一些零碎知识，复习下。  参考:  1. 3D数学基础: 图形与游戏开发">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/1.png">
 <meta property="og:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/2.png">
 <meta property="og:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/3.png">
-<meta property="og:updated_time" content="2019-01-01T09:55:02.369Z">
+<meta property="og:updated_time" content="2019-01-08T02:35:12.798Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="向量的点积与叉积">
-<meta name="twitter:description" content="今天看到一个几何的题目，正好用到了向量的点积和叉积。但是具体的公式计算却忘记了，知识不用就忘得快。特别做一个笔记，整理记录一下。  以下的内容是阅读”3D数学基础: 图形与游戏开发”书籍结合自己的理解的总结">
+<meta name="twitter:title" content="记录一些零碎的知识点">
+<meta name="twitter:description" content="过段时间需要进行一次测试，会有笔试题目。整理一些Unity和图形相关的一些零碎知识，复习下。  参考:  1. 3D数学基础: 图形与游戏开发">
 <meta name="twitter:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/1.png">
 
 
@@ -131,7 +131,7 @@
 
 
 
-  <title> 向量的点积与叉积 | 暮鼓晨钟的笔记 </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <title> 记录一些零碎的知识点 | 暮鼓晨钟的笔记 </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -256,7 +256,7 @@
             
             
               
-                向量的点积与叉积
+                记录一些零碎的知识点
               
             
           </h1>
@@ -298,13 +298,12 @@
       
 
       
-        <p>今天看到一个几何的题目，正好用到了向量的点积和叉积。但是具体的公式计算却忘记了，知识不用就忘得快。特别做一个笔记，整理记录一下。</p>
+        <p>过段时间需要进行一次测试，会有笔试题目。整理一些Unity和图形相关的一些零碎知识，复习下。</p>
 <blockquote>
-<p>以下的内容是阅读”3D数学基础: 图形与游戏开发”书籍结合自己的理解的总结</p>
+<p>参考:  1. <a href="https://book.douban.com/subject/1400419/" target="_blank" rel="external">3D数学基础: 图形与游戏开发</a></p>
 </blockquote>
 <a id="more"></a> 
-<p><strong>点积(Dot Product)</strong></p>
-<blockquote>
+<h3 id="点积-Dot-Product"><a href="#点积-Dot-Product" class="headerlink" title="点积(Dot Product)"></a>点积(Dot Product)</h3><blockquote>
 <p>点积最直接的意义就是可以计算出两个向量的夹角</p>
 </blockquote>
 <p><img src="/images/math_vector_dot_cross_product/1.png" alt=""></p>
@@ -333,7 +332,7 @@
 <p>其实根据定义可以看出，叉积求出的结果正好是向量两个向量组成的平行四边形的面积。</p>
 <p><img src="/images/math_vector_dot_cross_product/3.png" alt=""></p>
 <p>如上图，平行四边形的面积可以由如下公式求得<br>$$<br>area = |\vec a|h<br>$$<br>而高度h可以由如下公式求得<br>$$<br>h = |\vec b|sin\theta<br>$$<br>正好验证两个向量的叉积的值就是这两个向量组成的平行四边形的面积。</p>
-
+<h3 id="光照"><a href="#光照" class="headerlink" title="光照"></a>光照</h3>
       
     </div>
 
@@ -356,7 +355,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/math/" rel="tag"># math</a>
+            <a href="/tags/math-unity-opengl-cpp/" rel="tag"># math,unity,opengl,cpp</a>
           
         </div>
       
