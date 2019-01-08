@@ -82,21 +82,22 @@
 
 
 
-<meta name="description" content="过段时间需要进行一次测试，会有笔试题目。整理一些Unity和图形相关的一些零碎知识，复习下。  参考:  1. 3D数学基础: 图形与游戏开发">
+<meta name="description" content="过段时间需要进行一次测试，会有笔试题目。整理一些Unity和图形相关的一些零碎知识，复习下。  参考:  1. 3D数学基础: 图形与游戏开发 ​           2. LearnOpenGL">
 <meta name="keywords" content="math,unity,opengl,cpp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="记录一些零碎的知识点">
 <meta property="og:url" content="http://elangduan.github.com/2018/12/31/math/vector_dotproduct_crossproduct/index.html">
 <meta property="og:site_name" content="暮鼓晨钟的笔记">
-<meta property="og:description" content="过段时间需要进行一次测试，会有笔试题目。整理一些Unity和图形相关的一些零碎知识，复习下。  参考:  1. 3D数学基础: 图形与游戏开发">
+<meta property="og:description" content="过段时间需要进行一次测试，会有笔试题目。整理一些Unity和图形相关的一些零碎知识，复习下。  参考:  1. 3D数学基础: 图形与游戏开发 ​           2. LearnOpenGL">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/1.png">
 <meta property="og:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/2.png">
 <meta property="og:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/3.png">
-<meta property="og:updated_time" content="2019-01-08T02:47:15.531Z">
+<meta property="og:image" content="http://elangduan.github.com/images/note/1.png">
+<meta property="og:updated_time" content="2019-01-08T03:19:54.584Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="记录一些零碎的知识点">
-<meta name="twitter:description" content="过段时间需要进行一次测试，会有笔试题目。整理一些Unity和图形相关的一些零碎知识，复习下。  参考:  1. 3D数学基础: 图形与游戏开发">
+<meta name="twitter:description" content="过段时间需要进行一次测试，会有笔试题目。整理一些Unity和图形相关的一些零碎知识，复习下。  参考:  1. 3D数学基础: 图形与游戏开发 ​           2. LearnOpenGL">
 <meta name="twitter:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/1.png">
 
 
@@ -301,6 +302,7 @@
         <p>过段时间需要进行一次测试，会有笔试题目。整理一些Unity和图形相关的一些零碎知识，复习下。</p>
 <blockquote>
 <p>参考:  1. <a href="https://book.douban.com/subject/1400419/" target="_blank" rel="external">3D数学基础: 图形与游戏开发</a></p>
+<p>​           2. <a href="https://learnopengl.com/" target="_blank" rel="external">LearnOpenGL </a></p>
 </blockquote>
 <a id="more"></a> 
 <h3 id="点积-Dot-Product-和叉积-Cross-Product"><a href="#点积-Dot-Product-和叉积-Cross-Product" class="headerlink" title="点积(Dot Product)和叉积(Cross Product)"></a>点积(Dot Product)和叉积(Cross Product)</h3><h4 id="点积-Dot-Product"><a href="#点积-Dot-Product" class="headerlink" title="点积(Dot Product)"></a>点积(Dot Product)</h4><blockquote>
@@ -331,7 +333,15 @@
 <p>其实根据定义可以看出，叉积求出的结果正好是向量两个向量组成的平行四边形的面积。</p>
 <p><img src="/images/math_vector_dot_cross_product/3.png" alt=""></p>
 <p>如上图，平行四边形的面积可以由如下公式求得<br>$$<br>area = |\vec a|h<br>$$<br>而高度h可以由如下公式求得<br>$$<br>h = |\vec b|sin\theta<br>$$<br>正好验证两个向量的叉积的值就是这两个向量组成的平行四边形的面积。</p>
-<h3 id="光照"><a href="#光照" class="headerlink" title="光照"></a>光照</h3><h4 id="Phong-Lighting-Model"><a href="#Phong-Lighting-Model" class="headerlink" title="Phong Lighting Model"></a>Phong Lighting Model</h4><h4 id="Blinn-Phong-Lighting-Model"><a href="#Blinn-Phong-Lighting-Model" class="headerlink" title="Blinn-Phong Lighting Model"></a>Blinn-Phong Lighting Model</h4>
+<h3 id="光照"><a href="#光照" class="headerlink" title="光照"></a>光照</h3><h4 id="Phong-Lighting-Model"><a href="#Phong-Lighting-Model" class="headerlink" title="Phong Lighting Model"></a>Phong Lighting Model</h4><p>Phong光照的三个光照元素:</p>
+<ul>
+<li>环境光(Ambient)</li>
+<li>漫反射(Diffuse) - 模拟</li>
+<li>镜面光(Specular)</li>
+</ul>
+<p>三个元素组成最终的光照效果，过程如下(引用<a href="https://learnopengl.com/" target="_blank" rel="external">LearnOpenGL</a>图片):</p>
+<p><img src="/images/note/1.png" alt=""></p>
+<h4 id="Blinn-Phong-Lighting-Model"><a href="#Blinn-Phong-Lighting-Model" class="headerlink" title="Blinn-Phong Lighting Model"></a>Blinn-Phong Lighting Model</h4>
       
     </div>
 
