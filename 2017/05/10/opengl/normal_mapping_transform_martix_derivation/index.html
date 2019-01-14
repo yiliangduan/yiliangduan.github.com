@@ -82,20 +82,20 @@
 
 
 
-<meta name="description" content="本文的结论通过 the-normal-matrix 获得的。 今天在学习OpenGL shader的时候遇到一个困惑的地方,先上代码: 1234567891011121314151617//vertex shader...layout (location = 1) in vec3 aNormal;out vec3 Normal;uniform mat4 model;...int main()&amp;#1">
+<meta name="description" content="参考:  the-normal-matrix   今天在学习OpenGL shader的时候遇到一个困惑的地方,先上代码: 1234567891011121314151617//vertex shader...layout (location = 1) in vec3 aNormal;out vec3 Normal;uniform mat4 model;...int main()&amp;#123;">
 <meta name="keywords" content="opengl">
 <meta property="og:type" content="article">
 <meta property="og:title" content="OpenGL中Normal的变换矩阵的推导">
 <meta property="og:url" content="http://elangduan.github.com/2017/05/10/opengl/normal_mapping_transform_martix_derivation/index.html">
 <meta property="og:site_name" content="暮鼓晨钟的笔记">
-<meta property="og:description" content="本文的结论通过 the-normal-matrix 获得的。 今天在学习OpenGL shader的时候遇到一个困惑的地方,先上代码: 1234567891011121314151617//vertex shader...layout (location = 1) in vec3 aNormal;out vec3 Normal;uniform mat4 model;...int main()&amp;#1">
+<meta property="og:description" content="参考:  the-normal-matrix   今天在学习OpenGL shader的时候遇到一个困惑的地方,先上代码: 1234567891011121314151617//vertex shader...layout (location = 1) in vec3 aNormal;out vec3 Normal;uniform mat4 model;...int main()&amp;#123;">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://elangduan.github.com/images/opengl_normal/normal_image.jpeg">
 <meta property="og:image" content="http://elangduan.github.com/images/opengl_normal/CodeCogsEqn.png">
-<meta property="og:updated_time" content="2017-05-14T05:15:54.000Z">
+<meta property="og:updated_time" content="2019-01-09T06:32:57.846Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="OpenGL中Normal的变换矩阵的推导">
-<meta name="twitter:description" content="本文的结论通过 the-normal-matrix 获得的。 今天在学习OpenGL shader的时候遇到一个困惑的地方,先上代码: 1234567891011121314151617//vertex shader...layout (location = 1) in vec3 aNormal;out vec3 Normal;uniform mat4 model;...int main()&amp;#1">
+<meta name="twitter:description" content="参考:  the-normal-matrix   今天在学习OpenGL shader的时候遇到一个困惑的地方,先上代码: 1234567891011121314151617//vertex shader...layout (location = 1) in vec3 aNormal;out vec3 Normal;uniform mat4 model;...int main()&amp;#123;">
 <meta name="twitter:image" content="http://elangduan.github.com/images/opengl_normal/normal_image.jpeg">
 
 
@@ -297,7 +297,9 @@
       
 
       
-        <p>本文的结论通过 <a href="http://www.lighthouse3d.com/tutorials/glsl-12-tutorial/the-normal-matrix/" target="_blank" rel="external">the-normal-matrix</a> 获得的。</p>
+        <blockquote>
+<p> 参考:  <a href="http://www.lighthouse3d.com/tutorials/glsl-12-tutorial/the-normal-matrix/" target="_blank" rel="external">the-normal-matrix</a> </p>
+</blockquote>
 <p>今天在学习OpenGL shader的时候遇到一个困惑的地方,先上代码:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">//vertex shader</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">layout (location = 1) in vec3 aNormal;</span><br><span class="line"></span><br><span class="line">out vec3 Normal;</span><br><span class="line"></span><br><span class="line">uniform mat4 model;</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	mat3 normalMatrix = transpose(inverse(mat3(model)));</span><br><span class="line">    </span><br><span class="line">	Normal = normalize(normalMatrix * aNormal);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <blockquote>

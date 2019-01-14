@@ -93,8 +93,12 @@
 <meta property="og:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/1.png">
 <meta property="og:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/2.png">
 <meta property="og:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/3.png">
+<meta property="og:image" content="http://elangduan.github.com/images/note/diffuer_light_mode.png">
+<meta property="og:image" content="http://elangduan.github.com/images/note/specular_light_mode.png">
 <meta property="og:image" content="http://elangduan.github.com/images/note/1.png">
-<meta property="og:updated_time" content="2019-01-08T03:28:05.800Z">
+<meta property="og:image" content="http://elangduan.github.com/images/note/diffuer_light_mode_cal.png">
+<meta property="og:image" content="http://elangduan.github.com/images/note/specular_light_mode_cal.png">
+<meta property="og:updated_time" content="2019-01-14T05:58:23.346Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="记录一些零碎的知识点">
 <meta name="twitter:description" content="过段时间需要进行一次测试，会有笔试题目。整理一些Unity和图形相关的一些零碎知识，复习下。  参考:   3D数学基础: 图形与游戏开发LearnOpenGL">
@@ -310,7 +314,8 @@
 </blockquote>
 <p><img src="/images/math_vector_dot_cross_product/1.png" alt=""></p>
 <p><em>代数定义</em>:<br>$$<br>\vec{a} \cdot \vec{b} = \sum_{i=1}^na_ib_j = a_1b_1 + a_2b_2+ \cdots+a_nb_n<br>$$</p>
-<p>计算结果是一个标量:<br>$$<br>\left[<br>\begin{matrix}<br>a_1   \\<br>a_2   \\<br>\cdot \\<br>\cdot \\<br>a_n   \\<br>\end{matrix}<br>\right]<br>\cdot<br>\left[<br>\begin{matrix}<br>b_1   \\<br>b_2   \\<br>\cdot \\<br>\cdot \\<br>b_n   \\<br>\end{matrix}<br>\right]<br>=<br>a_1b_1 + a_2b_2 + \cdots a_nb_n<br>$$</p>
+<p>计算结果是一个标量:</p>
+<p>$$<br>\left[<br>\begin{matrix}<br>a_1   \\<br>a_2   \\<br>\cdot \\<br>\cdot \\<br>a_n   \\<br>\end{matrix}<br>\right]<br>\cdot<br>\left[<br>\begin{matrix}<br>b_1   \\<br>b_2   \\<br>\cdot \\<br>\cdot \\<br>b_n   \\<br>\end{matrix}<br>\right]<br>=<br>a_1b_1 + a_2b_2 + \cdots a_nb_n<br>$$</p>
 <p>计算的例子:</p>
 <ul>
 <li>2D向量计算</li>
@@ -333,15 +338,42 @@
 <p>其实根据定义可以看出，叉积求出的结果正好是向量两个向量组成的平行四边形的面积。</p>
 <p><img src="/images/math_vector_dot_cross_product/3.png" alt=""></p>
 <p>如上图，平行四边形的面积可以由如下公式求得<br>$$<br>area = |\vec a|h<br>$$<br>而高度h可以由如下公式求得<br>$$<br>h = |\vec b|sin\theta<br>$$<br>正好验证两个向量的叉积的值就是这两个向量组成的平行四边形的面积。</p>
+<h3 id="转置"><a href="#转置" class="headerlink" title="转置"></a>转置</h3><p>$$<br>\left[<br>\begin{matrix}<br>1 &amp; 2 \\<br>3 &amp; 4 \\<br>\end{matrix}<br>\right]^T<br>=<br>\left[<br>\begin{matrix}<br>1 &amp; 3 \\<br>2 &amp; 4 \\<br>\end{matrix}<br>\right]<br>$$</p>
+<p>$$<br>\left[<br>\begin{matrix}<br>1 &amp; 2 \\<br>3 &amp; 4 \\<br>5 &amp; 6 \\<br>\end{matrix}<br>\right]^T<br>=<br>\left[<br>\begin{matrix}<br>1 &amp; 3 &amp; 5\\<br>2 &amp; 4 &amp; 6\\<br>\end{matrix}<br>\right]<br>$$</p>
+<p>性质</p>
+<ul>
+<li><p>$$<br>(A + B)^T = A^T + B^T<br>$$</p>
+</li>
+<li><p>$$<br>\vec a \cdot \vec b = \vec a^T \vec b<br>$$</p>
+</li>
+</ul>
 <h3 id="光照"><a href="#光照" class="headerlink" title="光照"></a>光照</h3><h4 id="Phong-Lighting-Model"><a href="#Phong-Lighting-Model" class="headerlink" title="Phong Lighting Model"></a>Phong Lighting Model</h4><p>Phong光照的三个光照元素:</p>
 <ul>
-<li>环境光(Ambient) - 物体不会是完全黑暗的，有诸如月光，远处的光线灯环境中的光源，环境光就是模拟这种光照的。</li>
-<li>漫反射(Diffuse) - 模拟光源对物体方向性影响。物体的某一部分越是正对着光源，它就会越亮。它是Phong光照模型视觉上影响最大的元素。</li>
-<li>镜面光(Specular) - 模拟有光泽的物体表面出现的亮点，镜面光照的颜色相比于物体的颜色会更接近光源的颜色。</li>
+<li><p>环境光(Ambient) - 物体不会是完全黑暗的，有诸如月光，远处的光线灯环境中的光源，环境光就是模拟这种光照的。</p>
+</li>
+<li><p>漫反射(Diffuse) - 模拟光源对物体方向性影响。物体的某一部分越是正对着光源，它就会越亮。它是Phong光照模型视觉上影响最大的元素。漫反射的光照模型:</p>
+<p><img src="/images/note/diffuer_light_mode.png" alt=""></p>
+</li>
+<li><p>镜面光(Specular) - 模拟有光泽的物体表面出现的亮点，镜面光照的颜色相比于物体的颜色会更接近光源的颜色。</p>
+<p><img src="/images/note/specular_light_mode.png" alt=""></p>
+</li>
 </ul>
 <p>三个元素组成最终的光照效果，过程如下(引用<a href="https://learnopengl.com/" target="_blank" rel="external">LearnOpenGL</a>图片):</p>
 <p><img src="/images/note/1.png" alt=""></p>
-<h4 id="Blinn-Phong-Lighting-Model"><a href="#Blinn-Phong-Lighting-Model" class="headerlink" title="Blinn-Phong Lighting Model"></a>Blinn-Phong Lighting Model</h4>
+<p>三种光线的计算方法:</p>
+<ul>
+<li><p>环境光: 只需要用一个颜色变量和Fragment Shader中输出颜色做积就可以</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">fixed <span class="title">frag</span><span class="params">(v2f in)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ...</span><br><span class="line">	fixed color = in.color * ambient;    </span><br><span class="line">    <span class="keyword">return</span> color;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>漫反射通过入射光线和法线的夹角因子来计算光的强度，如图:</p>
+<p><img src="/images/note/diffuer_light_mode_cal.png" alt=""></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">v2f <span class="title">vert</span><span class="params">(app_base v)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    v2f out;</span><br><span class="line">    <span class="comment">// Unity里面直接用 UnityObjectToViewPos(v.position);</span></span><br><span class="line">    float4 position = projection_matrix * view_matrix * model_matrix * float4(v.position, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">//把当前渲染的顶点坐标转换到模型坐标</span></span><br><span class="line">    out.fragPos = model * float4(v.position, <span class="number">0</span>);</span><br><span class="line">    out.normal = v.normal;</span><br><span class="line">    <span class="keyword">return</span> out;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">float4 <span class="title">frag</span><span class="params">(v2f in)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    fixed3 normal = normalize(in.normal);</span><br><span class="line">    <span class="comment">//lightPos是确定的一个固定值，可以通过uniform形式在c#中赋值</span></span><br><span class="line">    fixed3 lightDir = normalize(lightPos - in.fragPos);</span><br><span class="line">    <span class="comment">//通过点积，求出法线和入射光线的夹角，这个夹角就是漫反射的光照因子。如果夹角大于90度，则直接算作全黑的，值为0，否则会出现负的情况。</span></span><br><span class="line">    <span class="keyword">float</span> diff = max(dot(normal, lightDir), <span class="number">0</span>);</span><br><span class="line">    <span class="comment">//用漫反射的光照因子与漫反射光照颜色相乘，得到漫反射光照</span></span><br><span class="line">    fixed3 diffuse = diff * diffuseLightColor;</span><br><span class="line">    <span class="comment">//最终输出颜色</span></span><br><span class="line">    fixed3 color = in.color * diffuse;</span><br><span class="line">    <span class="keyword">return</span> color;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>高光的计算: 高光是光线的反射光线和视角方向的夹角作为光线强度因子来计算光强度的，如图:<br><img src="/images/note/specular_light_mode_cal.png" alt=""></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">v2f <span class="title">vert</span><span class="params">(app_base v)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    v2f out;</span><br><span class="line">    <span class="comment">// Unity里面直接用 UnityObjectToViewPos(v.position);</span></span><br><span class="line">    float4 position = projection_matrix * view_matrix * model_matrix * float4(v.position, <span class="number">0</span>);</span><br><span class="line">    <span class="comment">//把当前渲染的顶点坐标转换到模型坐标</span></span><br><span class="line">    out.fragPos = model * float4(v.position, <span class="number">0</span>);</span><br><span class="line">    out.normal = v.normal;</span><br><span class="line">    <span class="keyword">return</span> out;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">v2f <span class="title">frag</span><span class="params">(v2f in)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    fixed3 normal = normalize(in.normal);</span><br><span class="line">    <span class="comment">//fragPos是从眼睛看过去的那个点</span></span><br><span class="line">    fixed3 viewDir = normalize(viewPos - in.fragPos);</span><br><span class="line">    <span class="comment">//光线的反射方向,lightDir取反下，因为reflect第一个参数是从光源方向指向片段位置的。</span></span><br><span class="line">    fixed3 lightReflectDir = reflect(-lightDir, normal);</span><br><span class="line">    <span class="comment">//取32次幂是高光的反光度，反光度越高，反射光的能力越强，散射的越少，高光点就越小。</span></span><br><span class="line">    <span class="keyword">float</span> specular = <span class="built_in">pow</span>(dot(viewDir, lightReflectDir), <span class="number">0.0</span>), <span class="number">32</span>);</span><br><span class="line">    <span class="comment">//最终输出颜色</span></span><br><span class="line">    fixed3 color = in.color * specular;</span><br><span class="line">    <span class="keyword">return</span> color</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+
       
     </div>
 
@@ -490,7 +522,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#点积-Dot-Product-和叉积-Cross-Product"><span class="nav-number">1.</span> <span class="nav-text">点积(Dot Product)和叉积(Cross Product)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#点积-Dot-Product"><span class="nav-number">1.1.</span> <span class="nav-text">点积(Dot Product)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#叉积-Cross-Product"><span class="nav-number">1.2.</span> <span class="nav-text">叉积(Cross Product)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#光照"><span class="nav-number">2.</span> <span class="nav-text">光照</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Phong-Lighting-Model"><span class="nav-number">2.1.</span> <span class="nav-text">Phong Lighting Model</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Blinn-Phong-Lighting-Model"><span class="nav-number">2.2.</span> <span class="nav-text">Blinn-Phong Lighting Model</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#点积-Dot-Product-和叉积-Cross-Product"><span class="nav-number">1.</span> <span class="nav-text">点积(Dot Product)和叉积(Cross Product)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#点积-Dot-Product"><span class="nav-number">1.1.</span> <span class="nav-text">点积(Dot Product)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#叉积-Cross-Product"><span class="nav-number">1.2.</span> <span class="nav-text">叉积(Cross Product)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#转置"><span class="nav-number">2.</span> <span class="nav-text">转置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#光照"><span class="nav-number">3.</span> <span class="nav-text">光照</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Phong-Lighting-Model"><span class="nav-number">3.1.</span> <span class="nav-text">Phong Lighting Model</span></a></li></ol></li></ol></div>
             
 
           </div>
