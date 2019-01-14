@@ -99,7 +99,7 @@
 <meta property="og:image" content="http://elangduan.github.com/images/note/specular_light_mode_cal.png">
 <meta property="og:image" content="http://elangduan.github.com/images/note/blinn_phong_specular.png">
 <meta property="og:image" content="http://elangduan.github.com/images/note/1.png">
-<meta property="og:updated_time" content="2019-01-14T12:57:22.495Z">
+<meta property="og:updated_time" content="2019-01-14T13:01:40.903Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="记录一些零碎的知识点">
 <meta name="twitter:description" content="过段时间需要进行一次测试，会有笔试题目。整理一些Unity和图形相关的一些零碎知识，复习下。  参考:   3D数学基础: 图形与游戏开发LearnOpenGL">
@@ -341,13 +341,6 @@
 <p>如上图，平行四边形的面积可以由如下公式求得<br>$$<br>area = |\vec a|h<br>$$<br>而高度h可以由如下公式求得<br>$$<br>h = |\vec b|sin\theta<br>$$<br>正好验证两个向量的叉积的值就是这两个向量组成的平行四边形的面积。</p>
 <h3 id="转置"><a href="#转置" class="headerlink" title="转置"></a>转置</h3><p>$$<br>\left[<br>\begin{matrix}<br>1 &amp; 2 \\<br>3 &amp; 4 \\<br>\end{matrix}<br>\right]^T<br>=<br>\left[<br>\begin{matrix}<br>1 &amp; 3 \\<br>2 &amp; 4 \\<br>\end{matrix}<br>\right]<br>$$</p>
 <p>$$<br>\left[<br>\begin{matrix}<br>1 &amp; 2 \\<br>3 &amp; 4 \\<br>5 &amp; 6 \\<br>\end{matrix}<br>\right]^T<br>=<br>\left[<br>\begin{matrix}<br>1 &amp; 3 &amp; 5\\<br>2 &amp; 4 &amp; 6\\<br>\end{matrix}<br>\right]<br>$$</p>
-<p>性质</p>
-<ul>
-<li><p>$$<br>(A + B)^T = A^T + B^T<br>$$</p>
-</li>
-<li><p>$$<br>\vec a \cdot \vec b = \vec a^T \vec b<br>$$</p>
-</li>
-</ul>
 <h3 id="光照"><a href="#光照" class="headerlink" title="光照"></a>光照</h3><h4 id="Phong"><a href="#Phong" class="headerlink" title="Phong"></a>Phong</h4><p>Phong光照的三个光照元素:</p>
 <ul>
 <li><p>环境光(Ambient) - 物体不会是完全黑暗的，有诸如月光，远处的光线灯环境中的光源，环境光就是模拟这种光照的。</p>
@@ -377,7 +370,6 @@
 <p>计算方法:</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">fixed3 <span class="title">frag</span><span class="params">(v2f in)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    fixed3 normal = normalize(in.normal);</span><br><span class="line">    <span class="comment">//fragPos是从眼睛看过去的那个点</span></span><br><span class="line">    fixed3 viewDir = normalize(viewPos - in.fragPos);</span><br><span class="line">    <span class="comment">//半程向量</span></span><br><span class="line">    fiex3 halfwayDir = normalize(lightDir + viewDir);</span><br><span class="line">    <span class="comment">//取32次幂是高光的反光度，反光度越高，反射光的能力越强，散射的越少，高光点就越小。</span></span><br><span class="line">    <span class="keyword">float</span> specular = <span class="built_in">pow</span>(dot(normal, halfwayDir), <span class="number">0.0</span>), <span class="number">32</span>);</span><br><span class="line">    <span class="comment">//最终输出颜色</span></span><br><span class="line">    float4 color = in.color * specular;</span><br><span class="line">    <span class="keyword">return</span> color</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>三个元素组成最终的光照效果，过程如下(引用<a href="https://learnopengl.com/" target="_blank" rel="external">LearnOpenGL</a>图片):</p>
-<p>在输出颜色的时候:</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">v2f <span class="title">frag</span><span class="params">(v2f in)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    float3 color = in.color * (ambient + diffuse + specular);</span><br><span class="line">    <span class="keyword">return</span> float4(color, <span class="number">1.0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><img src="/images/note/1.png" alt=""></p>
 
