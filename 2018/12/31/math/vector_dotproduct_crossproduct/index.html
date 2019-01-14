@@ -98,7 +98,7 @@
 <meta property="og:image" content="http://elangduan.github.com/images/note/1.png">
 <meta property="og:image" content="http://elangduan.github.com/images/note/diffuer_light_mode_cal.png">
 <meta property="og:image" content="http://elangduan.github.com/images/note/specular_light_mode_cal.png">
-<meta property="og:updated_time" content="2019-01-14T05:58:23.346Z">
+<meta property="og:updated_time" content="2019-01-14T06:03:00.368Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="记录一些零碎的知识点">
 <meta name="twitter:description" content="过段时间需要进行一次测试，会有笔试题目。整理一些Unity和图形相关的一些零碎知识，复习下。  参考:   3D数学基础: 图形与游戏开发LearnOpenGL">
@@ -363,7 +363,7 @@
 <p>三种光线的计算方法:</p>
 <ul>
 <li><p>环境光: 只需要用一个颜色变量和Fragment Shader中输出颜色做积就可以</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">fixed <span class="title">frag</span><span class="params">(v2f in)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ...</span><br><span class="line">	fixed color = in.color * ambient;    </span><br><span class="line">    <span class="keyword">return</span> color;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">fixed <span class="title">frag</span><span class="params">(v2f in)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	...</span><br><span class="line">	fixed color = in.color * ambient;    </span><br><span class="line">	<span class="keyword">return</span> color;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>漫反射通过入射光线和法线的夹角因子来计算光的强度，如图:</p>
 <p><img src="/images/note/diffuer_light_mode_cal.png" alt=""></p>
