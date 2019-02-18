@@ -66,7 +66,7 @@
 <link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="unity," />
+  <meta name="keywords" content="note," />
 
 
 
@@ -82,18 +82,15 @@
 
 
 
-<meta name="description" content="Unity内存释放 问题主要考虑一下几个方面:  (1)  Resources 加载的资源需要释放的时候调用 Resources.UnloadUnusedAssets();   (2) WWW 加载的任何资源必须调用WWW的Dispose接口   (3) 创建的RenderTexture必须调用Release接口   (4) 必须用Xcode联机调试确定C++层有没有内存泄漏   (5) Asse">
-<meta name="keywords" content="unity">
+<meta name="keywords" content="note">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Unity中内存资源释放总结">
-<meta property="og:url" content="http://elangduan.github.com/2016/06/18/unity/resource_memory_summary/index.html">
+<meta property="og:title" content="关于项目的任务分配问题">
+<meta property="og:url" content="http://elangduan.github.com/2019/02/18/note/project_task_assignment/index.html">
 <meta property="og:site_name" content="暮鼓晨钟的笔记">
-<meta property="og:description" content="Unity内存释放 问题主要考虑一下几个方面:  (1)  Resources 加载的资源需要释放的时候调用 Resources.UnloadUnusedAssets();   (2) WWW 加载的任何资源必须调用WWW的Dispose接口   (3) 创建的RenderTexture必须调用Release接口   (4) 必须用Xcode联机调试确定C++层有没有内存泄漏   (5) Asse">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-05-29T05:00:56.000Z">
+<meta property="og:updated_time" content="2019-02-18T03:33:18.122Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Unity中内存资源释放总结">
-<meta name="twitter:description" content="Unity内存释放 问题主要考虑一下几个方面:  (1)  Resources 加载的资源需要释放的时候调用 Resources.UnloadUnusedAssets();   (2) WWW 加载的任何资源必须调用WWW的Dispose接口   (3) 创建的RenderTexture必须调用Release接口   (4) 必须用Xcode联机调试确定C++层有没有内存泄漏   (5) Asse">
+<meta name="twitter:title" content="关于项目的任务分配问题">
 
 
 
@@ -121,13 +118,13 @@
 
 
 
-  <link rel="canonical" href="http://elangduan.github.com/2016/06/18/unity/resource_memory_summary/"/>
+  <link rel="canonical" href="http://elangduan.github.com/2019/02/18/note/project_task_assignment/"/>
 
 
 
 
 
-  <title> Unity中内存资源释放总结 | 暮鼓晨钟的笔记 </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <title> 关于项目的任务分配问题 | 暮鼓晨钟的笔记 </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -228,7 +225,7 @@
   
 
   <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2016/06/18/unity/resource_memory_summary/">
+  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2019/02/18/note/project_task_assignment/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="elangduan@126.com">
@@ -252,7 +249,7 @@
             
             
               
-                Unity中内存资源释放总结
+                关于项目的任务分配问题
               
             
           </h1>
@@ -264,8 +261,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-06-18T12:03:10+08:00">
-              2016-06-18
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-02-18T16:44:10+08:00">
+              2019-02-18
             </time>
             
           </span>
@@ -294,18 +291,7 @@
       
 
       
-        <p><strong>Unity内存释放</strong> 问题主要考虑一下几个方面:<br>  (1)  Resources 加载的资源需要释放的时候调用 Resources.UnloadUnusedAssets();</p>
-<p>  (2) WWW 加载的任何资源<font color="#FF0000">必须</font>调用WWW的Dispose接口</p>
-<p>  (3) 创建的RenderTexture<font color="#FF0000">必须</font>调用Release接口</p>
-<p>  (4) 必须用Xcode联机调试确定C++层有没有内存泄漏</p>
-<p>  (5) AssetBundle资源在Unity Profile中的Scene Memory不会显示，可以通过Xcode联机调试确定有没有释放完全</p>
-<p>  (6) 加载资源和卸载资源的异步处理,避免同一帧内加载过多资源导致内存瞬间增大从而导致Crash(低配机器上表现更明显)</p>
-<p>一般通过WWW加载一张Texture来通过Image显示的话，一种的方法是使用Texture通过Sprite.Create来创建一个Sprite对象赋值给Image.overrideSprite完成显示。但是需要注意一个问题，Sprite.Create创建对象对拷贝Texture中数据，并生成一个新的Sprite对象，这样会造成耗费将近2倍Texture大小的内存，而且这个内存占用不会随着Image的销毁而马上销毁，知道你调用Resources.UnloadUnusedResources()接口才会销毁。如果在一个场景中有大量的图片需要动态加载的话，那么必须注意内存问题了。所以建议不要使用显示Image的方式，有一种方式是显示RawImage，按照官方文档的描述:</p>
-<blockquote>
-<p>The Raw Image control displays a non-interactive image to the user. This can be used for decoration, icons, etc, and the image can also be changed from a script to reflect changes in other controls.</p>
-</blockquote>
-<p>RawImage是一个没有和用户交互的Image，所以如果我们不需要比如事件这种交互的操作的话，还是建议用RawImage来显示Texture。RawImage的方式会高效很多，如果从AssetBundle里面加载了一张Texture，不管是赋值给多少个RawImage，Texture是公用的，只会有一分内存。</p>
-
+        
       
     </div>
 
@@ -328,7 +314,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/unity/" rel="tag"># unity</a>
+            <a href="/tags/note/" rel="tag"># note</a>
           
         </div>
       
@@ -337,8 +323,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/06/05/csharp/multi_thread_note/" rel="next" title="C#多线程下数据同步处理">
-                <i class="fa fa-chevron-left"></i> C#多线程下数据同步处理
+              <a href="/2018/12/31/math/vector_dotproduct_crossproduct/" rel="next" title="基础光照的笔记">
+                <i class="fa fa-chevron-left"></i> 基础光照的笔记
               </a>
             
           </div>
@@ -346,10 +332,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/06/29/csharp/object_refer_each_other/" rel="prev" title="C# 内存管理之对象循环引用问题">
-                C# 内存管理之对象循环引用问题 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
