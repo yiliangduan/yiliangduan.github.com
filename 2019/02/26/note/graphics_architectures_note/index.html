@@ -93,7 +93,8 @@
 <meta property="og:image" content="http://elangduan.github.com/images/graphics_architectures/1.png">
 <meta property="og:image" content="http://elangduan.github.com/images/graphics_architectures/4.png">
 <meta property="og:image" content="http://elangduan.github.com/images/graphics_architectures/2.png">
-<meta property="og:updated_time" content="2019-03-01T12:15:25.215Z">
+<meta property="og:image" content="http://elangduan.github.com/images/graphics_architectures/3.png">
+<meta property="og:updated_time" content="2019-03-01T12:40:32.097Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="图形渲染架构的笔记">
 <meta name="twitter:description" content="参考:   PowerVR Hardware OpenGL Insights   Graphics Architectures现代的图形架构可以归为以下三类:  Immediate Mode Renderer (IMR) Tile Based Renderer (TBR) Tile Based Deferred Renderer (TBDR)  IMRIMR主要是PC平台上使用的GPU的图形渲染架">
@@ -320,7 +321,9 @@
 <p>Framebuffer被分成4x4个块，每个块的大小和Tile buffer的大小是一样的。光栅化(Raster Processing)和片元处理(Fragment Processing)就是基于每个Tile buffer区一个块一个块处理之后渲染到Framebuffer的。TBR模式下将需要进行读取操作的颜色buffer，深度buffer和模板buffer存储在了更加高速的On-Chop Memory上。整个过程如下:</p>
 <p><img src="/images/graphics_architectures/2.png" alt=""></p>
 <p>很显然TBR模式减小了Pipleline的带宽，但是相对于IMR模式并没有对overdraw有更多的改进。这种模式下任然使用的和IMR模式一样的Early-Z的技术来检测overdraw的问题，前提同样是应用层提交的渲染对象根据深度信息进行了从前向后的排序。</p>
-<h3 id="TBDR"><a href="#TBDR" class="headerlink" title="TBDR"></a>TBDR</h3>
+<h3 id="TBDR"><a href="#TBDR" class="headerlink" title="TBDR"></a>TBDR</h3><p>TBDR渲染将每个Tile分为<em>Hidden Surface Removal(HSR)</em>和<em>Deferred Pixel Shading</em>两个阶段来处理。HSR阶段将光栅化之后的那些遮挡的顶点数据去除，能够达到非透明渲染时完全避免overdraw的问题，每个像素只渲染一次。此外TBDR是采用的延迟渲染(Deffered rendering)的方式，延迟渲染意味着Fragment Shading阶段(下图中的Texture&amp;Shade阶段)会延迟执行所有的渲染对象，知道这些非透明的对象经过了可见性的测试。这种渲染模式可以极大的减少对系统内存带宽的要求。</p>
+<p><img src="/images/graphics_architectures/3.png" alt=""></p>
+
       
     </div>
 
