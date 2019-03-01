@@ -223,6 +223,137 @@
   
 
   <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2019/02/26/note/graphics_architectures_note/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="elangduan@126.com">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/uploads/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="暮鼓晨钟的笔记">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="暮鼓晨钟的笔记" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2019/02/26/note/graphics_architectures_note/" itemprop="url">
+                  图形渲染架构的笔记
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-02-26T20:49:40+08:00">
+              2019-02-26
+            </time>
+            
+          </span>
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>参考:</p>
+<ol>
+<li><a href="http://cdn.imgtec.com/sdk-documentation/PowerVR+Hardware.Architecture+Overview+for+Developers.pdf" target="_blank" rel="external">PowerVR Hardware</a></li>
+<li><a href="https://www.seas.upenn.edu/~pcozzi/OpenGLInsights/OpenGLInsights-TileBasedArchitectures.pdf" target="_blank" rel="external">OpenGL Insights</a><h3 id="Graphics-Architectures"><a href="#Graphics-Architectures" class="headerlink" title="Graphics Architectures"></a>Graphics Architectures</h3></li>
+</ol>
+</blockquote>
+<p>现代的图形架构可以归为以下三类:</p>
+<ul>
+<li>Immediate Mode Renderer (IMR)</li>
+<li>Tile Based Renderer (TBR)</li>
+<li>Tile Based Deferred Renderer (TBDR)</li>
+</ul>
+<h3 id="IMR"><a href="#IMR" class="headerlink" title="IMR"></a>IMR</h3><p>IMR主要是PC平台上使用的GPU的图形渲染架构。采用IMR模式从应用层提交的每个渲染对象都会经过Pipleline的每个阶段，这个过程渲染管线(Pipleline)不会中断，渲染的速度快。而且GPU是很多单元并行操作，每个单元只要负责渲染自己部分的数据即可，在处理Fragment shader之后只需要各个单元做一遍排序即可。整个过程如下:</p>
+<p><img src="/images/graphics_architectures/1.png" alt=""></p>
+<p>传统的IMR会造成处理很多无效的渲染对象。现在比如先处理了一个游艇，但是随即需要在这个游艇的正前方渲染一个超大的邮轮，而且这个邮轮正好挡住了这个游艇。最终渲染出来的画面是看不到游艇的，但是游艇却在Pipleline中任然渲染了，造成了大量的overdraw问题，白白浪费了性能。后来加入了Early-Z技术，大大减少了这种无效的渲染情况。Early-Z做了什么工作呢？在应用层我们提交渲染对象数据时，根据深度信息把渲染对象从前向后的顺序排序来提交(越靠近摄像机的对象越早提交)。这样我们在处理Raster之后可以在深度Buffer里面读取深度值和当前渲染的对象进行测试，只有需要渲染的才进行接下来的Fragment Shader(图中的Texture Shade)，这样减少了大量的overdraw的问题。</p>
+<p>在IMR模式中会保存颜色Buffer，深度Buffer和模板Buffer到系统内存中。在Pipleline中定期的读写操作这些Buffer很容易引起系统内存带宽的超负荷现象。显然对于移动设备这种带宽比较小的硬件设备性能压力就比较大。</p>
+<h3 id="TBR"><a href="#TBR" class="headerlink" title="TBR"></a>TBR</h3><p>TBR将顶点处理(Vertex Processing)之后的数据分成多个区块，然后单独去处理这些区块的数据。如图:</p>
+<p><img src="/images/graphics_architectures/4.png" alt=""></p>
+<p>Framebuffer被分成4x4个块，每个块的大小和Tile buffer的大小是一样的。光栅化(Raster Processing)和片元处理(Fragment Processing)就是基于每个Tile buffer区一个块一个块处理之后渲染到Framebuffer的。TBR模式下将需要进行读取操作的颜色buffer，深度buffer和模板buffer存储在了更加高速的On-Chop Memory上。整个过程如下:</p>
+<p><img src="/images/graphics_architectures/2.png" alt=""></p>
+<p>很显然TBR模式减小了Pipleline的带宽，但是相对于IMR模式并没有对overdraw有更多的改进。这种模式下任然使用的和IMR模式一样的Early-Z的技术来检测overdraw的问题，前提同样是应用层提交的渲染对象根据深度信息进行了从前向后的排序。</p>
+<h3 id="TBDR"><a href="#TBDR" class="headerlink" title="TBDR"></a>TBDR</h3>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
   <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2018/12/31/opengl/opengl_base_lighting_note/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -582,128 +713,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2018/11/21/unity/shader_load_performace/">
-
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="elangduan@126.com">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/uploads/avatar.png">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="暮鼓晨钟的笔记">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="暮鼓晨钟的笔记" src="">
-    </span>
-  </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2018/11/21/unity/shader_load_performace/" itemprop="url">
-                  Unity Shader加载性能消耗问题
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-11-21T23:30:00+08:00">
-              2018-11-21
-            </time>
-            
-          </span>
-
-          
-
-          
-
-          
-
-          
-          
-
-          
-          
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>unity 5.6.6f1</p>
-</blockquote>
-<p>在做性能优化时，发现Shader在每次加载使用了Shader的Prefab资源的时候都会调用<em>Shader.Parse</em>，<em>Shader.CreateGPUProgram</em>两个函数，这个函数的调用消耗了大量的CPU性能。这里写个<a href="https://github.com/elangduan/unity-shaderpreload" target="_blank" rel="external">demo</a>测试下，测试的demo创建了几个prefab，每个Prefab都挂在material，然后没隔0.5s执行一次随机创建一个prefab，再隔0.5s销毁，依次重复。主要如下:</p>
-          <!--noindex-->
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2018/11/21/unity/shader_load_performace/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -744,7 +758,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">40</span>
+              <span class="site-state-item-count">41</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
