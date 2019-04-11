@@ -86,7 +86,7 @@
 <meta name="keywords" content="unity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MonoBehaviour的Awake,Start等函数的调用原理">
-<meta property="og:url" content="http://elangduan.github.com/2017/03/08/unity/monobehaviour_awake_start_function_call_detail/index.html">
+<meta property="og:url" content="http://yiliangduan.github.com/2017/03/08/unity/monobehaviour_awake_start_function_call_detail/index.html">
 <meta property="og:site_name" content="暮鼓晨钟的笔记">
 <meta property="og:description" content="在用Unity的时候一直有一个比较困惑问题，继承自MonoBehaviour脚本的Awake(),Start(),Update()等这些函数是怎样被调用的。今天阅读了下Unity的代码了解了其中的调用原理,然后自己写了一个sample来模拟Unity中的调用方式。 Unity的引擎是用C++实现的，自己实现的MonoBehaviour的脚本却是CS脚本。所以这里就涉及到C++调用CS函数的过程。U">
 <meta property="og:locale" content="zh-Hans">
@@ -107,7 +107,7 @@
     motion: false,
     duoshuo: {
       userId: '0',
-      author: 'elangduan'
+      author: 'duanyiliang'
     },
     algolia: {
       applicationID: '',
@@ -121,7 +121,7 @@
 
 
 
-  <link rel="canonical" href="http://elangduan.github.com/2017/03/08/unity/monobehaviour_awake_start_function_call_detail/"/>
+  <link rel="canonical" href="http://yiliangduan.github.com/2017/03/08/unity/monobehaviour_awake_start_function_call_detail/"/>
 
 
 
@@ -228,10 +228,10 @@
   
 
   <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2017/03/08/unity/monobehaviour_awake_start_function_call_detail/">
+  <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2017/03/08/unity/monobehaviour_awake_start_function_call_detail/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="elangduan@126.com">
+    <meta itemprop="name" content="yiliangduan@qq.com">
     <meta itemprop="description" content="">
     <meta itemprop="image" content="/uploads/avatar.png">
   </span>
@@ -411,8 +411,8 @@
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/uploads/avatar.png"
-               alt="elangduan@126.com" />
-          <p class="site-author-name" itemprop="name">elangduan@126.com</p>
+               alt="yiliangduan@qq.com" />
+          <p class="site-author-name" itemprop="name">yiliangduan@qq.com</p>
           <p class="site-description motion-element" itemprop="description"></p>
         </div>
         <nav class="site-state motion-element">
@@ -470,7 +470,7 @@
   &copy; 
   <span itemprop="copyrightYear">2019</span>
 
-  <span class="author" itemprop="copyrightHolder">elangduan@126.com | </span>
+  <span class="author" itemprop="copyrightHolder">yiliangduan@qq.com | </span>
 
   <span>
     powered by <a class="theme-link" href="https://hexo.io">hexo</a>
@@ -563,7 +563,7 @@
   
 
   <script type="text/javascript">
-    var duoshuoQuery = {short_name:"elangduan"};
+    var duoshuoQuery = {short_name:"duanyiliang"};
     (function() {
       var ds = document.createElement('script');
       ds.type = 'text/javascript';ds.async = true;

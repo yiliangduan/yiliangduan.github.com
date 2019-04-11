@@ -86,24 +86,24 @@
 <meta name="keywords" content="math,unity,opengl,cpp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="OpenGL 基础光照的笔记">
-<meta property="og:url" content="http://elangduan.github.com/2018/12/31/opengl/opengl_base_lighting_note/index.html">
+<meta property="og:url" content="http://yiliangduan.github.com/2018/12/31/opengl/opengl_base_lighting_note/index.html">
 <meta property="og:site_name" content="暮鼓晨钟的笔记">
 <meta property="og:description" content="基础的知识不总结很容易忘记，今天在一个问题前困恼了很久。查阅资料才恍然大悟，这本是很基础的点积和叉积解决的问题，趁机会把点积和叉积以及直接用到这两个知识点的基础光照计算重新学习总结下。 点积(Dot Product)  点积最直接的意义就是可以计算出两个向量的夹角   代数定义:$$\vec{a} \cdot \vec{b} = \sum_{i=1}^na_ib_j = a_1b_1 + a_2b">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/1.png">
-<meta property="og:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/2.png">
-<meta property="og:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/3.png">
-<meta property="og:image" content="http://elangduan.github.com/images/note/diffuer_light_mode.png">
-<meta property="og:image" content="http://elangduan.github.com/images/note/specular_light_mode.png">
-<meta property="og:image" content="http://elangduan.github.com/images/note/diffuer_light_mode_cal.png">
-<meta property="og:image" content="http://elangduan.github.com/images/note/specular_light_mode_cal.png">
-<meta property="og:image" content="http://elangduan.github.com/images/note/blinn_phong_specular.png">
-<meta property="og:image" content="http://elangduan.github.com/images/note/1.png">
+<meta property="og:image" content="http://yiliangduan.github.com/images/math_vector_dot_cross_product/1.png">
+<meta property="og:image" content="http://yiliangduan.github.com/images/math_vector_dot_cross_product/2.png">
+<meta property="og:image" content="http://yiliangduan.github.com/images/math_vector_dot_cross_product/3.png">
+<meta property="og:image" content="http://yiliangduan.github.com/images/note/diffuer_light_mode.png">
+<meta property="og:image" content="http://yiliangduan.github.com/images/note/specular_light_mode.png">
+<meta property="og:image" content="http://yiliangduan.github.com/images/note/diffuer_light_mode_cal.png">
+<meta property="og:image" content="http://yiliangduan.github.com/images/note/specular_light_mode_cal.png">
+<meta property="og:image" content="http://yiliangduan.github.com/images/note/blinn_phong_specular.png">
+<meta property="og:image" content="http://yiliangduan.github.com/images/note/1.png">
 <meta property="og:updated_time" content="2019-03-02T09:10:45.717Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="OpenGL 基础光照的笔记">
 <meta name="twitter:description" content="基础的知识不总结很容易忘记，今天在一个问题前困恼了很久。查阅资料才恍然大悟，这本是很基础的点积和叉积解决的问题，趁机会把点积和叉积以及直接用到这两个知识点的基础光照计算重新学习总结下。 点积(Dot Product)  点积最直接的意义就是可以计算出两个向量的夹角   代数定义:$$\vec{a} \cdot \vec{b} = \sum_{i=1}^na_ib_j = a_1b_1 + a_2b">
-<meta name="twitter:image" content="http://elangduan.github.com/images/math_vector_dot_cross_product/1.png">
+<meta name="twitter:image" content="http://yiliangduan.github.com/images/math_vector_dot_cross_product/1.png">
 
 
 
@@ -117,7 +117,7 @@
     motion: false,
     duoshuo: {
       userId: '0',
-      author: 'elangduan'
+      author: 'duanyiliang'
     },
     algolia: {
       applicationID: '',
@@ -131,7 +131,7 @@
 
 
 
-  <link rel="canonical" href="http://elangduan.github.com/2018/12/31/opengl/opengl_base_lighting_note/"/>
+  <link rel="canonical" href="http://yiliangduan.github.com/2018/12/31/opengl/opengl_base_lighting_note/"/>
 
 
 
@@ -238,10 +238,10 @@
   
 
   <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2018/12/31/opengl/opengl_base_lighting_note/">
+  <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2018/12/31/opengl/opengl_base_lighting_note/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="elangduan@126.com">
+    <meta itemprop="name" content="yiliangduan@qq.com">
     <meta itemprop="description" content="">
     <meta itemprop="image" content="/uploads/avatar.png">
   </span>
@@ -466,8 +466,8 @@
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/uploads/avatar.png"
-               alt="elangduan@126.com" />
-          <p class="site-author-name" itemprop="name">elangduan@126.com</p>
+               alt="yiliangduan@qq.com" />
+          <p class="site-author-name" itemprop="name">yiliangduan@qq.com</p>
           <p class="site-description motion-element" itemprop="description"></p>
         </div>
         <nav class="site-state motion-element">
@@ -525,7 +525,7 @@
   &copy; 
   <span itemprop="copyrightYear">2019</span>
 
-  <span class="author" itemprop="copyrightHolder">elangduan@126.com | </span>
+  <span class="author" itemprop="copyrightHolder">yiliangduan@qq.com | </span>
 
   <span>
     powered by <a class="theme-link" href="https://hexo.io">hexo</a>
@@ -618,7 +618,7 @@
   
 
   <script type="text/javascript">
-    var duoshuoQuery = {short_name:"elangduan"};
+    var duoshuoQuery = {short_name:"duanyiliang"};
     (function() {
       var ds = document.createElement('script');
       ds.type = 'text/javascript';ds.async = true;

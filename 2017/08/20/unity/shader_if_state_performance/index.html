@@ -86,18 +86,18 @@
 <meta name="keywords" content="unity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity中shader代码的条件分支的性能问题">
-<meta property="og:url" content="http://elangduan.github.com/2017/08/20/unity/shader_if_state_performance/index.html">
+<meta property="og:url" content="http://yiliangduan.github.com/2017/08/20/unity/shader_if_state_performance/index.html">
 <meta property="og:site_name" content="暮鼓晨钟的笔记">
 <meta property="og:description" content="优化方案GPU对条件分支语句的执行性能比较敏感似乎是一个比较普遍的认知了，那么到底影响有多大呢？这里做了一次测试，测试针对Shader中的条件分支语句的性能情况。在有if语句和没有if语句时候的程序不同写法的:  针对if语句的优化方法，参考的这里, 目前没有找到更好的替换if语句的办法，希望有更好办法的同学评论里面提出来，非常感谢！  123456789101112fixed4 col = te">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://elangduan.github.com/images/shader_performance/test.jpg">
-<meta property="og:image" content="http://elangduan.github.com/images/shader_performance/performance_different1.jpg">
-<meta property="og:image" content="http://elangduan.github.com/images/shader_performance/performance_different2.jpg">
+<meta property="og:image" content="http://yiliangduan.github.com/images/shader_performance/test.jpg">
+<meta property="og:image" content="http://yiliangduan.github.com/images/shader_performance/performance_different1.jpg">
+<meta property="og:image" content="http://yiliangduan.github.com/images/shader_performance/performance_different2.jpg">
 <meta property="og:updated_time" content="2018-01-02T05:50:08.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity中shader代码的条件分支的性能问题">
 <meta name="twitter:description" content="优化方案GPU对条件分支语句的执行性能比较敏感似乎是一个比较普遍的认知了，那么到底影响有多大呢？这里做了一次测试，测试针对Shader中的条件分支语句的性能情况。在有if语句和没有if语句时候的程序不同写法的:  针对if语句的优化方法，参考的这里, 目前没有找到更好的替换if语句的办法，希望有更好办法的同学评论里面提出来，非常感谢！  123456789101112fixed4 col = te">
-<meta name="twitter:image" content="http://elangduan.github.com/images/shader_performance/test.jpg">
+<meta name="twitter:image" content="http://yiliangduan.github.com/images/shader_performance/test.jpg">
 
 
 
@@ -111,7 +111,7 @@
     motion: false,
     duoshuo: {
       userId: '0',
-      author: 'elangduan'
+      author: 'duanyiliang'
     },
     algolia: {
       applicationID: '',
@@ -125,7 +125,7 @@
 
 
 
-  <link rel="canonical" href="http://elangduan.github.com/2017/08/20/unity/shader_if_state_performance/"/>
+  <link rel="canonical" href="http://yiliangduan.github.com/2017/08/20/unity/shader_if_state_performance/"/>
 
 
 
@@ -232,10 +232,10 @@
   
 
   <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2017/08/20/unity/shader_if_state_performance/">
+  <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2017/08/20/unity/shader_if_state_performance/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="elangduan@126.com">
+    <meta itemprop="name" content="yiliangduan@qq.com">
     <meta itemprop="description" content="">
     <meta itemprop="image" content="/uploads/avatar.png">
   </span>
@@ -464,8 +464,8 @@
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/uploads/avatar.png"
-               alt="elangduan@126.com" />
-          <p class="site-author-name" itemprop="name">elangduan@126.com</p>
+               alt="yiliangduan@qq.com" />
+          <p class="site-author-name" itemprop="name">yiliangduan@qq.com</p>
           <p class="site-description motion-element" itemprop="description"></p>
         </div>
         <nav class="site-state motion-element">
@@ -539,7 +539,7 @@
   &copy; 
   <span itemprop="copyrightYear">2019</span>
 
-  <span class="author" itemprop="copyrightHolder">elangduan@126.com | </span>
+  <span class="author" itemprop="copyrightHolder">yiliangduan@qq.com | </span>
 
   <span>
     powered by <a class="theme-link" href="https://hexo.io">hexo</a>
@@ -632,7 +632,7 @@
   
 
   <script type="text/javascript">
-    var duoshuoQuery = {short_name:"elangduan"};
+    var duoshuoQuery = {short_name:"duanyiliang"};
     (function() {
       var ds = document.createElement('script');
       ds.type = 'text/javascript';ds.async = true;

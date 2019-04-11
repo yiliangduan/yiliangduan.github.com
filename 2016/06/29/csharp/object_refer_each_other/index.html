@@ -86,16 +86,16 @@
 <meta name="keywords" content="csharp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="C# 内存管理之对象循环引用问题">
-<meta property="og:url" content="http://elangduan.github.com/2016/06/29/csharp/object_refer_each_other/index.html">
+<meta property="og:url" content="http://yiliangduan.github.com/2016/06/29/csharp/object_refer_each_other/index.html">
 <meta property="og:site_name" content="暮鼓晨钟的笔记">
 <meta property="og:description" content="C#的内存管理用到了引用计数， 但是和以往我们认识的Java、Objective-c的内存管理有非常大的不同之处。不同之处在于C#的引用计数只有在GC Root对象引用的对象身上才生效，也就是说如果一个对象被GC Root对象引用了，那么在这个GC Root对象没有销毁之前这个对象是不会被销毁的。反之，如果一个对象没有被GC Root对象引用，即便这个对象被再多非GC Root对象引用，也会再下一">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://elangduan.github.com/images/cs_object_reference_each_other/1.png">
+<meta property="og:image" content="http://yiliangduan.github.com/images/cs_object_reference_each_other/1.png">
 <meta property="og:updated_time" content="2018-01-02T03:12:06.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="C# 内存管理之对象循环引用问题">
 <meta name="twitter:description" content="C#的内存管理用到了引用计数， 但是和以往我们认识的Java、Objective-c的内存管理有非常大的不同之处。不同之处在于C#的引用计数只有在GC Root对象引用的对象身上才生效，也就是说如果一个对象被GC Root对象引用了，那么在这个GC Root对象没有销毁之前这个对象是不会被销毁的。反之，如果一个对象没有被GC Root对象引用，即便这个对象被再多非GC Root对象引用，也会再下一">
-<meta name="twitter:image" content="http://elangduan.github.com/images/cs_object_reference_each_other/1.png">
+<meta name="twitter:image" content="http://yiliangduan.github.com/images/cs_object_reference_each_other/1.png">
 
 
 
@@ -109,7 +109,7 @@
     motion: false,
     duoshuo: {
       userId: '0',
-      author: 'elangduan'
+      author: 'duanyiliang'
     },
     algolia: {
       applicationID: '',
@@ -123,7 +123,7 @@
 
 
 
-  <link rel="canonical" href="http://elangduan.github.com/2016/06/29/csharp/object_refer_each_other/"/>
+  <link rel="canonical" href="http://yiliangduan.github.com/2016/06/29/csharp/object_refer_each_other/"/>
 
 
 
@@ -230,10 +230,10 @@
   
 
   <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2016/06/29/csharp/object_refer_each_other/">
+  <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2016/06/29/csharp/object_refer_each_other/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="elangduan@126.com">
+    <meta itemprop="name" content="yiliangduan@qq.com">
     <meta itemprop="description" content="">
     <meta itemprop="image" content="/uploads/avatar.png">
   </span>
@@ -399,8 +399,8 @@
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/uploads/avatar.png"
-               alt="elangduan@126.com" />
-          <p class="site-author-name" itemprop="name">elangduan@126.com</p>
+               alt="yiliangduan@qq.com" />
+          <p class="site-author-name" itemprop="name">yiliangduan@qq.com</p>
           <p class="site-description motion-element" itemprop="description"></p>
         </div>
         <nav class="site-state motion-element">
@@ -458,7 +458,7 @@
   &copy; 
   <span itemprop="copyrightYear">2019</span>
 
-  <span class="author" itemprop="copyrightHolder">elangduan@126.com | </span>
+  <span class="author" itemprop="copyrightHolder">yiliangduan@qq.com | </span>
 
   <span>
     powered by <a class="theme-link" href="https://hexo.io">hexo</a>
@@ -551,7 +551,7 @@
   
 
   <script type="text/javascript">
-    var duoshuoQuery = {short_name:"elangduan"};
+    var duoshuoQuery = {short_name:"duanyiliang"};
     (function() {
       var ds = document.createElement('script');
       ds.type = 'text/javascript';ds.async = true;

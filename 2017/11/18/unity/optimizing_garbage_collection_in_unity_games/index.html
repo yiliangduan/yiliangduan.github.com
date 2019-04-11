@@ -86,16 +86,16 @@
 <meta name="keywords" content="csharp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity游戏内存回收的优化(译)">
-<meta property="og:url" content="http://elangduan.github.com/2017/11/18/unity/optimizing_garbage_collection_in_unity_games/index.html">
+<meta property="og:url" content="http://yiliangduan.github.com/2017/11/18/unity/optimizing_garbage_collection_in_unity_games/index.html">
 <meta property="og:site_name" content="暮鼓晨钟的笔记">
 <meta property="og:description" content="原文Optimizing garbage collection in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。 Garbage Collector在这里被翻译成名词GC。对于Garbage Collection这里翻译成GC内存回收。 内存垃圾: 代码中销毁了(disposed)但是GC还没有清理的内存。  Unity的托管内存的简单介绍为了理解GC（本文GC指代Gar">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://elangduan.github.com/images/unity_performance_ways/window_with_data.png">
+<meta property="og:image" content="http://yiliangduan.github.com/images/unity_performance_ways/window_with_data.png">
 <meta property="og:updated_time" content="2017-12-03T08:19:16.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity游戏内存回收的优化(译)">
 <meta name="twitter:description" content="原文Optimizing garbage collection in Unity games。这里对这篇文章的粗略翻译，当作自己的笔记。 Garbage Collector在这里被翻译成名词GC。对于Garbage Collection这里翻译成GC内存回收。 内存垃圾: 代码中销毁了(disposed)但是GC还没有清理的内存。  Unity的托管内存的简单介绍为了理解GC（本文GC指代Gar">
-<meta name="twitter:image" content="http://elangduan.github.com/images/unity_performance_ways/window_with_data.png">
+<meta name="twitter:image" content="http://yiliangduan.github.com/images/unity_performance_ways/window_with_data.png">
 
 
 
@@ -109,7 +109,7 @@
     motion: false,
     duoshuo: {
       userId: '0',
-      author: 'elangduan'
+      author: 'duanyiliang'
     },
     algolia: {
       applicationID: '',
@@ -123,7 +123,7 @@
 
 
 
-  <link rel="canonical" href="http://elangduan.github.com/2017/11/18/unity/optimizing_garbage_collection_in_unity_games/"/>
+  <link rel="canonical" href="http://yiliangduan.github.com/2017/11/18/unity/optimizing_garbage_collection_in_unity_games/"/>
 
 
 
@@ -230,10 +230,10 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2017/11/18/unity/optimizing_garbage_collection_in_unity_games/">
+  <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2017/11/18/unity/optimizing_garbage_collection_in_unity_games/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="elangduan@126.com">
+    <meta itemprop="name" content="yiliangduan@qq.com">
     <meta itemprop="description" content="">
     <meta itemprop="image" content="/uploads/avatar.png">
   </span>
@@ -542,7 +542,7 @@
   <div class="comments" id="comments">
     
       <div class="ds-thread" data-thread-key="2017/11/18/unity/optimizing_garbage_collection_in_unity_games/"
-           data-title="Unity游戏内存回收的优化(译)" data-url="http://elangduan.github.com/2017/11/18/unity/optimizing_garbage_collection_in_unity_games/">
+           data-title="Unity游戏内存回收的优化(译)" data-url="http://yiliangduan.github.com/2017/11/18/unity/optimizing_garbage_collection_in_unity_games/">
       </div>
     
   </div>
@@ -580,8 +580,8 @@
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/uploads/avatar.png"
-               alt="elangduan@126.com" />
-          <p class="site-author-name" itemprop="name">elangduan@126.com</p>
+               alt="yiliangduan@qq.com" />
+          <p class="site-author-name" itemprop="name">yiliangduan@qq.com</p>
           <p class="site-description motion-element" itemprop="description"></p>
         </div>
         <nav class="site-state motion-element">
@@ -655,7 +655,7 @@
   &copy; 
   <span itemprop="copyrightYear">2019</span>
 
-  <span class="author" itemprop="copyrightHolder">elangduan@126.com | </span>
+  <span class="author" itemprop="copyrightHolder">yiliangduan@qq.com | </span>
 
   <span>
     powered by <a class="theme-link" href="https://hexo.io">hexo</a>
@@ -748,7 +748,7 @@
   
 
   <script type="text/javascript">
-    var duoshuoQuery = {short_name:"elangduan"};
+    var duoshuoQuery = {short_name:"duanyiliang"};
     (function() {
       var ds = document.createElement('script');
       ds.type = 'text/javascript';ds.async = true;

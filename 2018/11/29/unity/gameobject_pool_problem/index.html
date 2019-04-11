@@ -86,16 +86,16 @@
 <meta name="keywords" content="unity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity Object缓存遇到的一个问题">
-<meta property="og:url" content="http://elangduan.github.com/2018/11/29/unity/gameobject_pool_problem/index.html">
+<meta property="og:url" content="http://yiliangduan.github.com/2018/11/29/unity/gameobject_pool_problem/index.html">
 <meta property="og:site_name" content="暮鼓晨钟的笔记">
 <meta property="og:description" content="unity 5.6.6f1  今天在项目里面遇到一个BUG，一个脚本对一个Prefab的引用偶现丢失的情况。查证之后发现这个问题还比较特殊，记录一下。 问题是这样的: 有两个Prefab A和B，在场景中A和B分别 Instantiate出来a和b对象，a的父节点是其他的Prefab Instantiate的对象，但是b的父节点就是a。在a使用完成之后直接将a放进了ObjectPool里面回收了">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://elangduan.github.com/images/unity_objectpool_problem/1.png">
+<meta property="og:image" content="http://yiliangduan.github.com/images/unity_objectpool_problem/1.png">
 <meta property="og:updated_time" content="2018-12-01T07:17:55.722Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity Object缓存遇到的一个问题">
 <meta name="twitter:description" content="unity 5.6.6f1  今天在项目里面遇到一个BUG，一个脚本对一个Prefab的引用偶现丢失的情况。查证之后发现这个问题还比较特殊，记录一下。 问题是这样的: 有两个Prefab A和B，在场景中A和B分别 Instantiate出来a和b对象，a的父节点是其他的Prefab Instantiate的对象，但是b的父节点就是a。在a使用完成之后直接将a放进了ObjectPool里面回收了">
-<meta name="twitter:image" content="http://elangduan.github.com/images/unity_objectpool_problem/1.png">
+<meta name="twitter:image" content="http://yiliangduan.github.com/images/unity_objectpool_problem/1.png">
 
 
 
@@ -109,7 +109,7 @@
     motion: false,
     duoshuo: {
       userId: '0',
-      author: 'elangduan'
+      author: 'duanyiliang'
     },
     algolia: {
       applicationID: '',
@@ -123,7 +123,7 @@
 
 
 
-  <link rel="canonical" href="http://elangduan.github.com/2018/11/29/unity/gameobject_pool_problem/"/>
+  <link rel="canonical" href="http://yiliangduan.github.com/2018/11/29/unity/gameobject_pool_problem/"/>
 
 
 
@@ -230,10 +230,10 @@
   
 
   <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2018/11/29/unity/gameobject_pool_problem/">
+  <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2018/11/29/unity/gameobject_pool_problem/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="elangduan@126.com">
+    <meta itemprop="name" content="yiliangduan@qq.com">
     <meta itemprop="description" content="">
     <meta itemprop="image" content="/uploads/avatar.png">
   </span>
@@ -403,8 +403,8 @@
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/uploads/avatar.png"
-               alt="elangduan@126.com" />
-          <p class="site-author-name" itemprop="name">elangduan@126.com</p>
+               alt="yiliangduan@qq.com" />
+          <p class="site-author-name" itemprop="name">yiliangduan@qq.com</p>
           <p class="site-description motion-element" itemprop="description"></p>
         </div>
         <nav class="site-state motion-element">
@@ -462,7 +462,7 @@
   &copy; 
   <span itemprop="copyrightYear">2019</span>
 
-  <span class="author" itemprop="copyrightHolder">elangduan@126.com | </span>
+  <span class="author" itemprop="copyrightHolder">yiliangduan@qq.com | </span>
 
   <span>
     powered by <a class="theme-link" href="https://hexo.io">hexo</a>
@@ -555,7 +555,7 @@
   
 
   <script type="text/javascript">
-    var duoshuoQuery = {short_name:"elangduan"};
+    var duoshuoQuery = {short_name:"duanyiliang"};
     (function() {
       var ds = document.createElement('script');
       ds.type = 'text/javascript';ds.async = true;

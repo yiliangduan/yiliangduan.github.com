@@ -86,18 +86,18 @@
 <meta name="keywords" content="unity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Quaternion的插值分析及总结">
-<meta property="og:url" content="http://elangduan.github.com/2017/08/30/unity/quaternion_interpolation_note/index.html">
+<meta property="og:url" content="http://yiliangduan.github.com/2017/08/30/unity/quaternion_interpolation_note/index.html">
 <meta property="og:site_name" content="暮鼓晨钟的笔记">
 <meta property="og:description" content="下面的内容是阅读3D数学基础后结合自己的理解的总结  Unity中应用我们接触到的地方就是Unity的Transform组件。Transform组件维护了四元数实现方位角位的变换。但是我们也看到Transform组件提供了eulerAgnles属性，按理说里面也实现了欧拉角的，但事实并不是这样。接下来详细分析下 首先看看类似与这种操作，我们对一个GameObject实现旋转的时候，可以直接对其t">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://elangduan.github.com/images/quaternion/derivation.jpg">
-<meta property="og:image" content="http://elangduan.github.com/images/quaternion/effect_drawing.png">
-<meta property="og:image" content="http://elangduan.github.com/images/quaternion/different.jpg">
+<meta property="og:image" content="http://yiliangduan.github.com/images/quaternion/derivation.jpg">
+<meta property="og:image" content="http://yiliangduan.github.com/images/quaternion/effect_drawing.png">
+<meta property="og:image" content="http://yiliangduan.github.com/images/quaternion/different.jpg">
 <meta property="og:updated_time" content="2018-01-02T06:12:42.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Quaternion的插值分析及总结">
 <meta name="twitter:description" content="下面的内容是阅读3D数学基础后结合自己的理解的总结  Unity中应用我们接触到的地方就是Unity的Transform组件。Transform组件维护了四元数实现方位角位的变换。但是我们也看到Transform组件提供了eulerAgnles属性，按理说里面也实现了欧拉角的，但事实并不是这样。接下来详细分析下 首先看看类似与这种操作，我们对一个GameObject实现旋转的时候，可以直接对其t">
-<meta name="twitter:image" content="http://elangduan.github.com/images/quaternion/derivation.jpg">
+<meta name="twitter:image" content="http://yiliangduan.github.com/images/quaternion/derivation.jpg">
 
 
 
@@ -111,7 +111,7 @@
     motion: false,
     duoshuo: {
       userId: '0',
-      author: 'elangduan'
+      author: 'duanyiliang'
     },
     algolia: {
       applicationID: '',
@@ -125,7 +125,7 @@
 
 
 
-  <link rel="canonical" href="http://elangduan.github.com/2017/08/30/unity/quaternion_interpolation_note/"/>
+  <link rel="canonical" href="http://yiliangduan.github.com/2017/08/30/unity/quaternion_interpolation_note/"/>
 
 
 
@@ -232,10 +232,10 @@
   
 
   <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2017/08/30/unity/quaternion_interpolation_note/">
+  <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2017/08/30/unity/quaternion_interpolation_note/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="elangduan@126.com">
+    <meta itemprop="name" content="yiliangduan@qq.com">
     <meta itemprop="description" content="">
     <meta itemprop="image" content="/uploads/avatar.png">
   </span>
@@ -428,8 +428,8 @@
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/uploads/avatar.png"
-               alt="elangduan@126.com" />
-          <p class="site-author-name" itemprop="name">elangduan@126.com</p>
+               alt="yiliangduan@qq.com" />
+          <p class="site-author-name" itemprop="name">yiliangduan@qq.com</p>
           <p class="site-description motion-element" itemprop="description"></p>
         </div>
         <nav class="site-state motion-element">
@@ -503,7 +503,7 @@
   &copy; 
   <span itemprop="copyrightYear">2019</span>
 
-  <span class="author" itemprop="copyrightHolder">elangduan@126.com | </span>
+  <span class="author" itemprop="copyrightHolder">yiliangduan@qq.com | </span>
 
   <span>
     powered by <a class="theme-link" href="https://hexo.io">hexo</a>
@@ -596,7 +596,7 @@
   
 
   <script type="text/javascript">
-    var duoshuoQuery = {short_name:"elangduan"};
+    var duoshuoQuery = {short_name:"duanyiliang"};
     (function() {
       var ds = document.createElement('script');
       ds.type = 'text/javascript';ds.async = true;

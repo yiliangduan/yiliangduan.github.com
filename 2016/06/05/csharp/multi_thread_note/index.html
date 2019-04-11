@@ -86,16 +86,16 @@
 <meta name="keywords" content="csharp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="C#多线程下数据同步处理">
-<meta property="og:url" content="http://elangduan.github.com/2016/06/05/csharp/multi_thread_note/index.html">
+<meta property="og:url" content="http://yiliangduan.github.com/2016/06/05/csharp/multi_thread_note/index.html">
 <meta property="og:site_name" content="暮鼓晨钟的笔记">
 <meta property="og:description" content="本文是阅读CLR via C#和 Theading in C#做的个人总结 为什么要进行多线程的同步多个线程同时访问共享数据时有可能对数据造成损坏，线程同步的目的就是保证多线程访问共享数据时数据的安全性。在C#中能够对一个变量中的所有字节都一次性读取或写入，我们就认为这个变量类型具有原子性，CLR保证对以下类型变量的读写是原子性的: Boolean, Char, (S)Byte, (U)Int16">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://elangduan.github.com/images/cs_multi_thread_data_sync/multi_thread_data_sync.png">
+<meta property="og:image" content="http://yiliangduan.github.com/images/cs_multi_thread_data_sync/multi_thread_data_sync.png">
 <meta property="og:updated_time" content="2018-01-02T03:10:58.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="C#多线程下数据同步处理">
 <meta name="twitter:description" content="本文是阅读CLR via C#和 Theading in C#做的个人总结 为什么要进行多线程的同步多个线程同时访问共享数据时有可能对数据造成损坏，线程同步的目的就是保证多线程访问共享数据时数据的安全性。在C#中能够对一个变量中的所有字节都一次性读取或写入，我们就认为这个变量类型具有原子性，CLR保证对以下类型变量的读写是原子性的: Boolean, Char, (S)Byte, (U)Int16">
-<meta name="twitter:image" content="http://elangduan.github.com/images/cs_multi_thread_data_sync/multi_thread_data_sync.png">
+<meta name="twitter:image" content="http://yiliangduan.github.com/images/cs_multi_thread_data_sync/multi_thread_data_sync.png">
 
 
 
@@ -109,7 +109,7 @@
     motion: false,
     duoshuo: {
       userId: '0',
-      author: 'elangduan'
+      author: 'duanyiliang'
     },
     algolia: {
       applicationID: '',
@@ -123,7 +123,7 @@
 
 
 
-  <link rel="canonical" href="http://elangduan.github.com/2016/06/05/csharp/multi_thread_note/"/>
+  <link rel="canonical" href="http://yiliangduan.github.com/2016/06/05/csharp/multi_thread_note/"/>
 
 
 
@@ -230,10 +230,10 @@
   
 
   <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://elangduan.github.com/2016/06/05/csharp/multi_thread_note/">
+  <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2016/06/05/csharp/multi_thread_note/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="elangduan@126.com">
+    <meta itemprop="name" content="yiliangduan@qq.com">
     <meta itemprop="description" content="">
     <meta itemprop="image" content="/uploads/avatar.png">
   </span>
@@ -434,8 +434,8 @@
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/uploads/avatar.png"
-               alt="elangduan@126.com" />
-          <p class="site-author-name" itemprop="name">elangduan@126.com</p>
+               alt="yiliangduan@qq.com" />
+          <p class="site-author-name" itemprop="name">yiliangduan@qq.com</p>
           <p class="site-description motion-element" itemprop="description"></p>
         </div>
         <nav class="site-state motion-element">
@@ -509,7 +509,7 @@
   &copy; 
   <span itemprop="copyrightYear">2019</span>
 
-  <span class="author" itemprop="copyrightHolder">elangduan@126.com | </span>
+  <span class="author" itemprop="copyrightHolder">yiliangduan@qq.com | </span>
 
   <span>
     powered by <a class="theme-link" href="https://hexo.io">hexo</a>
@@ -602,7 +602,7 @@
   
 
   <script type="text/javascript">
-    var duoshuoQuery = {short_name:"elangduan"};
+    var duoshuoQuery = {short_name:"duanyiliang"};
     (function() {
       var ds = document.createElement('script');
       ds.type = 'text/javascript';ds.async = true;
