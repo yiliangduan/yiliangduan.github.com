@@ -1,0 +1,668 @@
+<!doctype html>
+
+
+
+
+<html class="theme-next mist" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="unity," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="unity 4.7.1f1  之前了解Unity的setpass call和batches时把顺道把渲染这块的代码(4.7.f1)也阅读了下，先利用一个思维导图把渲染的几个大的步骤记下来，以便有个整体的脉络(这里只记录Forward渲染)。   注1：由Camera的投影矩阵和对象的Z轴向量的积得出">
+<meta name="keywords" content="unity">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Unity渲染流程简述">
+<meta property="og:url" content="http://yiliangduan.github.com/2018/01/14/unity/unity_renderer_detail/index.html">
+<meta property="og:site_name" content="一点心得">
+<meta property="og:description" content="unity 4.7.1f1  之前了解Unity的setpass call和batches时把顺道把渲染这块的代码(4.7.f1)也阅读了下，先利用一个思维导图把渲染的几个大的步骤记下来，以便有个整体的脉络(这里只记录Forward渲染)。   注1：由Camera的投影矩阵和对象的Z轴向量的积得出">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yiliangduan.github.com/images/unity_renderer/1.png">
+<meta property="og:updated_time" content="2018-11-30T08:17:54.698Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Unity渲染流程简述">
+<meta name="twitter:description" content="unity 4.7.1f1  之前了解Unity的setpass call和batches时把顺道把渲染这块的代码(4.7.f1)也阅读了下，先利用一个思维导图把渲染的几个大的步骤记下来，以便有个整体的脉络(这里只记录Forward渲染)。   注1：由Camera的投影矩阵和对象的Z轴向量的积得出">
+<meta name="twitter:image" content="http://yiliangduan.github.com/images/unity_renderer/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"hide"},
+    fancybox: true,
+    motion: false,
+    duoshuo: {
+      userId: '0',
+      author: 'elangduan'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yiliangduan.github.com/2018/01/14/unity/unity_renderer_detail/"/>
+
+
+
+
+
+  <title> Unity渲染流程简述 | 一点心得 </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">一点心得</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2018/01/14/unity/unity_renderer_detail/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="yiliangduan@qq.com">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/uploads/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="一点心得">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="一点心得" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Unity渲染流程简述
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-01-14T16:22:10+08:00">
+              2018-01-14
+            </time>
+            
+          </span>
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>unity 4.7.1f1</p>
+</blockquote>
+<p>之前了解Unity的setpass call和batches时把顺道把渲染这块的代码(4.7.f1)也阅读了下，先利用一个思维导图把渲染的几个大的步骤记下来，以便有个整体的脉络(这里只记录Forward渲染)。</p>
+<p><img src="/images/unity_renderer/1.png" alt=""></p>
+<blockquote>
+<p>注1：由Camera的投影矩阵和对象的Z轴向量的积得出</p>
+</blockquote>
+<a id="more"></a> 
+<p><strong>RenderManager</strong></p>
+<ul>
+<li>RenderCameras</li>
+<li>RenderOffscreenCameras</li>
+</ul>
+<p><strong>RenderCameras和RenderOffscreenCameras</strong></p>
+<p>相同点:</p>
+<ul>
+<li>遍历所有的渲染的相机(或离屏渲染的相机)，先让每个相机做裁剪操作，裁剪完之后得到裁剪之后的对象集合，然后让相机渲染这个集合。</li>
+</ul>
+<p>不同点:</p>
+<ul>
+<li>RenderCameras是即时渲染的，即处理一个相机的Render就会马上渲染到场景上，接着再处理第二个相机。</li>
+<li>RenderOffscreenCameras处理所有的相机Render之后才渲染到场景上的。</li>
+</ul>
+<p><strong>Cull</strong></p>
+<p>现获取相机可见的场景上的所有Render，然后通过裁剪得到一个可见的对象集合。裁剪里面有个比较重要的参数就是相机使用了OcclusionCulling这个功能。使用了OnOcclusionCulling，则会调用Umbra进行Render在场景中的位置关系来处理。</p>
+<ul>
+<li><p>范围检测</p>
+<ul>
+<li>没有开启OnOcclusionCulling, 根据相机的Plane和每个Render的Bounds做AABB检测。</li>
+<li>开启了OnOcclusionCulling, 使用Umbra的API对每个Render的Bounds做可见检测。</li>
+</ul>
+</li>
+<li><p>可见检测</p>
+<ul>
+<li>对象的renderer是否为空了。</li>
+<li>对象是否是disable状态，如果是则不需要渲染了。</li>
+<li>对象是否被Camera的lod功能剔除了。</li>
+<li>对象是否被Camera的LayerDistance剔除了。</li>
+</ul>
+</li>
+</ul>
+<p>经过Cull处理之后得到了一个渲染的CullResults的数据对象。CullResults包含了对应的一个相机的需要渲染的Render集合、灯光信息、阴影等信息。</p>
+<p><strong>RenderLoop</strong></p>
+<p>这个步骤就处理上一步得到的CullResults数据，遍历CullResults里面的Render集合，对每个Render的上使用的material信息(Material,RenderQueue,subShaderIndex,lightmap,staticBatchIndex,renderer等)进行收集。得到一个需要渲染的已material为基础的RenderObjectData对象集合。</p>
+<p>有了这个数据，就可以开始进行渲染的操作了，接下来考虑的是使用Forward渲染还是Deferred模式渲染。不管那种渲染流程基本一致，这个考虑Forward渲染的方式。步骤如下:</p>
+<ul>
+<li>渲染Opaque物体</li>
+<li>渲染天空盒</li>
+<li>处理ImageFilters</li>
+<li>渲染透明物体</li>
+</ul>
+<p>这几个步骤渲染完成之后真个一帧的Render渲染工作就完成了。</p>
+<p><strong>DoForwardVertexRenderLoop</strong></p>
+<p>处理RenderLoop中得到的渲染对象数据(RenderObjectData)集合。处理之后把得到需要渲染的一个数据集合PlainRenderPasses，每个元素的数据对应一个需要渲染的Pass和渲染这个Pass需要的其他数据(subshader、light、material等数据)。</p>
+<p><strong>SortRenderPassData</strong></p>
+<p>处理PlainRenderPasses，把每个Pass都按照导图里面列出的元素的顺序优先级排序，排序之后的顺序就是接下来要渲染的顺序了。这里面的排序规则还是比较多的，这也关乎到场景上的模型被渲染之后的显示问题。比如两个Renderer A和B，两者使用的都是透明贴图，需要做透明混合处理。A的RenderQueue设置为3000，B的RenderQueue设置为30001，那么排序之后A在B的前面渲染，这样A的Renderer渲染出来的物体不会遮挡住B。排序的规则大致和导图里面的是一致的。</p>
+<p><strong>PerformRendering</strong></p>
+<p>这个方法里遍历在DoForwardVertexRenderLoop中处理得到的PlainRenderPasses集合，上面提到这个集合的的每个元素是一个pass需要渲染的内容。遍历这个数据集合对需要的渲染的mesh做动态合批，处理不同的pass里面的阴影。做好这些之后所有要在CPU处理的事情都做好了。</p>
+<p><strong>BatchRenderer</strong></p>
+<p>PerformRendering里遍历PlainRenderPasses，会对每个pass需要渲染的renderer用BatchRenderer处理，把可以合并在一个pass中渲染的renderer记录在一个动态数组中，当接下来遍历的元素不可以合并到当前的pass的时候，这个数组的所有renderer马上进行一次合批操作，然后再记录记下来这个元素。重复操作，一直到PlainRenderPasses的所有元素遍历完成。合并的具体操作在Renderer(MeshRenderer、ParticleSystemRenderer和SpriteRenderer)的RenderMultiple操作里面完成。</p>
+<p><strong>RenderMultiple</strong></p>
+<p>这个函数会处理每个需要合并的的renderer集合。首先会判断是动态合并还是静态合并，然后对renderer集合做相应的动态或者静态合批处理。</p>
+<p><strong>DrawVBO</strong><br>把合批之后的数据提交到GPU渲染。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/unity/" rel="tag"># unity</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/09/unity/setpass_calls_and_batches/" rel="next" title="Unity的SetPass Calls和Batches">
+                <i class="fa fa-chevron-left"></i> Unity的SetPass Calls和Batches
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/04/03/unity/unity_shaders_and_effects_cookbook_summary/" rel="prev" title="Unity Shaders and Effects Cookbook总结">
+                Unity Shaders and Effects Cookbook总结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.png"
+               alt="yiliangduan@qq.com" />
+          <p class="site-author-name" itemprop="name">yiliangduan@qq.com</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">42</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" align="center">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+
+  <span class="author" itemprop="copyrightHolder">yiliangduan@qq.com | </span>
+
+  <span>
+    powered by <a class="theme-link" href="https://hexo.io">hexo</a>
+  </span>
+
+  <span>
+    & theme <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next"> NexT</a>
+  </span>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"duanyiliang"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
