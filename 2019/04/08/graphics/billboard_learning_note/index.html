@@ -94,23 +94,23 @@
 
 
 
-  <meta name="description" content="在ShadowGunSample中学到了用shader实现一个广告牌（Billboard）效果，这里记录下。在ShadowGunSample的场景中，这个模型两边的光晕永远是对着移动中的摄像机，如下图:">
-<meta name="keywords" content="unity,opengl">
+  <meta name="description" content="在ShadowgunSample中学到了用shader实现一个广告牌（Billboard）效果，这里记录下。在ShadowgunSample的场景中，这个模型两边的光晕永远是对着移动中的摄像机，如下图:">
+<meta name="keywords" content="unity,graphics">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Billboard 实现原理笔记">
-<meta property="og:url" content="http://yiliangduan.github.com/2019/04/08/opengl/billboard_learning_note/index.html">
+<meta property="og:url" content="http://yiliangduan.github.com/2019/04/08/graphics/billboard_learning_note/index.html">
 <meta property="og:site_name" content="一点心得">
-<meta property="og:description" content="在ShadowGunSample中学到了用shader实现一个广告牌（Billboard）效果，这里记录下。在ShadowGunSample的场景中，这个模型两边的光晕永远是对着移动中的摄像机，如下图:">
+<meta property="og:description" content="在ShadowgunSample中学到了用shader实现一个广告牌（Billboard）效果，这里记录下。在ShadowgunSample的场景中，这个模型两边的光晕永远是对着移动中的摄像机，如下图:">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yiliangduan.github.com/images/opengl_shader_billboard/3.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/opengl_shader_billboard/3.gif">
 <meta property="og:image" content="http://yiliangduan.github.com/images/opengl_shader_billboard/4.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/opengl_shader_billboard/1.gif">
 <meta property="og:image" content="http://yiliangduan.github.com/images/pay/wechatpay.png">
-<meta property="og:updated_time" content="2019-04-12T12:35:09.154Z">
+<meta property="og:updated_time" content="2019-04-12T12:49:19.878Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Billboard 实现原理笔记">
-<meta name="twitter:description" content="在ShadowGunSample中学到了用shader实现一个广告牌（Billboard）效果，这里记录下。在ShadowGunSample的场景中，这个模型两边的光晕永远是对着移动中的摄像机，如下图:">
+<meta name="twitter:description" content="在ShadowgunSample中学到了用shader实现一个广告牌（Billboard）效果，这里记录下。在ShadowgunSample的场景中，这个模型两边的光晕永远是对着移动中的摄像机，如下图:">
 <meta name="twitter:image" content="http://yiliangduan.github.com/images/opengl_shader_billboard/3.png">
 
 
@@ -119,7 +119,7 @@
 
   
   
-  <link rel="canonical" href="http://yiliangduan.github.com/2019/04/08/opengl/billboard_learning_note/"/>
+  <link rel="canonical" href="http://yiliangduan.github.com/2019/04/08/graphics/billboard_learning_note/"/>
 
 
 
@@ -294,7 +294,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2019/04/08/opengl/billboard_learning_note/"/>
+    <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2019/04/08/graphics/billboard_learning_note/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="yiliangduan@qq.com"/>
@@ -342,7 +342,7 @@
       
 
       
-        <p>在<a href="https://files.unity3d.com/assetstore/ShadowgunSampleLevel.zip" target="_blank" rel="external">ShadowGunSample</a>中学到了用shader实现一个广告牌（Billboard）效果，这里记录下。在ShadowGunSample的场景中，这个模型两边的光晕永远是对着移动中的摄像机，如下图:</p>
+        <p>在<a href="https://files.unity3d.com/assetstore/ShadowgunSampleLevel.zip" target="_blank" rel="external">ShadowgunSample</a>中学到了用shader实现一个广告牌（Billboard）效果，这里记录下。在ShadowgunSample的场景中，这个模型两边的光晕永远是对着移动中的摄像机，如下图:</p>
 <a id="more"></a> 
 <p><img src="/images/opengl_shader_billboard/3.png" alt=""></p>
 <p>其实你如果看这个模型，它就是一个面片。然后在顶点着色器里面根据摄像机的当前的视角来修正每个顶点位置从而达到整个面片一直正向对着相机的效果。单独提取这个光晕模型显示的效果:</p>
@@ -374,7 +374,7 @@
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Shader <span class="string">"Custom/VertexColored"</span> &#123;</span><br><span class="line">    Properties&#123;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    SubShader&#123;</span><br><span class="line">        Pass &#123;</span><br><span class="line">            ColorMaterial AmbientAndDiffuse</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>创建的Mesh显示如下:</p>
 <p><img src="/images/opengl_shader_billboard/4.png" alt=""></p>
-<p>然后照着ShadowGunSample的Shader计算每个顶点随着相机的移动来变换，从而实现这个Mesh面片的Billboard效果:</p>
+<p>然后照着ShadowgunSample的Shader计算每个顶点随着相机的移动来变换，从而实现这个Mesh面片的Billboard效果:</p>
 <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Update</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    UpdateBillBoard();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">UpdateBillBoard</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">     <span class="comment">//模型的顶点随着摄像机移动而更新顶点位置</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt; OriginVertexs.Length; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        BBMeshVertexs[i] = SimulateVertexShaderCal(OriginVertexs[i]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">     BBMesh.vertices = BBMeshVertexs;</span><br><span class="line"></span><br><span class="line">    BBMesh.RecalculateNormals();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> Vector3 <span class="title">SimulateVertexShaderCal</span>(<span class="params">Vector3 vertex</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//这里的计算省去中心点的计算</span></span><br><span class="line">    Vector3 cameraPos = Camera.main.transform.position;</span><br><span class="line">    Vector3 cameraLocalPos = transform.InverseTransformPoint(cameraPos);</span><br><span class="line">    Vector3 localDir = -cameraLocalPos;</span><br><span class="line"></span><br><span class="line">    Vector3 normalizeLocalDir = Vector3.Normalize(localDir);</span><br><span class="line"></span><br><span class="line">    Vector3 upLocal = Mathf.Abs(normalizeLocalDir.y) &gt; <span class="number">0.999</span>f ? <span class="keyword">new</span> Vector3(<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>) : <span class="keyword">new</span> Vector3(<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">    Vector3 right = Vector3.Normalize(Vector3.Cross(normalizeLocalDir, upLocal));</span><br><span class="line">    upLocal = Vector3.Cross(normalizeLocalDir, right);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> vertex.x * right + vertex.y * upLocal;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>运行Editor然后移动相机，可以看到这个面片的Billboard效果了。</p>
 <p><img src="/images/opengl_shader_billboard/1.gif" alt=""></p>
@@ -408,7 +408,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/unity-opengl/" rel="tag"># unity,opengl</a>
+            <a href="/tags/unity-graphics/" rel="tag"># unity,graphics</a>
           
         </div>
       
@@ -499,6 +499,8 @@
                 <div class="site-state-item site-state-tags">
                   
                     
+                    
+                      
                     
                       
                     
