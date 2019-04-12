@@ -107,7 +107,7 @@
 <meta property="og:image" content="http://yiliangduan.github.com/images/graphics_architectures/2.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/graphics_architectures/3.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/pay/wechatpay.png">
-<meta property="og:updated_time" content="2019-04-12T02:05:06.235Z">
+<meta property="og:updated_time" content="2019-04-12T12:51:07.630Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity Pixelshader中使用Discard的问题">
 <meta name="twitter:description" content="在Unity的Manual中有段对GPU优化的提示:  Some GPUs, particularly ones found in mobile devices, incur a high performance overhead for alpha-testing (or use of the discard and clip operations in pixel shaders). You">
@@ -347,6 +347,7 @@
 <p>Some GPUs, particularly ones found in mobile devices, incur a high performance overhead for alpha-testing (or use of the discard and clip operations in pixel shaders). You should replace alpha-test shaders with alpha-blended ones if possible. Where alpha-testing cannot be avoided, you should keep the overall number of visible alpha-tested pixels to a minimum.</p>
 </blockquote>
 <p>意思是说某些类型的GPU设备，尤其是移动设备。在pixel shaders中使用了alpha-testing或者是使用discard和clip操作会导致很高的性能压力，应该使用alpha-blended来代替alpha-testing。</p>
+<a id="more"></a> 
 <p>首先这里要明白不管是alpha-testing，clip还是discard都是做了同样的原理的操作。就是针对某一个设定好的条件，根据这个条件满足的正常渲染，不满足的直接舍弃不渲染。举个例子，针对某个渲染对象如果alpha大于0.5时不可见，那么利用discard做如下操作即可:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">fixed4 frag(v2f i)</span><br><span class="line">&#123;</span><br><span class="line">	...</span><br><span class="line">   	if (alpha &gt; 0.5)</span><br><span class="line">		discard;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这里的问题是为什么向discard会导致很高性能压力呢？原因还得用图形的渲染架构来解释。现代的图形架构可以归为以下三类:</p>
