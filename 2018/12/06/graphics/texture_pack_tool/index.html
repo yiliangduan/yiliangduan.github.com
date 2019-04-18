@@ -82,22 +82,21 @@
 
 
 
-<meta name="description" content="unity 5.6.6f1  准备写一个Mesh优化的工具链，可以实现MeshRenderer的合并。要想把所有的MeshRenderer合并，则必须考虑这几种情况:  需要合并的MeshRenderer都使用了相同的Material，并且Material的属性相同。这种情况可以直接合并  需要合并的MeshRenderer使用了相同的Material，但是Material的属性存在不同，这种情">
+<meta name="description" content="unity 2018.3.5f1  这里实现了一个简单的合并贴图的工具，在Unity的Project窗口中，选中一个存放图片的文件夹。右键菜单中可以看到 [Pack Texture], [Pack Texture(All Relayout)] 选项, 即可合并该文件夹下的所有贴图。具体如图所示: 选中一个存放了图片的文件夹:  执行合图操作之后，将会合并贴图并将结果生成在事先在AtlasConf">
 <meta name="keywords" content="unity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity Texture合并工具">
 <meta property="og:url" content="http://yiliangduan.github.com/2018/12/06/graphics/texture_pack_tool/index.html">
 <meta property="og:site_name" content="一点心得">
-<meta property="og:description" content="unity 5.6.6f1  准备写一个Mesh优化的工具链，可以实现MeshRenderer的合并。要想把所有的MeshRenderer合并，则必须考虑这几种情况:  需要合并的MeshRenderer都使用了相同的Material，并且Material的属性相同。这种情况可以直接合并  需要合并的MeshRenderer使用了相同的Material，但是Material的属性存在不同，这种情">
+<meta property="og:description" content="unity 2018.3.5f1  这里实现了一个简单的合并贴图的工具，在Unity的Project窗口中，选中一个存放图片的文件夹。右键菜单中可以看到 [Pack Texture], [Pack Texture(All Relayout)] 选项, 即可合并该文件夹下的所有贴图。具体如图所示: 选中一个存放了图片的文件夹:  执行合图操作之后，将会合并贴图并将结果生成在事先在AtlasConf">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yiliangduan.github.com/images/unity_atlas_tool/2.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/unity_atlas_tool/1.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/unity_atlas_tool/3.png">
-<meta property="og:image" content="http://yiliangduan.github.com/images/pay/wechatpay.png">
-<meta property="og:updated_time" content="2019-04-12T12:51:32.434Z">
+<meta property="og:updated_time" content="2019-04-18T02:44:26.100Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity Texture合并工具">
-<meta name="twitter:description" content="unity 5.6.6f1  准备写一个Mesh优化的工具链，可以实现MeshRenderer的合并。要想把所有的MeshRenderer合并，则必须考虑这几种情况:  需要合并的MeshRenderer都使用了相同的Material，并且Material的属性相同。这种情况可以直接合并  需要合并的MeshRenderer使用了相同的Material，但是Material的属性存在不同，这种情">
+<meta name="twitter:description" content="unity 2018.3.5f1  这里实现了一个简单的合并贴图的工具，在Unity的Project窗口中，选中一个存放图片的文件夹。右键菜单中可以看到 [Pack Texture], [Pack Texture(All Relayout)] 选项, 即可合并该文件夹下的所有贴图。具体如图所示: 选中一个存放了图片的文件夹:  执行合图操作之后，将会合并贴图并将结果生成在事先在AtlasConf">
 <meta name="twitter:image" content="http://yiliangduan.github.com/images/unity_atlas_tool/2.png">
 
 
@@ -300,28 +299,9 @@
 
       
         <blockquote>
-<p>unity 5.6.6f1</p>
+<p>unity 2018.3.5f1</p>
 </blockquote>
-<p>准备写一个Mesh优化的工具链，可以实现MeshRenderer的合并。要想把所有的MeshRenderer合并，则必须考虑这几种情况:</p>
-<ol>
-<li><p>需要合并的MeshRenderer都使用了相同的Material，并且Material的属性相同。这种情况可以直接合并</p>
-</li>
-<li><p>需要合并的MeshRenderer使用了相同的Material，但是Material的属性存在不同，这种情况如果合并的话需要将Material的不同属性保存下来，在运行时候通过MaterialBlockProperty来改变其属性。（工具里面对这种情况暂保持不合并）</p>
-</li>
-<li><p>需要合并的MeshRenderer使用了不同的Material，但是Shader相同并除了Shader所使用的Texture不同之外其他属性都相同。这种情况先合并贴图，然后根据贴图再图集中的位置偏移重写MeshRenderer的UV，然后合并MeshRenderer。</p>
-</li>
-<li>需要合并的MeshRenderer使用了不同的Material并且使用Shader不同，这种情况合并不了。</li>
-</ol>
-<p>第1种情况只需合并MeshRenderer操作即可，第3种情况涉及到先合并贴图再合并修改统一的Material，然后合并MeshRenderer。基于此模块化这些步骤成单独的功能：</p>
-<ul>
-<li>贴图合并工具</li>
-<li>重写MeshRenderer的UV的工具</li>
-<li>合并MeshRenderer工具</li>
-</ul>
-<p><br></p>
-<a id="more"></a> 
-<p>贴图合并工具</p>
-<p>这里实现了一个简单的合并贴图的工具<a href="https://github.com/elangduan/unity-atlastool" target="_blank" rel="external">AtlasTool</a>，在Unity的Project窗口中，选中一个存放图片的文件夹。右键菜单中可以看到 [Pack Texture], [Pack Texture(All Relayout)] 选项, 即可合并该文件夹下的所有贴图。具体如图所示:</p>
+<p>这里实现了一个简单的合并贴图的工具，在Unity的Project窗口中，选中一个存放图片的文件夹。右键菜单中可以看到 [Pack Texture], [Pack Texture(All Relayout)] 选项, 即可合并该文件夹下的所有贴图。具体如图所示:</p>
 <p>选中一个存放了图片的文件夹:</p>
 <p><img src="/images/unity_atlas_tool/2.png" alt=""></p>
 <p>执行合图操作之后，将会合并贴图并将结果生成在事先在AtlasConfig.cs中配置好的路径中(这里测试配置的是Assets/Res目录)。结果包含两类文件Asset和Atlas，Asset文件保存了Atlas文件中每张贴图在图集中的偏移，缩放和对原始图片的引用。如果选中的目录下既有带Alpha的图片又有不带Alpha的图片，工具会根据是否带Alpha进行归类并且结果输出到不同的目录。如下图:</p>
@@ -333,12 +313,9 @@
 <li>Pack Texture:  如果之前合并过贴图，该种模式下会继承上次贴图的合并后在图集中的偏移，不会改动之前已经合过贴图的位置。</li>
 <li>Pack Texture(All Relayout): 全部重新排列合图，这种情况下可能改变之前已经合过贴图的在图集中的偏移。</li>
 </ul>
+<p>下面讲解下贴图合并工具的几个实现的细节:</p>
+<p>//TODO</p>
 <p><em>End</em></p>
-<blockquote>
-<p>如果这篇文章对你有帮助的话，可否愿意打赏一瓶饮料&gt;_&lt;，谢谢！</p>
-<p>微信:</p>
-<p><img src="/images/pay/wechatpay.png" alt=""></p>
-</blockquote>
 
       
     </div>
@@ -371,8 +348,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/11/29/unity/gameobject_pool_problem/" rel="next" title="Unity Object缓存遇到的一个问题">
-                <i class="fa fa-chevron-left"></i> Unity Object缓存遇到的一个问题
+              <a href="/2018/12/06/graphics/mesh_optimizer/" rel="next" title="Unity Mesh优化工具链">
+                <i class="fa fa-chevron-left"></i> Unity Mesh优化工具链
               </a>
             
           </div>
@@ -438,7 +415,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">43</span>
+              <span class="site-state-item-count">44</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>

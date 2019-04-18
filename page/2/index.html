@@ -293,10 +293,135 @@
 
       
         
-          <blockquote>
-<p>unity 5.6.6f1</p>
+          
+            <blockquote>
+<p>unity 2018.3.5f1</p>
 </blockquote>
-<p>准备写一个Mesh优化的工具链，可以实现MeshRenderer的合并。要想把所有的MeshRenderer合并，则必须考虑这几种情况:</p>
+<p>这里实现了一个简单的合并贴图的工具，在Unity的Project窗口中，选中一个存放图片的文件夹。右键菜单中可以看到 [Pack Texture], [Pack Texture(All Relayout)] 选项, 即可合并该文件夹下的所有贴图。具体如图所示:</p>
+<p>选中一个存放了图片的文件夹:</p>
+<p><img src="/images/unity_atlas_tool/2.png" alt=""></p>
+<p>执行合图操作之后，将会合并贴图并将结果生成在事先在AtlasConfig.cs中配置好的路径中(这里测试配置的是Assets/Res目录)。结果包含两类文件Asset和Atlas，Asset文件保存了Atlas文件中每张贴图在图集中的偏移，缩放和对原始图片的引用。如果选中的目录下既有带Alpha的图片又有不带Alpha的图片，工具会根据是否带Alpha进行归类并且结果输出到不同的目录。如下图:</p>
+<p><img src="/images/unity_atlas_tool/1.png" alt=""></p>
+<p>生成的Asset文件保存的信息如图:</p>
+<p><img src="/images/unity_atlas_tool/3.png" alt=""></p>
+<p>由于这些合并后的贴图是用于MeshRenderer的贴图，并且MeshRenderer会根据这些贴图再图集中的偏移而要改变自己的UV，所以为了避免每次合图之后MeshRenderer都需要重写UV的操作，这里的合图有两个选项<em>Pack Texture</em>和<em>Pack Texture(All Relayout)</em>。<em>Pack Texture</em>选中执行过程中不会对之前合并好的贴图进行改变，保持其在图集中的位置偏移，而<em>Pack Texture(All Relayout)</em>相当于重新排列每张图片在图集中的位置。所以需要注意这两点:</p>
+<ul>
+<li>Pack Texture:  如果之前合并过贴图，该种模式下会继承上次贴图的合并后在图集中的偏移，不会改动之前已经合过贴图的位置。</li>
+<li>Pack Texture(All Relayout): 全部重新排列合图，这种情况下可能改变之前已经合过贴图的在图集中的偏移。</li>
+</ul>
+<p>下面讲解下贴图合并工具的几个实现的细节:</p>
+<p>//TODO</p>
+<p><em>End</em></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2018/12/06/graphics/mesh_optimizer/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="yiliangduan@gmail.com">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/uploads/avatar.png">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="一点心得">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="一点心得" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2018/12/06/graphics/mesh_optimizer/" itemprop="url">
+                  Unity Mesh优化工具链
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-06T20:26:10+08:00">
+              2018-12-06
+            </time>
+            
+          </span>
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>准备写一个Mesh优化的工具链（<a href="https://github.com/yiliangduan/unity-meshoptimizer" target="_blank" rel="external">unity_meshoptimizer</a> Private项目），可以实现MeshRenderer的合并。要想把所有的MeshRenderer合并，则必须考虑这几种情况:</p>
 <ol>
 <li><p>需要合并的MeshRenderer都使用了相同的Material，并且Material的属性相同。这种情况可以直接合并</p>
 </li>
@@ -308,18 +433,12 @@
 </ol>
 <p>第1种情况只需合并MeshRenderer操作即可，第3种情况涉及到先合并贴图再合并修改统一的Material，然后合并MeshRenderer。基于此模块化这些步骤成单独的功能：</p>
 <ul>
-<li>贴图合并工具</li>
-<li>重写MeshRenderer的UV的工具</li>
-<li>合并MeshRenderer工具</li>
+<li><a href="https://www.duanyiliang.com/2018/12/06/graphics/texture_pack_tool/" target="_blank" rel="external">贴图合并工具</a> [Done]</li>
+<li><a href="https://www.duanyiliang.com/2019/04/12/graphics/mesh_combine_tool/" target="_blank" rel="external">Mesh合并工具</a>  [Done]</li>
+<li>图形化合并界面 [TODO]</li>
 </ul>
-<p><br></p>
-          <!--noindex-->
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2018/12/06/graphics/texture_pack_tool/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+
+          
         
       
     </div>
@@ -582,127 +701,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2018/10/24/unity/lightmap_remind/">
-
-  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="yiliangduan@gmail.com">
-    <meta itemprop="description" content="">
-    <meta itemprop="image" content="/uploads/avatar.png">
-  </span>
-
-  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-    <meta itemprop="name" content="一点心得">
-    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
-      <img style="display:none;" itemprop="url image" alt="一点心得" src="">
-    </span>
-  </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2018/10/24/unity/lightmap_remind/" itemprop="url">
-                  Unity的Lightmap加载的内存问题
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-10-24T20:26:10+08:00">
-              2018-10-24
-            </time>
-            
-          </span>
-
-          
-
-          
-
-          
-
-          
-          
-
-          
-          
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>unity 5.6.6f1</p>
-</blockquote>
-<p>再检查项目的内存问题时发现Lightmap的加载会消耗大量堆内存(高达17M，总共差不多35张lightmap贴图)。抛开lightmap的资源内存分配理论上不应该消耗堆内存才对，查看加载的代码最终发现了问题。</p>
-<ul>
-<li>LightmapSettings.lightmaps 每次返回的是一个新创建的数组。在所有的lightmap加载完成后去查找单独每个lightmap数据的索引使用到这个API，这个是分配堆内存的主要原因。</li>
-<li>lightmapData.lightmapColor.name  每次都会创建一个新的string对象。项目里面使用查找每个lightmapData的时候使用了名字去查找对比，调用次数非常频繁导致消耗了不少堆内存</li>
-</ul>
-          <!--noindex-->
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2018/10/24/unity/lightmap_remind/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -748,7 +746,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">43</span>
+              <span class="site-state-item-count">44</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>

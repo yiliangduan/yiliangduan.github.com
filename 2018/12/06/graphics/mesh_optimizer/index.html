@@ -82,18 +82,18 @@
 
 
 
-<meta name="description" content="隐藏的方式 1.1 设置Active为false方式。这种方式UIPanel的所有脚本逻辑、Rendering、Canvas.BuildBatch都会停止。构建的渲染的Mesh也会被清理。 1.2 设置不被渲染的Camera的Layer层上。这种方式相当于只是停掉了Rendering，其他的逻辑照常执行。  优缺点比较 2.1 方式1隐藏Panel的时候构建的Mesh会被清理掉，会节省这部分内存">
+<meta name="description" content="准备写一个Mesh优化的工具链（unity_meshoptimizer Private项目），可以实现MeshRenderer的合并。要想把所有的MeshRenderer合并，则必须考虑这几种情况:  需要合并的MeshRenderer都使用了相同的Material，并且Material的属性相同。这种情况可以直接合并  需要合并的MeshRenderer使用了相同的Material，但是Mate">
 <meta name="keywords" content="unity">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Unity3D的UIPanel隐藏的处理方式">
-<meta property="og:url" content="http://yiliangduan.github.com/2017/07/13/unity/ugui_panel_visible_manage/index.html">
+<meta property="og:title" content="Unity Mesh优化工具链">
+<meta property="og:url" content="http://yiliangduan.github.com/2018/12/06/graphics/mesh_optimizer/index.html">
 <meta property="og:site_name" content="一点心得">
-<meta property="og:description" content="隐藏的方式 1.1 设置Active为false方式。这种方式UIPanel的所有脚本逻辑、Rendering、Canvas.BuildBatch都会停止。构建的渲染的Mesh也会被清理。 1.2 设置不被渲染的Camera的Layer层上。这种方式相当于只是停掉了Rendering，其他的逻辑照常执行。  优缺点比较 2.1 方式1隐藏Panel的时候构建的Mesh会被清理掉，会节省这部分内存">
+<meta property="og:description" content="准备写一个Mesh优化的工具链（unity_meshoptimizer Private项目），可以实现MeshRenderer的合并。要想把所有的MeshRenderer合并，则必须考虑这几种情况:  需要合并的MeshRenderer都使用了相同的Material，并且Material的属性相同。这种情况可以直接合并  需要合并的MeshRenderer使用了相同的Material，但是Mate">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-01-02T11:05:20.000Z">
+<meta property="og:updated_time" content="2019-04-18T02:45:14.662Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Unity3D的UIPanel隐藏的处理方式">
-<meta name="twitter:description" content="隐藏的方式 1.1 设置Active为false方式。这种方式UIPanel的所有脚本逻辑、Rendering、Canvas.BuildBatch都会停止。构建的渲染的Mesh也会被清理。 1.2 设置不被渲染的Camera的Layer层上。这种方式相当于只是停掉了Rendering，其他的逻辑照常执行。  优缺点比较 2.1 方式1隐藏Panel的时候构建的Mesh会被清理掉，会节省这部分内存">
+<meta name="twitter:title" content="Unity Mesh优化工具链">
+<meta name="twitter:description" content="准备写一个Mesh优化的工具链（unity_meshoptimizer Private项目），可以实现MeshRenderer的合并。要想把所有的MeshRenderer合并，则必须考虑这几种情况:  需要合并的MeshRenderer都使用了相同的Material，并且Material的属性相同。这种情况可以直接合并  需要合并的MeshRenderer使用了相同的Material，但是Mate">
 
 
 
@@ -121,13 +121,13 @@
 
 
 
-  <link rel="canonical" href="http://yiliangduan.github.com/2017/07/13/unity/ugui_panel_visible_manage/"/>
+  <link rel="canonical" href="http://yiliangduan.github.com/2018/12/06/graphics/mesh_optimizer/"/>
 
 
 
 
 
-  <title> Unity3D的UIPanel隐藏的处理方式 | 一点心得 </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <title> Unity Mesh优化工具链 | 一点心得 </title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -228,7 +228,7 @@
   
 
   <article class="post post-type-tags " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2017/07/13/unity/ugui_panel_visible_manage/">
+  <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2018/12/06/graphics/mesh_optimizer/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="yiliangduan@gmail.com">
@@ -252,7 +252,7 @@
             
             
               
-                Unity3D的UIPanel隐藏的处理方式
+                Unity Mesh优化工具链
               
             
           </h1>
@@ -264,8 +264,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-13T23:40:10+08:00">
-              2017-07-13
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-06T20:26:10+08:00">
+              2018-12-06
             </time>
             
           </span>
@@ -294,16 +294,22 @@
       
 
       
-        <ol>
-<li><p>隐藏的方式</p>
-<p>1.1 设置Active为false方式。这种方式UIPanel的所有脚本逻辑、Rendering、Canvas.BuildBatch都会停止。构建的渲染的Mesh也会被清理。</p>
-<p>1.2 设置不被渲染的Camera的Layer层上。这种方式相当于只是停掉了Rendering，其他的逻辑照常执行。</p>
+        <p>准备写一个Mesh优化的工具链（<a href="https://github.com/yiliangduan/unity-meshoptimizer" target="_blank" rel="external">unity_meshoptimizer</a> Private项目），可以实现MeshRenderer的合并。要想把所有的MeshRenderer合并，则必须考虑这几种情况:</p>
+<ol>
+<li><p>需要合并的MeshRenderer都使用了相同的Material，并且Material的属性相同。这种情况可以直接合并</p>
 </li>
-<li><p>优缺点比较</p>
-<p>2.1 方式1隐藏Panel的时候构建的Mesh会被清理掉，会节省这部分内存。而且在动态Panel的时候(Panel上包含移动变化的GameObject)，Canvas的BuildBatch不会再调用，这会节省CPU(节省的程度根据Panel的复杂度决定的)。但是这种方式在隐藏和重新显示的时候由于需要重新构建渲染的Mesh，会消耗一定的CPU和产生GC.Allocate。</p>
-<p>2.2 方式2的好处在于Panel隐藏和重新显示的时候不需要重新构建渲染的Mesh，不会产生额外的CPU消耗和GC.Allocate。但是这种方式在隐藏的时候Panel的所有逻辑任然在执行(Update等)，在动态Panel的话Canvas的BuildBatch也会照常执行，这会一直消耗CPU资源。</p>
+<li><p>需要合并的MeshRenderer使用了相同的Material，但是Material的属性存在不同，这种情况如果合并的话需要将Material的不同属性保存下来，在运行时候通过MaterialBlockProperty来改变其属性。（工具里面对这种情况暂保持不合并）</p>
 </li>
+<li><p>需要合并的MeshRenderer使用了不同的Material，但是Shader相同并除了Shader所使用的Texture不同之外其他属性都相同。这种情况先合并贴图，然后根据贴图再图集中的位置偏移重写MeshRenderer的UV，然后合并MeshRenderer。</p>
+</li>
+<li>需要合并的MeshRenderer使用了不同的Material并且使用Shader不同，这种情况合并不了。</li>
 </ol>
+<p>第1种情况只需合并MeshRenderer操作即可，第3种情况涉及到先合并贴图再合并修改统一的Material，然后合并MeshRenderer。基于此模块化这些步骤成单独的功能：</p>
+<ul>
+<li><a href="https://www.duanyiliang.com/2018/12/06/graphics/texture_pack_tool/" target="_blank" rel="external">贴图合并工具</a> [Done]</li>
+<li><a href="https://www.duanyiliang.com/2019/04/12/graphics/mesh_combine_tool/" target="_blank" rel="external">Mesh合并工具</a>  [Done]</li>
+<li>图形化合并界面 [TODO]</li>
+</ul>
 
       
     </div>
@@ -336,8 +342,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/07/08/unity/render_order_question/" rel="next" title="Unity模型渲染层级顺序问题">
-                <i class="fa fa-chevron-left"></i> Unity模型渲染层级顺序问题
+              <a href="/2018/11/29/unity/gameobject_pool_problem/" rel="next" title="Unity Object缓存遇到的一个问题">
+                <i class="fa fa-chevron-left"></i> Unity Object缓存遇到的一个问题
               </a>
             
           </div>
@@ -346,8 +352,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/07/14/unity/ugui_sprite_format_summary/" rel="prev" title="Unity3D Sprite常用存储格式性能对比">
-                Unity3D Sprite常用存储格式性能对比 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/12/06/graphics/texture_pack_tool/" rel="prev" title="Unity Texture合并工具">
+                Unity Texture合并工具 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
