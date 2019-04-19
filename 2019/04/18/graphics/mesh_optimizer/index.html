@@ -90,12 +90,12 @@
 <meta property="og:site_name" content="一点心得">
 <meta property="og:description" content="项目中经常存在很多Material只是贴图不一样的情况，不同的Material是需要单独一个DrawCall来提交数据渲染这个对象的，比如下面场景中五个Cube对象，每个Cube对象使用了一个单独的Material，其中部分Material仅仅是使用的贴图不一样。因为每个Cube使用了独立的Material，渲染花费了五个Pass：  如果我们把这些贴图合并到一张大的贴图中去（参考Unity贴图合">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://yiliangduan.github.com/images/unity_atlas_tool/4.png">
-<meta property="og:updated_time" content="2019-04-19T12:57:11.604Z">
+<meta property="og:image" content="http://yiliangduan.github.com/images/unity_mesh_tool/4.png">
+<meta property="og:updated_time" content="2019-04-19T12:59:36.706Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity Mesh合并工具">
 <meta name="twitter:description" content="项目中经常存在很多Material只是贴图不一样的情况，不同的Material是需要单独一个DrawCall来提交数据渲染这个对象的，比如下面场景中五个Cube对象，每个Cube对象使用了一个单独的Material，其中部分Material仅仅是使用的贴图不一样。因为每个Cube使用了独立的Material，渲染花费了五个Pass：  如果我们把这些贴图合并到一张大的贴图中去（参考Unity贴图合">
-<meta name="twitter:image" content="http://yiliangduan.github.com/images/unity_atlas_tool/4.png">
+<meta name="twitter:image" content="http://yiliangduan.github.com/images/unity_mesh_tool/4.png">
 
 
 
@@ -297,7 +297,7 @@
 
       
         <p>项目中经常存在很多Material只是贴图不一样的情况，不同的Material是需要单独一个DrawCall来提交数据渲染这个对象的，比如下面场景中五个Cube对象，每个Cube对象使用了一个单独的Material，其中部分Material仅仅是使用的贴图不一样。因为每个Cube使用了独立的Material，渲染花费了五个Pass：</p>
-<p><img src="/images/unity_atlas_tool/4.png" alt=""></p>
+<p><img src="/images/unity_mesh_tool/4.png" alt=""></p>
 <p>如果我们把这些贴图合并到一张大的贴图中去（参考<a href="https://www.duanyiliang.com/2018/12/06/graphics/texture_pack_tool/" target="_blank" rel="external">Unity贴图合并工具</a>），然后让那些仅仅是贴图不一样的Material都使用这个合并后的大贴图。然后针对每个模型修改自己的UV，让Mesh的UV匹配到合并后的大贴图。这样这些模型就可以使用相同的Material了，Unity对使用相同的Material渲染的Mesh会进行<a href="https://docs.unity3d.com/Manual/DrawCallBatching.html" target="_blank" rel="external">动态合批（dynamic batching）</a>。这样就可以降低DrawCall了。进一步思考，Unity可以在运行时刻开辟一块内存把这些分散的Mesh合并到一个新的Mesh中去，我们干脆直接在资源层面将这些Mesh合并，这样还节省运行时刻的内存。</p>
 <p>//TODO</p>
 
