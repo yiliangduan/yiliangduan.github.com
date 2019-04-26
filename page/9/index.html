@@ -25,10 +25,6 @@
 
 
 
-  
-  
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
-
 
 
 
@@ -96,7 +92,7 @@
     root: '/',
     scheme: 'Mist',
     sidebar: {"position":"left","display":"hide"},
-    fancybox: true,
+    fancybox: false,
     motion: false,
     duoshuo: {
       userId: '0',
@@ -300,7 +296,7 @@
 <figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Sample1.0</span></span><br><span class="line">&#123;</span><br><span class="line">    List&lt;<span class="keyword">string</span>&gt; list = <span class="keyword">new</span> List&lt;<span class="keyword">string</span>&gt;()&#123;<span class="string">"hello"</span>, <span class="string">"world"</span>&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">foreach</span>(<span class="keyword">string</span> item <span class="keyword">in</span> list)</span><br><span class="line">    &#123;</span><br><span class="line">        UnityEngine.Debug.Log(item);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
           <!--noindex-->
           <div class="post-more-link text-center">
-            <a class="btn" href="/2016/10/29/unity/mono_foreach_memory_bug/#more" rel="contents">
+            <a class="btn" href="/2016/10/29/unity/mono_foreach_memory_bug/" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -424,7 +420,7 @@
 </ul>
           <!--noindex-->
           <div class="post-more-link text-center">
-            <a class="btn" href="/2016/09/05/unity/in_app_purchase_note/#more" rel="contents">
+            <a class="btn" href="/2016/09/05/unity/in_app_purchase_note/" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -546,7 +542,7 @@
 </ul>
           <!--noindex-->
           <div class="post-more-link text-center">
-            <a class="btn" href="/2016/07/16/unity/assetbundle_learning_and_summary/#more" rel="contents">
+            <a class="btn" href="/2016/07/16/unity/assetbundle_learning_and_summary/" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -833,8 +829,6 @@
 
 
 
-  
-
 
 
   
@@ -851,9 +845,6 @@
 
   
   <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
 
 
   
@@ -897,11 +888,6 @@
   </script>
 
   
-    
-    
-    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
-    <script src="/js/src/hook-duoshuo.js"></script>
-  
 
 
 
@@ -933,13 +919,28 @@
         }
       });
     </script>
-    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
   
 
 
   
 
   
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
 
   
 

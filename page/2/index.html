@@ -25,10 +25,6 @@
 
 
 
-  
-  
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
-
 
 
 
@@ -96,7 +92,7 @@
     root: '/',
     scheme: 'Mist',
     sidebar: {"position":"left","display":"hide"},
-    fancybox: true,
+    fancybox: false,
     motion: false,
     duoshuo: {
       userId: '0',
@@ -300,7 +296,7 @@
 <p>问题是这样的: 有两个Prefab A和B，在场景中A和B分别 Instantiate出来a和b对象，a的父节点是其他的Prefab Instantiate的对象，但是b的父节点就是a。在a使用完成之后直接将a放进了ObjectPool里面回收了，然后对b也用ObjectPool对其同样进行回收。过一段时间之后重新用到a对象，然后直接从ObjectPool里面取出来。但是这个时候Instantiate b的时候发现a的Instantiate对象上已经存在b(b在回收的时候没有断开与父节点的关联，a在之后回收的时候也没有删除b子节点)，这个时候就继续使用已经存在的b，过了一段时间(正好ObjectPool里面的缓存对象的生存周期结束)ObjectPool把B给回收了，造成了对b引用的脚本空指针了。结构如图:</p>
           <!--noindex-->
           <div class="post-more-link text-center">
-            <a class="btn" href="/2018/11/29/unity/gameobject_pool_problem/#more" rel="contents">
+            <a class="btn" href="/2018/11/29/unity/gameobject_pool_problem/" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -417,7 +413,7 @@
 <p>在做性能优化时，发现Shader在每次加载使用了Shader的Prefab资源的时候都会调用<em>Shader.Parse</em>，<em>Shader.CreateGPUProgram</em>两个函数，这个函数的调用消耗了大量的CPU性能。这里写个<a href="https://github.com/elangduan/unity-shaderpreload" target="_blank" rel="external">demo</a>测试下，测试的demo创建了几个prefab，每个Prefab都挂在material，然后没隔0.5s执行一次随机创建一个prefab，再隔0.5s销毁，依次重复。主要如下:</p>
           <!--noindex-->
           <div class="post-more-link text-center">
-            <a class="btn" href="/2018/11/21/unity/shader_load_performace/#more" rel="contents">
+            <a class="btn" href="/2018/11/21/unity/shader_load_performace/" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -538,7 +534,7 @@
 </ul>
           <!--noindex-->
           <div class="post-more-link text-center">
-            <a class="btn" href="/2018/10/24/unity/lightmap_remind/#more" rel="contents">
+            <a class="btn" href="/2018/10/24/unity/lightmap_remind/" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -657,7 +653,7 @@
 <p>这里配置了三个Motion动作，三个动作之间的切换利用Controller的Parameter来控制，这个Parameter同时可作为BlendTree的Thresholds。Thresholds是用来配置各个Motion的触发条件的。</p>
           <!--noindex-->
           <div class="post-more-link text-center">
-            <a class="btn" href="/2018/10/19/unity/animator_blendtree/#more" rel="contents">
+            <a class="btn" href="/2018/10/19/unity/animator_blendtree/" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -824,8 +820,6 @@
 
 
 
-  
-
 
 
   
@@ -842,9 +836,6 @@
 
   
   <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
 
 
   
@@ -888,11 +879,6 @@
   </script>
 
   
-    
-    
-    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
-    <script src="/js/src/hook-duoshuo.js"></script>
-  
 
 
 
@@ -924,13 +910,28 @@
         }
       });
     </script>
-    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
   
 
 
   
 
   
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
 
   
 

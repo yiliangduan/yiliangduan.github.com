@@ -25,10 +25,6 @@
 
 
 
-  
-  
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
-
 
 
 
@@ -96,7 +92,7 @@
     root: '/',
     scheme: 'Mist',
     sidebar: {"position":"left","display":"hide"},
-    fancybox: true,
+    fancybox: false,
     motion: false,
     duoshuo: {
       userId: '0',
@@ -307,7 +303,7 @@
 <p>两个独立的Mesh文件，我们只需要把它们这些信息合并就可以得到一个新的Mesh。这个新的Mesh包含了两者的信息。第一步获取这些信息:</p>
           <!--noindex-->
           <div class="post-more-link text-center">
-            <a class="btn" href="/2019/04/22/graphics/mesh_optimizer/#more" rel="contents">
+            <a class="btn" href="/2019/04/22/graphics/mesh_optimizer/" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -421,7 +417,7 @@
           <p>在<a href="https://files.unity3d.com/assetstore/ShadowgunSampleLevel.zip" target="_blank" rel="external">ShadowgunSample</a>中学到了用shader实现一个广告牌（Billboard）效果，这里记录下。在ShadowgunSample的场景中，这个模型两边的光晕永远是对着移动中的摄像机，如下图:</p>
           <!--noindex-->
           <div class="post-more-link text-center">
-            <a class="btn" href="/2019/04/08/graphics/billboard_learning_note/#more" rel="contents">
+            <a class="btn" href="/2019/04/08/graphics/billboard_learning_note/" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -539,7 +535,7 @@
 <p>意思是说某些类型的GPU设备，尤其是移动设备。在pixel shaders中使用了alpha-testing或者是使用discard和clip操作会导致很高的性能压力，应该使用alpha-blended来代替alpha-testing。</p>
           <!--noindex-->
           <div class="post-more-link text-center">
-            <a class="btn" href="/2019/02/26/note/graphics_architectures_note/#more" rel="contents">
+            <a class="btn" href="/2019/02/26/note/graphics_architectures_note/" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -667,7 +663,7 @@
 </ul>
           <!--noindex-->
           <div class="post-more-link text-center">
-            <a class="btn" href="/2018/12/06/graphics/texture_pack_tool/#more" rel="contents">
+            <a class="btn" href="/2018/12/06/graphics/texture_pack_tool/" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -834,8 +830,6 @@
 
 
 
-  
-
 
 
   
@@ -852,9 +846,6 @@
 
   
   <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
 
 
   
@@ -898,11 +889,6 @@
   </script>
 
   
-    
-    
-    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
-    <script src="/js/src/hook-duoshuo.js"></script>
-  
 
 
 
@@ -934,13 +920,28 @@
         }
       });
     </script>
-    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
   
 
 
   
 
   
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
 
   
 

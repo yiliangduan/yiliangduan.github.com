@@ -25,10 +25,6 @@
 
 
 
-  
-  
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
-
 
 
 
@@ -96,7 +92,7 @@
     root: '/',
     scheme: 'Mist',
     sidebar: {"position":"left","display":"hide"},
-    fancybox: true,
+    fancybox: false,
     motion: false,
     duoshuo: {
       userId: '0',
@@ -331,7 +327,7 @@
 <p>现在我们理解了当Unity渲染一帧时其内部发生了什么，接下来让我们思考下当渲染发生的时候会随之发生什么问题。</p>
           <!--noindex-->
           <div class="post-more-link text-center">
-            <a class="btn" href="/2017/12/03/unity/optimizing_graphics_rendering_in_unity_games/#more" rel="contents">
+            <a class="btn" href="/2017/12/03/unity/optimizing_graphics_rendering_in_unity_games/" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -470,7 +466,7 @@
 <p>现在我们了解了内存使用的流程，让我们来更深入的来了解栈和堆上的内存的分配和释放。</p>
           <!--noindex-->
           <div class="post-more-link text-center">
-            <a class="btn" href="/2017/11/18/unity/optimizing_garbage_collection_in_unity_games/#more" rel="contents">
+            <a class="btn" href="/2017/11/18/unity/optimizing_garbage_collection_in_unity_games/" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -949,8 +945,6 @@
 
 
 
-  
-
 
 
   
@@ -967,9 +961,6 @@
 
   
   <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
 
 
   
@@ -1013,11 +1004,6 @@
   </script>
 
   
-    
-    
-    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
-    <script src="/js/src/hook-duoshuo.js"></script>
-  
 
 
 
@@ -1049,13 +1035,28 @@
         }
       });
     </script>
-    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
   
 
 
   
 
   
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
 
   
 
