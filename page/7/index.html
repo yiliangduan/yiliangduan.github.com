@@ -215,7 +215,7 @@
 
     
 
-    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>首页</a>
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
 
   </li>
         
@@ -232,7 +232,7 @@
 
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>归档</a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
 
   </li>
 
@@ -268,6 +268,194 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2017/06/18/unity/auto_build_ipa/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="yiliangduan@gmail.com"/>
+      <meta itemprop="description" content=""/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一点心得"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/06/18/unity/auto_build_ipa/" class="post-title-link" itemprop="url">Unity脚本自动构建IPA包</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-06-18 23:30:00" itemprop="dateCreated datePublished" datetime="2017-06-18T23:30:00+08:00">2017-06-18</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2017-06-20 09:35:02" itemprop="dateModified" datetime="2017-06-20T09:35:02+08:00">2017-06-20</time>
+              
+            
+          </span>
+
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>Unity项目在iOS平台打包是一件比较费时间的事情，所以写了脚本来实现自动话打包生成ipa文件，避免每次去到处xcode工程然后配置证书之类的设置。</p>
+<blockquote>
+<p>测试环境 Unity5.5.1f3, macOS 10.12.4, Xcode 8.3.2</p>
+</blockquote>
+<h4 id="工具使用介绍"><a href="#工具使用介绍" class="headerlink" title="工具使用介绍"></a>工具使用介绍</h4><p>打包的配置用到了很重要的<a href="https://github.com/onevcat/XUPorter" target="_blank" rel="external">XUPorter</a>插件，打包的代码<a href="https://github.com/elangduan/UnityIPABuilder" target="_blank" rel="external">UnityIPABuilder</a>。下面简单讲解一下里面的具体实现</p>
+<p>Xcode打包主要有两个步骤，第一步是导出Xcode工程，第二步是构建Xcode工程并且导出ipa包。这里两种方式启动打包步骤。</p>
+<p><em>第一种</em>在Editor模式下打包。制作了一个Editor界面如下:</p>
+<p><img src="/images/unity_ipa_builder/ipa_builder_window.jpeg" alt=""></p>
+<p>里面的Export按钮的功能是直接导出一个配置号参数的Xcode工程，Build按钮的功能是首先会进行Export操作，然后对Export出的工程进行Build直接生成IPA包。整个界面比较简单，如果不满足自己的需求的话可以通过在<a href="https://github.com/elangduan/UnityIPABuilder/blob/master/Assets/Editor/ProjectBuilder/BuilderWindow.cs" target="_blank" rel="external">BuildWindow</a>里面添加。</p>
+<p><em>第二种</em>不启动Editor，直接用脚本打包。这种模式下我们直接启动项目打包脚本<a href="https://github.com/elangduan/UnityIPABuilder/blob/master/Builder/Script/cmd_start_unity_ipa_builder.sh" target="_blank" rel="external">cmd_start_unity_ipa_builder</a>加上对应的参数即可。例如sample工程的打包直接运行一下命令(先配置好<em>xcode_basic.cfg</em>)即可得到最终的ipa文件:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./cmd_start_unity_ipa_builder.sh -v 1.0.0 -b 100 -c QA</span><br></pre></td></tr></table></figure>
+<p>这个脚本会静默启动Unity来执行<em>ProjectBuilder</em>的打包方法。并且会把打包的日志存放在{$ProjectPath}/iOSBuild/build/log目录下。</p>
+<h4 id="导出Xcode工程部分"><a href="#导出Xcode工程部分" class="headerlink" title="导出Xcode工程部分"></a>导出Xcode工程部分</h4><p>这一步可以通过Unity的内置API完成。在这一步中我们还需要做的是设置好导出的Xcode的工程的各种配置(证书，版本号，Framework等)。导出Xcode工程直接只用Unity的API</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BuildPipeline.BuildPlayer(buildPlayerOptions);</span><br></pre></td></tr></table></figure>
+<p>这个API可以通过BuildOptions配置在Editor中的<em>Player Setttings</em>里面的各种配置。我的工具里面只添加了ScriptingImpletion、Architecture、渠道、Version和Build五个参数。这是根据我自己的需求来添加的，其他的设置在<em>Palyer Setting</em>设置好了基本上就不需要动态改变了，这几个参数是每次打包改动比较频繁的选项。</p>
+<p>先看下我们的整体构建步骤:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public static void BuildForiOS(ProjectBuildData data)</span><br><span class="line">&#123;</span><br><span class="line">		//导出Xcode工程</span><br><span class="line">    ExportForiOS(data);</span><br><span class="line"></span><br><span class="line">	   //构建Xcode工程</span><br><span class="line">    BuildiOSPorject();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public static void ExportForiOS(ProjectBuildData data)</span><br><span class="line">&#123;</span><br><span class="line">    //根据data数据来导出对应的Xcode工程</span><br><span class="line"> ....</span><br><span class="line"></span><br><span class="line">  //配置Xcode工程</span><br><span class="line">    XCodePostProcess.OnPostProcessBuild(BuildTarget.iOS, BuildPaths.ProjectPath, data.Channel, data);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>导出Xcode工程之后我们要做的就是配置Xcode工程。这里我用的是XUPorter插件来进行修改的，这个插件可以很方便的帮助我们自动把依赖的Framework、静态库、文件等添加到Xcode工程，这样可以解决我们在使用第三方插件的时候依赖的库每次打包需要手动添加的问题(5.5.1f1版本支持添加iOS系统自带的Framwork，但是不支持添加第三方的库，比如libsqlite3.dylib文件)。另外为了配置为了配置证书和Info.plist文件，稍微改动了一下里面的代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">public static void OnPostProcessBuild(BuildTarget target, string xcodeProjectPath, PackageChannel channel, ProjectBuildData data)</span><br><span class="line">&#123;</span><br><span class="line">	if (target != BuildTarget.iOS) &#123;</span><br><span class="line">		Debug.LogWarning(&quot;Target is not iPhone. XCodePostProcess will not run&quot;);</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	//这里来动态XUPorter的配置文件来自动添加Framework等一些XCode的配置</span><br><span class="line">	XCProject project = new XCProject(xcodeProjectPath + &quot;Unity-iPhone.xcodeproj&quot;);</span><br><span class="line"></span><br><span class="line">	string[] files = Directory.GetFiles( Application.dataPath, &quot;*.projmods&quot;, SearchOption.AllDirectories );</span><br><span class="line">	foreach( string file in files ) &#123;</span><br><span class="line">		project.ApplyMod( file );</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	//读取我们自己的配置文件</span><br><span class="line">	ProjectBasicConfig config = new ProjectBasicConfigLoader().GetConfig(channel);</span><br><span class="line"></span><br><span class="line">	//这里配置证书</span><br><span class="line">	OverWriteBuildSetting(config, project);</span><br><span class="line"></span><br><span class="line">   //这里配置Info.plist文件，比如加权限描述，修改版本号之类的</span><br><span class="line">	OverWriteInfoPlist(config, xcodeProjectPath, data);</span><br><span class="line"></span><br><span class="line">	project.overwriteBuildSetting (&quot;ENABLE_BITCODE&quot;,&quot;NO&quot;);</span><br><span class="line">	</span><br><span class="line">	//保存修改</span><br><span class="line">	project.Save();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>OnPosProcessBuild函数在XUPorter插件里面<a href="https://github.com/elangduan/UnityIPABuilder/blob/master/Assets/Editor/ProjectBuilder/XCodePostProcess.cs" target="_blank" rel="external">XCodePostProcess</a>文件里面的一个函数,这个函数本来是加了<em>[PostProcessBuild(999)]</em>属性，加了这个属性的函数是Unity在BuildPlayer调用之后会主动调用的函数。但是这里我们去掉这个属性，我们不需要Unity来主动调用这个函数。因为我们的构建的步骤是: BuildPlayer导出Xcode工程，XUPorter配置XCode工程，shell脚本构建XCode工程。XCodePostProcess属于第二步XUPorter配置XCode工程这一步，如果让Unity来主动调用XCodePostProcess的话在不修改XUPorter的情况下我们无法得知XUPorter执行完毕的时间。所以我们自己在调用完BuildPlayer之后接着调用XCodePostProcess然后再调用shell构建，这样顺序来执行。</p>
+<p>对于配置XUPorter的参数，大家可以参考工程的XUPorter插件下面的Bugly.projmods配置文件。详细的解释可以参考作者的<a href="https://onevcat.com/2012/12/xuporter/" target="_blank" rel="external">原文介绍</a>。至于ProjectBasicConfig配置，这个直接共用的shell脚本使用的配置文件，构建部分详解下。</p>
+<p>至此我们可以得到一个配置号所有参数的Xcode工程。</p>
+<h4 id="构建Xcode工程部分"><a href="#构建Xcode工程部分" class="headerlink" title="构建Xcode工程部分"></a>构建Xcode工程部分</h4><p>构建Xcode部分我设计的是不依赖Export部分，也就是说我们不需要在Export部分配置好证书或者版本号等这些参数(<a href="https://github.com/elangduan/UnityIPABuilder/blob/master/BuildScript/xcode_basic.cfg" target="_blank" rel="external">xcode_basic.cfg</a>文件包含的参数)，对于任何Xcode工程我们都可以通过这个脚本进行Build生成IPA包。构建脚本只有<a href="https://github.com/elangduan/UnityIPABuilder/blob/master/Builder/Script/auto_build_xcode_project.sh" target="_blank" rel="external">auto_build_xcode_project</a>一个文件，使用方法我们可以通过执行命令查阅:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sh auto_build_xcode_project.sh --help</span><br></pre></td></tr></table></figure>
+<p>我们可以先对shell脚本添加可执行权限，之后运行以来就不需要sh命令了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">chmod +x auto_build_xcode_project.sh</span><br><span class="line"></span><br><span class="line">./auto_build_xcode_project.sh --help</span><br></pre></td></tr></table></figure>
+<p>当然，我们在使用这个脚本之前请先配置这个脚本对应的配置文件<a href="https://github.com/elangduan/UnityIPABuilder/blob/master/Builder/Script/xcode_basic.cfg" target="_blank" rel="external">xcode_basic.cfg</a>，这个配置文件里面包含的参数是我们在使用这个脚本自动打包可以动态改变的所有参数。如果还需要修改额外的参数，那就需要自己另外添加了。整个配置文件我分了三个渠道，分别是Debug，QA和Release。每个渠道的配置的参数是一样的:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">channel=Debug</span><br><span class="line"></span><br><span class="line">#证书</span><br><span class="line">code_signing_identity=xxx</span><br><span class="line"></span><br><span class="line">#旧版描述文件</span><br><span class="line">provisioning_profile=xxx</span><br><span class="line"></span><br><span class="line">#新版本描述文件</span><br><span class="line">provisioning_profile_specifier=xxx</span><br><span class="line"></span><br><span class="line">#账号的TeamID</span><br><span class="line">team_id=xxx</span><br><span class="line"></span><br><span class="line">#包ID</span><br><span class="line">bundle_identity=xxx</span><br><span class="line"></span><br><span class="line">#包安装之后的显示名字</span><br><span class="line">display_name=xxx</span><br></pre></td></tr></table></figure>
+<p>打包脚本会自动读取相应的渠道的配置，这个配置的参数是有序的，不要改变他们之间的顺序。这里和大家说下怎么获取得到描述文件和证书的指。</p>
+<p>描述文件在Xcode里面的<em>Build Settings</em>里面Signing里面先选择对应的描述文件，然后在选项中选择<em>other</em>就会选择我们描述文件的值:</p>
+<p><img src="/images/unity_ipa_builder/provisining_profile_get_method.png" alt=""></p>
+<p>证书直接在系统应用<em>钥匙串访问里面查看</em>,双击点开一个钥匙串可以看得到:</p>
+<p><img src="/images/unity_ipa_builder/code_signing_identity_get_method.jpeg" alt=""></p>
+<p>直接复制里面的<em>常用名称</em>对应的值即可。</p>
+<p>其实Xcode的自动构建比较简单，主要是通过XcodeBuild来构建，构建好了之后会生成一个app包，然后再通过xcrun命令把这个app包压缩\转换成ipa包即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"></span><br><span class="line">//构建xcode，生成app包</span><br><span class="line">xcodebuild  -project $xcode_project_filepath \</span><br><span class="line">            -configuration $build_mode \</span><br><span class="line">            -target $project_target \</span><br><span class="line">            PROVISIONING_PROFILE=&quot;$provisioning_profile&quot; \</span><br><span class="line">            CODE_SIGN_IDENTITY=&quot;$code_signing_identity&quot; \</span><br><span class="line">            PRODUCT_BUNDLE_IDENTIFIER=$bundle_identity \</span><br><span class="line">            PRODUCT_NAME=$product_name \</span><br><span class="line">            DISPLAY_NAME=$display_name</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">转换app成ipa文件</span><br><span class="line">xcrun -sdk iphoneos PackageApplication -v $app_package_path -o $package_unique_path</span><br></pre></td></tr></table></figure>
+<p>至此我们就得到了ipa包了。如果需要自动上传到发布平台(比如fir.im)，可以直接在生成ipa包之后调用发布平台提供的上传命令直接上传即可，这样整个过程就完全自动化了。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -767,182 +955,6 @@
             <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>使用Vuforia或者EasyAR的AR识别库我们经常用到<em>Region Capture</em>这个插件来得到我们摄像头拍摄的画面中的识别图，得到这张贴图我们就可以把它贴在Target模型上面来达到实时上色的效果。但是在<em>Region Capture</em>获取贴图的过程中(实时的)经常或出现我们移动摄像头偏离识别图的时候那么<em>Region Capture</em>得到贴图有部分是黑色的(这部分黑色的就是识别图没有被摄像头拍摄到的部分)。很显然这样的效果我们是无法接受的。</p>
 <h2 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h2><p>我们读取<em>Region Capture</em>四个边角的pixel来判断是否是黑色。如果是黑色那么我们继续沿用上一次获取的贴图，知道下一次我们得到没有黑色的贴图再更新。下面是我的解决办法:</p>
 <figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// CameraOutputTexture是Camera的Target Texture</span></span><br><span class="line"><span class="comment">// modelTextureCache是直接从CameraOuputTexture读区的贴图</span></span><br><span class="line"><span class="comment">// ModelTexture是最终使用的Texture</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> IEnumerator <span class="title">ClipDrawingTexture</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">yield</span> return new <span class="title">WaitForEndOfFrame</span>(<span class="params"></span>)</span>;</span><br><span class="line"></span><br><span class="line">        AllocModelTextureCacheIsNull();</span><br><span class="line"></span><br><span class="line">        RenderTexture.active = CameraOutputTexture;</span><br><span class="line"></span><br><span class="line">        modelTextureCache.ReadPixels(ClipRegion, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">        RenderTexture.active = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">        modelTextureCache.Apply();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (cameraFocusTargetCenter())</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="literal">null</span> != ModelTexture)</span><br><span class="line">            &#123;</span><br><span class="line">                ModelTexture.LoadRawTextureData(modelTextureCache.GetRawTextureData());</span><br><span class="line">                ModelTexture.Apply();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">bool</span> <span class="title">cameraFocusTargetCenter</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> offsetStart = modelTextureCache.width / <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> textureWidth = modelTextureCache.width;</span><br><span class="line">        <span class="keyword">int</span> textureHeight = modelTextureCache.height;</span><br><span class="line"></span><br><span class="line">        Color leftTop = modelTextureCache.GetPixel(offsetStart, textureHeight - offsetStart);</span><br><span class="line">        Color leftBottom = modelTextureCache.GetPixel(offsetStart, offsetStart);</span><br><span class="line"></span><br><span class="line">        Color rightTop = modelTextureCache.GetPixel(textureWidth - offsetStart, textureHeight - offsetStart);</span><br><span class="line">        Color rightBottom = modelTextureCache.GetPixel(textureWidth - offsetStart, offsetStart);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> !isBlackColor(leftTop) &amp;&amp; !isBlackColor(leftBottom) &amp;&amp; !isBlackColor(rightTop) &amp;&amp; !isBlackColor(rightBottom);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">bool</span> <span class="title">isBlackColor</span>(<span class="params">Color color</span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (color.r &lt; <span class="number">0.01</span>f) &amp;&amp; (color.g &lt; <span class="number">0.01</span>f) &amp;&amp; (color.b &lt; <span class="number">0.01</span>f) &amp;&amp; color.a &gt; <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2017/03/08/unity/monobehaviour_awake_start_function_call_detail/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="yiliangduan@gmail.com"/>
-      <meta itemprop="description" content=""/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一点心得"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/03/08/unity/monobehaviour_awake_start_function_call_detail/" class="post-title-link" itemprop="url">MonoBehaviour的Awake,Start等函数的调用原理</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-03-08 18:12:40" itemprop="dateCreated datePublished" datetime="2017-03-08T18:12:40+08:00">2017-03-08</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2017-05-16 09:53:18" itemprop="dateModified" datetime="2017-05-16T09:53:18+08:00">2017-05-16</time>
-              
-            
-          </span>
-
-          
-
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>在用Unity的时候一直有一个比较困惑问题，继承自MonoBehaviour脚本的Awake(),Start(),Update()等这些函数是怎样被调用的。今天阅读了下Unity的代码了解了其中的调用原理,然后自己写了一个sample来模拟Unity中的调用方式。</p>
-<p>Unity的引擎是用C++实现的，自己实现的MonoBehaviour的脚本却是CS脚本。所以这里就涉及到C++调用CS函数的过程。Unity中用的Mono的Framework来实现在C++调用CS脚本，不多说直接上sample就懂了。</p>
-<blockquote>
-<p>测试环境: macOS 10.12.3 , mono 4.8.0</p>
-</blockquote>
-<p>有一个注意的地方就是必须设置好<strong>PKG_CONFIG_PATH</strong>环境变量，不然gcc在链接exe文件时候会报错,我是这样配置的:<br>export PKG_CONFIG_PATH=/Library/Frameworks/Mono.framework/Versions/Current/lib/pkgconfig/</p>
-<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">\\MonoBehaviour.cs</span><br><span class="line">\\这里模拟我们在CS中MonoBehaviour的类</span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">namespace</span> <span class="title">Unity</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">MonoBehaviour</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">Awake</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">			Console.WriteLine(<span class="string">"Awake"</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">OnEnable</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">		</span>&#123;</span><br><span class="line">			Console.WriteLine(<span class="string">"OnEnable"</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Start</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">		</span>&#123;</span><br><span class="line">			Console.WriteLine(<span class="string">"Start"</span>);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Test</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span> (<span class="params"></span>) </span>&#123;&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>编译MonoBehaviour.cs生成MonoBehaviour.exe 或者 MonoBehaviour.exe.dll (此处我直接生成exe文件)</p>
-<blockquote>
-<p>mcs MonoBehaviour.cs</p>
-</blockquote>
-<p>然后实现C++层调用代码(此处是根据mono的<a href="http://www.mono-project.com/docs/advanced/embedding/" target="_blank" rel="external">官方文档</a>和官方的sample来写的)</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line">\\InvokeMonoBehaviour.c</span><br><span class="line">\\这里用C语言写的，C++同理</span><br><span class="line">\\这个脚本模拟Unity引擎内部的调用方式</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;mono/jit/jit.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;mono/metadata/object.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;mono/metadata/environment.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;mono/metadata/assembly.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;mono/metadata/debug-helpers.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">call_methods</span> <span class="params">(MonoObject *obj)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	MonoClass *klass;</span><br><span class="line">	MonoDomain *domain;</span><br><span class="line">	MonoMethod *awake = <span class="literal">NULL</span>, *m = <span class="literal">NULL</span>, *onenable = <span class="literal">NULL</span>, *start = <span class="literal">NULL</span>, *mvalues;</span><br><span class="line">	MonoProperty *prop;</span><br><span class="line">	MonoObject *result, *exception;</span><br><span class="line">	MonoString *str;</span><br><span class="line">	<span class="keyword">char</span> *p;</span><br><span class="line">	<span class="keyword">void</span>* iter;</span><br><span class="line">	<span class="keyword">void</span>* args [<span class="number">2</span>];</span><br><span class="line">	<span class="keyword">int</span> val;</span><br><span class="line"></span><br><span class="line">	klass = mono_object_get_class (obj);</span><br><span class="line">	domain = mono_object_get_domain (obj);</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* retrieve all the methods we need */</span></span><br><span class="line">	iter = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//从MonoBehaviour.exe中查找MonoBehaviour.cs中的Awake，OnEnable，Start方法。</span></span><br><span class="line">	<span class="comment">//通过这种方式不管在cs中的访问权限是private,protected还是public都可以获取得到</span></span><br><span class="line">	</span><br><span class="line">	<span class="keyword">while</span> ((m = mono_class_get_methods (klass, &amp;iter))) &#123;</span><br><span class="line">		<span class="keyword">if</span> (<span class="built_in">strcmp</span> (mono_method_get_name (m), <span class="string">"Awake"</span>) == <span class="number">0</span>) &#123;</span><br><span class="line">			awake = m;</span><br><span class="line">		&#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">strcmp</span> (mono_method_get_name (m), <span class="string">"OnEnable"</span>) == <span class="number">0</span>) &#123;</span><br><span class="line">			onenable = m;</span><br><span class="line">		&#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">strcmp</span> (mono_method_get_name (m), <span class="string">"Start"</span>) == <span class="number">0</span>) &#123;</span><br><span class="line">			start = m;</span><br><span class="line">		&#125; </span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//这里调用了MonoBehaviour的Awake函数</span></span><br><span class="line">	mono_runtime_invoke (awake, obj, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//这里调用了MonoBehaviour的OnEnable函数</span></span><br><span class="line">	mono_runtime_invoke (onenable, obj, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">//这里调用了MonoBehaviour的Start函数</span></span><br><span class="line">	mono_runtime_invoke (start, obj, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">create_object</span> <span class="params">(MonoDomain *domain, MonoImage *image)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	MonoClass *klass;</span><br><span class="line">	MonoObject *obj;</span><br><span class="line"></span><br><span class="line">	klass = mono_class_from_name (image, <span class="string">"Unity"</span>, <span class="string">"MonoBehaviour"</span>);</span><br><span class="line">	<span class="keyword">if</span> (!klass) &#123;</span><br><span class="line">		<span class="built_in">fprintf</span> (<span class="built_in">stderr</span>, <span class="string">"Can't find MyType in assembly %s\n"</span>, mono_image_get_filename (image));</span><br><span class="line">		<span class="built_in">exit</span> (<span class="number">1</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	obj = mono_object_new (domain, klass);</span><br><span class="line">	<span class="comment">/* mono_object_new () only allocates the storage: </span></span><br><span class="line"><span class="comment">	 * it doesn't run any constructor. Tell the runtime to run</span></span><br><span class="line"><span class="comment">	 * the default argumentless constructor.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	mono_runtime_object_init (obj);</span><br><span class="line"></span><br><span class="line">	call_methods (obj);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main_function</span> <span class="params">(MonoDomain *domain, <span class="keyword">const</span> <span class="keyword">char</span> *file, <span class="keyword">int</span> argc, <span class="keyword">char</span> **argv)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	MonoAssembly *assembly;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Loading an assembly makes the runtime setup everything</span></span><br><span class="line"><span class="comment">	 * needed to execute it. If we're just interested in the metadata</span></span><br><span class="line"><span class="comment">	 * we'd use mono_image_load (), instead and we'd get a MonoImage*.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	assembly = mono_domain_assembly_open (domain, file);</span><br><span class="line">	<span class="keyword">if</span> (!assembly)</span><br><span class="line">		<span class="built_in">exit</span> (<span class="number">2</span>);</span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * mono_jit_exec() will run the Main() method in the assembly.</span></span><br><span class="line"><span class="comment">	 * The return value needs to be looked up from</span></span><br><span class="line"><span class="comment">	 * System.Environment.ExitCode.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="comment">//mono_jit_exec (domain, assembly, argc, argv);</span></span><br><span class="line"></span><br><span class="line">	create_object (domain, mono_assembly_get_image (assembly));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span> <span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>* argv[])</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">const</span> <span class="keyword">char</span> *file = <span class="string">"MonoBehaviour.exe"</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * mono_jit_init() creates a domain: each assembly is</span></span><br><span class="line"><span class="comment">	 * loaded and run in a MonoDomain.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	MonoDomain *domain = mono_jit_init (file);</span><br><span class="line"></span><br><span class="line">	main_function (domain, file, argc - <span class="number">1</span>, argv + <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> retval = mono_environment_exitcode_get ();</span><br><span class="line">	</span><br><span class="line">	mono_jit_cleanup (domain);</span><br><span class="line">	<span class="keyword">return</span> retval;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>编译InvokeMonoBehaviour.c生成了a.out文件</p>
-<blockquote>
-<p>gcc InvokeMonoBehaviour.c `pkg-config –cflags –libs mono-2`</p>
-</blockquote>
-<p>然后执行a.out文件</p>
-<blockquote>
-<p>./a.out</p>
-</blockquote>
-<p>可以看到terminal中输出:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Awake</span><br><span class="line">OnEnable</span><br><span class="line">Start</span><br></pre></td></tr></table></figure>
-<p>当我们编译了InvokeMonoBehaviour.c之后我们再次编辑MonoBehaviour.cs就不需要再编译InvokeMonoBehaviour.c文件就可以加载最新编译出的exe文件,这样还是比较方便的。</p>
-<p>整个调用过程就是这样的。在Unity中我们编写的CS脚本被编译成dll存放在项目根目录的Library/ScripAssemblies目录下面(Editor模式),Unity引擎内部封装了一个Manager来专门管理和加载这些dll。加载的方式和上面sample的方式是一样的。</p>
 
           
         
