@@ -113,7 +113,7 @@
 <meta property="og:image" content="http://yiliangduan.github.com/images/realtime_rendering/chapter2/figure2.7.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/realtime_rendering/chapter2/figure2.8.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/realtime_rendering/chapter2/figure2.9.png">
-<meta property="og:updated_time" content="2019-05-06T02:14:28.086Z">
+<meta property="og:updated_time" content="2019-05-06T02:27:24.866Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="RTR4 第二章 图形渲染管线">
 <meta name="twitter:description" content="这是阅读RealTime-Rendering 4th Edition的笔记，为了便于自己的理解直接一边阅读一边根据自己理解翻译下来，记录在这里。  这章介绍实时渲染的核心部分，也就是图形渲染管线(graphics rendering pipeline)，也称为“管线”。它主要的功能是将一个虚拟的摄像机，三维的对象，光源等这些场景元素生成或者渲染成一张二位的图片。因此，渲染管线是实时渲染的基础工具">
@@ -343,7 +343,7 @@
                 
               
 
-              <time title="Created: 2019-05-06 09:49:40 / Modified: 10:14:28" itemprop="dateCreated datePublished" datetime="2019-05-06T09:49:40+08:00">2019-05-06</time>
+              <time title="Created: 2019-05-06 09:49:40 / Modified: 10:27:24" itemprop="dateCreated datePublished" datetime="2019-05-06T09:49:40+08:00">2019-05-06</time>
             
 
             
@@ -451,7 +451,7 @@
 <blockquote>
 <p>图2.6 投影转换之后，只有需要继续处理的基元才会到单元盒（对应可视椎体里的基元）中。因此，在单元盒外部的基元就被裁剪掉了，在内部的基元全部保留下来。与单位盒相交的基元会依据单位盒进行裁剪，这样会生成新的顶点同时丢弃旧的顶点。</p>
 </blockquote>
-<h5 id="2-3-5-屏幕映射（Screen-Mapping）"><a href="#2-3-5-屏幕映射（Screen-Mapping）" class="headerlink" title="2.3.5 屏幕映射（Screen Mapping）"></a>2.3.5 屏幕映射（Screen Mapping）</h5><p>只有在可视空间体内的基元（裁剪过的）才会被传递到屏幕映射阶段，进入这个阶段时坐标还是三维的。每个基元的x坐标和y坐标被变化到<em>屏幕坐标（screen coordinates）</em>。屏幕坐标和z轴坐标也叫做<em>窗口坐标（window coordinates）</em>。假如场景应该渲染到一个最小角的坐标在 $$（x_1, y_1）$$, 最大角的坐标在$$（x_2, y_2）$$的窗口，其中$$x_1 &lt; x_2$$并且$$y_1&lt;y_2$$。然后屏幕映射通过缩放操作来进行变换。新的x和y坐标叫做屏幕坐标。z坐标（OpenGL为[-1, +1], DirectX为[0, 1]）同样被映射到$$[z_1, z_2]$$，$$z_1 = 0$$和$$z_2 = 1$$作为默认值。不管怎样这些是可以通过API来修改的。窗口以及重新映射的z值被传入光栅化阶段。图2.7描述了屏幕映射的过程。</p>
+<h5 id="2-3-5-屏幕映射（Screen-Mapping）"><a href="#2-3-5-屏幕映射（Screen-Mapping）" class="headerlink" title="2.3.5 屏幕映射（Screen Mapping）"></a>2.3.5 屏幕映射（Screen Mapping）</h5><p>只有在可视空间体内的基元（裁剪过的）才会被传递到屏幕映射阶段，进入这个阶段时坐标还是三维的。每个基元的x坐标和y坐标被变化到<em>屏幕坐标（screen coordinates）</em>。屏幕坐标和z轴坐标也叫做<em>窗口坐标（window coordinates）</em>。假如场景应该渲染到一个最小角的坐标在（x_1, y_1）, 最大角的坐标在（x_2, y_2）的窗口，其中x_1 &lt; x_2并且y_1&lt;y_2。然后屏幕映射通过缩放操作来进行变换。新的x和y坐标叫做屏幕坐标。z坐标（OpenGL为[-1, +1], DirectX为[0, 1]）同样被映射到[z_1, z_2]，z_1 = 0和z_2 = 1作为默认值。不管怎样这些是可以通过API来修改的。窗口以及重新映射的z值被传入光栅化阶段。图2.7描述了屏幕映射的过程。</p>
 <p><img src="/images/realtime_rendering/chapter2/figure2.7.png" alt=""></p>
 <blockquote>
 <p>Figure2.7 基元在投影转换之后位于一个单元盒中，屏幕映射过程负责找到基元在屏幕上的坐标。</p>
