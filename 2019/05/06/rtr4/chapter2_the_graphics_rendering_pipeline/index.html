@@ -113,7 +113,7 @@
 <meta property="og:image" content="http://yiliangduan.github.com/images/realtime_rendering/chapter2/figure2.7.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/realtime_rendering/chapter2/figure2.8.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/realtime_rendering/chapter2/figure2.9.png">
-<meta property="og:updated_time" content="2019-05-06T02:27:24.866Z">
+<meta property="og:updated_time" content="2019-05-06T02:51:52.015Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="RTR4 第二章 图形渲染管线">
 <meta name="twitter:description" content="这是阅读RealTime-Rendering 4th Edition的笔记，为了便于自己的理解直接一边阅读一边根据自己理解翻译下来，记录在这里。  这章介绍实时渲染的核心部分，也就是图形渲染管线(graphics rendering pipeline)，也称为“管线”。它主要的功能是将一个虚拟的摄像机，三维的对象，光源等这些场景元素生成或者渲染成一张二位的图片。因此，渲染管线是实时渲染的基础工具">
@@ -343,7 +343,7 @@
                 
               
 
-              <time title="Created: 2019-05-06 09:49:40 / Modified: 10:27:24" itemprop="dateCreated datePublished" datetime="2019-05-06T09:49:40+08:00">2019-05-06</time>
+              <time title="Created: 2019-05-06 09:49:40 / Modified: 10:51:52" itemprop="dateCreated datePublished" datetime="2019-05-06T09:49:40+08:00">2019-05-06</time>
             
 
             
@@ -392,7 +392,7 @@
 <p>图2.1.  在左边的图片中，一个虚拟的摄像机位于金字塔的最顶端（在四条直线聚集的地方）。只有那些在可视空间体（view volume）内的基元（译:基元指最小的渲染单位，包括点、线和三角形）才会被渲染。对于以透视渲染的图片（如这里的情况），可视空间体是一个平截的视椎体，比如金字塔的矩形底。右边的图片展示了摄像机所看到的内容。注意到左图中的环状红色的圈没有渲染到有图中，因为它的位置在可视空间体的外部了。而且，左图中这个扭曲的蓝色的菱柱被可视空间体的顶部面片裁剪。</p>
 </blockquote>
 <p>我们将更加集中解释渲染光线在这两个不同的阶段的功能而不是渲染的原理，这些阶段的详细相关应用将在后面的章节介绍。</p>
-<h4 id="2-1-架构"><a href="#2-1-架构" class="headerlink" title="2.1 架构"></a>2.1 架构</h4><p>在物理世界中，管线的概念表现为许多不同的形式，从组装工厂到快餐厨房。当然它也应用到图形渲染。一个管线由多个阶段组成，每个阶段都执行了大规模任务的其中一部分。</p>
+<h4 id="2-1-架构"><a href="#2-1-架构" class="headerlink" title="2.1 架构"></a>2.1 架构</h4><p>在物理世界中，管线的概念表现为许多不同的形式，从组装工厂到快餐厨房。当然它也应用到图形渲染。一个管线由多个阶段组成，每个阶段都执行了大任务的其中一部分。</p>
 <p>管线的阶段是并行执行的，每个阶段都依赖于上一个阶段的结果。理想情况下，将非管线系统分成<em>n</em>个管线阶段能够提高<em>n</em>倍速度。提高的性能主要原因来自使用了管线。举个例子，一系列的人可以快速的做出大量的三明治，一个人准备面包，另外一个人添加肉，再让一个人添加浇头。每个人处理好一个自己的一步之后马上传递给这条线上的接下来的那个人，随即开始处理下一个三明治。如果每个人花费20秒钟去处理他们的任务，做出一个三明治的最高速度为20秒，每分钟做出三个三明治。管线的每个阶段的执行都是并行的，但是他们处理好自己的任务之后暂停住，直到最慢的那个阶段完成。比如，让添加肉的阶段变的更加复杂点，需要花费30秒。现在每分钟最快的速度能完成两个三明治。对于这个制作三明治的管线，添加肉的阶段是性能的瓶颈，因为它决定了整个生产的速度。添加浇头的阶段等待添加肉阶段完成的这段时间叫<em>饥饿</em>(也叫消费者)时间。</p>
 <p>这种结构类型的管线也存在于实时计算机图形中。实时渲染管线粗略的划分为四个主要的阶段—应用层，几何处理，光栅化和像素处理，如图2.2所示。这个结构是渲染管线引擎的核心，它被用在实时计算机渲染应用程序中因此这是接下来的章节讨论的必不可少的基础。</p>
 <p><img src="/images/realtime_rendering/chapter2/figure2.2.png" alt=""></p>
