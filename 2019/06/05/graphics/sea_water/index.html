@@ -94,18 +94,18 @@
 
 
 
-  <meta name="description" content="本文参考: GPU Gems  越来越多的游戏中加入了类似海水的效果，这里利用Gerstner实现一个海水效果。 Gerstner波的计算公式: $$P(x, y, t) = \begin{pmatrix}  x + \sum(Q_iA_i \times \vec{D_ix} \times cos(w_i\vec{D_i}\cdot(x,y) + \varphi_it) \ y + \sum(Q">
+  <meta name="description" content="本文参考: GPU Gems  越来越多的游戏中加入了类似海水的效果，这里利用Gerstner实现一个海水效果。 Gerstner波的计算公式: $$P(x, y, t) = \begin{pmatrix}x + \sum(Q_iA_i \times \vec{D_ix} \times cos(w_i\vec{D_i}\cdot(x,y) + \varphi_it) \y + \sum(Q_iA">
 <meta name="keywords" content="graphics, unity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity 模拟海水的效果">
 <meta property="og:url" content="http://yiliangduan.github.com/2019/06/05/graphics/sea_water/index.html">
 <meta property="og:site_name" content="一点心得">
-<meta property="og:description" content="本文参考: GPU Gems  越来越多的游戏中加入了类似海水的效果，这里利用Gerstner实现一个海水效果。 Gerstner波的计算公式: $$P(x, y, t) = \begin{pmatrix}  x + \sum(Q_iA_i \times \vec{D_ix} \times cos(w_i\vec{D_i}\cdot(x,y) + \varphi_it) \ y + \sum(Q">
+<meta property="og:description" content="本文参考: GPU Gems  越来越多的游戏中加入了类似海水的效果，这里利用Gerstner实现一个海水效果。 Gerstner波的计算公式: $$P(x, y, t) = \begin{pmatrix}x + \sum(Q_iA_i \times \vec{D_ix} \times cos(w_i\vec{D_i}\cdot(x,y) + \varphi_it) \y + \sum(Q_iA">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-07-29T08:07:26.771Z">
+<meta property="og:updated_time" content="2019-07-29T08:10:22.474Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity 模拟海水的效果">
-<meta name="twitter:description" content="本文参考: GPU Gems  越来越多的游戏中加入了类似海水的效果，这里利用Gerstner实现一个海水效果。 Gerstner波的计算公式: $$P(x, y, t) = \begin{pmatrix}  x + \sum(Q_iA_i \times \vec{D_ix} \times cos(w_i\vec{D_i}\cdot(x,y) + \varphi_it) \ y + \sum(Q">
+<meta name="twitter:description" content="本文参考: GPU Gems  越来越多的游戏中加入了类似海水的效果，这里利用Gerstner实现一个海水效果。 Gerstner波的计算公式: $$P(x, y, t) = \begin{pmatrix}x + \sum(Q_iA_i \times \vec{D_ix} \times cos(w_i\vec{D_i}\cdot(x,y) + \varphi_it) \y + \sum(Q_iA">
 
 
 
@@ -348,7 +348,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-07-29 16:07:26" itemprop="dateModified" datetime="2019-07-29T16:07:26+08:00">2019-07-29</time>
+                <time title="Modified: 2019-07-29 16:10:22" itemprop="dateModified" datetime="2019-07-29T16:10:22+08:00">2019-07-29</time>
               
             
           </span>
@@ -384,11 +384,7 @@
 </blockquote>
 <p>越来越多的游戏中加入了类似海水的效果，这里利用Gerstner实现一个海水效果。</p>
 <p>Gerstner波的计算公式:</p>
-<p>$$<br>P(x, y, t) = \begin{pmatrix} </p>
-<p>x + \sum(Q_iA_i \times \vec{D_ix} \times cos(w_i\vec{D_i}\cdot(x,y) + \varphi_it) \</p>
-<p>y + \sum(Q_iA_i \times \vec{D_iy} \times cos(w_i\vec{D_i} \cdot(x,y) + \varphi_it)) \</p>
-<p>\sum(A_isin(w_i\vec{D_i} \cdot (x,y) + \varphi_it)) \</p>
-<p>\end{pmatrix}<br>$$</p>
+<p>$$<br>P(x, y, t) = \begin{pmatrix}<br>x + \sum(Q_iA_i \times \vec{D_ix} \times cos(w_i\vec{D_i}\cdot(x,y) + \varphi_it) \<br>y + \sum(Q_iA_i \times \vec{D_iy} \times cos(w_i\vec{D_i} \cdot(x,y) + \varphi_it)) \<br>\sum(A_isin(w_i\vec{D_i} \cdot (x,y) + \varphi_it)) \<br>\end{pmatrix}<br>$$</p>
 <p>公式中x和y是水平坐标构成的面，但是在Unity中x和y是相互垂直的，所以这里的x，y对应Unity中的x，z。转换下公式:</p>
 <p>$$<br>P(x, z, t) = \begin{pmatrix} </p>
 <p>x + \sum(Q_iA_i \times \vec{D_ix} \times cos(w_i\vec{D_i}\cdot(x,z) + \varphi_it) \</p>
