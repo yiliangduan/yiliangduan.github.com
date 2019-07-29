@@ -102,7 +102,7 @@
 <meta property="og:site_name" content="一点心得">
 <meta property="og:description" content="本文参考: GPU Gems  越来越多的游戏中加入了类似海水的效果，这里利用Gerstner实现一个海水效果。 Gerstner波的计算公式: $$P(x, y, t) = \begin{pmatrix}  x + \sum(Q_iA_i \times \vec{D_ix} \times cos(w_i\vec{D_i}\cdot(x,y) + \varphi_it) \ y + \sum(Q">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-07-29T07:56:04.077Z">
+<meta property="og:updated_time" content="2019-07-29T08:00:51.784Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity 模拟海水的效果">
 <meta name="twitter:description" content="本文参考: GPU Gems  越来越多的游戏中加入了类似海水的效果，这里利用Gerstner实现一个海水效果。 Gerstner波的计算公式: $$P(x, y, t) = \begin{pmatrix}  x + \sum(Q_iA_i \times \vec{D_ix} \times cos(w_i\vec{D_i}\cdot(x,y) + \varphi_it) \ y + \sum(Q">
@@ -348,7 +348,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-07-29 15:56:04" itemprop="dateModified" datetime="2019-07-29T15:56:04+08:00">2019-07-29</time>
+                <time title="Modified: 2019-07-29 16:00:51" itemprop="dateModified" datetime="2019-07-29T16:00:51+08:00">2019-07-29</time>
               
             
           </span>
@@ -628,6 +628,46 @@
   
   
 
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      document.getElementById(all[i].inputID + '-Frame').parentNode.className += ' has-jax';
+    }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
   
 
 
