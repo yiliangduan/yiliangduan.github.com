@@ -94,21 +94,21 @@
 
 
 
-  <meta name="description" content="本文参考: GPU Gems  越来越多的游戏中加入了类似海水的效果，这里利用Gerstner实现一个海水效果。 Gerstner波的计算公式:  公式中x和y是水平坐标构成的面，但是在Unity中x和y是相互垂直的，所以这里的x，y对应Unity中的x，z。转换下公式:  同理得出法线N:  上面公式中的变量说明:  波长（L） ：世界空间中波峰到波峰之前的距离。波长L与角频率w的关系为：">
+  <meta name="description" content="本文参考: GPU Gems  玩游戏时发现越来越多的游戏加入了水波效果，自己也来实现一个。 Gerstner波的计算公式:  公式中x和y是水平坐标构成的面，但是在Unity中x和y是相互垂直的，所以这里的x，y对应Unity中的x，z。转换下公式:  同理得出法线N:  上面公式中的变量说明:  波长（L） ：世界空间中波峰到波峰之前的距离。波长L与角频率w的关系为：   ​">
 <meta name="keywords" content="graphics, unity">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Unity 模拟海水的效果">
+<meta property="og:title" content="Unity 海水的效果">
 <meta property="og:url" content="http://yiliangduan.github.com/2019/06/05/graphics/sea_water/index.html">
 <meta property="og:site_name" content="一点心得">
-<meta property="og:description" content="本文参考: GPU Gems  越来越多的游戏中加入了类似海水的效果，这里利用Gerstner实现一个海水效果。 Gerstner波的计算公式:  公式中x和y是水平坐标构成的面，但是在Unity中x和y是相互垂直的，所以这里的x，y对应Unity中的x，z。转换下公式:  同理得出法线N:  上面公式中的变量说明:  波长（L） ：世界空间中波峰到波峰之前的距离。波长L与角频率w的关系为：">
+<meta property="og:description" content="本文参考: GPU Gems  玩游戏时发现越来越多的游戏加入了水波效果，自己也来实现一个。 Gerstner波的计算公式:  公式中x和y是水平坐标构成的面，但是在Unity中x和y是相互垂直的，所以这里的x，y对应Unity中的x，z。转换下公式:  同理得出法线N:  上面公式中的变量说明:  波长（L） ：世界空间中波峰到波峰之前的距离。波长L与角频率w的关系为：   ​">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yiliangduan.github.com/images/sea_water/1.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/sea_water/2.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/sea_water/3.png">
-<meta property="og:updated_time" content="2019-07-29T07:44:16.198Z">
+<meta property="og:updated_time" content="2019-07-29T07:55:14.976Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Unity 模拟海水的效果">
-<meta name="twitter:description" content="本文参考: GPU Gems  越来越多的游戏中加入了类似海水的效果，这里利用Gerstner实现一个海水效果。 Gerstner波的计算公式:  公式中x和y是水平坐标构成的面，但是在Unity中x和y是相互垂直的，所以这里的x，y对应Unity中的x，z。转换下公式:  同理得出法线N:  上面公式中的变量说明:  波长（L） ：世界空间中波峰到波峰之前的距离。波长L与角频率w的关系为：">
+<meta name="twitter:title" content="Unity 海水的效果">
+<meta name="twitter:description" content="本文参考: GPU Gems  玩游戏时发现越来越多的游戏加入了水波效果，自己也来实现一个。 Gerstner波的计算公式:  公式中x和y是水平坐标构成的面，但是在Unity中x和y是相互垂直的，所以这里的x，y对应Unity中的x，z。转换下公式:  同理得出法线N:  上面公式中的变量说明:  波长（L） ：世界空间中波峰到波峰之前的距离。波长L与角频率w的关系为：   ​">
 <meta name="twitter:image" content="http://yiliangduan.github.com/images/sea_water/1.png">
 
 
@@ -127,7 +127,7 @@
   };
 </script>
 
-  <title>Unity 模拟海水的效果 | 一点心得</title>
+  <title>Unity 海水的效果 | 一点心得</title>
   
 
 
@@ -223,7 +223,7 @@
 
     
 
-    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>首页</a>
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
 
   </li>
         
@@ -240,7 +240,7 @@
 
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>归档</a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
 
   </li>
 
@@ -309,7 +309,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Unity 模拟海水的效果
+          <h1 class="post-title" itemprop="name headline">Unity 海水的效果
 
               
             
@@ -352,7 +352,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-07-29 15:44:16" itemprop="dateModified" datetime="2019-07-29T15:44:16+08:00">2019-07-29</time>
+                <time title="Modified: 2019-07-29 15:55:14" itemprop="dateModified" datetime="2019-07-29T15:55:14+08:00">2019-07-29</time>
               
             
           </span>
@@ -386,7 +386,7 @@
         <blockquote>
 <p>本文参考: <a href="https://developer.nvidia.com/gpugems/GPUGems/gpugems_ch01.html" target="_blank" rel="external">GPU Gems</a></p>
 </blockquote>
-<p>越来越多的游戏中加入了类似海水的效果，这里利用Gerstner实现一个海水效果。</p>
+<p>玩游戏时发现越来越多的游戏加入了水波效果，自己也来实现一个。</p>
 <p>Gerstner波的计算公式:</p>
 <p><img src="/images/sea_water/1.png" alt=""></p>
 <p>公式中x和y是水平坐标构成的面，但是在Unity中x和y是相互垂直的，所以这里的x，y对应Unity中的x，z。转换下公式:</p>
@@ -401,7 +401,8 @@
 </li>
 <li>振幅（A）：从水面到波峰的高度。</li>
 <li>速度（S）：每秒钟波峰移动的距离。为了方便，把速度表示成相常数：<br>   ​                $$ \varphi = S \times 2 \pi / L $$</li>
-<li>方向（D）：垂直于波阵面的水平向量。波阵面为波峰沿着它运动的面。波的状态定义为水平位置（x，z）和时间（t）的函数：<br>   ​                $$ W_i（x，z，t）= A_i \times sin（\vec{D_i} \cdot（x，y）\times w_i + t \times \varphi_i） $$</li>
+<li>方向（D）：垂直于波阵面的水平向量。波阵面为波峰沿着它运动的面。波的状态定义为水平位置（x，z）和时间（t）的函数：<pre><code>![](/images/sea_water/4.png)
+</code></pre></li>
 </ul>
 
       
