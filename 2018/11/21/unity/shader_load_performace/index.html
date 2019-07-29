@@ -105,7 +105,7 @@
 <meta property="og:image" content="http://yiliangduan.github.com/images/unity_shader_load_performance/1.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/unity_shader_load_performance/2.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/unity_shader_load_performance/3.png">
-<meta property="og:updated_time" content="2018-11-22T05:40:26.196Z">
+<meta property="og:updated_time" content="2018-11-22T05:40:26.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity Shader加载性能消耗问题">
 <meta name="twitter:description" content="unity 5.6.6f1  在做性能优化时，发现Shader在每次加载使用了Shader的Prefab资源的时候都会调用Shader.Parse，Shader.CreateGPUProgram两个函数，这个函数的调用消耗了大量的CPU性能。这里写个demo测试下，测试的demo创建了几个prefab，每个Prefab都挂在material，然后没隔0.5s执行一次随机创建一个prefab，再隔">

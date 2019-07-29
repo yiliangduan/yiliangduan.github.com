@@ -94,21 +94,21 @@
 
 
 
-  <meta name="description" content="项目中经常存在很多Material只是贴图不一样的情况，不同的Material是需要单独一个DrawCall来提交数据渲染这个对象的，比如下面场景中五个Cube对象，每个Cube对象使用了一个单独的Material，其中各自的Material只有贴图不一样。因为每个Cube使用了独立的Material，渲染花费了五个DrawCall：  如果我们把这些贴图合并到一张大的贴图中去（参考Unity贴图">
+  <meta name="description" content="Unity  2018.3.5f1  项目中经常存在很多Material只是贴图不一样的情况，不同的Material是需要单独一个DrawCall来提交数据渲染这个对象的，比如下面场景中五个Cube对象，每个Cube对象使用了一个单独的Material，其中各自的Material只有贴图不一样。因为每个Cube使用了独立的Material，渲染花费了五个DrawCall：  如果我们把这些贴图合">
 <meta name="keywords" content="unity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity Mesh合并工具">
 <meta property="og:url" content="http://yiliangduan.github.com/2019/04/22/graphics/mesh_optimizer/index.html">
 <meta property="og:site_name" content="一点心得">
-<meta property="og:description" content="项目中经常存在很多Material只是贴图不一样的情况，不同的Material是需要单独一个DrawCall来提交数据渲染这个对象的，比如下面场景中五个Cube对象，每个Cube对象使用了一个单独的Material，其中各自的Material只有贴图不一样。因为每个Cube使用了独立的Material，渲染花费了五个DrawCall：  如果我们把这些贴图合并到一张大的贴图中去（参考Unity贴图">
+<meta property="og:description" content="Unity  2018.3.5f1  项目中经常存在很多Material只是贴图不一样的情况，不同的Material是需要单独一个DrawCall来提交数据渲染这个对象的，比如下面场景中五个Cube对象，每个Cube对象使用了一个单独的Material，其中各自的Material只有贴图不一样。因为每个Cube使用了独立的Material，渲染花费了五个DrawCall：  如果我们把这些贴图合">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yiliangduan.github.com/images/unity_mesh_tool/4.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/unity_mesh_tool/5.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/unity_mesh_tool/7.png">
-<meta property="og:updated_time" content="2019-04-28T04:35:41.404Z">
+<meta property="og:updated_time" content="2019-06-17T12:47:48.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity Mesh合并工具">
-<meta name="twitter:description" content="项目中经常存在很多Material只是贴图不一样的情况，不同的Material是需要单独一个DrawCall来提交数据渲染这个对象的，比如下面场景中五个Cube对象，每个Cube对象使用了一个单独的Material，其中各自的Material只有贴图不一样。因为每个Cube使用了独立的Material，渲染花费了五个DrawCall：  如果我们把这些贴图合并到一张大的贴图中去（参考Unity贴图">
+<meta name="twitter:description" content="Unity  2018.3.5f1  项目中经常存在很多Material只是贴图不一样的情况，不同的Material是需要单独一个DrawCall来提交数据渲染这个对象的，比如下面场景中五个Cube对象，每个Cube对象使用了一个单独的Material，其中各自的Material只有贴图不一样。因为每个Cube使用了独立的Material，渲染花费了五个DrawCall：  如果我们把这些贴图合">
 <meta name="twitter:image" content="http://yiliangduan.github.com/images/unity_mesh_tool/4.png">
 
 
@@ -352,7 +352,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-04-28 12:35:41" itemprop="dateModified" datetime="2019-04-28T12:35:41+08:00">2019-04-28</time>
+                <time title="Modified: 2019-06-17 20:47:48" itemprop="dateModified" datetime="2019-06-17T20:47:48+08:00">2019-06-17</time>
               
             
           </span>
@@ -386,7 +386,10 @@
       
 
       
-        <p>项目中经常存在很多Material只是贴图不一样的情况，不同的Material是需要单独一个DrawCall来提交数据渲染这个对象的，比如下面场景中五个Cube对象，每个Cube对象使用了一个单独的Material，其中各自的Material只有贴图不一样。因为每个Cube使用了独立的Material，渲染花费了五个DrawCall：</p>
+        <blockquote>
+<p>Unity  2018.3.5f1</p>
+</blockquote>
+<p>项目中经常存在很多Material只是贴图不一样的情况，不同的Material是需要单独一个DrawCall来提交数据渲染这个对象的，比如下面场景中五个Cube对象，每个Cube对象使用了一个单独的Material，其中各自的Material只有贴图不一样。因为每个Cube使用了独立的Material，渲染花费了五个DrawCall：</p>
 <p><img src="/images/unity_mesh_tool/4.png" alt=""></p>
 <p>如果我们把这些贴图合并到一张大的贴图中去（参考<a href="https://www.duanyiliang.com/2018/12/06/graphics/texture_pack_tool/" target="_blank" rel="external">Unity贴图合并工具</a>），然后让那些仅仅是贴图不一样的Material都使用这个合并后的大贴图。针对每个模型修改自己的UV，让Mesh的UV匹配到合并后的大贴图。这样这些模型就可以使用相同的Material了，Unity对使用相同的Material渲染的Mesh会进行<a href="https://docs.unity3d.com/Manual/DrawCallBatching.html" target="_blank" rel="external">动态合批（dynamic batching）</a>。这样游戏运行时这五个Cube只需要一个DrawCall消耗了。进一步思考，dynamic batching可以在运行时刻开辟一块内存把这些分散的Mesh合并到一个新的Mesh中去，我们干脆直接在资源层面将这些Mesh合并，这样还节省运行时刻的内存。这办法可行，下面介绍下一个简单的Mesh合并工具的实现过程。</p>
 <p>需要合并Mesh我们需要先了解其数据结构，一个Mesh文件基本组成部分：</p>
@@ -456,8 +459,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/05/06/rtr4/chapter2_the_graphics_rendering_pipeline/" rel="prev" title="RTR4 第二章 图形渲染管线">
-                RTR4 第二章 图形渲染管线 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/06/05/graphics/sea_water/" rel="prev" title="Unity 模拟海水的效果">
+                Unity 模拟海水的效果 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
