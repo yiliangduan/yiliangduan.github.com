@@ -215,7 +215,7 @@
 
     
 
-    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>首页</a>
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
 
   </li>
         
@@ -232,7 +232,7 @@
 
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>归档</a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
 
   </li>
 
@@ -346,7 +346,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-07-29 16:18:58" itemprop="dateModified" datetime="2019-07-29T16:18:58+08:00">2019-07-29</time>
+                <time title="Modified: 2019-07-29 16:19:59" itemprop="dateModified" datetime="2019-07-29T16:19:59+08:00">2019-07-29</time>
               
             
           </span>
@@ -388,8 +388,7 @@
 <p>公式中x和y是水平坐标构成的面，但是在Unity中x和y是相互垂直的，所以这里的x，y对应Unity中的x，z。转换下公式:</p>
 <p>$$<br>P(x, z, t) = \begin{pmatrix}<br>x + \sum(Q_iA_i \times \vec{D_ix} \times cos(w_i\vec{D_i}\cdot(x,z) + \varphi_it) \\<br>\sum(A_isin(w_i\vec{D_i} \cdot (x,z) + \varphi_it)) \\<br>z + \sum(Q_iA_i \times \vec{D_iz} \times cos(w_i\vec{D_i} \cdot(x,z) + \varphi_it)) \\<br>\end{pmatrix}<br>$$</p>
 <p>同理得出法线N:</p>
-<p>$$<br>\vec{N} = \begin{pmatrix}</p>
-<p>-\sum(\vec{D_ix \times w_i \times A_i \times cos(w_i \times \vec{D_i} \cdot \vec{P} + \varphi_it)}) \\<br>1 -\sum(Q_i\times w_i \times A_i \times sin(w_i \times \vec{D_i} \cdot \vec{P} + \varphi_it)) \\<br>-\sum(\vec{D_iz \times w_i \times A_i \times cos(w_i \times \vec{D_i} \cdot \vec{P} + \varphi_it)}) \\<br>\end{pmatrix}<br>$$</p>
+<p>$$<br>\vec{N} = \begin{pmatrix}<br>-\sum(\vec{D_ix \times w_i \times A_i \times cos(w_i \times \vec{D_i} \cdot \vec{P} + \varphi_it)}) \\<br>1 -\sum(Q_i\times w_i \times A_i \times sin(w_i \times \vec{D_i} \cdot \vec{P} + \varphi_it)) \\<br>-\sum(\vec{D_iz \times w_i \times A_i \times cos(w_i \times \vec{D_i} \cdot \vec{P} + \varphi_it)}) \\<br>\end{pmatrix}<br>$$</p>
 <p>上面公式中的变量说明:</p>
 <ul>
 <li><p>波长（L） ：世界空间中波峰到波峰之前的距离。波长L与角频率w的关系为：<br>   ​               $$ w = 2 \pi / L $$</p>
