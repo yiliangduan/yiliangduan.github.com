@@ -346,7 +346,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-07-29 16:19:59" itemprop="dateModified" datetime="2019-07-29T16:19:59+08:00">2019-07-29</time>
+                <time title="Modified: 2019-08-01 20:13:24" itemprop="dateModified" datetime="2019-08-01T20:13:24+08:00">2019-08-01</time>
               
             
           </span>
@@ -378,30 +378,23 @@
 
       
         
-          
-            <blockquote>
-<p>本文参考: <a href="https://developer.nvidia.com/gpugems/GPUGems/gpugems_ch01.html" target="_blank" rel="external">GPU Gems</a></p>
+          <blockquote>
+<p>说明: </p>
+<ol>
+<li>水波计算参考自:  <a href="https://developer.nvidia.com/gpugems/GPUGems/gpugems_ch01.html" target="_blank" rel="external">GPU Gems</a> </li>
+<li>岸边的水浪参考了:  <a href="http://www.lsngo.net/2017/10/04/unityshader_seawave/?canijq=8y2y42&amp;luhibq=5jzj83&amp;qunqxq=isdjn3" target="_blank" rel="external">lsngo</a> </li>
+</ol>
 </blockquote>
-<p>越来越多的游戏中加入了类似海水的效果，这里利用Gerstner实现一个海水效果。</p>
-<p>Gerstner波的计算公式:</p>
-<p>$$<br>P(x, y, t) = \begin{pmatrix}<br>x + \sum(Q_iA_i \times \vec{D_ix} \times cos(w_i\vec{D_i}\cdot(x,y) + \varphi_it) \\<br>y + \sum(Q_iA_i \times \vec{D_iy} \times cos(w_i\vec{D_i} \cdot(x,y) + \varphi_it)) \\<br>\sum(A_isin(w_i\vec{D_i} \cdot (x,y) + \varphi_it))<br>\end{pmatrix}<br>$$</p>
-<p>公式中x和y是水平坐标构成的面，但是在Unity中x和y是相互垂直的，所以这里的x，y对应Unity中的x，z。转换下公式:</p>
-<p>$$<br>P(x, z, t) = \begin{pmatrix}<br>x + \sum(Q_iA_i \times \vec{D_ix} \times cos(w_i\vec{D_i}\cdot(x,z) + \varphi_it) \\<br>\sum(A_isin(w_i\vec{D_i} \cdot (x,z) + \varphi_it)) \\<br>z + \sum(Q_iA_i \times \vec{D_iz} \times cos(w_i\vec{D_i} \cdot(x,z) + \varphi_it)) \\<br>\end{pmatrix}<br>$$</p>
-<p>同理得出法线N:</p>
-<p>$$<br>\vec{N} = \begin{pmatrix}<br>-\sum(\vec{D_ix \times w_i \times A_i \times cos(w_i \times \vec{D_i} \cdot \vec{P} + \varphi_it)}) \\<br>1 -\sum(Q_i\times w_i \times A_i \times sin(w_i \times \vec{D_i} \cdot \vec{P} + \varphi_it)) \\<br>-\sum(\vec{D_iz \times w_i \times A_i \times cos(w_i \times \vec{D_i} \cdot \vec{P} + \varphi_it)}) \\<br>\end{pmatrix}<br>$$</p>
-<p>上面公式中的变量说明:</p>
-<ul>
-<li><p>波长（L） ：世界空间中波峰到波峰之前的距离。波长L与角频率w的关系为：<br>   ​               $$ w = 2 \pi / L $$</p>
-</li>
-<li><p>控制波陡度的参数（Q）：对于单个的波i，Qi = 0给出正常的正弦波，表示为：<br>   ​              $$  Qi = 1 / (wiAi) $$<br>给出尖峰的波形。应当避免选用较大的Qi值，因为它们将会在波峰上形成环。</p>
-</li>
-<li>振幅（A）：从水面到波峰的高度。</li>
-<li>速度（S）：每秒钟波峰移动的距离。为了方便，把速度表示成相常数：<br>   ​                $$ \varphi = S \times 2 \pi / L $$</li>
-<li>方向（D）：垂直于波阵面的水平向量。波阵面为波峰沿着它运动的面。波的状态定义为水平位置（x，z）和时间（t）的函数：<br>   ​                $$ W_i（x，z，t）= A_i \times sin（\vec{D_i} \cdot（x，y）\times w_i + t \times \varphi_i） $$</li>
-</ul>
-<p>//TODO</p>
-
+<p>越来越多的游戏中加入了类似海水的效果，效果挺不错的。这里自己也实现一个，就当做学习了。首先看实现的效果:</p>
+          <!--noindex-->
           
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/06/05/graphics/sea_water/" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
       
     </div>
