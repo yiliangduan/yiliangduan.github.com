@@ -108,7 +108,9 @@
 <meta property="og:image" content="http://yiliangduan.github.com/images/sea_water/4.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/sea_water/5.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/sea_water/6.jpg">
-<meta property="og:updated_time" content="2019-08-02T12:08:44.073Z">
+<meta property="og:image" content="http://yiliangduan.github.com/images/sea_water/7.png">
+<meta property="og:image" content="http://yiliangduan.github.com/images/sea_water/8.png">
+<meta property="og:updated_time" content="2019-08-02T12:37:23.697Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity 模拟海水的效果">
 <meta name="twitter:description" content="Unity 2018.3.5.f1  越来越多的游戏中加入了类似海水的效果，效果挺不错的。这里自己也实现一个，就当做学习了。首先看实现的效果（文件比较大，需要加载一会）:">
@@ -226,7 +228,7 @@
 
     
 
-    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>首页</a>
 
   </li>
         
@@ -243,7 +245,7 @@
 
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>归档</a>
 
   </li>
 
@@ -355,7 +357,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-08-02 20:08:44" itemprop="dateModified" datetime="2019-08-02T20:08:44+08:00">2019-08-02</time>
+                <time title="Modified: 2019-08-02 20:37:23" itemprop="dateModified" datetime="2019-08-02T20:37:23+08:00">2019-08-02</time>
               
             
           </span>
@@ -404,7 +406,7 @@
 <li>水面Mesh: 自己写了个工具，根据需要的网格数来生成Mesh面片。</li>
 <li>水波 :  用到的是常见的Gerstner波，这个在<a href="https://developer.nvidia.com/gpugems/GPUGems/gpugems_ch01.html" target="_blank" rel="external">GPU Gems</a>中有详细介绍。</li>
 <li>水面的UV扰动 :  通过一个UV扰动贴图，交叉改变UV来实现。</li>
-<li>岸边水逐步变浅 :通过计算每个水面像素的深度来改变水面透明度实现。</li>
+<li>水深浅的效果 :通过计算每个水面像素的深度来改变水面透明度实现。</li>
 <li>岸边轻微的水浪效果: 这个效果是参考自<a href="http://www.lsngo.net/2017/10/04/unityshader_seawave/?canijq=8y2y42&amp;luhibq=5jzj83&amp;qunqxq=isdjn3" target="_blank" rel="external">lsngo</a> ,通过一张水浪图实现的。</li>
 <li>水面的光照: 光照包含了环境光，漫反射和反射。</li>
 </ul>
@@ -440,7 +442,13 @@
 <p><img src="/images/sea_water/6.jpg" alt=""></p>
 <p>计算的shader代码如下:</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//法线从两个方向交叉摆动，形成一种来回的水面波纹</span></span><br><span class="line"><span class="comment">//不使用blue颜色，bump贴图的blue颜色太强了。</span></span><br><span class="line">float3 bump1 = UnpackNormal(tex2D(_BumpTex, i.bump.xy)).rgr; </span><br><span class="line">float3 bump2 = UnpackNormal(tex2D(_BumpTex, i.bump.zw)).rgr;</span><br><span class="line">float3 bump = (bump1 + bump2) * <span class="number">0.5</span>;</span><br></pre></td></tr></table></figure>
-<p>岸边的水逐步变浅</p>
+<p>水深浅的效果</p>
+<p>要计算水深浅的效果需要用的知识是去场景模型的深度值，取场景里的模型的深度值之前写过一篇<a href="https://www.duanyiliang.com/2018/08/18/unity/unity_shader_depth/" target="_blank" rel="external">Unity渲染的深度值获取</a>。拿到水面底部的模型Mesh的深度值，然后用水面Mesh的深度减去底部模型Mesh深度值，得到的值就是该点水的深度值。根据这个深度来改变水面颜色的透明度，即可实现水随深度变浅的效果。如下场景模型，绿色的一层表示水面，底部白色的Mesh是地形，从右边往左其实地形的高度是越来越高的，也就是离水面的高度是越来越小的。我们需要拿到底部Mesh的深度，然后用绿色水面的深度减去它就可以得到深度。</p>
+<p><img src="/images/sea_water/7.png" alt=""></p>
+<p>得到的深度值输出来是这个样子的，颜色越接近黑色的表示值越小也就是越浅的地方。</p>
+<p><img src="/images/sea_water/8.png" alt=""></p>
+<p>有了这个值可以改变像素着色器中输出的颜色的透明度来达到水越浅越透明，水越深越暗的效果了。计算的代码如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//波的深度值</span></span><br><span class="line"><span class="function"><span class="keyword">float</span> <span class="title">get_wave_depth</span><span class="params">(float4 screenPos)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">//水面边缘的透明渐变因子  [远处 -&gt; 岸边 颜色越来越透，形成离岸越近水越浅的效果]</span></span><br><span class="line">	float4 screenPosNorm = screenPos / screenPos.w;</span><br><span class="line"></span><br><span class="line">	screenPosNorm.z = (UNITY_NEAR_CLIP_VALUE &gt;= <span class="number">0</span>) ? screenPosNorm.z : screenPosNorm.z * <span class="number">0.5</span> + <span class="number">0.5</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//非线性的深度值 sceneDepth是GPU中的深度Buffer中的值，记录着在当前顶点渲染之前的最新的顶点深度值。</span></span><br><span class="line">	<span class="comment">//转换为View空间的线性值</span></span><br><span class="line">	<span class="keyword">float</span> linearSceneDepth = LinearEyeDepth(UNITY_SAMPLE_DEPTH(tex2Dproj(_CameraDepthTexture, UNITY_PROJ_COORD(screenPosNorm))));</span><br><span class="line"></span><br><span class="line"> 	<span class="keyword">return</span> (linearSceneDepth - LinearEyeDepth(screenPosNorm.z));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
       
     </div>
