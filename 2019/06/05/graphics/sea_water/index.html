@@ -110,7 +110,7 @@
 <meta property="og:image" content="http://yiliangduan.github.com/images/sea_water/6.jpg">
 <meta property="og:image" content="http://yiliangduan.github.com/images/sea_water/7.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/sea_water/8.png">
-<meta property="og:updated_time" content="2019-08-02T12:55:26.422Z">
+<meta property="og:updated_time" content="2019-08-02T12:57:28.108Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity 模拟海水的效果">
 <meta name="twitter:description" content="Unity 2018.3.5.f1  越来越多的游戏中加入了类似海水的效果，效果挺不错的。这里自己也实现一个，就当做学习了。首先看实现的效果（文件比较大，需要加载一会）:">
@@ -228,7 +228,7 @@
 
     
 
-    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>首页</a>
 
   </li>
         
@@ -245,7 +245,7 @@
 
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>归档</a>
 
   </li>
 
@@ -357,7 +357,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-08-02 20:55:26" itemprop="dateModified" datetime="2019-08-02T20:55:26+08:00">2019-08-02</time>
+                <time title="Modified: 2019-08-02 20:57:28" itemprop="dateModified" datetime="2019-08-02T20:57:28+08:00">2019-08-02</time>
               
             
           </span>
@@ -452,7 +452,7 @@
 <p>水面的光照</p>
 <p>这里给水面加了环境光，漫反射和反射。反射的光线采样自天空盒。比较简单不详细介绍了，下面是计算光照的代码</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//计算光照</span></span><br><span class="line"><span class="function">fixed3 <span class="title">cal_pixel_light_color</span><span class="params">(float3 bump, float3 lightDir, float3 reflect, <span class="keyword">float</span> fresnelFac)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">//环境光</span></span><br><span class="line">	fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz;</span><br><span class="line">	<span class="comment">//漫反射光照</span></span><br><span class="line">	fixed3 diffuse = max(dot(bump, lightDir), <span class="number">0</span>);</span><br><span class="line">	<span class="comment">//反射</span></span><br><span class="line">	fixed3 reflection = texCUBE(_SkyBox, reflect).rgb;</span><br><span class="line"></span><br><span class="line">	fixed3 lightColor = ambient + lerp(diffuse*_DiffuseColor.rgb*_LightColor0.rgb, reflection, fresnelFac);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> lightColor;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>整合上面几部即可得到最开始展示的水面效果。</p>
+<p>整合以面几部即可得到最开始展示的水面效果。</p>
 <p><em>END</em></p>
 
       
