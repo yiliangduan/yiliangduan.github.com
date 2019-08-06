@@ -110,7 +110,7 @@
 <meta property="og:image" content="http://yiliangduan.github.com/images/sea_water/6.jpg">
 <meta property="og:image" content="http://yiliangduan.github.com/images/sea_water/7.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/sea_water/8.png">
-<meta property="og:updated_time" content="2019-08-06T05:57:17.878Z">
+<meta property="og:updated_time" content="2019-08-06T06:02:21.374Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity 模拟海水的效果">
 <meta name="twitter:description" content="Unity 2018.3.5.f1  越来越多的游戏中加入了类似海水的效果，效果挺不错的。这里自己也实现一个，就当做学习了。首先看实现的效果:  文件比较大，需要加载一会。另外GIF看起来锯齿有点严重，实际会好点。如果有SS的话开全局模式会立即加载出来。">
@@ -357,7 +357,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-08-06 13:57:17" itemprop="dateModified" datetime="2019-08-06T13:57:17+08:00">2019-08-06</time>
+                <time title="Modified: 2019-08-06 14:02:21" itemprop="dateModified" datetime="2019-08-06T14:02:21+08:00">2019-08-06</time>
               
             
           </span>
@@ -417,7 +417,7 @@
 <li>水面的光照: 光照包含了环境光，漫反射和反射。</li>
 </ul>
 <p>水面Mesh</p>
-<p>创建水面首先需要的是一个网格，网格的密度要适中，太小了水波波形成齿状不自然，太大了渲染的压力就会很大。我写了个简单的生成Mesh的工具，根据自己的需求来自定义网格数生成Mesh（注：网格这块我没有做LOD优化，如果哪天项目里面用到的话在做优化&gt;_&lt;）:</p>
+<p>创建水面首先需要的是一个网格，网格的密度要适中，太小了水波波形成齿状不自然，太大了渲染的压力就会很大。我写了个简单的生成Mesh的工具，根据自己的需求来自定义网格数生成Mesh（注：网格这块我没有做LOD优化，如果哪天项目里面用到的话在做优化&gt;_&lt;）。工具的代码自己实现也比较简单，也影响文章的长度就不贴了。</p>
 <p><img src="/images/sea_water/2.png" alt=""></p>
 <p>水波</p>
 <p>网格生成好之后着手编写shader来把这个网格渲染成水面，首先是创建摆动水波。由于正弦余弦波的特性（如下图）比较适合计算水面来回起伏的特点，很多计算水波的公式都是基于正弦余弦来演化的。</p>
