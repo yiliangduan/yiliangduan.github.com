@@ -110,7 +110,7 @@
 <meta property="og:image" content="http://yiliangduan.github.com/images/sea_water/6.jpg">
 <meta property="og:image" content="http://yiliangduan.github.com/images/sea_water/7.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/sea_water/8.png">
-<meta property="og:updated_time" content="2019-08-06T09:01:22.505Z">
+<meta property="og:updated_time" content="2019-08-06T11:34:30.983Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity 海水效果">
 <meta name="twitter:description" content="Unity 2018.3.5.f1  越来越多的游戏中加入了类似海水的效果，效果挺不错的。这里自己也实现一个，就当做学习了。首先看实现的效果:  文件比较大，需要加载一会。另外GIF看起来锯齿有点严重，实际会好点。如果有SS的话开全局模式会立即加载出来。">
@@ -357,7 +357,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-08-06 17:01:22" itemprop="dateModified" datetime="2019-08-06T17:01:22+08:00">2019-08-06</time>
+                <time title="Modified: 2019-08-06 19:34:30" itemprop="dateModified" datetime="2019-08-06T19:34:30+08:00">2019-08-06</time>
               
             
           </span>
@@ -449,7 +449,7 @@
 <p>计算的shader代码如下:</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//法线从两个方向交叉摆动，形成一种来回的水面波纹</span></span><br><span class="line"><span class="comment">//不使用blue颜色，bump贴图的blue颜色太强了。</span></span><br><span class="line"><span class="comment">//bump的xy和zw是在顶点着色器中计算的，后面有计算代码。两者的数值是通过世界坐标和自定义的UV偏移参数确定的。</span></span><br><span class="line">float3 bump1 = UnpackNormal(tex2D(_BumpTex, i.bump.xy)).rgr; </span><br><span class="line">float3 bump2 = UnpackNormal(tex2D(_BumpTex, i.bump.zw)).rgr;</span><br><span class="line">float3 bump = (bump1 + bump2) * <span class="number">0.5</span>;</span><br></pre></td></tr></table></figure>
 <p>水深浅的效果</p>
-<p>要计算水深浅的效果需要用的知识是去场景模型的深度值，取场景里的模型的深度值之前写过一篇<a href="https://www.duanyiliang.com/2018/08/18/unity/unity_shader_depth/" target="_blank" rel="external">Unity渲染的深度值获取</a>。拿到水面底部的模型Mesh的深度值，然后用水面Mesh的深度减去底部模型Mesh深度值，得到的值就是该点水的深度值。根据这个深度来改变水面颜色的透明度，即可实现水随深度变浅的效果。如下场景模型，蓝色的一层表示水面，底部是地形，从红色箭头房间其实地形的高度是越来越高的，也就是离水面的高度是越来越小的。我们需要拿到底部地形的深度值，然后用蓝色水面的深度减去它就可以得到深度。</p>
+<p>要计算水深浅的效果需要用的知识是去场景模型的深度值，取场景里的模型的深度值之前写过一篇<a href="https://www.duanyiliang.com/2018/08/18/unity/unity_shader_depth/" target="_blank" rel="external">Unity渲染的深度值获取</a>。拿到水面底部的模型Mesh的深度值，然后用水面Mesh的深度减去底部模型Mesh深度值，得到的值就是该点水的<em>深浅值</em>。根据这个深浅值来改变水面颜色的透明度，即可实现水随深度变浅的效果。如下场景模型，蓝色的一层表示水面，底部是地形，从红色箭头房间其实地形的高度是越来越高的，也就是离水面的高度是越来越小的。我们需要拿到底部地形的深度值，然后用蓝色水面的深度减去它就可以得到深度。</p>
 <p><img src="/images/sea_water/7.png" alt=""></p>
 <p>得到的深度值输出来是这个样子的，颜色越接近黑色的表示值越小也就是越浅的地方。</p>
 <p><img src="/images/sea_water/8.png" alt=""></p>
