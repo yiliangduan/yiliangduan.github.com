@@ -114,7 +114,7 @@
 <meta property="og:image" content="http://yiliangduan.github.com/images/sea_water/10.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/sea_water/sea_water.gif">
 <meta property="og:image" content="http://yiliangduan.github.com/images/pay/wechatpay.png">
-<meta property="og:updated_time" content="2019-08-15T08:25:49.318Z">
+<meta property="og:updated_time" content="2019-08-15T08:32:59.221Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity 海水效果">
 <meta name="twitter:description" content="Unity 2018.3.5.f1  越来越多的游戏中加入了类似海水的效果，效果挺不错的。这里自己也实现一个，就当做学习了。首先看实现的效果:">
@@ -232,7 +232,7 @@
 
     
 
-    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>首页</a>
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
 
   </li>
         
@@ -249,7 +249,7 @@
 
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>归档</a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
 
   </li>
         
@@ -266,7 +266,7 @@
 
     
 
-    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br/>关于</a>
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br/>About</a>
 
   </li>
 
@@ -378,7 +378,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-08-15 16:25:49" itemprop="dateModified" datetime="2019-08-15T16:25:49+08:00">2019-08-15</time>
+                <time title="Modified: 2019-08-15 16:32:59" itemprop="dateModified" datetime="2019-08-15T16:32:59+08:00">2019-08-15</time>
               
             
           </span>
@@ -433,7 +433,7 @@
 <li>水深浅的效果 :通过计算每个水面像素的深度来改变水面透明度实现。</li>
 <li>岸边轻微的水浪效果: 这个效果是参考自<a href="http://www.lsngo.net/2017/10/04/unityshader_seawave/?canijq=8y2y42&amp;luhibq=5jzj83&amp;qunqxq=isdjn3" target="_blank" rel="external">lsngo</a> ,通过一张水浪图实现的。</li>
 <li>水面的光照: 光照包含了环境光，漫反射和高光。</li>
-<li>水面的反射: 利用了一个单独的相机渲染除水的部分到一张RT上，然后采样这样RT到水面。</li>
+<li>水面的反射: 利用了一个单独的相机（剔除水所在的Layer）渲染场景到一张RT上，然后采样这样RT到水面。</li>
 </ul>
 <p>水面Mesh</p>
 <p>创建水面首先需要的是一个网格，网格的密度要适中，太小了水波波形成齿状不自然，太大了渲染的压力就会很大。我写了个简单的生成Mesh的工具，根据自己的需求来自定义网格数生成Mesh（注：网格这块我没有做LOD优化，如果哪天项目里面用到的话在做优化&gt;_&lt;）。工具的代码贴在评论区了。</p>
