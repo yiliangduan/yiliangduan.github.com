@@ -114,7 +114,7 @@
 <meta property="og:image" content="http://yiliangduan.github.com/images/sea_water/10.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/sea_water/sea_water.gif">
 <meta property="og:image" content="http://yiliangduan.github.com/images/pay/wechatpay.png">
-<meta property="og:updated_time" content="2019-08-15T01:45:10.381Z">
+<meta property="og:updated_time" content="2019-08-15T01:48:00.367Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity 海水效果">
 <meta name="twitter:description" content="Unity 2018.3.5.f1  越来越多的游戏中加入了类似海水的效果，效果挺不错的。这里自己也实现一个，就当做学习了。首先看实现的效果:">
@@ -378,7 +378,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-08-15 09:45:10" itemprop="dateModified" datetime="2019-08-15T09:45:10+08:00">2019-08-15</time>
+                <time title="Modified: 2019-08-15 09:48:00" itemprop="dateModified" datetime="2019-08-15T09:48:00+08:00">2019-08-15</time>
               
             
           </span>
@@ -478,7 +478,7 @@
 <p>这里给水面加了环境光，漫反射和反射。反射的光线采样自天空盒。比较简单不详细介绍了，下面是计算光照的代码</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//计算光照</span></span><br><span class="line"><span class="function">fixed3 <span class="title">cal_pixel_light_color</span><span class="params">(float3 bump, float3 lightDir, float3 reflect, float3 viewDir)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">//环境光</span></span><br><span class="line">	fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz;</span><br><span class="line">	<span class="comment">//漫反射光照</span></span><br><span class="line">	fixed3 diffuse = _LightColor0.rgb * max(dot(bump, lightDir), <span class="number">0</span>);</span><br><span class="line">	<span class="comment">//高光</span></span><br><span class="line">	fixed3 specular = _LightColor0.rgb * <span class="built_in">pow</span>(max(dot(reflect, viewDir), <span class="number">0</span>), <span class="number">16</span>);</span><br><span class="line"></span><br><span class="line">	fixed3 lightColor = ambient + diffuse + specular;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> lightColor;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>水面的反射:</p>
-<p>水面的反射是通过一个独立的相机把场景（除水面的其他部分）渲染到一个RenderTexture上。如图:</p>
+<p>水面的反射是通过一个独立的视角翻转的相机把场景（除水面的其他部分）渲染到一个RenderTexture上。如图:</p>
 <p><img src="/images/sea_water/9.png" alt=""></p>
 <p>然后把这个RenderTexture混合到水面颜色中:</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//采样倒影的贴图</span></span><br><span class="line">float4 reflectTextureUV = i.screenPos;</span><br><span class="line">reflectTextureUV.xy += bump * _ReflectionDistort;</span><br><span class="line">half4 reflection = tex2Dproj(_ReflectionTex, UNITY_PROJ_COORD(reflectTextureUV));</span><br><span class="line"></span><br><span class="line"><span class="comment">//i.reflect.w存储的是顶点相对相机的距离，这里实现距离相机越远反射率越大的效果。可以实现最远处的水面和天空盒相连的感觉。</span></span><br><span class="line">half reflectionStrength = clamp(_ReflectionStrength*i.reflect.w*<span class="number">0.01</span>, _ReflectionMinStrength, _ReflectionMaxStrength);</span><br><span class="line"></span><br><span class="line"><span class="comment">//混合</span></span><br><span class="line">color.rgb = lerp(color.rgb, reflection.rgb, reflectionStrength);</span><br></pre></td></tr></table></figure>
