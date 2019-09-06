@@ -301,6 +301,160 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2017/04/24/unity/unity_ar_region_caption_display_black_question/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="yiliangduan@gmail.com"/>
+      <meta itemprop="description" content=""/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一点心得"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/04/24/unity/unity_ar_region_caption_display_black_question/" class="post-title-link" itemprop="url">Region_Capture截取的UV色彩变黑的问题</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-04-24 23:40:10" itemprop="dateCreated datePublished" datetime="2017-04-24T23:40:10+08:00">2017-04-24</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-01-02 11:32:20" itemprop="dateModified" datetime="2018-01-02T11:32:20+08:00">2018-01-02</time>
+              
+            
+          </span>
+
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>使用Vuforia或者EasyAR的AR识别库我们经常用到<em>Region Capture</em>这个插件来得到我们摄像头拍摄的画面中的识别图，得到这张贴图我们就可以把它贴在Target模型上面来达到实时上色的效果。但是在<em>Region Capture</em>获取贴图的过程中(实时的)经常或出现我们移动摄像头偏离识别图的时候那么<em>Region Capture</em>得到贴图有部分是黑色的(这部分黑色的就是识别图没有被摄像头拍摄到的部分)。很显然这样的效果我们是无法接受的。</p>
+<h2 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h2><p>我们读取<em>Region Capture</em>四个边角的pixel来判断是否是黑色。如果是黑色那么我们继续沿用上一次获取的贴图，知道下一次我们得到没有黑色的贴图再更新。下面是我的解决办法:</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// CameraOutputTexture是Camera的Target Texture</span></span><br><span class="line"><span class="comment">// modelTextureCache是直接从CameraOuputTexture读区的贴图</span></span><br><span class="line"><span class="comment">// ModelTexture是最终使用的Texture</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> IEnumerator <span class="title">ClipDrawingTexture</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">yield</span> return new <span class="title">WaitForEndOfFrame</span>(<span class="params"></span>)</span>;</span><br><span class="line"></span><br><span class="line">        AllocModelTextureCacheIsNull();</span><br><span class="line"></span><br><span class="line">        RenderTexture.active = CameraOutputTexture;</span><br><span class="line"></span><br><span class="line">        modelTextureCache.ReadPixels(ClipRegion, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">        RenderTexture.active = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">        modelTextureCache.Apply();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (cameraFocusTargetCenter())</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="literal">null</span> != ModelTexture)</span><br><span class="line">            &#123;</span><br><span class="line">                ModelTexture.LoadRawTextureData(modelTextureCache.GetRawTextureData());</span><br><span class="line">                ModelTexture.Apply();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">bool</span> <span class="title">cameraFocusTargetCenter</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> offsetStart = modelTextureCache.width / <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> textureWidth = modelTextureCache.width;</span><br><span class="line">        <span class="keyword">int</span> textureHeight = modelTextureCache.height;</span><br><span class="line"></span><br><span class="line">        Color leftTop = modelTextureCache.GetPixel(offsetStart, textureHeight - offsetStart);</span><br><span class="line">        Color leftBottom = modelTextureCache.GetPixel(offsetStart, offsetStart);</span><br><span class="line"></span><br><span class="line">        Color rightTop = modelTextureCache.GetPixel(textureWidth - offsetStart, textureHeight - offsetStart);</span><br><span class="line">        Color rightBottom = modelTextureCache.GetPixel(textureWidth - offsetStart, offsetStart);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> !isBlackColor(leftTop) &amp;&amp; !isBlackColor(leftBottom) &amp;&amp; !isBlackColor(rightTop) &amp;&amp; !isBlackColor(rightBottom);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">bool</span> <span class="title">isBlackColor</span>(<span class="params">Color color</span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (color.r &lt; <span class="number">0.01</span>f) &amp;&amp; (color.g &lt; <span class="number">0.01</span>f) &amp;&amp; (color.b &lt; <span class="number">0.01</span>f) &amp;&amp; color.a &gt; <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2017/03/08/unity/monobehaviour_awake_start_function_call_detail/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -748,164 +902,6 @@
           
             <div class="post-button text-center">
               <a class="btn" href="/2017/02/25/unity/monobehavior_awake_function_call_time/" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2017/02/11/csharp/json_auto_generate_cs_code/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="yiliangduan@gmail.com"/>
-      <meta itemprop="description" content=""/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一点心得"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/02/11/csharp/json_auto_generate_cs_code/" class="post-title-link" itemprop="url">Json自动生成C#代码的工具</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-02-11 17:03:34" itemprop="dateCreated datePublished" datetime="2017-02-11T17:03:34+08:00">2017-02-11</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2017-03-08 13:20:28" itemprop="dateModified" datetime="2017-03-08T13:20:28+08:00">2017-03-08</time>
-              
-            
-          </span>
-
-          
-
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h3><p>由于现在项目里面与服务器通信的数据使用的Json格式，在每次服务器添加协议的时候客户端都要根据服务器返回的数据对照写一遍解析的数据类和解析类，这样重复性的工作比较浪费时间，所以写了一个Json自动生成C#代码的工具，只要把服务器返回的Json数据用这个工具转换一下就可以自动生成对应的C#解析的代码。</p>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2017/02/11/csharp/json_auto_generate_cs_code/" rel="contents">
                 Read more &raquo;
               </a>
             </div>

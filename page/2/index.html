@@ -301,6 +301,168 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2019/02/26/note/graphics_architectures_note/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="yiliangduan@gmail.com"/>
+      <meta itemprop="description" content=""/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一点心得"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/02/26/note/graphics_architectures_note/" class="post-title-link" itemprop="url">Unity 着色器中"discard"操作符的问题</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-02-26 20:49:40" itemprop="dateCreated datePublished" datetime="2019-02-26T20:49:40+08:00">2019-02-26</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-08-21 15:42:13" itemprop="dateModified" datetime="2019-08-21T15:42:13+08:00">2019-08-21</time>
+              
+            
+          </span>
+
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>在Unity的Manual中有段对GPU优化的提示:</p>
+<blockquote>
+<p>Some GPUs, particularly ones found in mobile devices, incur a high performance overhead for alpha-testing (or use of the discard and clip operations in pixel shaders). You should replace alpha-test shaders with alpha-blended ones if possible. Where alpha-testing cannot be avoided, you should keep the overall number of visible alpha-tested pixels to a minimum.</p>
+</blockquote>
+<p>意思是说某些类型的GPU设备，尤其是移动设备。在pixel shaders中使用了alpha-testing或者是使用discard和clip操作会导致很高的性能压力，应该使用alpha-blended来代替alpha-testing。</p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/02/26/note/graphics_architectures_note/" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2018/12/06/graphics/texture_pack_tool/"/>
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -737,171 +899,6 @@
           
             <div class="post-button text-center">
               <a class="btn" href="/2018/11/21/unity/shader_load_performace/" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2018/10/24/unity/lightmap_remind/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="yiliangduan@gmail.com"/>
-      <meta itemprop="description" content=""/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一点心得"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2018/10/24/unity/lightmap_remind/" class="post-title-link" itemprop="url">Unity的Lightmap加载的内存问题</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2018-10-24 20:26:10" itemprop="dateCreated datePublished" datetime="2018-10-24T20:26:10+08:00">2018-10-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-10-25 10:17:48" itemprop="dateModified" datetime="2018-10-25T10:17:48+08:00">2018-10-25</time>
-              
-            
-          </span>
-
-          
-
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>unity 5.6.6f1</p>
-</blockquote>
-<p>再检查项目的内存问题时发现Lightmap的加载会消耗大量堆内存(高达17M，总共差不多35张lightmap贴图)。抛开lightmap的资源内存分配理论上不应该消耗堆内存才对，查看加载的代码最终发现了问题。</p>
-<ul>
-<li>LightmapSettings.lightmaps 每次返回的是一个新创建的数组。在所有的lightmap加载完成后去查找单独每个lightmap数据的索引使用到这个API，这个是分配堆内存的主要原因。</li>
-<li>lightmapData.lightmapColor.name  每次都会创建一个新的string对象。项目里面使用查找每个lightmapData的时候使用了名字去查找对比，调用次数非常频繁导致消耗了不少堆内存</li>
-</ul>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2018/10/24/unity/lightmap_remind/" rel="contents">
                 Read more &raquo;
               </a>
             </div>
