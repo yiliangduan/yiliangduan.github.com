@@ -94,19 +94,22 @@
 
 
 
-  <meta name="description" content="参考: GPUGems3 Chapter16 。 如果不想看英文版本的话，我一边阅读的时候一边根据自己的理解翻译下来，放在这里，可以供参考。  首先看效果（文件比较大，需要加载一会）:">
+  <meta name="description" content="参考: GPUGems3 Chapter16 。 如果不想看英文版本的话，我阅读的时候根据自己的理解翻译下来，放在这里，需要的可以参考。  首先看效果（文件比较大，需要加载一会）:">
 <meta name="keywords" content="graphics, unity">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity 草地效果">
 <meta property="og:url" content="http://yiliangduan.github.com/2019/09/03/graphics/grass_effect/index.html">
 <meta property="og:site_name" content="一点心得">
-<meta property="og:description" content="参考: GPUGems3 Chapter16 。 如果不想看英文版本的话，我一边阅读的时候一边根据自己的理解翻译下来，放在这里，可以供参考。  首先看效果（文件比较大，需要加载一会）:">
+<meta property="og:description" content="参考: GPUGems3 Chapter16 。 如果不想看英文版本的话，我阅读的时候根据自己的理解翻译下来，放在这里，需要的可以参考。  首先看效果（文件比较大，需要加载一会）:">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://yiliangduan.github.com/images/graphics/grass/grass.gif">
-<meta property="og:updated_time" content="2019-09-06T09:01:57.904Z">
+<meta property="og:image" content="http://yiliangduan.github.com/images/graphics/grass/1.png">
+<meta property="og:image" content="http://yiliangduan.github.com/images/graphics/grass/2.png">
+<meta property="og:image" content="http://yiliangduan.github.com/images/graphics/grass/3.png">
+<meta property="og:updated_time" content="2019-09-07T03:16:59.414Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity 草地效果">
-<meta name="twitter:description" content="参考: GPUGems3 Chapter16 。 如果不想看英文版本的话，我一边阅读的时候一边根据自己的理解翻译下来，放在这里，可以供参考。  首先看效果（文件比较大，需要加载一会）:">
+<meta name="twitter:description" content="参考: GPUGems3 Chapter16 。 如果不想看英文版本的话，我阅读的时候根据自己的理解翻译下来，放在这里，需要的可以参考。  首先看效果（文件比较大，需要加载一会）:">
 <meta name="twitter:image" content="http://yiliangduan.github.com/images/graphics/grass/grass.gif">
 
 
@@ -367,7 +370,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-09-06 17:01:57" itemprop="dateModified" datetime="2019-09-06T17:01:57+08:00">2019-09-06</time>
+                <time title="Modified: 2019-09-07 11:16:59" itemprop="dateModified" datetime="2019-09-07T11:16:59+08:00">2019-09-07</time>
               
             
           </span>
@@ -403,11 +406,26 @@
       
         <blockquote>
 <p>参考: <a href="https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_ch16.html" target="_blank" rel="external">GPUGems3 Chapter16</a> 。</p>
-<p>如果不想看英文版本的话，我一边阅读的时候一边根据自己的理解翻译下来，放在<a href="https://github.com/yiliangduan/grass_effect_lab/blob/master/gpu_gems3_ch16.pdf" target="_blank" rel="external">这里</a>，可以供参考。</p>
+<p>如果不想看英文版本的话，我阅读的时候根据自己的理解翻译下来，放在<a href="https://github.com/yiliangduan/grass_effect_lab/blob/master/gpu_gems3_ch16.pdf" target="_blank" rel="external">这里</a>，需要的可以参考。</p>
 </blockquote>
 <p>首先看效果（文件比较大，需要加载一会）:</p>
 <p><img src="/images/graphics/grass/grass.gif" alt=""></p>
 <a id="more"></a> 
+<p>草地的Mesh</p>
+<p>草的Mesh为了适应各个角度，做法是用两个面片交叉形成一个十字面片。如下图:</p>
+<p><img src="/images/graphics/grass/1.png" alt=""></p>
+<p>这样不管从哪个角度看，至少可以看到一个面（主要在着色器中开启双面渲染）。要实现这种效果其实还有另外一种方法，就是BillBoard方法。之前写过一篇介绍BillBo的文章，可以参考<a href="https://www.duanyiliang.com/2019/04/08/graphics/billboard_learning_note/" target="_blank" rel="external">这里</a>。</p>
+<p>相位变化曲线</p>
+<p>草的摆动效果通过顶点的相位变化来形成，主要相位变化的函数如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//平滑 曲线</span></span><br><span class="line"><span class="function">float4 <span class="title">SmoothCurve</span><span class="params">( float4 x )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> x * x * (<span class="number">3.0</span> - <span class="number">2.0</span> * x);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//波</span></span><br><span class="line"><span class="function">float4 <span class="title">TriangleWave</span><span class="params">( float4 x )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">abs</span> (frac( x + <span class="number">0.5</span> ) * <span class="number">2.0</span> - <span class="number">1.0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//波平滑</span></span><br><span class="line"><span class="function">float4 <span class="title">SmoothTriangleWave</span><span class="params">( float4 x )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> SmoothCurve(TriangleWave( x ));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以将函数画出来，看看计算出来的数值曲线。画图的工具我是用的<a href="https://www.geogebra.org/graphing" target="_blank" rel="external">geogebra.</a></p>
+<p><img src="/images/graphics/grass/2.png" alt=""></p>
+<p>草的摆动相位函数有了，还有最后一个问题是现实当中草在被风吹动的时候摆动的效果从草的根部到草尖的效果是不一样的。正常情况下，草最根部是不动的，然后自下往上至叶尖摆动幅度是越来越大的。在GPU Gems中介绍的方法是给模型上顶点色，把振幅因子存储到顶点色中，然后渲染的时候读出这个数值作为草的摆动的时候的振幅因子。我这里直接简单一点处理，我是用一张渐变的的贴图，如下:</p>
+<p><img src="/images/graphics/grass/3.png" alt=""></p>
+<p>这样，在计算草的摆动的时候，采样这张贴图，然后把贴图的其中一个通道（我这里取的R通道，其他这种灰色的图取RGB通道值都是差不多的）作为振幅因子（程序中的phaseWeight变量）去和计算好的草的相位做积。就可以得出草的摆动幅度自草根到草尖是越来越强的效果。</p>
+<p>最后着色器代码</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//草的风吹摇摆效果的相位变化</span></span><br><span class="line"><span class="function">float3 <span class="title">GrassSwingPhase</span><span class="params">(float4 vertex, fixed phaseWeight)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	float4 worldPos = mul(unity_ObjectToWorld, vertex);</span><br><span class="line"></span><br><span class="line">	fixed branchPhase = dot(worldPos, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">float</span> vtxPhase = dot(vertex.xyz, branchPhase);</span><br><span class="line">	<span class="keyword">float</span> wavesIn = _Time.y + vtxPhase;</span><br><span class="line"></span><br><span class="line">	float4 waves = (frac(wavesIn.xxxx * float4(<span class="number">1.975</span>, <span class="number">0.793</span>, <span class="number">0.375</span>, <span class="number">0.193</span>)) * <span class="number">2.0</span> - <span class="number">1.0</span>) * _Speed * phaseWeight;</span><br><span class="line">	waves = SmoothTriangleWave(waves);</span><br><span class="line"></span><br><span class="line">	float2 wavesSum = waves.xz + waves.yw;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> wavesSum.xxy * _Speed;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">v2f <span class="title">vert</span> <span class="params">(appdata input)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    v2f o;</span><br><span class="line"></span><br><span class="line">    o.uv = TRANSFORM_TEX(input.uv, _MainTex);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//相位变化权重，草的根部近似0，越往草尖，值越大</span></span><br><span class="line">    fixed phaseWeight = max(<span class="number">0</span>, tex2Dlod(_SwingTex, fixed4(TRANSFORM_TEX(input.uv, _SwingTex), <span class="number">0</span>, <span class="number">0</span>)).r);</span><br><span class="line"></span><br><span class="line">    float4 vertexPhase = float4(input.vertex.xyz + GrassSwingPhase(input.vertex, phaseWeight), input.vertex.w);</span><br><span class="line">    </span><br><span class="line">    o.vertex = UnityObjectToClipPos(vertexPhase);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> o;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fixed4 frag (v2f i) : COLOR</span><br><span class="line">&#123;</span><br><span class="line">    fixed4 col = tex2D(_MainTex, i.uv);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> col;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><em>END</em></p>
 
       
     </div>
