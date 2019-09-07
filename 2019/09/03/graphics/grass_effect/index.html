@@ -106,7 +106,7 @@
 <meta property="og:image" content="http://yiliangduan.github.com/images/graphics/grass/1.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/graphics/grass/2.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/graphics/grass/3.png">
-<meta property="og:updated_time" content="2019-09-07T03:16:59.414Z">
+<meta property="og:updated_time" content="2019-09-07T03:23:25.273Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity 草地效果">
 <meta name="twitter:description" content="参考: GPUGems3 Chapter16 。 如果不想看英文版本的话，我阅读的时候根据自己的理解翻译下来，放在这里，需要的可以参考。  首先看效果（文件比较大，需要加载一会）:">
@@ -224,7 +224,7 @@
 
     
 
-    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>首页</a>
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
 
   </li>
         
@@ -241,7 +241,7 @@
 
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>归档</a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
 
   </li>
         
@@ -258,7 +258,7 @@
 
     
 
-    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br/>关于</a>
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br/>About</a>
 
   </li>
 
@@ -370,7 +370,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-09-07 11:16:59" itemprop="dateModified" datetime="2019-09-07T11:16:59+08:00">2019-09-07</time>
+                <time title="Modified: 2019-09-07 11:23:25" itemprop="dateModified" datetime="2019-09-07T11:23:25+08:00">2019-09-07</time>
               
             
           </span>
@@ -414,7 +414,7 @@
 <p>草地的Mesh</p>
 <p>草的Mesh为了适应各个角度，做法是用两个面片交叉形成一个十字面片。如下图:</p>
 <p><img src="/images/graphics/grass/1.png" alt=""></p>
-<p>这样不管从哪个角度看，至少可以看到一个面（主要在着色器中开启双面渲染）。要实现这种效果其实还有另外一种方法，就是BillBoard方法。之前写过一篇介绍BillBo的文章，可以参考<a href="https://www.duanyiliang.com/2019/04/08/graphics/billboard_learning_note/" target="_blank" rel="external">这里</a>。</p>
+<p>这样不管从哪个角度看，至少可以看到一个面（需要在着色器中开启双面渲染）。要实现这种效果其实还有另外一种方法，就是BillBoard方法。之前写过一篇介绍BillBo的文章，可以参考<a href="https://www.duanyiliang.com/2019/04/08/graphics/billboard_learning_note/" target="_blank" rel="external">这里</a>。</p>
 <p>相位变化曲线</p>
 <p>草的摆动效果通过顶点的相位变化来形成，主要相位变化的函数如下：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//平滑 曲线</span></span><br><span class="line"><span class="function">float4 <span class="title">SmoothCurve</span><span class="params">( float4 x )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> x * x * (<span class="number">3.0</span> - <span class="number">2.0</span> * x);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//波</span></span><br><span class="line"><span class="function">float4 <span class="title">TriangleWave</span><span class="params">( float4 x )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">abs</span> (frac( x + <span class="number">0.5</span> ) * <span class="number">2.0</span> - <span class="number">1.0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//波平滑</span></span><br><span class="line"><span class="function">float4 <span class="title">SmoothTriangleWave</span><span class="params">( float4 x )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> SmoothCurve(TriangleWave( x ));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
