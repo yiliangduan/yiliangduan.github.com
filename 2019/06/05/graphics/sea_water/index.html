@@ -113,8 +113,7 @@
 <meta property="og:image" content="http://yiliangduan.github.com/images/sea_water/9.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/sea_water/10.png">
 <meta property="og:image" content="http://yiliangduan.github.com/images/sea_water/sea_water.gif">
-<meta property="og:image" content="http://yiliangduan.github.com/images/pay/wechatpay.png">
-<meta property="og:updated_time" content="2019-08-23T12:56:18.310Z">
+<meta property="og:updated_time" content="2019-09-17T08:12:24.322Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Unity 海水效果">
 <meta name="twitter:description" content="Unity 2018.3.5.f1  越来越多的游戏中加入了类似海水的效果，效果挺不错的。这里自己也实现一个，就当做学习了。首先看实现的效果:">
@@ -232,7 +231,7 @@
 
     
 
-    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>首页</a>
 
   </li>
         
@@ -249,7 +248,7 @@
 
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>归档</a>
 
   </li>
         
@@ -266,7 +265,7 @@
 
     
 
-    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br/>About</a>
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br/>关于</a>
 
   </li>
 
@@ -378,7 +377,7 @@
                 
                   <span class="post-meta-item-text">Edited on</span>
                 
-                <time title="Modified: 2019-08-23 20:56:18" itemprop="dateModified" datetime="2019-08-23T20:56:18+08:00">2019-08-23</time>
+                <time title="Modified: 2019-09-17 16:12:24" itemprop="dateModified" datetime="2019-09-17T16:12:24+08:00">2019-09-17</time>
               
             
           </span>
@@ -424,12 +423,12 @@
 <li>天空盒:  资源来自<a href="https://assetstore.unity.com/packages/2d/textures-materials/sky/skybox-series-free-103633" target="_blank" rel="external">skybox-series</a></li>
 <li>海水 </li>
 </ul>
-<p>三部分用到的所有资源都是免费的。这里只讲解海水是怎么实现的，其他的不在本文讲解。</p>
+<p>这里只讲解第三部分的海水是怎么实现的，其他的不在本文讲解。</p>
 <p>针对海水我这里主要分为以下几部分来实现的。</p>
 <ul>
 <li>水面Mesh: 自己写了个工具，根据需要的网格数来生成Mesh面片。</li>
 <li>水波 :  用到的是常见的Gerstner波，这个在<a href="https://developer.nvidia.com/gpugems/GPUGems/gpugems_ch01.html" target="_blank" rel="external">GPU Gems</a>中有详细介绍。</li>
-<li>水面的UV扰动 :  通过一个UV扰动贴图，交叉改变UV来实现。</li>
+<li>水面的小波纹 :  通过一个UV扰动贴图，交叉改变UV来实现。</li>
 <li>水深浅的效果 :通过计算每个水面像素的深度来改变水面透明度实现。</li>
 <li>岸边轻微的水浪效果: 这个效果是参考自<a href="http://www.lsngo.net/2017/10/04/unityshader_seawave/?canijq=8y2y42&amp;luhibq=5jzj83&amp;qunqxq=isdjn3" target="_blank" rel="external">lsngo</a> ,通过一张水浪图实现的。</li>
 <li>水面的光照: 光照包含了环境光，漫反射和高光。</li>
@@ -443,7 +442,7 @@
 <p><img src="/images/sea_water/3.png" alt=""></p>
 <p>看下直接利用正弦来计算水波Mesh面波动的效果:</p>
 <p><img src="/images/sea_water/4.png" alt=""></p>
-<p>很明显，真正的海水的波不会像上图的正弦波那样的坡度那样缓和。gerstner更好的模拟了水波的自然形态。如下图，图中gerstner公式计算出来的波每周期左边的坡度是大于右边的坡度的，模拟水波由图片右边向左边波动的效果。</p>
+<p>很明显，真正的海水的波不会像上图的正弦波那样的坡度那样对称缓和。gerstner更好的模拟了水波的自然形态。如下图，图中gerstner公式计算出来的波每周期左边的坡度是大于右边的坡度的，模拟水波由图片右边向左边波动的效果。</p>
 <p><img src="/images/sea_water/5.png" alt=""></p>
 <p>下面看看gerstner水波计算公式（详细的介绍可以参考书籍<a href="https://developer.nvidia.com/gpugems/GPUGems/gpugems_ch01.html" target="_blank" rel="external">GPU Gems</a>）:<br>$$<br>P(x, y, t) = \begin{pmatrix}<br>x + \sum(Q_iA_i \times \vec{D_ix} \times cos(w_i\vec{D_i}\cdot(x,y) + \varphi_it) \\<br>y + \sum(Q_iA_i \times \vec{D_iy} \times cos(w_i\vec{D_i} \cdot(x,y) + \varphi_it)) \\<br>\sum(A_isin(w_i\vec{D_i} \cdot (x,y) + \varphi_it))<br>\end{pmatrix}<br>$$</p>
 <p>公式中x和y是水平坐标构成的面，但是在Unity中x和y是相互垂直的，所以这里的x，y对应Unity中的x，z。转换下公式:</p>
@@ -462,8 +461,8 @@
 </ul>
 <p>编写成代码之后如下:</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">float4 <span class="title">get_gerstner_wave_vertex</span><span class="params">(float4 vertex, float3 direction,<span class="keyword">float</span> steepness, <span class="keyword">float</span> waveLength, <span class="keyword">float</span> speed, <span class="keyword">float</span> amplitude)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">float</span> factorW = <span class="number">2</span> * UNITY_PI / waveLength;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">float</span> factortrangle = factorW * direction.x + speed * _Time.y;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">float</span> factorQ = steepness;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">float</span> cosFactor = <span class="built_in">pow</span>(<span class="built_in">cos</span>(factortrangle), <span class="number">2</span>);</span><br><span class="line">	<span class="keyword">float</span> sinFactor = <span class="built_in">pow</span>(<span class="built_in">sin</span>(factortrangle), <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">	float4 vertexWavePos;</span><br><span class="line"></span><br><span class="line">	vertexWavePos.x = vertex.x + direction.x * factorQ * amplitude * cosFactor;</span><br><span class="line">	vertexWavePos.y = factorQ * sinFactor;</span><br><span class="line">	vertexWavePos.z = vertex.z + direction.z * factorQ  * amplitude *  cosFactor;</span><br><span class="line">	vertexWavePos.w = vertex.w;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> vertexWavePos;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>水面的UV扰动 </p>
-<p>水波的效果处理好之后，接下来实现下水面的UV扰动效果。通俗一点说就是水面像是被风吹着有来回轻微晃动的效果。这部比较简单直接用一张凹凸贴图来实时改变水面Mesh的UV即可。但是要有<em>来回</em>的效果的话这里面有个方法就是对凹凸贴图进行两次采样，两次采样的UV保持不同。然后混合两个采样后的像素，把这个像素作为扰动UV的因子就可以得到想要的效果了。我用的贴图如下（也可以<a href="https://www.google.com/search?rlz=1C1CHBD_zh-CNUS848US848&amp;q=water+normal+texture&amp;tbm=isch&amp;source=univ&amp;sa=X&amp;ved=2ahUKEwj_9vfykuTjAhUbyosBHQrZCOwQsAR6BAgHEAE&amp;biw=1348&amp;bih=798" target="_blank" rel="external">点这里Google一张</a>选择自己想要的）:</p>
+<p>水面的小波纹</p>
+<p>水波的效果处理好之后，接下来实现下水面的小波纹。通俗一点说就是水面像是被风吹着有来回轻微晃动的效果。这部比较简单直接用一张凹凸贴图来实时改变水面Mesh的UV即可。但是要有<em>来回</em>的效果的话这里面有个方法就是对凹凸贴图进行两次采样，两次采样的UV保持不同。然后混合两个采样后的像素，把这个像素作为扰动UV的因子就可以得到想要的效果了。我用的贴图如下（也可以<a href="https://www.google.com/search?rlz=1C1CHBD_zh-CNUS848US848&amp;q=water+normal+texture&amp;tbm=isch&amp;source=univ&amp;sa=X&amp;ved=2ahUKEwj_9vfykuTjAhUbyosBHQrZCOwQsAR6BAgHEAE&amp;biw=1348&amp;bih=798" target="_blank" rel="external">点这里Google一张</a>选择自己想要的）:</p>
 <p><img src="/images/sea_water/6.jpg" alt=""></p>
 <p>计算的shader代码如下:</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//法线从两个方向交叉摆动，形成一种来回的水面波纹</span></span><br><span class="line"><span class="comment">//不使用blue颜色，bump贴图的blue颜色太强了。</span></span><br><span class="line"><span class="comment">//bump的xy和zw是在顶点着色器中计算的，后面有计算代码。两者的数值是通过世界坐标和自定义的UV偏移参数确定的。</span></span><br><span class="line">float3 bump1 = UnpackNormal(tex2D(_BumpTex, i.bump.xy)).rgr; </span><br><span class="line">float3 bump2 = UnpackNormal(tex2D(_BumpTex, i.bump.zw)).rgr;</span><br><span class="line">float3 bump = (bump1 + bump2) * <span class="number">0.5</span>;</span><br></pre></td></tr></table></figure>
@@ -490,11 +489,6 @@
 </blockquote>
 <p><img src="/images/sea_water/sea_water.gif" alt=""></p>
 <p><em>END</em></p>
-<blockquote>
-<p>觉得对你有帮助的话，可以自愿付费。</p>
-<p>微信:</p>
-<p><img src="/images/pay/wechatpay.png" alt=""></p>
-</blockquote>
 
       
     </div>
