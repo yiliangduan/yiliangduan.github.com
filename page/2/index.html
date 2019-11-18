@@ -2,22 +2,26 @@
 
 
 
+  
 
 
-
-
-
-
-
-
-
-
-<html class="theme-next mist" lang="zh-Hans">
+<html class="theme-next muse use-motion" lang="zh-Hans">
 <head>
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
-<meta name="theme-color" content="#222"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
 
 
@@ -40,44 +44,67 @@
 
 
 
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.0.0" rel="stylesheet" type="text/css" />
 
 
-<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2"/>
-
-<link rel="stylesheet" href="/css/main.css?v=7.1.0"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.0.0">
 
 
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.0.0">
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico?v=7.1.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.0.0">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico?v=7.1.0">
-
-
-  <link rel="mask-icon" href="/images/logo.svg?v=7.1.0" color="#222">
-
+  <link rel="mask-icon" href="/images/logo.svg?v=6.0.0" color="#222">
 
 
 
 
 
+  <meta name="keywords" content="Hexo, NexT" />
 
-<script id="hexo.configurations">
+
+
+
+
+
+
+
+
+
+<meta name="description" content="blog-documents">
+<meta property="og:type" content="website">
+<meta property="og:title" content="一点心得">
+<meta property="og:url" content="http://yiliangduan.github.com/README.html">
+<meta property="og:site_name" content="一点心得">
+<meta property="og:description" content="blog-documents">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-08-16T02:33:19.028Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一点心得">
+<meta name="twitter:description" content="blog-documents">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
   var NexT = window.NexT || {};
   var CONFIG = {
     root: '/',
-    scheme: 'Mist',
-    version: '7.1.0',
-    sidebar: {"position":"left","display":"remove","offset":12,"onmobile":false,"dimmer":false},
-    back2top: true,
-    back2top_sidebar: false,
+    scheme: 'Muse',
+    version: '6.0.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
     fancybox: false,
     fastclick: false,
     lazyload: false,
     tabs: true,
-    motion: {"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
     algolia: {
       applicationID: '',
       apiKey: '',
@@ -89,36 +116,14 @@
 </script>
 
 
-  
 
-
-
-
-  <meta property="og:type" content="website">
-<meta property="og:title" content="一点心得">
-<meta property="og:url" content="http://yiliangduan.github.com/page/2/index.html">
-<meta property="og:site_name" content="一点心得">
-<meta property="og:locale" content="zh-Hans">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="一点心得">
+  <link rel="canonical" href="http://yiliangduan.github.com/README.html"/>
 
 
 
 
 
-  
-  
-  <link rel="canonical" href="http://yiliangduan.github.com/page/2/"/>
-
-
-
-<script id="page.configurations">
-  CONFIG.page = {
-    sidebar: "",
-  };
-</script>
-
-  <title>一点心得</title>
+  <title>一点心得</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -127,35 +132,6 @@
 
 
 
-
-
-
-
-
-  <noscript>
-  <style>
-  .use-motion .motion-element,
-  .use-motion .brand,
-  .use-motion .menu-item,
-  .sidebar-inner,
-  .use-motion .post-block,
-  .use-motion .pagination,
-  .use-motion .comments,
-  .use-motion .post-header,
-  .use-motion .post-body,
-  .use-motion .collection-title { opacity: initial; }
-
-  .use-motion .logo,
-  .use-motion .site-title,
-  .use-motion .site-subtitle {
-    opacity: initial;
-    top: initial;
-  }
-
-  .use-motion .logo-line-before i { left: initial; }
-  .use-motion .logo-line-after i { right: initial; }
-  </style>
-</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
 
 </head>
 
@@ -171,23 +147,24 @@
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
     
 
     <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
-        
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
         <span class="site-title">一点心得</span>
-        
+        <span class="logo-line-after"><i></i></span>
       </a>
     </div>
-    
-    
+      
+        <p class="site-subtitle"></p>
+      
   </div>
 
   <div class="site-nav-toggle">
-    <button aria-label="Toggle navigation bar">
+    <button>
       <span class="btn-bar"></span>
       <span class="btn-bar"></span>
       <span class="btn-bar"></span>
@@ -195,72 +172,35 @@
   </div>
 </div>
 
-
-
 <nav class="site-nav">
+  
+
   
     <ul id="menu" class="menu">
       
         
-        
-        
-          
-          <li class="menu-item menu-item-home">
-
-    
-    
-    
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
       
-    
-
-    
-
-    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>首页</a>
-
-  </li>
         
-        
-        
-          
-          <li class="menu-item menu-item-archives">
-
-    
-    
-    
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
       
-    
 
-    
-
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>归档</a>
-
-  </li>
-        
-        
-        
-          
-          <li class="menu-item menu-item-about">
-
-    
-    
-    
-      
-    
-
-    
-
-    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br/>关于</a>
-
-  </li>
-
-      
       
     </ul>
-  
-
-  
-    
-
   
 
   
@@ -268,20 +208,12 @@
 
 
 
-  
-
-
-
-</div>
+ </div>
     </header>
-
-    
-
 
     <main id="main" class="main">
       <div class="main-inner">
         <div class="content-wrap">
-          
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
@@ -294,23 +226,21 @@
   
   
 
-  
-
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
   
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2019/04/08/graphics/billboard_learning_note/"/>
+    <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2019/04/08/graphics/billboard_learning_note/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="yiliangduan@gmail.com"/>
-      <meta itemprop="description" content=""/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
+      <meta itemprop="name" content="yiliangduan@gmail.com">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.png">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一点心得"/>
+      <meta itemprop="name" content="一点心得">
     </span>
 
     
@@ -320,51 +250,23 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                
-                <a href="/2019/04/08/graphics/billboard_learning_note/" class="post-title-link" itemprop="url">Billboard 效果实现原理</a>
-              
-            
-          </h1>
+                <a class="post-title-link" href="/2019/04/08/graphics/billboard_learning_note/" itemprop="url">Billboard 效果实现原理</a></h1>
         
 
         <div class="post-meta">
           <span class="post-time">
-
-            
-            
-            
-
             
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-
-              
-                
-              
-
-              <time title="Created: 2019-04-08 20:26:10" itemprop="dateCreated datePublished" datetime="2019-04-08T20:26:10+08:00">2019-04-08</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-08T20:26:10+08:00">2019-04-08</time>
             
 
             
-              
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-08-07 10:39:01" itemprop="dateModified" datetime="2019-08-07T10:39:01+08:00">2019-08-07</time>
-              
             
           </span>
 
@@ -397,29 +299,21 @@
         
           <p>在<a href="https://files.unity3d.com/assetstore/ShadowgunSampleLevel.zip" target="_blank" rel="external">ShadowgunSample</a>中学到了用shader实现一个广告牌（Billboard）效果，这里记录下。在ShadowgunSample的场景中，这个模型两边的光晕永远是对着移动中的摄像机，如下图:</p>
           <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2019/04/08/graphics/billboard_learning_note/" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/04/08/graphics/billboard_learning_note/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
           <!--/noindex-->
         
       
     </div>
-
-    
-
     
     
     
 
     
 
-    
-      
-    
     
 
     
@@ -452,23 +346,21 @@
   
   
 
-  
-
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
   
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2019/02/26/note/graphics_architectures_note/"/>
+    <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2019/02/26/note/graphics_architectures_note/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="yiliangduan@gmail.com"/>
-      <meta itemprop="description" content=""/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
+      <meta itemprop="name" content="yiliangduan@gmail.com">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.png">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一点心得"/>
+      <meta itemprop="name" content="一点心得">
     </span>
 
     
@@ -478,51 +370,23 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                
-                <a href="/2019/02/26/note/graphics_architectures_note/" class="post-title-link" itemprop="url">Unity 着色器中"discard"操作符的问题</a>
-              
-            
-          </h1>
+                <a class="post-title-link" href="/2019/02/26/note/graphics_architectures_note/" itemprop="url">Unity 着色器中"discard"操作符的问题</a></h1>
         
 
         <div class="post-meta">
           <span class="post-time">
-
-            
-            
-            
-
             
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-
-              
-                
-              
-
-              <time title="Created: 2019-02-26 20:49:40" itemprop="dateCreated datePublished" datetime="2019-02-26T20:49:40+08:00">2019-02-26</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-26T20:49:40+08:00">2019-02-26</time>
             
 
             
-              
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-08-21 15:42:13" itemprop="dateModified" datetime="2019-08-21T15:42:13+08:00">2019-08-21</time>
-              
             
           </span>
 
@@ -559,29 +423,21 @@
 </blockquote>
 <p>意思是说某些类型的GPU设备，尤其是移动设备。在pixel shaders中使用了alpha-testing或者是使用discard和clip操作会导致很高的性能压力，应该使用alpha-blended来代替alpha-testing。</p>
           <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2019/02/26/note/graphics_architectures_note/" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/02/26/note/graphics_architectures_note/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
           <!--/noindex-->
         
       
     </div>
-
-    
-
     
     
     
 
     
 
-    
-      
-    
     
 
     
@@ -614,23 +470,21 @@
   
   
 
-  
-
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
   
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2018/12/06/graphics/texture_pack_tool/"/>
+    <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2018/12/06/graphics/texture_pack_tool/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="yiliangduan@gmail.com"/>
-      <meta itemprop="description" content=""/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
+      <meta itemprop="name" content="yiliangduan@gmail.com">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.png">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一点心得"/>
+      <meta itemprop="name" content="一点心得">
     </span>
 
     
@@ -640,51 +494,23 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                
-                <a href="/2018/12/06/graphics/texture_pack_tool/" class="post-title-link" itemprop="url">Unity Texture合并工具</a>
-              
-            
-          </h1>
+                <a class="post-title-link" href="/2018/12/06/graphics/texture_pack_tool/" itemprop="url">Unity Texture合并工具</a></h1>
         
 
         <div class="post-meta">
           <span class="post-time">
-
-            
-            
-            
-
             
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-
-              
-                
-              
-
-              <time title="Created: 2018-12-06 21:26:10" itemprop="dateCreated datePublished" datetime="2018-12-06T21:26:10+08:00">2018-12-06</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-06T21:26:10+08:00">2018-12-06</time>
             
 
             
-              
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2019-10-14 19:42:58" itemprop="dateModified" datetime="2019-10-14T19:42:58+08:00">2019-10-14</time>
-              
             
           </span>
 
@@ -731,29 +557,21 @@
 <li>Pack Texture(All Relayout): 全部重新排列合图，这种情况下可能改变之前已经合过贴图的在图集中的偏移。</li>
 </ul>
           <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2018/12/06/graphics/texture_pack_tool/" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/12/06/graphics/texture_pack_tool/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
           <!--/noindex-->
         
       
     </div>
-
-    
-
     
     
     
 
     
 
-    
-      
-    
     
 
     
@@ -786,23 +604,21 @@
   
   
 
-  
-
   <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
   
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2018/11/29/unity/gameobject_pool_problem/"/>
+    <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2018/11/29/unity/gameobject_pool_problem/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="yiliangduan@gmail.com"/>
-      <meta itemprop="description" content=""/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
+      <meta itemprop="name" content="yiliangduan@gmail.com">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.png">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一点心得"/>
+      <meta itemprop="name" content="一点心得">
     </span>
 
     
@@ -812,51 +628,23 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                
-                <a href="/2018/11/29/unity/gameobject_pool_problem/" class="post-title-link" itemprop="url">Unity Object缓存遇到的一个问题</a>
-              
-            
-          </h1>
+                <a class="post-title-link" href="/2018/11/29/unity/gameobject_pool_problem/" itemprop="url">Unity Object缓存遇到的一个问题</a></h1>
         
 
         <div class="post-meta">
           <span class="post-time">
-
-            
-            
-            
-
             
               <span class="post-meta-item-icon">
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-
-              
-                
-              
-
-              <time title="Created: 2018-11-29 20:26:10" itemprop="dateCreated datePublished" datetime="2018-11-29T20:26:10+08:00">2018-11-29</time>
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-29T20:26:10+08:00">2018-11-29</time>
             
 
             
-              
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-12-01 15:17:56" itemprop="dateModified" datetime="2018-12-01T15:17:56+08:00">2018-12-01</time>
-              
             
           </span>
 
@@ -893,29 +681,21 @@
 <p>今天在项目里面遇到一个BUG，一个脚本对一个Prefab的引用偶现丢失的情况。查证之后发现这个问题还比较特殊，记录一下。</p>
 <p>问题是这样的: 有两个Prefab A和B，在场景中A和B分别 Instantiate出来a和b对象，a的父节点是其他的Prefab Instantiate的对象，但是b的父节点就是a。在a使用完成之后直接将a放进了ObjectPool里面回收了，然后对b也用ObjectPool对其同样进行回收。过一段时间之后重新用到a对象，然后直接从ObjectPool里面取出来。但是这个时候Instantiate b的时候发现a的Instantiate对象上已经存在b(b在回收的时候没有断开与父节点的关联，a在之后回收的时候也没有删除b子节点)，这个时候就继续使用已经存在的b，过了一段时间(正好ObjectPool里面的缓存对象的生存周期结束)ObjectPool把B给回收了，造成了对b引用的脚本空指针了。结构如图:</p>
           <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2018/11/29/unity/gameobject_pool_problem/" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/11/29/unity/gameobject_pool_problem/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
           <!--/noindex-->
         
       
     </div>
-
-    
-
     
     
     
 
     
 
-    
-      
-    
     
 
     
@@ -944,7 +724,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -952,7 +732,92 @@
           </div>
           
 
+
+          
+
         </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/avatar.png"
+                alt="yiliangduan@gmail.com" />
+            
+              <p class="site-author-name" itemprop="name">yiliangduan@gmail.com</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
         
       </div>
     </main>
@@ -960,7 +825,7 @@
     <footer id="footer" class="footer">
       <div class="footer-inner">
         <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
-  <span class="with-love" id="animate">
+  <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">yiliangduan@gmail.com</span>
@@ -971,15 +836,20 @@
 </div>
 
 
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
 
 
 
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/theme-next/hexo-theme-next">NexT.Muse</a> v6.0.0</div>
 
 
 
 
         
-
 
 
 
@@ -1000,14 +870,11 @@
 
     
 
-    
-
-    
   </div>
 
   
 
-<script>
+<script type="text/javascript">
   if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
     window.Promise = null;
   }
@@ -1036,46 +903,32 @@
 
 
 
-
-
   
-  <script src="/lib/jquery/index.js?v=2.1.3"></script>
-
   
-  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
   
-  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-
-  
-
-
-  <script src="/js/utils.js?v=7.1.0"></script>
-
-  <script src="/js/motion.js?v=7.1.0"></script>
-
-
 
   
   
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
 
-
-  <script src="/js/schemes/muse.js?v=7.1.0"></script>
-
-
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
 
 
   
 
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.0.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.0.0"></script>
+
+
+
   
-
-
-  <script src="/js/next-boot.js?v=7.1.0"></script>
-
-
-  
-
   
 
   
@@ -1083,49 +936,74 @@
   
 
 
-
-  
-
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.0.0"></script>
 
 
 
   
 
   
-
-  
-  
-
-  
-  
-    
-      
-    
-      
-    
-      
-    
-      
     
   
 
-  
-
-
-  
-
-  
-
-  
-  <script>
-    (function(){
-      var bp = document.createElement('script');
-      var curProtocol = window.location.protocol.split(':')[0];
-      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
-      var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(bp, s);
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"duanyiliang"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
     })();
-  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
 
 
   
@@ -1135,7 +1013,6 @@
   
 
   
-
   
 
   
