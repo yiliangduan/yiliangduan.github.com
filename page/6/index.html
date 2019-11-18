@@ -215,7 +215,7 @@
 
     
 
-    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>首页</a>
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
 
   </li>
         
@@ -232,7 +232,7 @@
 
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>归档</a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
 
   </li>
         
@@ -249,7 +249,7 @@
 
     
 
-    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br/>关于</a>
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br/>About</a>
 
   </li>
 
@@ -285,6 +285,183 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2017/11/18/unity/optimizing_garbage_collection_in_unity_games/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="yiliangduan@gmail.com"/>
+      <meta itemprop="description" content=""/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一点心得"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2017/11/18/unity/optimizing_garbage_collection_in_unity_games/" class="post-title-link" itemprop="url">Unity游戏内存回收的优化(译)</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2017-11-18 20:58:35" itemprop="dateCreated datePublished" datetime="2017-11-18T20:58:35+08:00">2017-11-18</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2017-12-03 16:19:16" itemprop="dateModified" datetime="2017-12-03T16:19:16+08:00">2017-12-03</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>原文<a href="https://unity3d.com/cn/learn/tutorials/topics/performance-optimization/optimizing-garbage-collection-unity-games" target="_blank" rel="external">Optimizing garbage collection in Unity games</a>。这里对这篇文章的粗略翻译，当作自己的笔记。</p>
+<p>Garbage Collector在这里被翻译成名词GC。对于Garbage Collection这里翻译成GC内存回收。</p>
+<p>内存垃圾: 代码中销毁了(disposed)但是GC还没有清理的内存。</p>
+</blockquote>
+<h1 id="Unity的托管内存的简单介绍"><a href="#Unity的托管内存的简单介绍" class="headerlink" title="Unity的托管内存的简单介绍"></a>Unity的托管内存的简单介绍</h1><p>为了理解GC（本文GC指代Garbage Collector）在内存分配和回收时是怎样工作的，我们必须首先了解Unity的引擎代码和我们自己编写的脚本是怎么利用内存来工作的。</p>
+<p>Unity引擎代码运行时管理内存的方式叫做手动管理内存(manual memory management)。也就是说引擎代码必须显示的声明内存是怎么使用的。手动管理内存没有用到GC，这部分内容本文不做介绍。</p>
+<p>当运行我们自己编写的脚本时Unity管理这部分内存的方式叫做自动内存管理(automatic memory management).这意味这我们自己编写的代码不需要很详细的去告诉Unity怎样去管理这部分内存。Unity都帮我们做好了。</p>
+<p>简而言之，Unity的自动管理内存工作方式如下：</p>
+<ul>
+<li>Unity有两个可以访问的内存池：栈(stack)和堆 (heap)(也被叫做托管堆。栈内存被用在短期存储一些小片段的数据，堆则用来存储一些长期并且比较大的片段数据)。</li>
+<li>当一个变量创建好了，Unity会在栈或者堆中申请一个内存块。</li>
+<li>只要这个创建的变量在作用范围之内(我们的代码一直可以访问到它)，为它分配的相应的那块内存就一直是保持可用状态。我们把这块内存成为已经被分配的(allocated)。我们把在栈中分配内存的变量叫做栈上的对象，把内存分配在堆上的变量成为堆上的对象。</li>
+<li>当这个变量已经脱离了它的作用区域，相应的这个变量所分配的内存也就不再需要了，这块内存随之就会把返回给分配时的那个内存池。我们称这块内存叫做已回收(deallocated)。栈上的内存一旦离开了作用区域就会立即被回收。如果是堆上的内存即便是它的引用已经超出了作用区域也不会被立即回收，它还会保持它的分配状态。</li>
+<li>GC会标记并且回收堆上没有被使用的内存。它会周期性的对堆上的内存进行清理。</li>
+</ul>
+<p>现在我们了解了内存使用的流程，让我们来更深入的来了解栈和堆上的内存的分配和释放。</p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2017/11/18/unity/optimizing_garbage_collection_in_unity_games/" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -866,172 +1043,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-tags" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yiliangduan.github.com/2017/07/13/unity/ugui_panel_visible_manage/"/>
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="yiliangduan@gmail.com"/>
-      <meta itemprop="description" content=""/>
-      <meta itemprop="image" content="/images/avatar.gif"/>
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="一点心得"/>
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2017/07/13/unity/ugui_panel_visible_manage/" class="post-title-link" itemprop="url">Unity3D的UIPanel隐藏的处理方式</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-
-              
-                
-              
-
-              <time title="Created: 2017-07-13 23:40:10" itemprop="dateCreated datePublished" datetime="2017-07-13T23:40:10+08:00">2017-07-13</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Edited on</span>
-                
-                <time title="Modified: 2018-01-02 19:05:20" itemprop="dateModified" datetime="2018-01-02T19:05:20+08:00">2018-01-02</time>
-              
-            
-          </span>
-
-          
-
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <ol>
-<li><p>隐藏的方式</p>
-<p>1.1 设置Active为false方式。这种方式UIPanel的所有脚本逻辑、Rendering、Canvas.BuildBatch都会停止。构建的渲染的Mesh也会被清理。</p>
-<p>1.2 设置不被渲染的Camera的Layer层上。这种方式相当于只是停掉了Rendering，其他的逻辑照常执行。</p>
-</li>
-<li><p>优缺点比较</p>
-<p>2.1 方式1隐藏Panel的时候构建的Mesh会被清理掉，会节省这部分内存。而且在动态Panel的时候(Panel上包含移动变化的GameObject)，Canvas的BuildBatch不会再调用，这会节省CPU(节省的程度根据Panel的复杂度决定的)。但是这种方式在隐藏和重新显示的时候由于需要重新构建渲染的Mesh，会消耗一定的CPU和产生GC.Allocate。</p>
-<p>2.2 方式2的好处在于Panel隐藏和重新显示的时候不需要重新构建渲染的Mesh，不会产生额外的CPU消耗和GC.Allocate。但是这种方式在隐藏的时候Panel的所有逻辑任然在执行(Update等)，在动态Panel的话Canvas的BuildBatch也会照常执行，这会一直消耗CPU资源。</p>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
