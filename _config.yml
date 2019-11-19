@@ -21,8 +21,8 @@ permalink: pretty
 # Pagination
 paginate: 10
 #paginate_path: "/page:num/"
-#archive:
-  #paginate: 10
+archive:
+  paginate: 100
   #paginate_path: "/page:num/"
 #category:
   #paginate: 10
@@ -121,7 +121,7 @@ menu:
   #categories: /categories/
   #about: /about/
   archives: /archives/
-  tags: /tags/
+  #tags: /tags/
   #sitemap: /sitemap.xml
   #commonweal: /404.html
 
