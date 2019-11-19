@@ -339,6 +339,7 @@ BRDF = \frac{ \frac{kD} {\pi} + kS * (D * V * F) }4
 $$
 
 不明白为啥高光部分计算sj$$D * V * F$$，$$V$$和$$G$$究竟是什么关系？特地查找了资料发现有人也在问这个问题[where-come-from-about-unity-brdf-function]( https://forum.unity.com/threads/where-come-from-about-unity-brdf-function.539751/ )，可惜回答里没有给出真正的具体的答案来解释清楚这个问题。其实很简单，上面给出了几何阴影函数之后我们可以带入到高光计算函数（现在还没介绍$$Fresnel$$，没有任何关系，而且$$Fresnel$$很好理解）。带入到高光计算函数中你会发现，高光计算函数的分母和几何阴影函数的分子$$4(n*l)(n*v)$$正好可以抵消掉，抵消掉之后我们用一个全新的符号来代替几何阴影函数，那就用$$V$$吧。全新的高光计算函数：
+
 $$
 f_{specular-cooktorrance} = D(h, \alpha)  V(v, l, \alpha)  F(v, h, f0)
 $$
@@ -365,8 +366,6 @@ float brdf_specular_gsf_ggx(float NdotL, float NdotV, float roughness)
     return ggx_l * ggx_v;
 }
 ```
-
-
 
 #### 菲涅尔
 
