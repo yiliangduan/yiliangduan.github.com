@@ -251,11 +251,11 @@ $$
 
 #### 正态分布函数
 
-由于微表面存在粗糙度的原因，每个微表面的法线方向是没有规则比较杂乱的，正态分布计算的结果模拟的是各个微表面的法线与指定方向（视角方向和光照入射方向形成的中间向量，简单点说就是 $$half = normal + lightDir$$）一致的分布情况。微表面的法线和指定方向越一致，那么这个微表面的光照越强，反之则越弱也就形成了阴影。先来看一个正态分布的一个样图：
+由于微表面存在粗糙度的原因，每个微表面的法线方向是没有规则比较杂乱的，正态分布计算的结果模拟的是各个微表面的法线与指定方向（视角方向和光照入射方向形成的中间向量，简单点说就是 $$half = normal + lightDir$$）一致的分布情况。微表面的法线和指定方向越一致，那么这个微表面的光照越强，反之则越弱。先来看一个正态分布的一个样图：
 
 ![](/images/pbr_learning/standard_deviation_diagram.svg.png)
 <center>图[10]. 正态分布样图</center>
-从图中可以看到深蓝色区域所占比率为全部数值的68%，它说明了什么呢？举个很浅显的例子，读书的时候每次班级的考试成绩的分布，你会发现，成绩好的和成绩差的同学总是占少数，除此之外的同学的分数你会发现都比较集中，差距比较小。这部分分数集中的同学就是图[10]中的蓝色区域。这段小范围内集中了大部分的样本，这就是正态分布。那么为什么用正态分布函数来模拟计算微表面的阴影呢？很简单，因为经过实验微表面的法线分布情况正好接近于正态分布。
+从图中可以看到深蓝色区域所占比率为全部数值的68%，它说明了什么呢？举个很浅显的例子，读书的时候每次班级的考试成绩的分布，你会发现，成绩好的和成绩差的同学总是占少数，除此之外的同学的分数你会发现都比较集中，差距比较小。这部分分数集中的同学就是图[10]中的蓝色区域。这段小范围内集中了大部分的样本，这就是正态分布。那么为什么用正态分布函数来模拟计算微表面的粗糙度呢？很简单，因为经过实验表面微表面的法线分布情况正好接近于正态分布。
 
 接着看正态分布的表达式：
 
@@ -266,7 +266,6 @@ $$
 表达式中的各个变量的含义：
 
 * $$\alpha$$：表示粗糙度的二次方值。
-
 * $$h$$：视角方向（或者光照的出射方向）和光照入射的点积。
 * $$n$$：法线
 
@@ -276,13 +275,17 @@ $$
 float specular_ndf_ggx(float h, float roughness)
 {
     //这里的a并不是公式中的alpha，只是计算时的临时变量。
-	float a = h * roughtness;
+    float a = h * roughtness;
     float k = roughness / (1.0 - h * h + a * a);
     return k * k * (1.0 / PI);
 }
 ```
 
 代码里面计算的时候是吧表达式展开来计算的，这样计算的好处在于减少了分母中不必要的相同的计算（k值的计算），效率更高效。
+
+#### 几何阴影函数
+
+
 
 ---
 
@@ -297,3 +300,4 @@ float specular_ndf_ggx(float h, float roughness)
 7.  [article_physically_based_rendering](http://www.codinglabs.net/article_physically_based_rendering.aspx )
 8.  [learnopengl](https://learnopengl-cn.github.io/07 PBR/01 Theory/#brdf) 
 8.  [ Bidirectional_reflectance_distribution_function]( https://en.wikipedia.org/wiki/Bidirectional_reflectance_distribution_function  )
+9.  [正态分布]( [https://zh.wikipedia.org/zh/%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83](https://zh.wikipedia.org/zh/正态分布) )
