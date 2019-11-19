@@ -7,7 +7,11 @@ comments: false
 ---
 
 
-> 个人的理解，可能有错误的地方。
+> 个人的理解，可能有错误的地方，欢迎指出。
+>
+> 测试环境：Unity2018.4.8f1（64bit）
+>
+> 文中画图工具：geogebra
 
 
 
@@ -225,7 +229,7 @@ $$
 $$ \sigma $$为漫反射率，除以$$\pi$$的得到半球的漫反射因子。代码中计算漫反射时把漫反射颜色乘以漫反射因子，代码如下：
 
 ```c++
-float  brdf_fd_lambert()
+float brdf_lambert()
 {
     return _ReflectanceRatio / UNITY_PI;
 }
@@ -251,13 +255,13 @@ $$
 
 #### 正态分布函数
 
-由于微表面存在粗糙度的原因，每个微表面的法线方向是没有规则比较杂乱的，正态分布计算的结果模拟的是各个微表面的法线与指定方向（视角方向和光照入射方向形成的中间向量，简单点说就是 $$half = normal + lightDir$$）一致的分布情况。微表面的法线和指定方向越一致，那么这个微表面的光照越强，反之则越弱。先来看一个正态分布的一个样图：
+由于微表面存在粗糙度的原因，每个微表面的法线方向是没有规则比较杂乱的，**正态分布计算的结果模拟的是各个微表面的法线与指定方向（视角方向和光照入射方向形成的中间向量）一致的分布情况**。微表面的法线和指定方向越一致，那么这个微表面的光照越强，反之则越弱。先来看一个正态分布的一个样图：
 
 ![](/images/pbr_learning/standard_deviation_diagram.svg.png)
 <center>图[10]. 正态分布样图</center>
-从图中可以看到深蓝色区域所占比率为全部数值的68%，它说明了什么呢？举个很浅显的例子，读书的时候每次班级的考试成绩的分布，你会发现，成绩好的和成绩差的同学总是占少数，除此之外的同学的分数你会发现都比较集中，差距比较小。这部分分数集中的同学就是图[10]中的蓝色区域。这段小范围内集中了大部分的样本，这就是正态分布。那么为什么用正态分布函数来模拟计算微表面的粗糙度呢？很简单，因为经过实验表面微表面的法线分布情况正好接近于正态分布。
+从图中可以看到深蓝色区域所占比率为全部数值的68%，它说明了什么呢？举个很浅显的例子，读书的时候每次班级的考试成绩的分布，成绩好的和成绩差的同学总是占少数，除此之外的同学的分数你会发现都比较集中，差距比较小。这部分分数集中的同学就是图[10]中的蓝色区域。这段小范围内集中了大部分的样本，具有这种分布规律的就是正态分布。那么为什么用正态分布函数来模拟计算微表面的粗糙度呢？很简单啊，因为经过实验表面微表面的法线分布情况正好接近于正态分布。
 
-接着看正态分布的表达式：
+接着看正态分布的表达式（正态分布的表达式有很多，这里使用 <font color="#6495ED">Trowbridge-Reitz GGX</font>）：
 
 $$
 D_{GGX}(h, \alpha) = \frac{\alpha^2}{\pi ((n \cdot h)^2)(\alpha^2-1)+1)^2}
@@ -265,25 +269,106 @@ $$
 
 表达式中的各个变量的含义：
 
-* $$\alpha$$：表示粗糙度的二次方值。
-* $$h$$：视角方向（或者光照的出射方向）和光照入射的点积。
-* $$n$$：法线
+* $$\alpha$$：粗糙度。
+* $$h$$：视角向量（或者光照的出射向量）和光照入射向量的中间向量（ $$half = normal + lightDir$$）。
+* $$n$$：法线向量。
 
 转换成代码：
 
 ```c++
-float specular_ndf_ggx(float h, float roughness)
+float brdf_specular_ndf_ggx(float NLhalf, float roughness)
 {
     //这里的a并不是公式中的alpha，只是计算时的临时变量。
-    float a = h * roughtness;
+    float a = NLhalf * roughtness;
     float k = roughness / (1.0 - h * h + a * a);
     return k * k * (1.0 / PI);
 }
 ```
 
-代码里面计算的时候是吧表达式展开来计算的，这样计算的好处在于减少了分母中不必要的相同的计算（k值的计算），效率更高效。
+代码里面计算的时候是把表达式展开来计算的，这样计算的好处在于减少了分母中不必要的相同的计算（k值的计算），计算更高效。
 
 #### 几何阴影函数
+
+几何阴影函数计算的是光照在微平面被遮蔽形成的阴影的效果，如图[5]中右图，视角方向看过去的表面形成遮蔽，光照被微表面的凹凸起势正好挡住了，正好形成阴影。
+
+几何阴影函数表达式：
+
+$$
+G(v, l, \alpha) =  \frac{2(n \cdot l)}{n \cdot l + \sqrt{\alpha^2 + (1-\alpha^2)(n\cdot l)^2}}  \frac{2(n \cdot v)}{n \cdot v + \sqrt{\alpha^2 + (1-\alpha^2)(n\cdot v)^2}}
+$$
+
+表达式中的各个变量的含义：
+
+* $$v$$：视角向量。
+* $$l$$：光照向量。
+* $$n$$：法线向量。
+* $$\alpha$$：粗糙度。
+
+之前看Unity的BRDF渲染的着色器的代码的时候一直不明白它的计算代码，它的计算代码是这样的（省略了很多细节代码）：
+
+```c
+// Main Physically Based BRDF
+// Derived from Disney work and based on Torrance-Sparrow micro-facet model
+//
+//   BRDF = kD / pi + kS * (D * V * F) / 4
+//   I = BRDF * NdotL
+//
+half4 BRDF1_Unity_PBS (half3 diffColor, half3 specColor, half oneMinusReflectivity, half smoothness,
+	half3 normal, half3 viewDir,
+	UnityLight light, UnityIndirect gi)
+{
+    ...
+#if UNITY_BRDF_GGX
+	half V = SmithJointGGXVisibilityTerm (nl, nv, roughness);
+	half D = GGXTerm (nh, roughness);
+#endif
+    half specularTerm = V*D * UNITY_PI; // Torrance-Sparrow model, Fresnel is applied later
+    ...
+    half3 color =   diffColor * (gi.diffuse + light.color * diffuseTerm)
+                    + specularTerm * light.color * FresnelTerm (specColor, lh)
+					+ surfaceReduction * gi.specular * FresnelLerp (specColor, grazingTerm, nv);
+
+	return half4(color, 1);
+}
+```
+
+通过函数说明可以看到Unity计算BRDF的公式
+
+$$
+BRDF = \frac{ \frac{kD} {\pi} + kS * (D * V * F) }4
+$$
+
+不明白为啥高光部分计算sj$$D * V * F$$，$$V$$和$$G$$究竟是什么关系？特地查找了资料发现有人也在问这个问题[where-come-from-about-unity-brdf-function]( https://forum.unity.com/threads/where-come-from-about-unity-brdf-function.539751/ )，可惜回答里没有给出真正的具体的答案来解释清楚这个问题。其实很简单，上面给出了几何阴影函数之后我们可以带入到高光计算函数（现在还没介绍$$Fresnel$$，没有任何关系，而且$$Fresnel$$很好理解）。带入到高光计算函数中你会发现，高光计算函数的分母和几何阴影函数的分子$$4(n*l)(n*v)$$正好可以抵消掉，抵消掉之后我们用一个全新的符号来代替几何阴影函数，那就用$$V$$吧。全新的高光计算函数：
+$$
+f_{specular-cooktorrance} = D(h, \alpha)  V(v, l, \alpha)  F(v, h, f0)
+$$
+
+Unity的BRDF的公式就是这样得来的，得到的新的几何阴影函数如下：
+
+$$
+V(v, l, \alpha) =  \frac{1}{n \cdot l + \sqrt{\alpha^2 + (1-\alpha^2)(n\cdot l)^2}}  \frac{1}{n \cdot v + \sqrt{\alpha^2 + (1-\alpha^2)(n\cdot v)^2}}
+$$
+
+用代码表示如下：
+
+```c
+float brdf_specular_gsf_smith(float dotV, float roughness2)
+{
+    return = 1 /(dotValue + sqrt(dotV * dotV * (1 - roughness2) + roughness2));
+}
+
+float brdf_specular_gsf_ggx(float NdotL, float NdotV, float roughness)
+{
+    float a2 = roughness * roughness;
+	float ggx_l = brdf_specular_gsf_smith(NdotL, a2);
+    float ggx_v = brdf_specular_gsf_smith(NdotV, a2);
+    return ggx_l * ggx_v;
+}
+```
+
+
+
+#### 菲涅尔
 
 
 
@@ -299,5 +384,5 @@ float specular_ndf_ggx(float h, float roughness)
 5.  [article_physically_based_rendering_cook_torrance](http://www.codinglabs.net/article_physically_based_rendering_cook_torrance.aspx )
 7.  [article_physically_based_rendering](http://www.codinglabs.net/article_physically_based_rendering.aspx )
 8.  [learnopengl](https://learnopengl-cn.github.io/07 PBR/01 Theory/#brdf) 
-8.  [ Bidirectional_reflectance_distribution_function]( https://en.wikipedia.org/wiki/Bidirectional_reflectance_distribution_function  )
+8.  [Bidirectional_reflectance_distribution_function]( https://en.wikipedia.org/wiki/Bidirectional_reflectance_distribution_function  )
 9.  [正态分布]( [https://zh.wikipedia.org/zh/%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83](https://zh.wikipedia.org/zh/正态分布) )
