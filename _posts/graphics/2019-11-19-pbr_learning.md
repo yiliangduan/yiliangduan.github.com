@@ -377,7 +377,7 @@ float brdf_specular_gsf_ggx(float NdotL, float NdotV, float roughness)
 
 先来看一张湖面景色图片：
 
-![/images/pbr_learning/lake.jpg]
+![][/images/pbr_learning/lake.jpg]
 
 <center>图[11]</center>
 
