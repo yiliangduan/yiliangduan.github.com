@@ -416,7 +416,7 @@ float3 brdf_fresnel_schlick(float NdotL, float3 R0)
 }
 ```
 
-BRDF的内容都介绍完成了。PBR方程中现在只剩下一个内容没有提到，$$L_e(p, w)$$。放到Unity中，我们可以看看Unity的Standard 
+BRDF的内容都介绍完成了。PBR方程中现在只剩下一个内容没有提到，$$L_e(p, w)$$。放到Unity中，我们可以看看Unity的采用PBR渲染方式的Standard Shader ：
 
 ![](/images/pbr_learning/emission.png)
 
