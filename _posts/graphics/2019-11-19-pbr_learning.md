@@ -392,11 +392,19 @@ $$
 
 ![](/images/pbr_learning/fresnel_r.png)
 
+<center>图[12]</center>
+
+
+
 可以从近视点位置的A点和远视点位置的B来对比下反射比可以明白图[11]中的现象了。
 
 对于菲涅尔方程中的$$R_0$$值，这个值是根据材质来定的。显示世界中一些比较常见材质的$$R_0$$值和$$cos\theta$$的菲涅尔反射比关系图如下：
 
 ![](/images/pbr_learning/fresnel_material_hd.jpg)
+
+<center>图[13]</center>
+
+
 
 在视角向量和材质表面法线向量角度趋于$$90^\circ $$度时任何材质的反射比都趋近于1。
 
