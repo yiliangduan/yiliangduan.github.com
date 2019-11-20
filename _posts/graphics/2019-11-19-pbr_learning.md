@@ -375,7 +375,17 @@ float brdf_specular_gsf_ggx(float NdotL, float NdotV, float roughness)
 
 #### 菲涅尔
 
-//come soon
+先来看一张湖面景色图片：
+
+![/images/pbr_learning/lake.jpg]
+
+<center>图[11]</center>
+
+从上面的湖面景色图片中我们可以发现，距离山越近的地方水面倒影的颜色越深，距离视角位置越近倒影的颜色越浅，水下的石头也更清晰些。这种现象其实就是菲涅尔反射。
+
+
+
+
 
 ---
 
@@ -391,3 +401,4 @@ float brdf_specular_gsf_ggx(float NdotL, float NdotV, float roughness)
 8.  [learnopengl](https://learnopengl-cn.github.io/07 PBR/01 Theory/#brdf) 
 8.  [Bidirectional_reflectance_distribution_function]( https://en.wikipedia.org/wiki/Bidirectional_reflectance_distribution_function  )
 9.  [正态分布]( [https://zh.wikipedia.org/zh/%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83](https://zh.wikipedia.org/zh/正态分布) )
+10.  [菲涅耳方程]( https://zhuanlan.zhihu.com/p/31534769 )
