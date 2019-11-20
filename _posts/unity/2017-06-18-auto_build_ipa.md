@@ -67,35 +67,35 @@ BuildPipeline.BuildPlayer(buildPlayerOptions);
 导出Xcode工程之后我们要做的就是配置Xcode工程。这里我用的是XUPorter插件来进行修改的，这个插件可以很方便的帮助我们自动把依赖的Framework、静态库、文件等添加到Xcode工程，这样可以解决我们在使用第三方插件的时候依赖的库每次打包需要手动添加的问题(5.5.1f1版本支持添加iOS系统自带的Framwork，但是不支持添加第三方的库，比如libsqlite3.dylib文件)。另外为了配置为了配置证书和Info.plist文件，稍微改动了一下里面的代码。
 
 ```
-		public static void OnPostProcessBuild(BuildTarget target, string xcodeProjectPath, PackageChannel channel, ProjectBuildData data)
-		{
-			if (target != BuildTarget.iOS) {
-				Debug.LogWarning("Target is not iPhone. XCodePostProcess will not run");
-				return;
-			}
+public static void OnPostProcessBuild(BuildTarget target, string xcodeProjectPath, PackageChannel channel, ProjectBuildData data)
+{
+	if (target != BuildTarget.iOS) {
+		Debug.LogWarning("Target is not iPhone. XCodePostProcess will not run");
+		return;
+	}
 
-			//这里来动态XUPorter的配置文件来自动添加Framework等一些XCode的配置
-			XCProject project = new XCProject(xcodeProjectPath + "Unity-iPhone.xcodeproj");
+	//这里来动态XUPorter的配置文件来自动添加Framework等一些XCode的配置
+	XCProject project = new XCProject(xcodeProjectPath + "Unity-iPhone.xcodeproj");
 
-			string[] files = Directory.GetFiles( Application.dataPath, "*.projmods", SearchOption.AllDirectories );
-			foreach( string file in files ) {
-				project.ApplyMod( file );
-			}
+	string[] files = Directory.GetFiles( Application.dataPath, "*.projmods", SearchOption.AllDirectories );
+	foreach( string file in files ) {
+		project.ApplyMod( file );
+	}
 
-			//读取我们自己的配置文件
-			ProjectBasicConfig config = new ProjectBasicConfigLoader().GetConfig(channel);
-		
-			//这里配置证书
-			OverWriteBuildSetting(config, project);
-		
-		   //这里配置Info.plist文件，比如加权限描述，修改版本号之类的
-			OverWriteInfoPlist(config, xcodeProjectPath, data);
-		
-			project.overwriteBuildSetting ("ENABLE_BITCODE","NO");
-			
-			//保存修改
-			project.Save();
-		}
+	//读取我们自己的配置文件
+	ProjectBasicConfig config = new ProjectBasicConfigLoader().GetConfig(channel);
+
+	//这里配置证书
+	OverWriteBuildSetting(config, project);
+
+   //这里配置Info.plist文件，比如加权限描述，修改版本号之类的
+	OverWriteInfoPlist(config, xcodeProjectPath, data);
+
+	project.overwriteBuildSetting ("ENABLE_BITCODE","NO");
+	
+	//保存修改
+	project.Save();
+}
 
 ```
 
