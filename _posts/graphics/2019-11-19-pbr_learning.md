@@ -286,7 +286,7 @@ float brdf_specular_ndf_ggx(float NLhalf, float roughness)
 {
     //这里的a并不是公式中的alpha，只是计算时的临时变量。
     float a = NLhalf * roughtness;
-    float k = roughness / (1.0 - h * h + a * a);
+    float k = roughness / (1.0 - NLhalf * NLhalf + a * a);
     return k * k * (1.0 / PI);
 }
 ```
