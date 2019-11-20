@@ -132,7 +132,7 @@ $$
 E(p, w) = \int_\Omega L_i(p, w)  cos\theta dw
 $$
 
-最终我们需要的辐射强度公式（10）已经得出，如果阅读到此处完全没有看明白辐射，也没有理解辐射强度公式的话，不用担心，没有任何关系。因为后续的内容没有依赖辐射的知识，而且在反射方程实际计算的时候$$L_i(p, w)$$我们直接使用RGB值，这个RGB可以是采样一张贴图，也可以是着色器预置一个专门的变量让用户来自定义这个值。$$cos\theta$$是光照入射向量和平面的法线方向，光线由于角度入射在平面上的面积肯定变小了，而总的辐射变小了，这里的余弦值可以看做是光线的衰减值。对于入射光照$$w$$的积分。在游戏中我们可以假设入射光就是一条直线光，所以真正计算的时候可以不用做积分运算。
+最终我们需要的辐射强度公式（10）已经得出，如果阅读到此处完全没有看明白辐射，也没有理解辐射强度公式的话，不用担心，没有任何关系（我花费了很多时间才理解这个推导过程，但是对于只想知道PBR的实际计算的话辐射知识其实可以不用了解都可以）。因为后续的内容没有依赖辐射的知识，而且在反射方程实际计算的时候$$L_i(p, w)$$我们直接使用RGB值，这个RGB可以是采样一张贴图，也可以是着色器预置一个专门的变量让用户来自定义这个值。$$cos\theta$$是光照入射向量和平面的法线方向，光线由于角度入射在平面上的面积肯定变小了，而总的辐射变小了，这里的余弦值可以看做是光线的衰减值。对于入射光照$$w$$的积分。在游戏中我们可以假设入射光就是一条直线光，所以真正计算的时候可以不用做积分运算。
 
 ### 双向反射分布函数（BRDF）
 
@@ -377,13 +377,38 @@ float brdf_specular_gsf_ggx(float NdotL, float NdotV, float roughness)
 
 先来看一张湖面景色图片：
 
-![][/images/pbr_learning/lake.jpg]
+![](/images/pbr_learning/lake.jpg)
 
 <center>图[11]</center>
+从上面的湖面景色图片中我们可以发现，距离山越近的地方水面倒影的颜色越深，距离视角位置越近倒影的颜色越浅，水下的石头也更清晰些。这种现象其实就是菲涅尔反射。菲涅尔反射（或者叫菲涅尔方程）描述光在两种不同折射率的介质中传播时的反射和折射。这里使用 <font color="#6495ED">Schlick</font>近似菲涅尔方程（一般光照计算都采用这个近似方程）：
+$$
+R(\theta) = R_0 + (1-R_0)(1-cos\theta)^5
+$$
 
-从上面的湖面景色图片中我们可以发现，距离山越近的地方水面倒影的颜色越深，距离视角位置越近倒影的颜色越浅，水下的石头也更清晰些。这种现象其实就是菲涅尔反射。
+* $$R_0$$：光照垂直入射到材质表面时的反射比，这个值是个常数。
+* $$cos\theta$$：材质表面的法线向量和视角向量的余弦值。
 
+根据公式我们可以得出反射比 $$R{\theta}$$ 和视角方向有很大的关系，再来解释下图[11]中的现象。距离视角位置越远的水面位置，视角和该点位置的夹角越小，那么余弦值就越小，得出的反射比就越小。所以你看到的水面倒影越清晰，看不清水下的石头。用一张说明图来描述下，如图[12]：
 
+![](/images/pbr_learning/fresnel_r.png)
+
+可以从近视点位置的A点和远视点位置的B来对比下反射比可以明白图[11]中的现象了。
+
+对于菲涅尔方程中的$$R_0$$值，这个值是根据材质来定的。显示世界中一些比较常见材质的$$R_0$$值和$$cos\theta$$的菲涅尔反射比关系图如下：
+
+![](/images/pbr_learning/fresnel_material_hd.jpg)
+
+在视角向量和材质表面法线向量角度趋于$$90^\circ $$度时任何材质的反射比都趋近于1。
+
+菲涅尔反射就介绍这些，下面我们把菲涅尔反射方程转换为程序代码：
+
+```c
+float3 brdf_fresnel_schlick(float NdotL, float3 R0)
+{
+    //1.0是90度时候的反射比
+    return R0 + (float3(1.0, 1.0, 1.0) - R0) * pow(1 - NdotL, 5.0);
+}
+```
 
 
 
@@ -401,4 +426,6 @@ float brdf_specular_gsf_ggx(float NdotL, float NdotV, float roughness)
 8.  [learnopengl](https://learnopengl-cn.github.io/07 PBR/01 Theory/#brdf) 
 8.  [Bidirectional_reflectance_distribution_function]( https://en.wikipedia.org/wiki/Bidirectional_reflectance_distribution_function  )
 9.  [正态分布]( [https://zh.wikipedia.org/zh/%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83](https://zh.wikipedia.org/zh/正态分布) )
-10.  [菲涅耳方程]( https://zhuanlan.zhihu.com/p/31534769 )
+10.  [菲涅耳方程 milo]( https://zhuanlan.zhihu.com/p/31534769 )
+11.  [菲涅尔方程 wiki]( [https://zh.wikipedia.org/wiki/%E8%8F%B2%E6%B6%85%E8%80%B3%E6%96%B9%E7%A8%8B](https://zh.wikipedia.org/wiki/菲涅耳方程) )
+12.  [Schlick’s approximation]( [https://en.wikipedia.org/wiki/Schlick%27s_approximation](https://en.wikipedia.org/wiki/Schlick's_approximation) )
