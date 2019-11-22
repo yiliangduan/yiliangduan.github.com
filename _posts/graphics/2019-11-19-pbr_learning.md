@@ -169,7 +169,7 @@ BRDF认为表面是没有绝对平滑的，必然有一定程度上的粗糙度�
 
 ![](/images/pbr_learning/microfacet.png)
 
-<center>图[4] 左图是微观表面，右图是宏观表面</center>
+<center>图[4] 左图是微观表面，右图是宏观表面（绝对光滑）</center>
 因为微观表面的凹凸不平，并不是所有反射出去的光能够进入视野，如下图[5]（暂不考虑二次反射）:
 
 ![](/images/pbr_learning/microfacet_2.png)
@@ -377,7 +377,8 @@ float brdf_specular_gsf_ggx(float NdotL, float NdotV, float roughness)
 
 先来看一张湖面景色图片：
 
-![](/images/pbr_learning/lake.jpg)
+<div align=center>  ![图[11]](/images/pbr_learning/lake.jpg)
+
 
 <center>图[11]</center>
 从上面的湖面景色图片中我们可以发现，距离山越近的地方水面倒影的颜色越深，距离视角位置越近倒影的颜色越浅，水下的石头也更清晰些。这种现象其实就是菲涅尔现象或者叫菲涅尔反射。菲涅尔反射（或者菲涅尔方程）描述光在两种不同折射率的介质中传播时的反射和折射。可以先了解下方程，这里使用 <font color="#6495ED">Schlick</font>近似菲涅尔方程（一般光照计算都采用这个近似方程）：
