@@ -1,5 +1,5 @@
 ---
-title: 我所理解的PBR
+title: PBR的学习总结
 date: 2019-11-04 16:44:10
 categories: graphics
 tags: [graphics,unity]
@@ -15,7 +15,7 @@ comments: false
 
 
 
-### 什么是PBR
+### 定义
 
 ---
 
