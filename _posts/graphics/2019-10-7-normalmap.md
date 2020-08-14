@@ -1,3 +1,12 @@
+---
+title: 法线贴图
+date: 2019-10-07 16:44:10
+categories: graphics
+tags: [graphics,unity]
+comments: false
+---
+
+
 ###  法线贴图（NormalMap）
 
 法线贴图是一种凹凸贴图（Bump Map），它可以让你将其纹理数据添加到模型，从而为模型增加表面细节（凹凸，凹槽和划痕）和光照效果。法线贴图分为两种：切线空间的法线贴图（Tangent-space normal map）和模型空间的法线贴图（Object-space normal map），两者的唯一区别正如命名那样法线所在的坐标系不同。通常情况下（游戏开发）我们使用的都是切线空间的法线贴图，所以这里介绍切线空间的法线贴图。
