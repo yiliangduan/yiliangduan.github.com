@@ -1,5 +1,5 @@
 ---
-title: UI上的特效的裁剪问题
+title: UGUI中对UI上的特效的裁剪问题
 date: 2020-11-04 23:59:40
 type: "tags"
 comments: false
