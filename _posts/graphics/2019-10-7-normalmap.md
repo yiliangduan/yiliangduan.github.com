@@ -1,5 +1,5 @@
 ---
-title: Unity 法线贴图总结
+title: Unity 法线贴图数据存储和读取
 date: 2019-10-07 16:44:10
 categories: graphics
 tags: [graphics,unity]
