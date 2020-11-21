@@ -16,6 +16,8 @@ tags: unity,UGUI,unity2019.4.14f
 
 可以看到，超出 ScrollRect 的 SubItem 背景的 Image 裁剪掉了，但是粒子特效没有被裁减。不管是是用 RectMask2D还是 Mask 都是这样的结果。
 
+<!-- more --> 
+
 要知道其中的原因我们先了解下 RectMask2D 和 Mask 这两个功能脚本。
 
 **RectMask2D**  正如其名它只能对2D的对象进行裁剪，它是通过计算每个子节点对象的RectTransform的size来判定是否超出了设定的mask区域的，如果超出了则重新计算这个对象的大小并且调整顶点，把超出的部分丢弃掉。大概的操作如下：
