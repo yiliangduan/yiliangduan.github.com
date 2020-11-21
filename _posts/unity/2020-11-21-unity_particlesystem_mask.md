@@ -6,7 +6,9 @@ comments: false
 tags: unity,UGUI,unity2019.4.14f
 ---
 
-在UI界面的制作中，我们会遇到这种需求：在一个 *ScrollRect* 内显示若干个子物件UI，并且子物件UI需要显示粒子特效。这种情况我们会遇到超出 *ScrollRect* 需要裁剪粒子特效的问题。如：
+> Unity2019.4.14f, UGUI
+
+在UI（UGUI）界面的制作中，我们会遇到这种需求：在一个 *ScrollRect* 内显示若干个子物件UI，并且子物件UI需要显示粒子特效。这种情况我们会遇到超出 *ScrollRect* 需要裁剪粒子特效的问题。如：
 
 ![](/images/unity_particlesystem_mask/a.png)
 
