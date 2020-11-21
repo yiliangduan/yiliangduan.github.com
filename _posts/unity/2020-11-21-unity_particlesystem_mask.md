@@ -8,8 +8,9 @@ tags: unity
 
 在UI界面的制作中，我们会遇到这种需求：在一个 *ScrollRect* 内显示若干个子物件UI，并且子物件UI需要显示粒子特效。这种情况我们会遇到超出 *ScrollRect* 需要裁剪粒子特效的问题。如：
 
-![](images/unity_particlesystem_mask/a.png)
+![](/images/unity_particlesystem_mask/a.png)
 
+<center>图[1]</center>
 
 可以看到，超出 ScrollRect 的 SubItem 背景的 Image 裁剪掉了，但是粒子特效没有被裁减。不管是是用 RectMask2D还是 Mask 都是这样的结果。
 
@@ -43,7 +44,7 @@ foreach (IClippable clipTarget in m_ClipTargets)
 
 **Mask**的实现相比于 RectMask2D 更加低层，它是利用 模板测试 (*Stencil Test*) 来进行裁剪的。模版测试是渲染管线（Render Pipeline）中的流程，在GPU中执行的， RectMask2D 则是在CPU中执行。模版测试的原理其实很简单：根据屏幕像素的密度给定一个对应大小的 Stencil Buffer ，每个元素只需要1byte字节，也就是最大255的精度。然后在渲染的时候 Mask（UGUI会把UI的对象转换成Mesh去渲染）对 Stencil Buffer 指定的区域（Mask设定的裁剪区域）写入指定的值（UGUI里面是写入的1），当渲染在这个区域（*Stencil Buffer* 的值为1）的Mask子节点的时候会进行模版测试，比较Stencil Buffer值，满足条件就继续渲染，否则丢弃掉不渲染。例如一个4x4像素的buffer，然后mask的区域是中间四个像素，假设在渲染Mask节点之前没有任何材质对Stencil Buffer进行修改，那么Stencil Buffer在渲染Mask的时候的变化是这样的：
 
-![](images/unity_particlesystem_mask/b.png)
+![](/images/unity_particlesystem_mask/b.png)
 
 <center>图[2]</center>
 
@@ -73,7 +74,7 @@ Stencil {
 
 在Unity的Inpsector中对该着色器设置值如下：
 
-![](images/unity_particlesystem_mask/c.png)
+![](/images/unity_particlesystem_mask/c.png)
 
 <center>图[3]</center>
 
@@ -81,7 +82,7 @@ Stencil {
 
 修改之后发现粒子特效不可见了，也就是没有渲染出来了。间接证明了，Stencil Buffer里在粒子特效对应的像素的位置值不为1了，说明之前Mask写入的Stencil Buffer的值可能被重置掉了。这个就很奇怪了，到底哪一步做了清理工作呢？我在Unity的Frame Debugger中找到了答案。下图是 图[1]中的对象渲染时候的Frame Debug信息：
 
-![](images/unity_particlesystem_mask/d.png)
+![](/images/unity_particlesystem_mask/d.png)
 
 <center>图[4]</center>
 
@@ -122,7 +123,7 @@ Stencil {
 
 第二种方法是使用RectMask2D来裁剪UI，我们自己来对RectMask2D区域写入指定的Stencil Buffer 值，然后对ParticleSystem的Render材质设置Stencil测试，通过测试才显示。设置如下：
 
-![](images/unity_particlesystem_mask/e.png)
+![](/images/unity_particlesystem_mask/e.png)
 
 <center>图[5]</center>
 
