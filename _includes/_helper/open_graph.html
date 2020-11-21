@@ -8,11 +8,7 @@
   {% if page.tags and page.tags.size != 0 %}{% assign page_tags = page.tags | join: ', ' %}{% endif %}
   {% assign keywords = page.keywords | default: page_tags | default: site.keywords %}
 
-  {% if page.layout == 'post' %}
-    {% assign type = 'article' %}
-  {% else %}
-    {% assign type = 'website' %}
-  {% endif %}
+ 
 
   {% assign url = page.url | absolute_url %}
   {% assign og_title = page.title | default: site.title %}
