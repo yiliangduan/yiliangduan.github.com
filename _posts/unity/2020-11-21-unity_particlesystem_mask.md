@@ -1,9 +1,9 @@
 ---
-title: UGUI中对UI上的特效的裁剪问题
+title: UI上的特效的裁剪问题
 date: 2020-11-04 23:59:40
 type: "tags"
 comments: false
-tags: unity
+tags: unity,UGUI,unity2019.4.14f
 ---
 
 在UI界面的制作中，我们会遇到这种需求：在一个 *ScrollRect* 内显示若干个子物件UI，并且子物件UI需要显示粒子特效。这种情况我们会遇到超出 *ScrollRect* 需要裁剪粒子特效的问题。如：
