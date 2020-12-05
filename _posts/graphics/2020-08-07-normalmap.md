@@ -1,6 +1,6 @@
 ---
 title: Unity 法线贴图数据存储和读取
-date: 2019-10-07 16:44:10
+date: 2020-08-07 16:44:10
 categories: graphics
 tags: [graphics,unity]
 comments: false
