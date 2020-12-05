@@ -249,6 +249,7 @@ fixed IsPixelInRect(float3 pixelPos, float3 a, float3 b, float3 c, float3 d)
 
 总体来说利用着色器来进行描边的最终效果对于UGUI的outline的改进还是比较明显的。利用着色器来描边的方式把CPU的性能消耗转移到了GPU，因为我们需要对每个像素做8次的采样，自然就增加了GPU的性能消耗。两种方式哪种合适还得结合自己的项目需求来定。
 
-*END*
+---
 
-参考：https://gameinstitute.qq.com/community/detail/114969
+参考：[https://gameinstitute.qq.com/community/detail/114969](https://gameinstitute.qq.com/community/detail/114969)
+
