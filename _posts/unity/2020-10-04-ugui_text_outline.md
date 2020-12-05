@@ -49,7 +49,7 @@ public override void ModifyMesh(VertexHelper vh)
 
 1. 描边的效果不是特别理想，可以看到图[1]中的 “这”这个字，在边缘的转角处的描边很多没有连贯起来。
 
-   ![](利用着色器实现UGUI的文本描边.assets/2.png)
+   ![](/images/ugui_text_outline/2.png)
 
 2. 因为这种描边相当于额外增加了3份的顶点数，所以描边之后带来的顶点渲染消耗也是成倍增加的。比如对于单个文字来说，描边和不描边的区别如下：
 
