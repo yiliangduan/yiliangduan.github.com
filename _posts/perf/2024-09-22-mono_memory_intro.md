@@ -378,7 +378,7 @@ Unity开发的程序，内存主要分为：托管内存（Mono内存），Nativ
 
 MemoryProfiler工具一次只能采集一帧数据，相当于把一帧的内存数据Dump出来，如下图（图片来自MemoryProfiler Package文档）：
 
-<img src="memory-profiler-window.png" alt="img" style="zoom:50%;" />
+<img src="/images/mono_memory_intro/memory-profiler-window.png" alt="img" style="zoom:50%;" />
 
 ##### 优点
 
