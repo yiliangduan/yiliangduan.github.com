@@ -571,7 +571,7 @@ MonoTracer统计了每一帧IL2CPP对象分配，每个类型的对象分配都�
 ---
 
 引用:
-1. [[Unity - Manual: Mono overview](https://docs.unity3d.com/Manual/Mono.html)](https://docs.unity3d.com/Manual/Mono.html)
+1. [[Unity - Manual: Mono overview](https://docs.unity3d.com/Manual/Mono.html)]
 2. [Unity3D托管堆BoehmGC算法学习-内存分配篇](https://juejin.cn/post/6966954993869914119)
 3. [Unity3D托管堆BoehmGC算法学习-垃圾回收篇](https://juejin.cn/post/6968400262629163038)
 4. [GitHub il2cpp各个版本的源码整理](https://github.com/4ch12dy/il2cpp)
