@@ -571,21 +571,12 @@ MonoTracer统计了每一帧IL2CPP对象分配，每个类型的对象分配都�
 ---
 
 引用:
-
 1. [[Unity - Manual: Mono overview](https://docs.unity3d.com/Manual/Mono.html)](https://docs.unity3d.com/Manual/Mono.html)
-
 2. [Unity3D托管堆BoehmGC算法学习-内存分配篇](https://juejin.cn/post/6966954993869914119)
-
 3. [Unity3D托管堆BoehmGC算法学习-垃圾回收篇](https://juejin.cn/post/6968400262629163038)
-
 4. [GitHub il2cpp各个版本的源码整理](https://github.com/4ch12dy/il2cpp)
-
 5. [MemoryProfiler Package Manual](https://docs.unity3d.com/Packages/com.unity.memoryprofiler@1.1/manual/index.html)
-
 6. [Unity Profiler Manual](https://docs.unity3d.com/Manual/Profiler.html)
-
 7. [c/c++ backtrace打印函数调用栈](https://blog.csdn.net/jiangliuhuan123/article/details/130274179)
-
 8. [iOS dSYM 文件 & 符号化](https://www.odszz.com/posts/ios-dsym-symbolicate/)
-
 9. [利用dwarfdump从dsym文件中得到symbol](https://blog.csdn.net/xiaofei125145/article/details/50456614)
