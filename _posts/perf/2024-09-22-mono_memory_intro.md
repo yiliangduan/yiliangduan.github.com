@@ -18,6 +18,7 @@ comments: true
 >
 > 注：
 > 1. 本文的 Mono 内存全部指 Unity 开启 IL2CPP之后构建的手机包运行时的 Mono 内存。
+> 
 > ​2. BDWGC 指 Boehm-Demers-Weiser Garbage Collector，用在标题是全部为大写，用在文中时方便阅读我全部小写。
 
 ### 什么是IL2CPP
