@@ -38,10 +38,13 @@ Pass
     
     v2f vert (appdata_base v)
     {
-    	v2f o;
+  	v2f o;
     	//裁剪坐标
+        //裁剪坐标的xy的范围是[-v.vertex.w, -v.vertex.w]
     	o.clipPos = UnityObjectToClipPos(v.vertex);
     	//屏幕坐标
+        //这里的屏幕坐标的范围是[0, o.clipPos.w]
+        //o.clipPos的zw和v.vertex.zw值是相同的
     	o.scrPos = ComputeScreenPos(o.clipPos);
     	return o;
     }
