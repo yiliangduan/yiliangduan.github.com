@@ -2,8 +2,8 @@
 title: '一文了解 Mono 内存'
 date: 2024-09-22 00:31:25
 type: "tags"
-tags: perf
-comments: false
+tags: perf,unity
+comments: true
 ---
 
 
@@ -16,9 +16,9 @@ comments: false
 
 > 目录的主题之间存在相互依赖，前面三个主题是为了了解内存，第四个 Mono 内存监控是基于前三个主题的知识做的监控工具。
 >
-> 注：1. 本文的 Mono 内存全部指 Unity 开启 IL2CPP之后构建的手机包运行时的 Mono 内存。
->
-> ​        2. BDWGC 指 Boehm-Demers-Weiser Garbage Collector，用在标题是全部为大写，用在文中时方便阅读我全部小写。
+> 注：
+> 1. 本文的 Mono 内存全部指 Unity 开启 IL2CPP之后构建的手机包运行时的 Mono 内存。
+> ​2. BDWGC 指 Boehm-Demers-Weiser Garbage Collector，用在标题是全部为大写，用在文中时方便阅读我全部小写。
 
 ### 什么是IL2CPP
 
@@ -571,7 +571,7 @@ MonoTracer统计了每一帧IL2CPP对象分配，每个类型的对象分配都�
 ---
 
 引用:
-1. [[Unity - Manual: Mono overview](https://docs.unity3d.com/Manual/Mono.html)]
+1. [Unity - Manual: Mono overview](https://docs.unity3d.com/Manual/Mono.html)
 2. [Unity3D托管堆BoehmGC算法学习-内存分配篇](https://juejin.cn/post/6966954993869914119)
 3. [Unity3D托管堆BoehmGC算法学习-垃圾回收篇](https://juejin.cn/post/6968400262629163038)
 4. [GitHub il2cpp各个版本的源码整理](https://github.com/4ch12dy/il2cpp)
