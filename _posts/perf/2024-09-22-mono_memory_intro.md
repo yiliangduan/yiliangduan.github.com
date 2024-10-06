@@ -16,10 +16,13 @@ comments: true
 
 > 目录的主题之间存在相互依赖，前面三个主题是为了了解内存，第四个 Mono 内存监控是基于前三个主题的知识做的监控工具。
 >
-> 注：1. 本文的 Mono 内存全部指 Unity 开启 IL2CPP之后构建的手机包运行时的 Mono 内存。
+> 注:
+> 1. 本文的 Mono 内存全部指 Unity 开启 IL2CPP之后构建的手机包运行时的 Mono 内存。
 > ​2. BDWGC 指 Boehm-Demers-Weiser Garbage Collector，用在标题是全部为大写，用在文中时方便阅读我全部小写。
 
 > 文中有任何问题或者疑问欢迎帮忙提出来 @yiliangduan@qq.com
+
+---
 
 ### 什么是IL2CPP
 
