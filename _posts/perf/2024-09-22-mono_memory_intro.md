@@ -1,5 +1,5 @@
 ---
-title: '一文了解 Mono 内存'
+title: 'Unity内存(一) mono内存分配和释放'
 date: 2024-09-22 21:31:25
 type: "tags"
 tags: perf
@@ -12,7 +12,6 @@ comments: false
 - 什么是IL2CPP
 - Mono内存分配流程
 - BDWGC
-- Mono内存监控
 
 > 目录的主题之间存在相互依赖，前面三个主题是为了了解内存，第四个 Mono 内存监控是基于前三个主题的知识做的监控工具。
 >
