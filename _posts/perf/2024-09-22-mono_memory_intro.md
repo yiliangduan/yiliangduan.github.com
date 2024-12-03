@@ -1,9 +1,9 @@
 ---
-title: '一文了解 Mono 内存'
-date: 2024-09-22 00:31:25
+title: 'Unity内存(一) mono内存分配和释放'
+date: 2024-09-22 21:31:25
 type: "tags"
-tags: perf,unity
-comments: true
+tags: perf
+comments: false
 ---
 
 
@@ -12,17 +12,12 @@ comments: true
 - 什么是IL2CPP
 - Mono内存分配流程
 - BDWGC
-- Mono内存监控
 
 > 目录的主题之间存在相互依赖，前面三个主题是为了了解内存，第四个 Mono 内存监控是基于前三个主题的知识做的监控工具。
 >
 > 注：1. 本文的 Mono 内存全部指 Unity 开启 IL2CPP之后构建的手机包运行时的 Mono 内存。
-> 
->    ​2. BDWGC 指 Boehm-Demers-Weiser Garbage Collector，用在标题是全部为大写，用在文中时方便阅读我全部小写。
-
-> 文中有任何问题或者疑问欢迎帮忙提出来 @yiliangduan@qq.com
-
----
+>
+> ​        2. BDWGC 指 Boehm-Demers-Weiser Garbage Collector，用在标题是全部为大写，用在文中时方便阅读我全部小写。
 
 ### 什么是IL2CPP
 
@@ -575,12 +570,21 @@ MonoTracer统计了每一帧IL2CPP对象分配，每个类型的对象分配都�
 ---
 
 引用:
-1. [Unity - Manual: Mono overview](https://docs.unity3d.com/Manual/Mono.html)
+
+1. [[Unity - Manual: Mono overview](https://docs.unity3d.com/Manual/Mono.html)](https://docs.unity3d.com/Manual/Mono.html)
+
 2. [Unity3D托管堆BoehmGC算法学习-内存分配篇](https://juejin.cn/post/6966954993869914119)
+
 3. [Unity3D托管堆BoehmGC算法学习-垃圾回收篇](https://juejin.cn/post/6968400262629163038)
+
 4. [GitHub il2cpp各个版本的源码整理](https://github.com/4ch12dy/il2cpp)
+
 5. [MemoryProfiler Package Manual](https://docs.unity3d.com/Packages/com.unity.memoryprofiler@1.1/manual/index.html)
+
 6. [Unity Profiler Manual](https://docs.unity3d.com/Manual/Profiler.html)
+
 7. [c/c++ backtrace打印函数调用栈](https://blog.csdn.net/jiangliuhuan123/article/details/130274179)
+
 8. [iOS dSYM 文件 & 符号化](https://www.odszz.com/posts/ios-dsym-symbolicate/)
+
 9. [利用dwarfdump从dsym文件中得到symbol](https://blog.csdn.net/xiaofei125145/article/details/50456614)
