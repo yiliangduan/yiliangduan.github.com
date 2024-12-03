@@ -1,5 +1,5 @@
 ---
-title: 'Unity内存(二) 内存快照'
+title: 'Unity内存（二） 内存快照'
 date: 2024-11-15 00:31:25
 type: "tags"
 tags: perf,unity
@@ -10,7 +10,7 @@ comments: true
 
 Unity的Mono内存有两个指标很关键，一个是 *Used Total* 另外一个是 *Reserved Memory*。 这个可以从 Profiler 的 Memory 项中可以看到：
 
-<img src="../../images/perf/unity_memory_2/1.png" alt="1" style="zoom: 67%;" />
+<img src="/images/perf/unity_memory_2/1.png" alt="1" style="zoom: 67%;" />
 
 > Unity2019.4.18f1 版本的Profiler截图
 
@@ -257,7 +257,7 @@ void ReportIL2CppClasses(ClassReportFunc callback, void* context)
 
 到这里我们已经了解了 TakeSnapshot采集的托管对象数据结构，也了解了HeapExplorer怎么解析的托管内存Snapshot数据了。我们也可以自定定义采集数据做自动化监控功能：
 
-<img src="../../images/perf/unity_memory_2/3.png" alt="image-20241118210547014" style="zoom:70%;" />
+<img src="/images/perf/unity_memory_2/3.png" alt="image-20241118210547014" style="zoom:70%;" />
 
 ---
 
