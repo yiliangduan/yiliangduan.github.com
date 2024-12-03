@@ -6,36 +6,7 @@ tags: perf,unity
 comments: true
 ---
 
-
-#### MemoryProfiler
-
-MemoryProfiler工具一次只能采集一帧数据，相当于把一帧的内存数据Dump出来，如下图（图片来自MemoryProfiler Package文档）：
-
-<img src="/images/mono_memory_intro/memory-profiler-window.png" alt="img" style="zoom:50%;" />
-
-##### 优点
-
-* 对查某一帧内存问题的话还比较有效，可以很详细的看到这一帧中内存驻留了哪些对象，每个对象对象占用了多少内存，被什么对象引用了。
-
-##### 缺点
-
-* 不能方便查出整场单局的内存会分配的非常高的问题。因为撑高内存的对象很可能是分配了短期内又释放了这种，这种情况MemoryProfiler很难恰好Dump到这一帧。除非每帧一次Dump，但是MemoryProfiler本身一次Dump巨卡，所以每帧Dump非常不现实。
-
-#### Profiler
-
-Profiler工具是实时记录的每帧GC.Collect数据，这个数据可以用 ProfilerAnalyzer工具做个统计来看会更方便点，如下图（注：图片来自Unity ProfilerMemory docs）。
-
-<img src="/images/mono_memory_intro/profiler-memory-simple-view.png" alt="The Simple view with some Profiler data loaded" style="zoom:67%;" />
-
-##### 优点
-
-可以监控到业务代码中所有触发GC.Alloc和GC.Collect。
-
-##### 缺点
-
-需要Profiler性能桩插的非常细，否则是定位不到具体函数的。性能桩插的足够细又会导致Profiler极度影响性能，甚至是影响游戏正常逻辑。
-
-可以看到这两种方法都有很明显的弊端，很难在大规模的项目里面要很快速的解决问题。我们需要什么？
+上一篇中我们讲到了内存的Dump工具HeapExplorer，HeapExplorer可以帮助我们分析指定帧的内存情况，但是这肯定不够，很难在大规模的项目里面要很快速的解决问题。我们还需要什么？
 
 * 能够记录到任何一次Mono内存的分配，并且能够反定位到分配来源，类似于一个深层次并且带上行号的堆栈。可以方便的定位问题来源。
 * 能够获取到每次分配的对象类型，这个便于统计我们内存分配情况，可以方便的确定优化点。

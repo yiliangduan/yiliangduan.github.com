@@ -57,7 +57,7 @@ public enum CaptureFlags : uint
 
 关于TakeSnapshot输出的内存Dump文件，在Unity Documents基本上搜不到有价值的信息（也可能是我没找到）。所以最直接的方式是直接看HeapExplore代码，通过HeapExplore代码来反推Dump文件的信息，了解Dump的细节（这里有个奇怪的点是HeapExplore的作者是怎么了解到Dump文件的数据内容的，莫不是有源码）。那就先从HeapExplore工具展示的内容，再到HeapExplore的代码，最后了解Dump的原理。首先我们看下HeapExplore里面Mono内存的统计：
 
-<img src="../../images/perf/unity_memory_2/2.png" alt="image-20241118210547014" style="zoom:80%;" />
+<img src="/images/perf/unity_memory_2/2.png" alt="image-20241118210547014" style="zoom:80%;" />
 
 可以看到HeapExplorer可以把当前帧每种类型的对象都列出来，并且每种类型的对象分配的数量和大小都有统计。了解功能之后我们直接看解析TakeSnapshot文件的代码，看这个C#对象列表是怎么解析出来的。首先我们分析下 TakeSnapshot出来的文件对象（只列出Mono内存相关）：
 
