@@ -26,7 +26,7 @@ Unity App Crash问题主要分为几类：
 
 可以看到无论哪个平台都需要符号文件，所以如果是标准化流程的话，构建包的流水线每次都应该生成符号文件，并且上传到云服务器，保证每个包都能取到对应的符号文件。另外这些平台都需要提供崩溃日志，但是如果是外网玩家出现的取不到日志的情况呢？一个实用的Crash工具[CrashSight](https://crashsight.qq.com/)，App继承了CrashSight之后能够捕获到发生的Crash日志并且上报的服务器，我们只需要把包的符号文件上传到CrashSight服务器，CrashSight能够把每个上报的Crash堆栈自动找到对应的符号文件还原成符号化的堆栈。整个过程是这样的：
 
-![](D:\Github\yiliangduan.github.com\images\crash\crashsight_flow.png)
+![](/images/crash/crashsight_flow.png)
 
 没有用CrashSight的可以按照这个流程来构建一个自己项目的解决Crash问题工作流。另外客户端发生的Crash问题 CrashSight 并不是每次都能捕获到的，其他工具也是如此。这种情况我们只能通过内存的适配和功能测试，有案例发生时，我们拿到日志文件首先符号化来还原堆栈，并且定位问题。CrashSight用户端的页面提供了一个符号化的工具，没有接入CrashSight的话我们也可以用自己做的工具。
 
