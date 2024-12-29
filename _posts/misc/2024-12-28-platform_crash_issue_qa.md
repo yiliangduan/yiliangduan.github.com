@@ -70,7 +70,7 @@ adb logcat -v time > xxx_carsh.log
 
 拿到日志之后，可以直接在日志里面搜索关键字 *lowmemorykiller* 或者 *kill*，找到自己App的包名：
 
-![low_memory_killer](../../images/crash/low_memory_killer.png)
+![low_memory_killer](/images/crash/low_memory_killer.png)
 
 如果能找到自己包名的 *lowmemorykiller* (不同设备可能这个关键字不一样)可以表明就是oom问题了。
 
@@ -78,16 +78,16 @@ ANR
 
 ANR（Android Not Responding）问题是安卓的特有问题，Android系统中，*ActivityManagerServer(简称AMS) 和WindowManagerServie(简称WMS)*会检测App的响应时间，如果App在特定时间无法响应屏幕触摸或者键盘输入，或者特定事件没有处理完毕，就会触发ANR。
 
-* 出现以下任何情况时，系统都会针对您的应用触发 ANR：
-  - **Input dispatching timed out**：如果您的应用在 5 秒内未响应输入事件（例如按键或屏幕触摸）。
-  - **Executing service:**：如果应用声明的服务无法在几秒内完成 `Service.onCreate()` 和 `Service.onStartCommand()`/`Service.onBind()` 执行。
-  - **Service.startForeground() not called**：如果您的应用使用 `Context.startForegroundService()` 在前台启动新服务，但该服务在 5 秒内未调用 `startForeground()`。
-  - **Broadcast of intent**：如果 [`BroadcastReceiver`](https://developer.android.com/reference/android/content/BroadcastReceiver?hl=zh-cn) 在设定的一段时间内没有执行完毕。如果应用有任何前台 activity，此超时期限为 5 秒。
-  - **JobScheduler interactions**：如果 [`JobService`](https://developer.android.com/reference/android/app/job/JobService?hl=zh-cn) 未在几秒钟内从 `JobService.onStartJob()` 或 `JobService.onStopJob()` 返回，或者如果[user-initiaed job](https://developer.android.com/reference/android/app/job/JobParameters?hl=zh-cn#isUserInitiatedJob())启动，而您的应用在调用 `JobService.onStartJob()` 后的几秒内未调用 `JobService.setNotification()`。对于以 Android 13 及更低版本为目标平台的应用，ANR 会保持静默状态，且不会报告给应用。对于以 Android 14 及更高版本为目标平台的应用，ANR 会保持活动状态，并会报告给应用。
+出现以下任何情况时，系统都会针对您的应用触发 ANR：
+- **Input dispatching timed out**：如果您的应用在 5 秒内未响应输入事件（例如按键或屏幕触摸）。
+- **Executing service:**：如果应用声明的服务无法在几秒内完成 `Service.onCreate()` 和 `Service.onStartCommand()`/`Service.onBind()` 执行。
+- **Service.startForeground() not called**：如果您的应用使用 `Context.startForegroundService()` 在前台启动新服务，但该服务在 5 秒内未调用 `startForeground()`。
+- **Broadcast of intent**：如果 [`BroadcastReceiver`](https://developer.android.com/reference/android/content/BroadcastReceiver?hl=zh-cn) 在设定的一段时间内没有执行完毕。如果应用有任何前台 activity，此超时期限为 5 秒。
+- **JobScheduler interactions**：如果 [`JobService`](https://developer.android.com/reference/android/app/job/JobService?hl=zh-cn) 未在几秒钟内从 `JobService.onStartJob()` 或 `JobService.onStopJob()` 返回，或者如果[user-initiaed job](https://developer.android.com/reference/android/app/job/JobParameters?hl=zh-cn#isUserInitiatedJob())启动，而您的应用在调用 `JobService.onStartJob()` 后的几秒内未调用 `JobService.setNotification()`。对于以 Android 13 及更低版本为目标平台的应用，ANR 会保持静默状态，且不会报告给应用。对于以 Android 14 及更高版本为目标平台的应用，ANR 会保持活动状态，并会报告给应用。
 
 发生ANR拿到logcat日志之后，可以在日志里面看到：
 
-![anr](../../images/crash/anr.jpg)
+![anr](/images/crash/anr.jpg)
 
 这里是5秒钟未响应事件，对于Unity的App来说其实没有给到明确的原因，发生这种情况一般是游戏的线程卡住了，导致未响应。此时我们需要根据Unity日志里面匹配时间点来看我们在处理什么逻辑导致卡住的（或者是App里面接入的SDK卡住的）。
 
