@@ -1,5 +1,5 @@
 ---
-title: 'Unity App的Crash问题解决方法'
+title: 'Unity 应用Crash问题解决方法'
 date: 2024-12-28 21:32:25
 type: "tags"
 tags: unity
