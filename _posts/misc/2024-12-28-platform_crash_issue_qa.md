@@ -11,7 +11,6 @@ comments: false
 ### Crash问题处理流程
 
 Unity App Crash问题主要分为几类：
-
 * 系统资源（包括内存，CPU等）
 * 业务逻辑（主要是死循环这类，因为是C#写的没有空指针这种问题，Unity为数不多的有点）
 * 引擎自己的代码逻辑（空指针，死循环等）
@@ -19,7 +18,6 @@ Unity App Crash问题主要分为几类：
 * 其他原因
 
 针对不同平台，我们定位Crash需要的数据信息也不一样：
-
 * Android： adb logcat日志 + so符号文件
 * iOS：ips日志 + dSYM符号文件
 * Window：dump日志 + pdb符号文件
@@ -100,7 +98,7 @@ ANR问题是安卓的特有问题，Android系统中，*ActivityManagerServer(�
 
 Android系统对后台运行的App限制比较严格，当然不同的定制Android系统处理规则又不一样。比如这段时我最近遇到的，这是一台6GBRAM的手机出现Crash的日志：
 
-![](../../images/crash/background_service.jpg)
+![system_service](/images/crash/background_service.jpg)
 
 可以看到尽管这台手机有6GB的RAM，但是切换到后台10秒钟之后就被系统终止掉了，这种情况我们只能通过系统保活方案来处理。
 
