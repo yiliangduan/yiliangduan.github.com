@@ -6,7 +6,7 @@ tags: unity
 comments: false
 ---
 
-最近在处理Crash问题总结了一些心得这里记录下。
+>最近在处理Crash问题总结了一些心得，这里记录下。
 
 ### Crash问题处理流程
 
