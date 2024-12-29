@@ -34,9 +34,9 @@ Unity App Crash问题主要分为几类：
 
 ### 常见Crash问题具体案例
 
-#### oom 
+#### OOM (Out Of Memory)
 
-oom（out of memory）和字面意思一样，就是系统内存不够或者给定当前的app的内存超出上限了，然后分配不到内存Crash了。
+oom和字面意思一样，就是系统内存不够或者给定当前的app的内存超出上限了，然后分配不到内存Crash了。
 
 iOS系统有Jetsam机制，当内存不够时Jetsam会终止App，并且会生成Jetsam的ips日志，日志名字一般为  *JetsamEventxxx.ips*。所以当Crash时我们发现系统生成了Jetsam ips日志时，基本上可以判断是由于oom造成的。Jetsam日志里面会记录下当前App所有进程分配的内存情况，日志文件里我们可以看到如下内容（省略了很多内容的）：
 ```c#
@@ -74,9 +74,9 @@ adb logcat -v time > xxx_carsh.log
 
 如果能找到自己包名的 *lowmemorykiller* (不同设备可能这个关键字不一样)可以表明就是oom问题了。
 
-ANR
+#### ANR（Android Not Responding）
 
-ANR（Android Not Responding）问题是安卓的特有问题，Android系统中，*ActivityManagerServer(简称AMS) 和WindowManagerServie(简称WMS)*会检测App的响应时间，如果App在特定时间无法响应屏幕触摸或者键盘输入，或者特定事件没有处理完毕，就会触发ANR。
+ANR问题是安卓的特有问题，Android系统中，*ActivityManagerServer(简称AMS) 和WindowManagerServie(简称WMS)*会检测App的响应时间，如果App在特定时间无法响应屏幕触摸或者键盘输入，或者特定事件没有处理完毕，就会触发ANR。
 
 出现以下任何情况时，系统都会针对您的应用触发 ANR：
 - **Input dispatching timed out**：如果您的应用在 5 秒内未响应输入事件（例如按键或屏幕触摸）。
@@ -102,7 +102,6 @@ ANR（Android Not Responding）问题是安卓的特有问题，Android系统中
 引用：
 
 1. [iOS 内存 Jetsam 机制探究](https://juejin.cn/post/6844903508848689166)
-
 2. [带你打造一套 APM 监控系统 之 OOM 问题](https://cloud.tencent.com/developer/inventory/513/article/1662232)
 3. [Logcat命令行工具](https://developer.android.com/tools/logcat?hl=zh-cn)
 4. [Android ANR：原理分析及解决办法](https://juejin.cn/post/7018172565369651230)
