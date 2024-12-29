@@ -76,9 +76,8 @@ adb logcat -v time > xxx_carsh.log
 
 #### ANR（Android Not Responding）
 
-ANR问题是安卓的特有问题，Android系统中，*ActivityManagerServer(简称AMS) 和WindowManagerServie(简称WMS)*会检测App的响应时间，如果App在特定时间无法响应屏幕触摸或者键盘输入，或者特定事件没有处理完毕，就会触发ANR。
+ANR问题是安卓的特有问题，Android系统中，*ActivityManagerServer(简称AMS) 和WindowManagerServie(简称WMS)*会检测App的响应时间，如果App在特定时间无法响应屏幕触摸或者键盘输入，或者特定事件没有处理完毕，就会触发ANR。出现以下任何情况时，系统都会针对您的应用触发 ANR：
 
-出现以下任何情况时，系统都会针对您的应用触发 ANR：
 - **Input dispatching timed out**：如果您的应用在 5 秒内未响应输入事件（例如按键或屏幕触摸）。
 - **Executing service:**：如果应用声明的服务无法在几秒内完成 `Service.onCreate()` 和 `Service.onStartCommand()`/`Service.onBind()` 执行。
 - **Service.startForeground() not called**：如果您的应用使用 `Context.startForegroundService()` 在前台启动新服务，但该服务在 5 秒内未调用 `startForeground()`。
@@ -90,6 +89,20 @@ ANR问题是安卓的特有问题，Android系统中，*ActivityManagerServer(�
 ![anr](/images/crash/anr.jpg)
 
 这里是5秒钟未响应事件，对于Unity的App来说其实没有给到明确的原因，发生这种情况一般是游戏的线程卡住了，导致未响应。此时我们需要根据Unity日志里面匹配时间点来看我们在处理什么逻辑导致卡住的（或者是App里面接入的SDK卡住的）。
+
+#### 后台限制
+
+游戏运行过程中，有时候会被动切换到后台的情况，遇到几种常见的：
+
+* 登陆的时候切换到QQ确认，此时游戏会被被切换到后台。
+* 活动界面使用的H5做的(UniWebView) ，切换到H5界面时游戏会被切换到后台。
+* 系统权限提示框弹出来时，游戏也会被切换到后台。
+
+Android系统对后台运行的App限制比较严格，当然不同的定制Android系统处理规则又不一样。比如这段时我最近遇到的，这是一台6GBRAM的手机出现Crash的日志：
+
+![](../../images/crash/background_service.jpg)
+
+可以看到尽管这台手机又6GB的RAM，但是切换到后台10秒钟之后就被系统终止掉了，这种情况我们只能通过系统保活方案来处理。
 
 #### 业务逻辑
 
