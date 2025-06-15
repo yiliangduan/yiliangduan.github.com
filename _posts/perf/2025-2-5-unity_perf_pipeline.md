@@ -2,7 +2,7 @@
 title: '构建Unity性能监控管线'
 date: 2025-02-05 21:31:25
 type: "tags"
-tags: perf
+tags: unity,perf
 comments: false
 ---
 
@@ -21,7 +21,7 @@ comments: false
 关于数据采集方式： 
 
 * Release 包不能采集详细的业务中的性能数据（比如Unity Profiler数据），但是数据准确，没有测试环境干扰。
-* Development 包能够采集详细的业务中的性能数据，但是数据不准确，有测试环境的干扰（比如自己添加了Profiler性能桩之后，因为Profiler本身的性能开销，导致整体性能会比Release包要低）。
+* Development 包能够采集详细的业务中的性能数据，但是数据不准确，有测试环境的干扰（比如自己添加了Profiler性能桩之后，因为Profiler本身的性能开销，导致整体性能会比Release包要低，上了规模的项目这种测试功能非常多，干扰的比较大）。
 
 这里有个矛盾点：
 
@@ -57,7 +57,8 @@ else
   ↳ 通知采集完成到企微（自动）
 ```
 
-其中涉及到登录和点击UI这种操作可以用 [GAutomator](https://github.com/Tencent/GAutomator) 来处理。
+其中涉及到登录和点击UI这种自动操作可以用 [GAutomator](https://github.com/Tencent/GAutomator) 来处理。
+单局中的角色自动战斗的处理有很多方法，比如专门制作AI行为树或者使用类似对局的回放功能，只要能保证每次测试行为和环境一致即可。
 
 #### PerfDog （一级数据）
 
