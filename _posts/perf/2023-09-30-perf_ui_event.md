@@ -67,7 +67,7 @@ public virtual string text
 }
 ```
 
-##### 事件频次太高
+#### 事件频次太高
 如果HpBarView的数量非常多，比如当前场景有50个HpBarView需要显示，那就是50个HpBarView在监听 *EventKey.HpUpdate* 事件，如果有30个Actor正好在同一帧都触发了一次Hp的更新，那就是会抛出50次 *EventKey.HpUpdate* 事件，那HpBarView的OnHpUpdate函数实际触发的次数：
 
 ```csharp
